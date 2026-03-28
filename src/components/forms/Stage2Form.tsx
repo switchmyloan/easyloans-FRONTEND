@@ -68,7 +68,7 @@ export default function Stage2Form({ onSubmit, defaultValues, isPrefilled }: Sta
             : "Complete your profile to see loan offers"}
         </p>
 
-        {isPrefilled && (
+        {/* {isPrefilled && (
           <div className="flex items-center gap-2 bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 mb-4">
             <svg className="w-4 h-4 text-amber-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -77,7 +77,7 @@ export default function Stage2Form({ onSubmit, defaultValues, isPrefilled }: Sta
               Fields are pre-filled from your previous application. You can edit any field.
             </p>
           </div>
-        )}
+        )} */}
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
           {/* Row 1: Last Name + Email */}

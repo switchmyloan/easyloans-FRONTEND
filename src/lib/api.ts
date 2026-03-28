@@ -155,7 +155,37 @@ export interface GetOffersPayload {
   monthly_income: number;
 }
 
-export async function getOffers(payload: GetOffersPayload) {
+// ---------- Offers API response types ----------
+
+export interface StaticLender {
+  name: string;
+  utm_link: string;
+}
+
+export interface LenderResponse {
+  success: boolean;
+  message: string;
+  data: unknown;
+  statusCode: number;
+  utm_link?: string;
+}
+
+export interface OffersApiResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: {
+    MoneyView: LenderResponse;
+    KreditBee: LenderResponse;
+    staticLenders: StaticLender[];
+  };
+}
+
+const OFFERS_SESSION_KEY = "offersResponse";
+
+export async function getOffers(
+  payload: GetOffersPayload
+): Promise<OffersApiResponse> {
   const { firstName } = splitName(payload.name);
 
   const body = {
@@ -181,5 +211,18 @@ export async function getOffers(payload: GetOffersPayload) {
   });
 
   if (!res.ok) throw new Error("Failed to fetch offers");
-  return res.json();
+
+  const json: OffersApiResponse = await res.json();
+  sessionStorage.setItem(OFFERS_SESSION_KEY, JSON.stringify(json));
+  return json;
+}
+
+export function getStoredOffers(): OffersApiResponse | null {
+  const raw = sessionStorage.getItem(OFFERS_SESSION_KEY);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
 }

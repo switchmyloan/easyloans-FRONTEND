@@ -12,6 +12,7 @@ interface OfferCardProps {
   onApply: () => void;
   delay?: number;
   badge?: React.ReactNode;
+  logoDarkBg?: boolean;
 }
 
 export default function OfferCard({
@@ -24,6 +25,7 @@ export default function OfferCard({
   onApply,
   delay = 0,
   badge,
+  logoDarkBg,
 }: OfferCardProps) {
   return (
     <motion.div
@@ -37,7 +39,7 @@ export default function OfferCard({
       )}
 
       <div className="flex items-start gap-4 p-5 sm:p-6">
-        <div className="w-16 h-16 sm:w-[72px] sm:h-[72px] bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-center flex-shrink-0">
+        <div className={`w-16 h-16 sm:w-[72px] sm:h-[72px] rounded-xl border flex items-center justify-center flex-shrink-0 ${logoDarkBg ? "bg-gray-800 border-gray-700" : "bg-gray-50 border-gray-100"}`}>
           {lenderLogo}
         </div>
         <div className="flex-1 min-w-0 pr-20">

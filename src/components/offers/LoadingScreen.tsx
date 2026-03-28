@@ -95,7 +95,7 @@ export default function LoadingScreen() {
         </motion.div>
 
         {/* Title */}
-        <motion.h2
+        {/* <motion.h2
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
@@ -110,7 +110,7 @@ export default function LoadingScreen() {
           className="text-gray-400 text-sm mb-8"
         >
           via Satekkite secure gateway
-        </motion.p>
+        </motion.p> */}
 
         {/* Progress bar */}
         <div className="w-full h-1.5 bg-gray-200 rounded-full mb-6 overflow-hidden">
