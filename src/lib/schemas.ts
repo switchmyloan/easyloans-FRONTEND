@@ -14,6 +14,10 @@ export const stage1Schema = yup.object({
 
 // Step 2 — All other fields
 export const stage2Schema = yup.object({
+  last_name: yup
+    .string()
+    .min(1, "Last name is required")
+    .required("Last name is required"),
   email: yup.string().email("Invalid email").required("Email is required"),
   gender: yup.string().required("Gender is required"),
   pincode: yup
