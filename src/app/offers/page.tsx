@@ -115,7 +115,7 @@ export default function OffersPage() {
                 description={kbOffer.description}
                 keyFeature={kbOffer.keyFeature}
                 interestRate={kbOffer.interestRate}
-                onApply={() => handleApply(kbUtmLink)}
+                onApply={() => handleApply(kbUtmLink || "https://www.kreditbee.in/")}
                 delay={0.3}
                 badge={
                   <button
@@ -154,7 +154,7 @@ export default function OffersPage() {
                 description={mvOffer.description}
                 keyFeature={mvOffer.keyFeature}
                 interestRate={mvOffer.interestRate}
-                onApply={() => handleApply(mvUtmLink)}
+                onApply={() => handleApply(mvUtmLink || "https://moneyview.in/")}
                 delay={showKB ? 0.45 : 0.3}
               />
             )}
