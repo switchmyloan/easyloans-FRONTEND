@@ -37,6 +37,7 @@ export default function Stage1Form({ onSubmit, defaultValues }: Stage1FormProps)
       <div className="absolute -top-16 -right-16 w-48 h-48 bg-white/5 rounded-full blur-2xl pointer-events-none" />
       <div className="absolute -bottom-10 -left-10 w-36 h-36 bg-[#A6FF00]/5 rounded-full blur-2xl pointer-events-none" />
 
+
       <div className="relative z-10">
         <ProgressBar percent={30} />
 
