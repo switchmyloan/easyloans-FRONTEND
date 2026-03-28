@@ -16,6 +16,12 @@ export const stage1Schema = yup.object({
 
 // Step 2 — All other fields
 export const stage2Schema = yup.object({
+  first_name: yup
+    .string()
+    .trim()
+    .min(2, "First name must be at least 2 characters")
+    .matches(/^[A-Za-z\s]+$/, "First name must contain only letters")
+    .required("First name is required"),
   last_name: yup
     .string()
     .trim()

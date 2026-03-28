@@ -62,6 +62,10 @@ export default function Home() {
         const defaults = mapLeadToFormDefaults(lead);
         setStage2Defaults(defaults);
         setIsPrefilled(true);
+      } else {
+        // Prefill first name from Stage 1 full name
+        const firstName = data.name.trim().split(/\s+/)[0] || "";
+        setStage2Defaults({ first_name: firstName });
       }
 
       // Only advance to stage2 on successful API response
@@ -84,6 +88,7 @@ export default function Home() {
       try {
         await getOffers({
           name: stage1Data.name,
+          first_name: data.first_name,
           last_name: data.last_name,
           mobile: stage1Data.mobile,
           email: data.email,

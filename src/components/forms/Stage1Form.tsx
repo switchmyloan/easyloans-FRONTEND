@@ -50,9 +50,9 @@ export default function Stage1Form({ onSubmit, defaultValues }: Stage1FormProps)
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
           <FormInput
             id="name"
-            label="Full Name"
+            label="First Name"
             type="text"
-            placeholder="Enter your full name"
+            placeholder="Enter your first name"
             registration={register("name")}
             error={errors.name}
           />

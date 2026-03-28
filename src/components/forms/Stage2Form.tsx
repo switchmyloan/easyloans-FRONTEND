@@ -12,6 +12,7 @@ import GenderToggle from "@/components/ui/GenderToggle";
 import ProgressBar from "@/components/ui/ProgressBar";
 
 interface Stage2Defaults {
+  first_name?: string;
   last_name?: string;
   email?: string;
   gender?: string;
@@ -80,8 +81,16 @@ export default function Stage2Form({ onSubmit, defaultValues, isPrefilled }: Sta
         )} */}
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
-          {/* Row 1: Last Name + Email */}
+          {/* Row 1: First Name + Last Name */}
           <div className="grid grid-cols-2 gap-3">
+            <FormInput
+              id="first_name"
+              label="First Name"
+              type="text"
+              placeholder="Rahul"
+              registration={register("first_name")}
+              error={errors.first_name}
+            />
             <FormInput
               id="last_name"
               label="Last Name"
@@ -90,6 +99,10 @@ export default function Stage2Form({ onSubmit, defaultValues, isPrefilled }: Sta
               registration={register("last_name")}
               error={errors.last_name}
             />
+          </div>
+
+          {/* Row 2: Email + Gender */}
+          <div className="grid grid-cols-2 gap-3">
             <FormInput
               id="email"
               label="Email"
@@ -98,10 +111,6 @@ export default function Stage2Form({ onSubmit, defaultValues, isPrefilled }: Sta
               registration={register("email")}
               error={errors.email}
             />
-          </div>
-
-          {/* Row 2: Gender + Pincode */}
-          <div className="grid grid-cols-2 gap-3">
             <Controller
               name="gender"
               control={control}
@@ -113,6 +122,10 @@ export default function Stage2Form({ onSubmit, defaultValues, isPrefilled }: Sta
                 />
               )}
             />
+          </div>
+
+          {/* Row 3: Pincode + PAN */}
+          <div className="grid grid-cols-2 gap-3">
             <FormInput
               id="pincode"
               label="Pincode"
@@ -122,10 +135,6 @@ export default function Stage2Form({ onSubmit, defaultValues, isPrefilled }: Sta
               registration={register("pincode")}
               error={errors.pincode}
             />
-          </div>
-
-          {/* Row 3: PAN + DOB */}
-          <div className="grid grid-cols-2 gap-3">
             <FormInput
               id="pan_no"
               label="PAN Number"
@@ -140,6 +149,10 @@ export default function Stage2Form({ onSubmit, defaultValues, isPrefilled }: Sta
               error={errors.pan_no}
               style={{ textTransform: "uppercase" }}
             />
+          </div>
+
+          {/* Row 4: DOB + Job Type */}
+          <div className="grid grid-cols-2 gap-3">
             <FormInput
               id="dob"
               label="Date of Birth"
@@ -148,10 +161,6 @@ export default function Stage2Form({ onSubmit, defaultValues, isPrefilled }: Sta
               error={errors.dob}
               max={new Date().toISOString().split("T")[0]}
             />
-          </div>
-
-          {/* Row 4: Job Type + Salary */}
-          <div className="grid grid-cols-2 gap-3">
             <FormSelect
               id="profile"
               label="Job Type"
@@ -160,6 +169,10 @@ export default function Stage2Form({ onSubmit, defaultValues, isPrefilled }: Sta
               registration={register("profile")}
               error={errors.profile}
             />
+          </div>
+
+          {/* Row 5: Monthly Salary */}
+          <div className="grid grid-cols-2 gap-3">
             <FormInput
               id="monthly_income"
               label="Monthly Salary"

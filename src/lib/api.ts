@@ -91,6 +91,7 @@ const REVERSE_GENDER_MAP: Record<string, string> = {
 };
 
 export interface PrefilledStage2 {
+  first_name?: string;
   last_name?: string;
   email?: string;
   gender?: string;
@@ -104,6 +105,7 @@ export interface PrefilledStage2 {
 export function mapLeadToFormDefaults(lead: LeadRecord): PrefilledStage2 {
   const defaults: PrefilledStage2 = {};
 
+  if (lead.first_name) defaults.first_name = lead.first_name;
   if (lead.last_name) defaults.last_name = lead.last_name;
   if (lead.email) defaults.email = lead.email;
   if (lead.gender)
@@ -135,12 +137,6 @@ const GENDER_MAP: Record<string, string> = {
   Other: "OTHER",
 };
 
-function splitName(full: string): { firstName: string; lastName: string } {
-  const parts = full.trim().split(/\s+/);
-  if (parts.length <= 1) return { firstName: parts[0] || "", lastName: "" };
-  return { firstName: parts[0], lastName: parts.slice(1).join(" ") };
-}
-
 function formatDOB(dob: Date | string): string {
   const d = typeof dob === "string" ? new Date(dob) : dob;
   return d.toISOString().split("T")[0];
@@ -148,6 +144,7 @@ function formatDOB(dob: Date | string): string {
 
 export interface GetOffersPayload {
   name: string;
+  first_name: string;
   last_name: string;
   mobile: string;
   email: string;
@@ -190,11 +187,9 @@ const OFFERS_SESSION_KEY = "offersResponse";
 export async function getOffers(
   payload: GetOffersPayload
 ): Promise<OffersApiResponse> {
-  const { firstName } = splitName(payload.name);
-
   const body = {
     name: payload.name,
-    firstName,
+    firstName: payload.first_name,
     lastName: payload.last_name,
     email: payload.email,
     dateOfBirth: formatDOB(payload.dob),
