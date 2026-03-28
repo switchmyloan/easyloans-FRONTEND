@@ -43,9 +43,11 @@ export default function Home() {
     PrefilledStage2 | undefined
   >();
   const [isPrefilled, setIsPrefilled] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const handleStage1 = useCallback(async (data: Stage1Data) => {
     setStage1Data(data);
+    setApiError(null);
     setStage("loading");
 
     try {
@@ -61,16 +63,23 @@ export default function Home() {
         setStage2Defaults(defaults);
         setIsPrefilled(true);
       }
+
+      // Only advance to stage2 on successful API response
+      setTimeout(() => setStage("stage2"), LOADING_DELAY_MS);
     } catch (err) {
       console.error("Lead generation error:", err);
+      const message =
+        err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      setApiError(message);
+      // Go back to stage1 so user can retry
+      setStage("stage1");
     }
-
-    setTimeout(() => setStage("stage2"), LOADING_DELAY_MS);
   }, []);
 
   const handleStage2 = useCallback(
     async (data: Stage2Data) => {
       if (!stage1Data) return;
+      setApiError(null);
 
       try {
         await getOffers({
@@ -85,11 +94,15 @@ export default function Home() {
           profile: data.profile,
           monthly_income: data.monthly_income,
         });
+
+        // Only navigate to offers on successful API response
+        router.push("/offers");
       } catch (err) {
         console.error("Get offers error:", err);
+        const message =
+          err instanceof Error ? err.message : "Something went wrong. Please try again.";
+        setApiError(message);
       }
-
-      router.push("/offers");
     },
     [stage1Data, router]
   );
@@ -108,6 +121,15 @@ export default function Home() {
             className={`w-full ${stage === "stage2" ? "max-w-[540px]" : "max-w-[460px]"}`}
           >
             <MobileHeader />
+
+            {apiError && (
+              <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm flex items-center gap-2">
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {apiError}
+              </div>
+            )}
 
             <AnimatePresence mode="wait">
               {stage === "stage1" && (

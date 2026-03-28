@@ -49,9 +49,13 @@ export async function submitLead(data: {
     body: JSON.stringify({ phone: data.phone, name: data.name }),
   });
 
-  if (!res.ok) throw new Error("Lead generation failed");
+  if (!res.ok) throw new Error("Lead generation failed. Please try again.");
 
   const json: LeadsResponse = await res.json();
+
+  if (json.statusCode !== 200 || !json.success) {
+    throw new Error(json.message || "Lead generation failed. Please try again.");
+  }
 
   // Store full response in sessionStorage
   sessionStorage.setItem(SESSION_KEY, JSON.stringify(json));
@@ -210,9 +214,14 @@ export async function getOffers(
     body: JSON.stringify(body),
   });
 
-  if (!res.ok) throw new Error("Failed to fetch offers");
+  if (!res.ok) throw new Error("Failed to fetch offers. Please try again.");
 
   const json: OffersApiResponse = await res.json();
+
+  if (json.statusCode !== 200 || !json.success) {
+    throw new Error(json.message || "Failed to fetch offers. Please try again.");
+  }
+
   sessionStorage.setItem(OFFERS_SESSION_KEY, JSON.stringify(json));
   return json;
 }
