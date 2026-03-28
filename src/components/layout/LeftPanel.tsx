@@ -17,7 +17,7 @@ export default function LeftPanel() {
         {/* Text content */}
         <div className="mb-10">
           <h2 className="text-2xl xl:text-[28px] font-medium leading-snug text-gray-800 mb-3">
-            <img src="/cready.png" alt="Cready" className="h-6 w-auto inline-block align-baseline mr-1" /> is here, with personal
+            <span className="text-[#6232FF] font-semibold">cready</span>, with personal
             loans that actually feel personal.
           </h2>
           <p className="font-bold text-lg xl:text-xl text-gray-900 leading-snug">
