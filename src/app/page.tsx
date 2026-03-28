@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { AnimatePresence } from "framer-motion";
 import type { Stage1Data, Stage2Data, AppStage } from "@/lib/types";
@@ -8,7 +9,6 @@ import { LOADING_DELAY_MS } from "@/lib/constants";
 
 import LeftPanel from "@/components/layout/LeftPanel";
 import MobileHeader from "@/components/layout/MobileHeader";
-import TrustBadges from "@/components/ui/TrustBadges";
 import Stage1Form from "@/components/forms/Stage1Form";
 
 const Stage2Form = dynamic(() => import("@/components/forms/Stage2Form"), {
@@ -22,13 +22,8 @@ const Stage2Form = dynamic(() => import("@/components/forms/Stage2Form"), {
 
 const LoadingScreen = dynamic(() => import("@/components/offers/LoadingScreen"));
 
-const SuccessScreen = dynamic(() => import("@/components/offers/SuccessScreen"), {
-  loading: () => (
-    <div className="h-96 flex items-center justify-center text-gray-400">Loading offers...</div>
-  ),
-});
-
 export default function Home() {
+  const router = useRouter();
   const [stage, setStage] = useState<AppStage>("stage1");
   const [stage1Data, setStage1Data] = useState<Stage1Data | null>(null);
 
@@ -42,22 +37,10 @@ export default function Home() {
     (data: Stage2Data) => {
       const fullData = { ...stage1Data, ...data };
       console.log("Full application data:", fullData);
-      setStage("success");
+      router.push("/offers");
     },
-    [stage1Data]
+    [stage1Data, router]
   );
-
-  // Full-screen offers
-  if (stage === "success") {
-    return (
-      <main className="min-h-screen bg-gray-50 py-10 px-4 sm:px-8">
-        <div className="max-w-3xl mx-auto">
-          <SuccessScreen />
-          <TrustBadges />
-        </div>
-      </main>
-    );
-  }
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-white">
