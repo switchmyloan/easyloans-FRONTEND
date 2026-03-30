@@ -169,21 +169,21 @@ export interface KBCoupon {
 
 export const KB_COUPONS: KBCoupon[] = [
   {
-    code: "New100",
+    code: "New100_Salaried",
     discount: "100% OFF",
     description:
       "100% off processing fee for salaried professionals! Apply now with KreditBee.",
     eligibility: ["salaried"],
   },
   {
-    code: "KBPA50",
+    code: "KBPA50_Salaried/business",
     discount: "50% OFF",
     description:
       "50% off processing fee for salaried & business applicants! Limited time offer.",
     eligibility: ["salaried", "business"],
   },
   {
-    code: "LIST70",
+    code: "LIST70/75 _business",
     discount: "70% OFF",
     description:
       "70% off processing fee exclusively for business owners! Apply now.",
@@ -197,7 +197,7 @@ export const KB_COUPONS: KBCoupon[] = [
     eligibility: ["business"],
   },
   {
-    code: "KOT100",
+    code: "KOT100 up to 100℅_ business",
     discount: "100% OFF",
     description:
       "Up to 100% off processing fee for business applicants! Don't miss out.",
