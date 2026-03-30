@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { OFFERS, getStaticLenderDetail, STATIC_LENDER_LOGOS } from "@/lib/constants";
+import { OFFERS, getStaticLenderDetail, STATIC_LENDER_LOGOS, getEligibleCoupon, type KBCoupon } from "@/lib/constants";
 import { getStoredOffers, type StaticLender } from "@/lib/api";
 import OfferCard from "@/components/offers/OfferCard";
 import ScratchCoupon from "@/components/offers/ScratchCoupon";
@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 
 export default function OffersPage() {
   const [showScratch, setShowScratch] = useState(false);
+  const [coupon, setCoupon] = useState<KBCoupon | null>(null);
   const [showKB, setShowKB] = useState(false);
   const [showMV, setShowMV] = useState(false);
   const [kbUtmLink, setKbUtmLink] = useState<string | undefined>();
@@ -41,6 +42,10 @@ export default function OffersPage() {
       setShowKB(true);
       setShowMV(true);
     }
+    // Pick a profile-based KreditBee coupon
+    const profile = sessionStorage.getItem("userProfile") || "Salaried";
+    setCoupon(getEligibleCoupon(profile));
+
     setLoaded(true);
   }, []);
 
@@ -207,11 +212,11 @@ export default function OffersPage() {
         </motion.div>
       </div>
 
-      {showScratch && (
+      {showScratch && coupon && (
         <ScratchCoupon
-          discount="-50%"
-          description="50% off processing fee! Use code at checkout. Offer valid until January 1, 2025. Apply now!"
-          couponCode="KREDITBEE50OFF"
+          discount={coupon.discount}
+          description={coupon.description}
+          couponCode={coupon.code}
           onClose={() => setShowScratch(false)}
         />
       )}

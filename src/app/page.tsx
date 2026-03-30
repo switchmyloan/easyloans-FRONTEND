@@ -85,6 +85,9 @@ export default function Home() {
       if (!stage1Data) return;
       setApiError(null);
 
+      // Store profile for coupon selection on offers page
+      sessionStorage.setItem("userProfile", data.profile);
+
       try {
         await getOffers({
           name: stage1Data.name,

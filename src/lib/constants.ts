@@ -158,3 +158,57 @@ export function getStaticLenderDetail(name: string) {
 }
 
 export const LOADING_DELAY_MS = 3000;
+
+// ---------- KreditBee Coupons ----------
+
+export interface KBCoupon {
+  code: string;
+  discount: string;
+  description: string;
+  eligibility: ("salaried" | "business")[];
+}
+
+export const KB_COUPONS: KBCoupon[] = [
+  {
+    code: "New100",
+    discount: "100% OFF",
+    description:
+      "100% off processing fee for salaried professionals! Apply now with KreditBee.",
+    eligibility: ["salaried"],
+  },
+  {
+    code: "KBPA50",
+    discount: "50% OFF",
+    description:
+      "50% off processing fee for salaried & business applicants! Limited time offer.",
+    eligibility: ["salaried", "business"],
+  },
+  {
+    code: "LIST70",
+    discount: "70% OFF",
+    description:
+      "70% off processing fee exclusively for business owners! Apply now.",
+    eligibility: ["business"],
+  },
+  {
+    code: "LIST75",
+    discount: "75% OFF",
+    description:
+      "75% off processing fee exclusively for business owners! Apply now.",
+    eligibility: ["business"],
+  },
+  {
+    code: "KOT100",
+    discount: "100% OFF",
+    description:
+      "Up to 100% off processing fee for business applicants! Don't miss out.",
+    eligibility: ["business"],
+  },
+];
+
+export function getEligibleCoupon(profile: string): KBCoupon {
+  const businessProfiles = ["Self Employed", "Business Owner", "Freelancer"];
+  const category = businessProfiles.includes(profile) ? "business" : "salaried";
+  const eligible = KB_COUPONS.filter((c) => c.eligibility.includes(category));
+  return eligible[Math.floor(Math.random() * eligible.length)];
+}
