@@ -1,7 +1,6 @@
 export const PROFILE_OPTIONS = [
   "Salaried",
   "Self Employed",
-  "Business Owner",
   "Freelancer",
   "Student",
   "Other",
@@ -207,7 +206,7 @@ export const KB_COUPONS: KBCoupon[] = [
 ];
 
 export function getEligibleCoupon(profile: string): KBCoupon {
-  const businessProfiles = ["Self Employed", "Business Owner", "Freelancer"];
+  const businessProfiles = ["Self Employed", "Freelancer"];
   const category = businessProfiles.includes(profile) ? "business" : "salaried";
   const eligible = KB_COUPONS.filter((c) => c.eligibility.includes(category));
   return eligible[Math.floor(Math.random() * eligible.length)];
