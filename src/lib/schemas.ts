@@ -67,4 +67,11 @@ export const stage2Schema = yup.object({
     .positive("Income must be positive")
     .min(1000, "Income must be at least ₹1,000")
     .required("Monthly Income is required"),
+  loan_purpose: yup
+    .string()
+    .oneOf(
+      ["Home Renovation", "Medical Emergency", "Education", "Wedding", "Travel", "Debt Consolidation", "Others"],
+      "Select a valid loan purpose"
+    )
+    .required("Loan purpose is required"),
 });

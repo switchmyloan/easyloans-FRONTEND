@@ -120,6 +120,62 @@ export function mapLeadToFormDefaults(lead: LeadRecord): PrefilledStage2 {
   return defaults;
 }
 
+// ---------- OTP ----------
+
+export interface SendOtpResponse {
+  statusCode: number;
+  data: { hashedOtp: string; expiresAt: number };
+  message: string;
+  success: boolean;
+}
+
+export async function sendOtp(mobileNumber: string): Promise<SendOtpResponse> {
+  const res = await fetch(`${BASE_URL}//onSubmit/send-otp`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ mobileNumber }),
+  });
+
+  if (!res.ok) throw new Error("Failed to send OTP. Please try again.");
+
+  const json: SendOtpResponse = await res.json();
+
+  if (json.statusCode !== 200) {
+    throw new Error(json.message || "Failed to send OTP.");
+  }
+
+  return json;
+}
+
+export interface VerifyOtpResponse {
+  statusCode: number;
+  data: { isVerified: boolean };
+  message: string;
+  success: boolean;
+}
+
+export async function verifyOtp(payload: {
+  otp: string;
+  hashedOtp: string;
+  expiresAt: number;
+}): Promise<VerifyOtpResponse> {
+  const res = await fetch(`${BASE_URL}/onSubmit/verify-otp`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) throw new Error("OTP verification failed. Please try again.");
+
+  const json: VerifyOtpResponse = await res.json();
+
+  if (json.statusCode !== 200 || !json.data.isVerified) {
+    throw new Error(json.message || "Invalid OTP.");
+  }
+
+  return json;
+}
+
 // ---------- Stage 2: Get offers ----------
 
 const JOB_TYPE_MAP: Record<string, string> = {

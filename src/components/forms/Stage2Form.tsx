@@ -20,6 +20,7 @@ interface Stage2Defaults {
   dob?: string | Date;
   profile?: string;
   monthly_income?: number;
+  loan_purpose?: string;
 }
 
 interface Stage2FormProps {
@@ -185,7 +186,36 @@ export default function Stage2Form({ onSubmit, defaultValues, isPrefilled }: Sta
               registration={register("monthly_income")}
               error={errors.monthly_income}
             />
+
+            {/* Row 6: Loan Purpose */}
+          {/* <div className="grid grid-cols-2 gap-3"> */}
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="loan_purpose" className="text-white/90 text-[13px] font-medium tracking-wide">
+                Loan Purpose
+              </label>
+              <select
+                id="loan_purpose"
+                {...register("loan_purpose")}
+                className={`w-full rounded-xl px-4 py-3 bg-white/[0.12] backdrop-blur-sm border text-white focus:outline-none focus:bg-white/[0.18] focus:border-white/50 focus:shadow-[0_0_0_3px_rgba(255,255,255,0.08)] transition-all duration-200 ${
+                  errors.loan_purpose ? "border-red-400/80" : "border-white/20"
+                }`}
+              >
+                <option value="" className="text-gray-800">Select purpose</option>
+                <option value="Home Renovation" className="text-gray-800">Home Renovation</option>
+                <option value="Medical Emergency" className="text-gray-800">Medical Emergency</option>
+                <option value="Education" className="text-gray-800">Education</option>
+                <option value="Wedding" className="text-gray-800">Wedding</option>
+                <option value="Travel" className="text-gray-800">Travel</option>
+                <option value="Debt Consolidation" className="text-gray-800">Debt Consolidation</option>
+                <option value="Others" className="text-gray-800">Others</option>
+              </select>
+              {errors.loan_purpose && (
+                <span className="text-red-300 text-xs pl-1">{errors.loan_purpose.message}</span>
+              )}
+            </div>
+          {/* </div> */}
           </div>
+          
 
           <button
             type="submit"

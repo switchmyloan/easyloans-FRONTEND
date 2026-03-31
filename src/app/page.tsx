@@ -9,6 +9,8 @@ import { LOADING_DELAY_MS } from "@/lib/constants";
 import {
   submitLead,
   getOffers,
+  sendOtp,
+  verifyOtp,
   mapLeadToFormDefaults,
   type PrefilledStage2,
 } from "@/lib/api";
@@ -16,6 +18,7 @@ import {
 import LeftPanel from "@/components/layout/LeftPanel";
 import MobileHeader from "@/components/layout/MobileHeader";
 import Stage1Form from "@/components/forms/Stage1Form";
+import OtpForm from "@/components/forms/OtpForm";
 import GradientBanner from "@/components/ui/GradientBanner";
 
 const Stage2Form = dynamic(() => import("@/components/forms/Stage2Form"), {
@@ -45,41 +48,81 @@ export default function Home() {
   >();
   const [isPrefilled, setIsPrefilled] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [otpError, setOtpError] = useState<string | null>(null);
+  const [otpData, setOtpData] = useState<{ hashedOtp: string; expiresAt: number } | null>(null);
 
   const handleStage1 = useCallback(async (data: Stage1Data) => {
     setStage1Data(data);
     setApiError(null);
-    setStage("loading");
+    setOtpError(null);
 
     try {
-      const response = await submitLead({
-        name: data.name,
-        phone: data.mobile,
-      });
-
-      // If lead found, prefill Stage 2 with existing data
-      if (response.data?.found && response.data.leads?.length > 0) {
-        const lead = response.data.leads[0];
-        const defaults = mapLeadToFormDefaults(lead);
-        setStage2Defaults(defaults);
-        setIsPrefilled(true);
-      } else {
-        // Prefill first name from Stage 1 full name
-        const firstName = data.name.trim().split(/\s+/)[0] || "";
-        setStage2Defaults({ first_name: firstName });
-      }
-
-      // Only advance to stage2 on successful API response
-      setTimeout(() => setStage("stage2"), LOADING_DELAY_MS);
+      const otpRes = await sendOtp(data.mobile);
+      setOtpData(otpRes.data);
+      setStage("otp");
     } catch (err) {
-      console.error("Lead generation error:", err);
+      console.error("Send OTP error:", err);
       const message =
-        err instanceof Error ? err.message : "Something went wrong. Please try again.";
+        err instanceof Error ? err.message : "Failed to send OTP. Please try again.";
       setApiError(message);
-      // Go back to stage1 so user can retry
-      setStage("stage1");
     }
   }, []);
+
+  const handleOtpVerify = useCallback(
+    async (otp: string) => {
+      if (!otpData || !stage1Data) return;
+      setOtpError(null);
+
+      try {
+        await verifyOtp({
+          otp,
+          hashedOtp: otpData.hashedOtp,
+          expiresAt: otpData.expiresAt,
+        });
+
+        // OTP verified — now submit lead and proceed
+        setStage("loading");
+
+        const response = await submitLead({
+          name: stage1Data.name,
+          phone: stage1Data.mobile,
+        });
+
+        if (response.data?.found && response.data.leads?.length > 0) {
+          const lead = response.data.leads[0];
+          const defaults = mapLeadToFormDefaults(lead);
+          setStage2Defaults(defaults);
+          setIsPrefilled(true);
+        } else {
+          const firstName = stage1Data.name.trim().split(/\s+/)[0] || "";
+          setStage2Defaults({ first_name: firstName });
+        }
+
+        setTimeout(() => setStage("stage2"), LOADING_DELAY_MS);
+      } catch (err) {
+        console.error("OTP/Lead error:", err);
+        const message =
+          err instanceof Error ? err.message : "Something went wrong. Please try again.";
+        setOtpError(message);
+      }
+    },
+    [otpData, stage1Data]
+  );
+
+  const handleOtpResend = useCallback(async () => {
+    if (!stage1Data) return;
+    setOtpError(null);
+
+    try {
+      const otpRes = await sendOtp(stage1Data.mobile);
+      setOtpData(otpRes.data);
+    } catch (err) {
+      console.error("Resend OTP error:", err);
+      const message =
+        err instanceof Error ? err.message : "Failed to resend OTP. Please try again.";
+      setOtpError(message);
+    }
+  }, [stage1Data]);
 
   const handleStage2 = useCallback(
     async (data: Stage2Data) => {
@@ -126,7 +169,7 @@ export default function Home() {
           {stage === "loading" && <LoadingScreen key="loading" />}
         </AnimatePresence>
 
-        {(stage === "stage1" || stage === "stage2") && (
+        {(stage === "stage1" || stage === "otp" || stage === "stage2") && (
           <div
             className={`w-full ${stage === "stage2" ? "max-w-[540px]" : "max-w-[460px]"}`}
           >
@@ -147,6 +190,19 @@ export default function Home() {
                   key="stage1"
                   onSubmit={handleStage1}
                   defaultValues={stage1Data ?? undefined}
+                />
+              )}
+              {stage === "otp" && stage1Data && (
+                <OtpForm
+                  key="otp"
+                  mobile={stage1Data.mobile}
+                  onVerify={handleOtpVerify}
+                  onResend={handleOtpResend}
+                  onBack={() => {
+                    setStage("stage1");
+                    setOtpError(null);
+                  }}
+                  error={otpError}
                 />
               )}
               {stage === "stage2" && (
