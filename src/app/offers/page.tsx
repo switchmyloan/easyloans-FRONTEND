@@ -8,6 +8,12 @@ import ScratchCoupon from "@/components/offers/ScratchCoupon";
 import TrustBadges from "@/components/ui/TrustBadges";
 import { motion } from "framer-motion";
 
+const DISPLAY_NAMES: Record<string, string> = {
+  poonawalla: "Poonawalla",
+  SmartCoinHighIntent: "SmartCoin",
+  Zype_Dedupe: "Zype",
+};
+
 export default function OffersPage() {
   const [showScratch, setShowScratch] = useState(false);
   const [coupon, setCoupon] = useState<KBCoupon | null>(null);
@@ -212,7 +218,7 @@ export default function OffersPage() {
               return (
                 <OfferCard
                   key={lender.name}
-                  lenderName={lender.name}
+                  lenderName={DISPLAY_NAMES[lender.name] || lender.name}
                   compact={staticLenders.length > 1}
                   logoDarkBg={logo?.darkBg}
                   lenderLogo={

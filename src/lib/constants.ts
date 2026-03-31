@@ -114,7 +114,7 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest Rates start at 1%* per month",
   },
   RapidMoney: {
-    headline: "Get up to ₹5,000 to ₹25,000 in minutes!",
+    headline: "Get ₹5,000 to ₹25,000",
     description: "Flexible repayment options and loan tenure from 1 month to 6 months",
     keyFeature: "Flexible Repayment Options and Quick Access to Lump Sum Amount",
     interestRate: "Interest Rates start at 0.1%* per day",
@@ -144,19 +144,19 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest Rates start at 10.5%* per annum",
   },
   SmartCoinHighIntent: {
-    headline: "Get up to ₹5,000 to ₹25,000 in minutes!",
+    headline: "Get ₹5,000 to ₹25,000",
     description: "Flexible repayment options and loan tenure from 1 month to 6 months",
     keyFeature: "Flexible Repayment Options and Quick Access to Lump Sum Amount",
     interestRate: "Interest Rates start at 0.1%* per day",
   },
   TrueBalance: {
-    headline: "Get up to ₹5,00,000 with instant approval!",
+    headline: "Get ₹5,00,000 with instant approval!",
     description: "Quick personal loans with minimal documentation and fast disbursement",
     keyFeature: "Instant Approval and Same Day Disbursement",
     interestRate: "Interest Rates start at 1%* per month",
   },
   Zype_Dedupe: {
-    headline: "Get up to ₹3,000 to ₹3,00,000 in minutes!",
+    headline: "Get ₹3,000 to ₹3,00,000",
     description: "Flexible repayment options and loan tenure from 6 month to 18 months",
     keyFeature: "Flexible Repayment Options and Approval in 60 seconds",
     interestRate: "Interest Rates start at 0.05%* per day",
