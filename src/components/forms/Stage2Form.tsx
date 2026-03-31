@@ -4,11 +4,10 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { stage2Schema } from "@/lib/schemas";
 import type { Stage2Data } from "@/lib/types";
-import { PROFILE_OPTIONS } from "@/lib/constants";
 import { motion } from "framer-motion";
 import FormInput from "@/components/ui/FormInput";
-import FormSelect from "@/components/ui/FormSelect";
 import GenderToggle from "@/components/ui/GenderToggle";
+import JobTypeToggle from "@/components/ui/JobTypeToggle";
 import ProgressBar from "@/components/ui/ProgressBar";
 
 interface Stage2Defaults {
@@ -39,6 +38,7 @@ export default function Stage2Form({ onSubmit, defaultValues, isPrefilled }: Sta
     resolver: yupResolver(stage2Schema),
     defaultValues: {
       gender: "Male",
+      profile: "Salaried",
       ...defaultValues,
     } as Record<string, unknown>,
   });
@@ -161,13 +161,16 @@ export default function Stage2Form({ onSubmit, defaultValues, isPrefilled }: Sta
               error={errors.dob}
               max={new Date().toISOString().split("T")[0]}
             />
-            <FormSelect
-              id="profile"
-              label="Job Type"
-              options={PROFILE_OPTIONS}
-              placeholder="Select"
-              registration={register("profile")}
-              error={errors.profile}
+            <Controller
+              name="profile"
+              control={control}
+              render={({ field }) => (
+                <JobTypeToggle
+                  value={field.value}
+                  onChange={field.onChange}
+                  error={errors.profile}
+                />
+              )}
             />
           </div>
 
@@ -178,7 +181,7 @@ export default function Stage2Form({ onSubmit, defaultValues, isPrefilled }: Sta
               label="Monthly Salary"
               type="number"
               placeholder="45000"
-              prefix="₹"
+              // prefix="₹"
               registration={register("monthly_income")}
               error={errors.monthly_income}
             />

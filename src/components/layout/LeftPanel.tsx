@@ -85,7 +85,22 @@ export default function LeftPanel() {
 
           {/* Partner pills */}
           <div className="absolute -bottom-3 right-4 animate-float-delayed">
-            <div className="flex gap-2">
+            <div className="flex gap-1">
+              <div className="bg-white px-3 py-2 rounded-full shadow-md border border-gray-100">
+                <img src="/hero.webp" alt="Truebalance" className="h-4 w-auto" />
+              </div>
+              <div className="bg-white px-3 py-2 rounded-full shadow-md border border-gray-100">
+                <img src="/poonawalla.svg" alt="Truebalance" className="h-4 w-auto" />
+              </div>
+              <div className="bg-white px-3 py-2 rounded-full shadow-md border border-gray-100">
+                <img src="/true.webp" alt="Truebalance" className="h-4 w-auto" />
+              </div>
+              <div className="bg-white px-3 py-2 rounded-full shadow-md border border-gray-100">
+                <img src="/olyv.png" alt="Olyv" className="h-4 w-auto" />
+              </div>
+              <div className="bg-white px-3 py-2 rounded-full shadow-md border border-gray-100">
+                <img src="/zype.png" alt="Zype" className="h-4 w-auto" />
+              </div>
               <div className="bg-white px-3 py-2 rounded-full shadow-md border border-gray-100">
                 <img src="/kreditbee-logo.svg" alt="KreditBee" className="h-4 w-auto" />
               </div>

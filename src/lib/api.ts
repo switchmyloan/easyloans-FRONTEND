@@ -178,6 +178,9 @@ export interface OffersApiResponse {
   data: {
     MoneyView: LenderResponse;
     KreditBee: LenderResponse;
+    SmartCoinHighIntent?: LenderResponse;
+    TrueBalance?: LenderResponse;
+    Zype_Dedupe?: LenderResponse;
     staticLenders: StaticLender[];
   };
 }

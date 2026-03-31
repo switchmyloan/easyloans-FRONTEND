@@ -64,7 +64,7 @@ export default function Stage1Form({ onSubmit, defaultValues }: Stage1FormProps)
             type="tel"
             maxLength={10}
             placeholder="10-digit mobile number"
-            prefix="+91"
+            // prefix="+91"
             registration={register("mobile")}
             error={errors.mobile}
           />

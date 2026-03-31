@@ -28,14 +28,44 @@ export default function OffersPage() {
       const kbHasOffer = !isRejected(kbMsg);
       const mvHasOffer = !isRejected(mvMsg);
 
+      // Always include these lenders if they exist in data (regardless of status)
+      const extras: StaticLender[] = [];
+      const extraMap: Record<string, string> = {
+        SmartCoinHighIntent: response.data.SmartCoinHighIntent?.utm_link || "https://olyv.com/",
+        TrueBalance: response.data.TrueBalance?.utm_link || "https://truebalance.io/",
+        Zype_Dedupe: response.data.Zype_Dedupe?.utm_link || "https://zype.co.in/",
+      };
+      for (const [key, fallbackLink] of Object.entries(extraMap)) {
+        if (response.data[key as keyof typeof response.data]) {
+          extras.push({ name: key, utm_link: fallbackLink });
+        }
+      }
+
       if (kbHasOffer || mvHasOffer) {
         setShowKB(kbHasOffer);
         setShowMV(mvHasOffer);
         if (kbHasOffer) setKbUtmLink(response.data.KreditBee?.utm_link);
         if (mvHasOffer) setMvUtmLink(response.data.MoneyView?.utm_link);
-      } else {
-        // Both not offered — show static lenders
-        setStaticLenders(response.data.staticLenders || []);
+      }
+
+      // Merge and sort all static lenders by priority
+      const LENDER_ORDER = [
+        "poonawalla",
+        "HeroFinCorp",
+        "SmartCoinHighIntent",
+        "Zype_Dedupe",
+        "TrueBalance",
+        "RapidMoney",
+      ];
+      const allStatic = [...(response.data.staticLenders || []), ...extras];
+      allStatic.sort((a, b) => {
+        const ai = LENDER_ORDER.indexOf(a.name);
+        const bi = LENDER_ORDER.indexOf(b.name);
+        // Known lenders first in defined order, unknown lenders at the end
+        return (ai === -1 ? LENDER_ORDER.length : ai) - (bi === -1 ? LENDER_ORDER.length : bi);
+      });
+      if (allStatic.length > 0) {
+        setStaticLenders(allStatic);
       }
     } else {
       // No API response — show both as fallback
@@ -53,7 +83,12 @@ export default function OffersPage() {
 
   const kbOffer = OFFERS.find((o) => o.lenderName === "KreditBee")!;
   const mvOffer = OFFERS.find((o) => o.lenderName === "MoneyView")!;
-  const showStaticOnly = !showKB && !showMV && staticLenders.length > 0;
+  const hasStaticLenders = staticLenders.length > 0;
+  const showStaticOnly = !showKB && !showMV && hasStaticLenders;
+
+  // Decide if we need wider container for grid
+  const totalCards = (showKB ? 1 : 0) + (showMV ? 1 : 0) + staticLenders.length;
+  const multipleCards = totalCards > 1;
 
   const handleApply = (url?: string) => {
     if (url) window.open(url, "_blank");
@@ -61,7 +96,7 @@ export default function OffersPage() {
 
   return (
     <main className="min-h-screen bg-[#f8f9fb]">
-      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+      <div className={`mx-auto px-4 sm:px-6 py-10 sm:py-14 ${multipleCards ? "max-w-6xl" : "max-w-2xl"}`}>
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -8 }}
@@ -105,10 +140,11 @@ export default function OffersPage() {
 
         {/* KreditBee & MoneyView offer cards */}
         {(showKB || showMV) && (
-          <div className="space-y-4">
+          <div className={showKB && showMV ? "grid grid-cols-1 sm:grid-cols-2 gap-4" : "space-y-4"}>
             {showKB && (
               <OfferCard
                 lenderName={kbOffer.lenderName}
+                compact={showKB && showMV}
                 lenderLogo={
                   <img
                     src={kbOffer.logo}
@@ -148,6 +184,7 @@ export default function OffersPage() {
             {showMV && (
               <OfferCard
                 lenderName={mvOffer.lenderName}
+                compact={showKB && showMV}
                 lenderLogo={
                   <img
                     src={mvOffer.logo}
@@ -166,9 +203,9 @@ export default function OffersPage() {
           </div>
         )}
 
-        {/* Static lenders fallback */}
-        {showStaticOnly && (
-          <div className="space-y-4">
+        {/* Static / extra lenders */}
+        {hasStaticLenders && (
+          <div className={staticLenders.length > 1 ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4" : "space-y-4"}>
             {staticLenders.map((lender, i) => {
               const detail = getStaticLenderDetail(lender.name);
               const logo = STATIC_LENDER_LOGOS[lender.name];
@@ -176,6 +213,7 @@ export default function OffersPage() {
                 <OfferCard
                   key={lender.name}
                   lenderName={lender.name}
+                  compact={staticLenders.length > 1}
                   logoDarkBg={logo?.darkBg}
                   lenderLogo={
                     logo ? (

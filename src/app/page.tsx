@@ -16,6 +16,7 @@ import {
 import LeftPanel from "@/components/layout/LeftPanel";
 import MobileHeader from "@/components/layout/MobileHeader";
 import Stage1Form from "@/components/forms/Stage1Form";
+import GradientBanner from "@/components/ui/GradientBanner";
 
 const Stage2Form = dynamic(() => import("@/components/forms/Stage2Form"), {
   loading: () => (
@@ -116,6 +117,7 @@ export default function Home() {
   );
 
   return (
+    <>
     <div className="min-h-screen flex flex-col lg:flex-row bg-white">
       <LeftPanel />
 
@@ -163,6 +165,9 @@ export default function Home() {
           </div>
         )}
       </main>
+
     </div>
+       <GradientBanner />
+    </>
   );
 }

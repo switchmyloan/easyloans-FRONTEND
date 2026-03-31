@@ -13,6 +13,7 @@ interface OfferCardProps {
   delay?: number;
   badge?: React.ReactNode;
   logoDarkBg?: boolean;
+  compact?: boolean;
 }
 
 export default function OfferCard({
@@ -26,7 +27,63 @@ export default function OfferCard({
   delay = 0,
   badge,
   logoDarkBg,
+  compact = false,
 }: OfferCardProps) {
+  if (compact) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay, duration: 0.4 }}
+        className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow relative flex flex-col h-full"
+      >
+        {badge && (
+          <div className="absolute top-4 right-4 z-10">{badge}</div>
+        )}
+
+        <div className="p-5 flex-1">
+          {/* Logo + Name row */}
+          <div className="flex items-center gap-3 mb-3">
+            <div className={`w-12 h-12 rounded-xl border flex items-center justify-center flex-shrink-0 ${logoDarkBg ? "bg-gray-800 border-gray-700" : "bg-gray-50 border-gray-100"}`}>
+              {lenderLogo}
+            </div>
+            <p className="text-sm font-semibold text-gray-900">{lenderName}</p>
+          </div>
+
+          {/* Headline + Description */}
+          <h3 className="text-base font-bold text-gray-900 leading-snug mb-1">
+            {headline}
+          </h3>
+          <p className="text-xs text-gray-500 mb-4 line-clamp-2">{description}</p>
+
+          <div className="border-t border-gray-100 pt-3 space-y-2">
+            <div>
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5">
+                Key Feature
+              </p>
+              <p className="text-xs font-medium text-gray-700 leading-snug">{keyFeature}</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-0.5">
+                Interest Rate
+              </p>
+              <p className="text-xs font-medium text-gray-700 leading-snug">{interestRate}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-5 pt-0">
+          <button
+            onClick={onApply}
+            className="w-full px-4 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-sm font-semibold rounded-xl transition-colors active:scale-[0.97] cursor-pointer"
+          >
+            Apply Now
+          </button>
+        </div>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}

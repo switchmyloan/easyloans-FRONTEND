@@ -57,7 +57,7 @@ export const stage2Schema = yup.object({
   profile: yup
     .string()
     .oneOf(
-      ["Salaried", "Self Employed", "Business Owner", "Freelancer", "Student", "Other"],
+      ["Salaried", "Self Employed"],
       "Select a valid job type"
     )
     .required("Job Type is required"),
