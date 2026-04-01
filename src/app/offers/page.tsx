@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { OFFERS, getStaticLenderDetail, STATIC_LENDER_LOGOS, getEligibleCoupon, type KBCoupon } from "@/lib/constants";
 import { getStoredOffers, saveLender, type StaticLender } from "@/lib/api";
 import OfferCard from "@/components/offers/OfferCard";
@@ -16,6 +17,7 @@ const DISPLAY_NAMES: Record<string, string> = {
 };
 
 export default function OffersPage() {
+  const router = useRouter();
   const [showScratch, setShowScratch] = useState(false);
   const [coupon, setCoupon] = useState<KBCoupon | null>(null);
   const [showKB, setShowKB] = useState(false);
@@ -76,9 +78,9 @@ export default function OffersPage() {
         setStaticLenders(allStatic);
       }
     } else {
-      // No API response — show both as fallback
-      setShowKB(true);
-      setShowMV(true);
+      // No API response — user hasn't completed the form, redirect to home
+      router.replace("/");
+      return;
     }
     // Pick a profile-based KreditBee coupon
     const profile = sessionStorage.getItem("userProfile") || "Salaried";
