@@ -9,18 +9,18 @@ export const OFFERS = [
   {
     lenderName: "KreditBee",
     logo: "/kreditbee-logo.svg",
-    headline: "Get up to ₹5,000 to ₹4,00,000 in minutes!",
+    headline: "Get Personal Loans up to ₹5 Lakhs",
     description: "Flexible repayment options and loan tenure up to 24 months",
     keyFeature: "Instant Disbursement and Flexible EMI Options",
-    interestRate: "Interest Rates start at 0.1%* per day",
+    interestRate: "Interest rate starting from 1% per month",
   },
   {
     lenderName: "MoneyView",
     logo: "/moneyview-logo.svg",
-    headline: "Get up to ₹10,00,000 with quick approval!",
+    headline: "Get Personal Loans up to ₹10 Lakhs",
     description: "Minimal documentation and fast digital process",
     keyFeature: "Flexible Repayment Options and Quick Access to Lump Sum",
-    interestRate: "Interest Rates start at 1.33%* per month",
+    interestRate: "Interest rate starting from 1.16%% per month.",
   },
 ] as const;
 
@@ -48,7 +48,7 @@ export const STATIC_LENDER_DETAILS: Record<
   }
 > = {
   SmartCoin: {
-    headline: "Get up to ₹5,000 to ₹25,000 in minutes!",
+    headline: "Get Personal Loans up to ₹5 Lakhs",
     description: "Flexible repayment options and loan tenure from 1 month to 6 months",
     keyFeature: "Flexible Repayment Options and Quick Access to Lump Sum Amount",
     interestRate: "Interest Rates start at 0.1%* per day",
@@ -117,7 +117,7 @@ export const STATIC_LENDER_DETAILS: Record<
     headline: "Get ₹5,000 to ₹25,000",
     description: "Flexible repayment options and loan tenure from 1 month to 6 months",
     keyFeature: "Flexible Repayment Options and Quick Access to Lump Sum Amount",
-    interestRate: "Interest Rates start at 0.1%* per day",
+    interestRate: "Interest rate starting from 3.01% per month.",
   },
   RamFinCorp: {
     headline: "Get up to ₹1,00,000 with easy approval!",
@@ -126,16 +126,16 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest Rates start at 1.5%* per month",
   },
   poonawalla: {
-    headline: "Get up to ₹25,00,000 with quick approval!",
+    headline: "Get Instant Personal Loans up to ₹15 Lakhs",
     description: "Personal loans with attractive interest rates and flexible tenure",
     keyFeature: "Pre-approved Offers and Instant Disbursement",
-    interestRate: "Interest Rates start at 10.49%* per annum",
+    interestRate: "Interest rate starting from 0.83% per month.",
   },
   HeroFinCorp: {
-    headline: "Get up to ₹5,00,000 in minutes!",
+    headline: "Get Personal Loans up to ₹5 Lakhs",
     description: "Hassle-free personal loans with quick digital process",
     keyFeature: "No Collateral Required and Flexible EMI Options",
-    interestRate: "Interest Rates start at 14%* per annum",
+    interestRate: "Interest rate starting from 1.58% per month.",
   },
   AdityaBirlaCapital: {
     headline: "Get up to ₹40,00,000 with easy approval!",
@@ -144,22 +144,22 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest Rates start at 10.5%* per annum",
   },
   SmartCoinHighIntent: {
-    headline: "Get ₹5,000 to ₹25,000",
+    headline: "Get Personal Loans up to ₹5 Lakhs",
     description: "Flexible repayment options and loan tenure from 1 month to 6 months",
     keyFeature: "Flexible Repayment Options and Quick Access to Lump Sum Amount",
-    interestRate: "Interest Rates start at 0.1%* per day",
+    interestRate: "Interest rate starting from 1.5% per month.",
   },
   TrueBalance: {
-    headline: "Get ₹5,00,000 with instant approval!",
+    headline: "Get Personal Loans up to ₹2-5 Lakhs",
     description: "Quick personal loans with minimal documentation and fast disbursement",
     keyFeature: "Instant Approval and Same Day Disbursement",
-    interestRate: "Interest Rates start at 1%* per month",
+    interestRate: "Interest rate starting from 2.4% per month.",
   },
   Zype_Dedupe: {
-    headline: "Get ₹3,000 to ₹3,00,000",
+    headline: "Get Personal Loans up to ₹5 Lakhs",
     description: "Flexible repayment options and loan tenure from 6 month to 18 months",
     keyFeature: "Flexible Repayment Options and Approval in 60 seconds",
-    interestRate: "Interest Rates start at 0.05%* per day",
+    interestRate: "Interest rate starting from 1.5% per month.",
   },
 };
 
