@@ -148,6 +148,7 @@ export default function Home() {
           dob: data.dob,
           profile: data.profile,
           monthly_income: data.monthly_income,
+          loan_purpose: data.loan_purpose,
         });
 
         // Only navigate to offers on successful API response

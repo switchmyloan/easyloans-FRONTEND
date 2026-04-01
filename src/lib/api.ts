@@ -1,4 +1,5 @@
 const BASE_URL = "https://apply.switchmyloan.in/api";
+// const BASE_URL = "http://localhost:8000/api";
 
 const PARTNER_HEADERS = {
   "x-partner-shortname": "MoneyTap",
@@ -139,7 +140,7 @@ export interface SendOtpResponse {
 }
 
 export async function sendOtp(mobileNumber: string): Promise<SendOtpResponse> {
-  const res = await fetch(`${BASE_URL}//onSubmit/send-otp`, {
+  const res = await fetch(`${BASE_URL}/onSubmit/send-otp`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ mobileNumber }),
@@ -219,6 +220,7 @@ export interface GetOffersPayload {
   dob: Date | string;
   profile: string;
   monthly_income: number;
+  loan_purpose: string;
 }
 
 // ---------- Offers API response types ----------
@@ -269,6 +271,7 @@ export async function getOffers(
     onboardingStep: "",
     panNumber: payload.pan_no,
     pincode: payload.pincode,
+    loanPurpose: payload.loan_purpose,
   };
 
   const res = await fetch(`${BASE_URL}/onSubmit/get-offer-kb-mv`, {
@@ -286,6 +289,7 @@ export async function getOffers(
   }
 
   sessionStorage.setItem(OFFERS_SESSION_KEY, JSON.stringify(json));
+  sessionStorage.setItem("userPhone", payload.mobile);
   return json;
 }
 
@@ -296,5 +300,22 @@ export function getStoredOffers(): OffersApiResponse | null {
     return JSON.parse(raw);
   } catch {
     return null;
+  }
+}
+
+// ---------- Save Lender (on Apply Now click) ----------
+
+export async function saveLender(phoneNumber: string, lenderName: string): Promise<void> {
+  try {
+    await fetch(`${BASE_URL}/onSubmit/save-lender`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        phoneNumber,
+        lenders: [{ lenderName }],
+      }),
+    });
+  } catch (err) {
+    console.error("Failed to save lender:", err);
   }
 }

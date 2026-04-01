@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { OFFERS, getStaticLenderDetail, STATIC_LENDER_LOGOS, getEligibleCoupon, type KBCoupon } from "@/lib/constants";
-import { getStoredOffers, type StaticLender } from "@/lib/api";
+import { getStoredOffers, saveLender, type StaticLender } from "@/lib/api";
 import OfferCard from "@/components/offers/OfferCard";
 import ScratchCoupon from "@/components/offers/ScratchCoupon";
 import TrustBadges from "@/components/ui/TrustBadges";
@@ -97,7 +97,10 @@ export default function OffersPage() {
   const totalCards = (showKB ? 1 : 0) + (showMV ? 1 : 0) + staticLenders.length;
   const multipleCards = totalCards > 1;
 
-  const handleApply = (url?: string) => {
+  const handleApply = async (lenderName: string, url?: string) => {
+    const phone = sessionStorage.getItem("userPhone") || "";
+    console.log("handleApply called:", { lenderName, phone, url });
+    await saveLender(phone, lenderName);
     if (url) window.open(url, "_blank");
   };
 
@@ -163,7 +166,7 @@ export default function OffersPage() {
                 description={kbOffer.description}
                 keyFeature={kbOffer.keyFeature}
                 interestRate={kbOffer.interestRate}
-                onApply={() => handleApply(kbUtmLink || "https://www.kreditbee.in/")}
+                onApply={() => handleApply("KreditBee", kbUtmLink || "https://www.kreditbee.in/")}
                 delay={0.3}
                 badge={
                   <button
@@ -203,7 +206,7 @@ export default function OffersPage() {
                 description={mvOffer.description}
                 keyFeature={mvOffer.keyFeature}
                 interestRate={mvOffer.interestRate}
-                onApply={() => handleApply(mvUtmLink || "https://moneyview.in/")}
+                onApply={() => handleApply("MoneyView", mvUtmLink || "https://moneyview.in/")}
                 delay={showKB ? 0.45 : 0.3}
               />
             )}
@@ -235,7 +238,7 @@ export default function OffersPage() {
                   description={detail.description}
                   keyFeature={detail.keyFeature}
                   interestRate={detail.interestRate}
-                  onApply={() => window.open(lender.utm_link, "_blank")}
+                  onApply={() => handleApply(lender.name, lender.utm_link)}
                   delay={0.2 + i * 0.1}
                 />
               );
