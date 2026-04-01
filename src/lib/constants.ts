@@ -9,7 +9,7 @@ export const OFFERS = [
   {
     lenderName: "KreditBee",
     logo: "/kreditbee-logo.svg",
-    headline: "Get Personal Loans up to ₹5 Lakhs",
+    headline: "Get Personal Loans up to ₹6000 to ₹10 Lakhs",
     description: "Flexible repayment options and loan tenure up to 24 months",
     keyFeature: "Instant Disbursement and Flexible EMI Options",
     interestRate: "Interest rate starting from 1% per month",
