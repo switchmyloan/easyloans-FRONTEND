@@ -24,6 +24,7 @@ export default function OffersPage() {
   const [mvUtmLink, setMvUtmLink] = useState<string | undefined>();
   const [staticLenders, setStaticLenders] = useState<StaticLender[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [showAllOffers, setShowAllOffers] = useState(false);
 
   useEffect(() => {
     const response = getStoredOffers();
@@ -215,35 +216,60 @@ export default function OffersPage() {
 
         {/* Static / extra lenders */}
         {hasStaticLenders && (
-          <div className={staticLenders.length > 1 ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4" : "space-y-4"}>
-            {staticLenders.map((lender, i) => {
-              const detail = getStaticLenderDetail(lender.name);
-              const logo = STATIC_LENDER_LOGOS[lender.name];
-              return (
-                <OfferCard
-                  key={lender.name}
-                  lenderName={DISPLAY_NAMES[lender.name] || lender.name}
-                  compact={staticLenders.length > 1}
-                  logoDarkBg={logo?.darkBg}
-                  lenderLogo={
-                    logo ? (
-                      <img src={logo.src} alt={lender.name} className="h-6 w-auto" />
-                    ) : (
-                      <span className="text-xl font-bold text-gray-600">
-                        {lender.name.charAt(0)}
-                      </span>
-                    )
-                  }
-                  headline={detail.headline}
-                  description={detail.description}
-                  keyFeature={detail.keyFeature}
-                  interestRate={detail.interestRate}
-                  onApply={() => handleApply(lender.name, lender.utm_link)}
-                  delay={0.2 + i * 0.1}
-                />
-              );
-            })}
-          </div>
+          <>
+            {/* Show "View All Offers" button when KB or MV is visible */}
+            {(showKB || showMV) && !showAllOffers && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5 }}
+                className="flex justify-center mt-6"
+              >
+                <button
+                  onClick={() => setShowAllOffers(true)}
+                  className="px-6 py-3 bg-white border border-gray-200 hover:border-gray-300 text-gray-700 text-sm font-semibold rounded-xl shadow-sm hover:shadow-md transition-all active:scale-[0.97] cursor-pointer flex items-center gap-2"
+                >
+                  View All Offers
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+              </motion.div>
+            )}
+
+            {/* Show static lenders: always if no KB/MV, or after clicking "View All Offers" */}
+            {(showStaticOnly || showAllOffers) && (
+              <div className={staticLenders.length > 1 ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4" : "space-y-4 mt-4"}>
+                {staticLenders.map((lender, i) => {
+                  const detail = getStaticLenderDetail(lender.name);
+                  const logo = STATIC_LENDER_LOGOS[lender.name];
+                  return (
+                    <OfferCard
+                      key={lender.name}
+                      lenderName={DISPLAY_NAMES[lender.name] || lender.name}
+                      compact={staticLenders.length > 1}
+                      logoDarkBg={logo?.darkBg}
+                      lenderLogo={
+                        logo ? (
+                          <img src={logo.src} alt={lender.name} className="h-6 w-auto" />
+                        ) : (
+                          <span className="text-xl font-bold text-gray-600">
+                            {lender.name.charAt(0)}
+                          </span>
+                        )
+                      }
+                      headline={detail.headline}
+                      description={detail.description}
+                      keyFeature={detail.keyFeature}
+                      interestRate={detail.interestRate}
+                      onApply={() => handleApply(lender.name, lender.utm_link)}
+                      delay={0.2 + i * 0.1}
+                    />
+                  );
+                })}
+              </div>
+            )}
+          </>
         )}
 
         {/* Footer */}
