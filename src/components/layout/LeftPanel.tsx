@@ -42,11 +42,11 @@ export default function LeftPanel() {
                   <div className="text-xs text-gray-500 mt-0.5">Approval Time</div>
                 </div>
                 <div className="text-center border-x border-gray-100">
-                  <div className="text-2xl font-bold text-[#6232FF]">10L+</div>
-                  <div className="text-xs text-gray-500 mt-0.5">Loan Amount</div>
+                  <div className="text-2xl font-bold text-[#6232FF]">15L</div>
+                  <div className="text-xs text-gray-500 mt-0.5">Upto Loan Amount</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-[#6232FF]">0.1%</div>
+                  <div className="text-2xl font-bold text-[#6232FF]">0.83%</div>
                   <div className="text-xs text-gray-500 mt-0.5">Starting Rate</div>
                 </div>
               </div>
