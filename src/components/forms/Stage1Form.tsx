@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { stage1Schema } from "@/lib/schemas";
@@ -14,6 +15,9 @@ interface Stage1FormProps {
 }
 
 export default function Stage1Form({ onSubmit, defaultValues }: Stage1FormProps) {
+  const [showFullCredit, setShowFullCredit] = useState(false);
+  const [showFullComm, setShowFullComm] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -68,6 +72,109 @@ export default function Stage1Form({ onSubmit, defaultValues }: Stage1FormProps)
             registration={register("mobile")}
             error={errors.mobile}
           />
+
+          {/* Consent checkboxes */}
+          <div className="flex flex-col gap-3 mt-2">
+            <label className="flex items-start gap-2.5 cursor-pointer group">
+              <input
+                type="checkbox"
+                {...register("consent_tnc")}
+                className="mt-1 h-4 w-4 accent-[#A6FF00] rounded cursor-pointer shrink-0"
+              />
+              <span className="text-white/70 text-[11px] leading-normal group-hover:text-white/90 transition-colors">
+                I have read and agree to the{" "}
+                <a
+                  href="https://www.cready.in/terms-condition"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#A6FF00] underline underline-offset-2"
+                >
+                  Terms & Conditions
+                </a>{" "}
+                and{" "}
+                <a
+                  href="https://www.cready.in/privacy-policy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#A6FF00] underline underline-offset-2"
+                >
+                  Privacy Policy
+                </a>
+                .
+              </span>
+            </label>
+            {errors.consent_tnc && (
+              <p className="text-red-300 text-[11px] -mt-2 ml-6">{errors.consent_tnc.message}</p>
+            )}
+
+            <div className="flex items-start gap-2.5 group">
+              <input
+                type="checkbox"
+                {...register("consent_credit")}
+                className="mt-1 h-4 w-4 accent-[#A6FF00] rounded cursor-pointer shrink-0"
+              />
+              <span className="text-white/70 text-[11px] leading-normal">
+                I hereby consent to Cready being appointed as my authorised representative to receive my Credit Information{" "}
+                {showFullCredit ? (
+                  <>
+                    from Experian/Credit/EQUIFAX/CRIF for the purpose of Credit Assessment to Advise on loan offers, or expiry of 6 months; whichever is earlier. I also agree that this consent would be shared with Lending Partners to Process my loan application.{" "}
+                    <button
+                      type="button"
+                      onClick={() => setShowFullCredit(false)}
+                      className="text-[#A6FF00] underline underline-offset-2 cursor-pointer"
+                    >
+                      Read less
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setShowFullCredit(true)}
+                    className="text-[#A6FF00] underline underline-offset-2 cursor-pointer"
+                  >
+                    Read more
+                  </button>
+                )}
+              </span>
+            </div>
+            {errors.consent_credit && (
+              <p className="text-red-300 text-[11px] -mt-2 ml-6">{errors.consent_credit.message}</p>
+            )}
+
+            <div className="flex items-start gap-2.5 group">
+              <input
+                type="checkbox"
+                {...register("consent_communication")}
+                className="mt-1 h-4 w-4 accent-[#A6FF00] rounded cursor-pointer shrink-0"
+              />
+              <span className="text-white/70 text-[11px] leading-normal">
+                I hereby consent to receive loan related communication from Cready or its authorized representatives{" "}
+                {showFullComm ? (
+                  <>
+                    via Call, SMS, Email, RCS & Voice over Internet Protocol (VoIP) including WhatsApp.{" "}
+                    <button
+                      type="button"
+                      onClick={() => setShowFullComm(false)}
+                      className="text-[#A6FF00] underline underline-offset-2 cursor-pointer"
+                    >
+                      Read less
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setShowFullComm(true)}
+                    className="text-[#A6FF00] underline underline-offset-2 cursor-pointer"
+                  >
+                    Read more
+                  </button>
+                )}
+              </span>
+            </div>
+            {errors.consent_communication && (
+              <p className="text-red-300 text-[11px] -mt-2 ml-6">{errors.consent_communication.message}</p>
+            )}
+          </div>
 
           <button
             type="submit"

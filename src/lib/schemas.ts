@@ -1,6 +1,6 @@
 import * as yup from "yup";
 
-// Step 1 — Name + Mobile only
+// Step 1 — Name + Mobile + Consents
 export const stage1Schema = yup.object({
   name: yup
     .string()
@@ -12,6 +12,18 @@ export const stage1Schema = yup.object({
     .string()
     .matches(/^[6-9]\d{9}$/, "Enter a valid 10-digit mobile number")
     .required("Mobile number is required"),
+  consent_tnc: yup
+    .boolean()
+    .oneOf([true], "You must agree to the Terms & Conditions and Privacy Policy")
+    .required(),
+  consent_credit: yup
+    .boolean()
+    .oneOf([true], "You must consent to credit information access")
+    .required(),
+  consent_communication: yup
+    .boolean()
+    .oneOf([true], "You must consent to receive communications")
+    .required(),
 });
 
 // Step 2 — All other fields

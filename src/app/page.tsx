@@ -86,6 +86,9 @@ export default function Home() {
         const response = await submitLead({
           name: stage1Data.name,
           phone: stage1Data.mobile,
+          consent_tnc: stage1Data.consent_tnc,
+          consent_credit: stage1Data.consent_credit,
+          consent_communication: stage1Data.consent_communication,
         });
 
         if (response.data?.found && response.data.leads?.length > 0) {

@@ -42,11 +42,20 @@ const SESSION_KEY = "leadResponse";
 export async function submitLead(data: {
   name: string;
   phone: string;
+  consent_tnc: boolean;
+  consent_credit: boolean;
+  consent_communication: boolean;
 }): Promise<LeadsResponse> {
   const res = await fetch(`${BASE_URL}/leadsGeneration`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ phone: data.phone, name: data.name }),
+    body: JSON.stringify({
+      phone: data.phone,
+      name: data.name,
+      consent_tnc: data.consent_tnc,
+      consent_credit: data.consent_credit,
+      consent_communication: data.consent_communication,
+    }),
   });
 
   if (!res.ok) throw new Error("Lead generation failed. Please try again.");
