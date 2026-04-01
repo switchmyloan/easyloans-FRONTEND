@@ -7,6 +7,7 @@ import OfferCard from "@/components/offers/OfferCard";
 import ScratchCoupon from "@/components/offers/ScratchCoupon";
 import TrustBadges from "@/components/ui/TrustBadges";
 import { motion } from "framer-motion";
+import GradientBanner from "@/components/ui/GradientBanner";
 
 const DISPLAY_NAMES: Record<string, string> = {
   poonawalla: "Poonawalla",
@@ -264,6 +265,9 @@ export default function OffersPage() {
           onClose={() => setShowScratch(false)}
         />
       )}
+
+
+      <GradientBanner />
     </main>
   );
 }

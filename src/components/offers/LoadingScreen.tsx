@@ -174,13 +174,29 @@ export default function LoadingScreen() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1 }}
-          className="flex items-center gap-4 mt-8 pt-6 border-t border-gray-200 w-full justify-center"
+          className="flex flex-wrap items-center gap-2 mt-8 pt-6 border-t border-gray-200 w-full justify-center"
         >
-          <div className="px-4 py-2 bg-white rounded-xl shadow-sm border border-gray-100">
-            <img src="/kreditbee-logo.svg" alt="KreditBee" className="h-5 w-auto" />
+          
+          <div className="px-2 py-1.5 bg-white rounded-lg shadow-sm border border-gray-100">
+            <img src="/kreditbee-logo.svg" alt="KreditBee" className="h-4 w-auto" />
           </div>
-          <div className="px-4 py-2 bg-white rounded-xl shadow-sm border border-gray-100">
-            <img src="/moneyview-logo.svg" alt="MoneyView" className="h-5 w-auto" />
+          <div className="px-2 py-1.5 bg-white rounded-lg shadow-sm border border-gray-100">
+            <img src="/moneyview-logo.svg" alt="MoneyView" className="h-4 w-auto" />
+          </div>
+          <div className="px-2 py-1.5 bg-white rounded-lg shadow-sm border border-gray-100">
+            <img src="/hero.webp" alt="Hero Fincorp" className="h-4 w-auto" />
+          </div>
+          <div className="px-2 py-1.5 bg-white rounded-lg shadow-sm border border-gray-100">
+            <img src="/poonawalla.svg" alt="Poonawalla" className="h-4 w-auto" />
+          </div>
+          <div className="px-2 py-1.5 bg-white rounded-lg shadow-sm border border-gray-100">
+            <img src="/true.webp" alt="Truebalance" className="h-4 w-auto" />
+          </div>
+          <div className="px-2 py-1.5 bg-white rounded-lg shadow-sm border border-gray-100">
+            <img src="/olyv.png" alt="Olyv" className="h-4 w-auto" />
+          </div>
+          <div className="px-2 py-1.5 bg-white rounded-lg shadow-sm border border-gray-100">
+            <img src="/zype.png" alt="Zype" className="h-4 w-auto" />
           </div>
         </motion.div>
       </div>

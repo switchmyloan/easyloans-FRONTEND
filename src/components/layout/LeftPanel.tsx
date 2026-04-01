@@ -82,58 +82,31 @@ export default function LeftPanel() {
               </span>
             </div>
           </div>
-
           {/* Partner pills */}
-          {/* <div className="absolute -bottom-3 right-4 animate-float-delayed">
-            <div className="flex gap-1">
-              <div className="bg-white px-3 py-2 rounded-full shadow-md border border-gray-100">
-                <img src="/hero.webp" alt="Truebalance" className="h-4 w-auto" />
-              </div>
-              <div className="bg-white px-3 py-2 rounded-full shadow-md border border-gray-100">
-                <img src="/poonawalla.svg" alt="Truebalance" className="h-4 w-auto" />
-              </div>
-              <div className="bg-white px-3 py-2 rounded-full shadow-md border border-gray-100">
-                <img src="/true.webp" alt="Truebalance" className="h-4 w-auto" />
-              </div>
-              <div className="bg-white px-3 py-2 rounded-full shadow-md border border-gray-100">
-                <img src="/olyv.png" alt="Olyv" className="h-4 w-auto" />
-              </div>
-              <div className="bg-white px-3 py-2 rounded-full shadow-md border border-gray-100">
-                <img src="/zype.png" alt="Zype" className="h-4 w-auto" />
-              </div>
-              <div className="bg-white px-3 py-2 rounded-full shadow-md border border-gray-100">
-                <img src="/kreditbee-logo.svg" alt="KreditBee" className="h-4 w-auto" />
-              </div>
-              <div className="bg-white px-3 py-2 rounded-full shadow-md border border-gray-100">
-                <img src="/moneyview-logo.svg" alt="MoneyView" className="h-4 w-auto" />
-              </div>
+          <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 w-full max-w-2xl animate-float-delayed">
+            <div className="flex items-center justify-center gap-2 px-4">
+              {[
+                { src: "/hero.webp", alt: "Hero Fincorp" },
+                { src: "/poonawalla.svg", alt: "Poonawalla" },
+                { src: "/true.webp", alt: "Truebalance" },
+                { src: "/olyv.png", alt: "Olyv" },
+                { src: "/zype.png", alt: "Zype" },
+                { src: "/kreditbee-logo.svg", alt: "KreditBee" },
+                { src: "/moneyview-logo.svg", alt: "MoneyView" },
+              ].map((logo, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-center bg-white h-9 px-4 rounded-full shadow-sm border border-gray-100 flex-shrink-0"
+                >
+                  <img
+                    src={logo.src}
+                    alt={logo.alt}
+                    className="h-3.5 w-auto object-contain max-w-[80px]"
+                  />
+                </div>
+              ))}
             </div>
-          </div> */}
-          {/* Partner pills */}
-<div className="absolute -bottom-5 left-1/2 -translate-x-1/2 w-full max-w-2xl animate-float-delayed">
-  <div className="flex items-center justify-center gap-2 px-4">
-    {[
-      { src: "/hero.webp", alt: "Hero Fincorp" },
-      { src: "/poonawalla.svg", alt: "Poonawalla" },
-      { src: "/true.webp", alt: "Truebalance" },
-      { src: "/olyv.png", alt: "Olyv" },
-      { src: "/zype.png", alt: "Zype" },
-      { src: "/kreditbee-logo.svg", alt: "KreditBee" },
-      { src: "/moneyview-logo.svg", alt: "MoneyView" },
-    ].map((logo, index) => (
-      <div 
-        key={index} 
-        className="flex items-center justify-center bg-white h-9 px-4 rounded-full shadow-sm border border-gray-100 flex-shrink-0"
-      >
-        <img 
-          src={logo.src} 
-          alt={logo.alt} 
-          className="h-3.5 w-auto object-contain max-w-[80px]" 
-        />
-      </div>
-    ))}
-  </div>
-</div>
+          </div>
         </div>
       </div>
     </div>
