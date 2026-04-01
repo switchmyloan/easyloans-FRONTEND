@@ -14,6 +14,7 @@ interface OfferCardProps {
   badge?: React.ReactNode;
   logoDarkBg?: boolean;
   compact?: boolean;
+  recommended?: boolean;
 }
 
 export default function OfferCard({
@@ -28,7 +29,15 @@ export default function OfferCard({
   badge,
   logoDarkBg,
   compact = false,
+  recommended = false,
 }: OfferCardProps) {
+  const recommendedRibbon = recommended ? (
+    <div className="absolute top-[-1] left-0 z-10">
+      <span className="inline-block bg-green-100 text-green-700 text-[11px] font-semibold px-3 py-1 rounded-md">
+        Recommended
+      </span>
+    </div>
+  ) : null;
   if (compact) {
     return (
       <motion.div
@@ -37,6 +46,7 @@ export default function OfferCard({
         transition={{ delay, duration: 0.4 }}
         className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow relative flex flex-col h-full"
       >
+        {recommendedRibbon}
         {badge && (
           <div className="absolute top-4 right-4 z-10">{badge}</div>
         )}
@@ -91,6 +101,7 @@ export default function OfferCard({
       transition={{ delay, duration: 0.4 }}
       className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow relative"
     >
+      {recommendedRibbon}
       {badge && (
         <div className="absolute top-4 right-4 z-10">{badge}</div>
       )}

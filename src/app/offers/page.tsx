@@ -156,6 +156,7 @@ export default function OffersPage() {
               <OfferCard
                 lenderName={kbOffer.lenderName}
                 compact={showKB && showMV}
+                recommended
                 lenderLogo={
                   <img
                     src={kbOffer.logo}
@@ -196,6 +197,7 @@ export default function OffersPage() {
               <OfferCard
                 lenderName={mvOffer.lenderName}
                 compact={showKB && showMV}
+                recommended
                 lenderLogo={
                   <img
                     src={mvOffer.logo}
