@@ -71,7 +71,7 @@ function LoanPurposeDropdown({
   }, []);
 
   return (
-    <div className="flex flex-col gap-1.5" ref={ref}>
+    <div className="relative z-50 flex flex-col gap-1.5" ref={ref}>
       <label className="text-white/90 text-[13px] font-medium tracking-wide">
         Loan Purpose
       </label>
@@ -96,9 +96,9 @@ function LoanPurposeDropdown({
       </button>
 
       {open && (
-        <div className="relative z-50">
+        <div className="relative z-[9999]">
           <ul
-            className="absolute top-0 left-0 w-full max-h-44 overflow-y-auto rounded-xl bg-[#2d1b69] border border-white/20 shadow-xl py-1"
+            className="absolute bottom-0 left-0 w-full max-h-44 overflow-y-auto rounded-xl bg-[#2d1b69] border border-white/20 shadow-xl py-1 mb-1"
             style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.2) transparent" }}
           >
             {LOAN_PURPOSES.map((purpose) => (
