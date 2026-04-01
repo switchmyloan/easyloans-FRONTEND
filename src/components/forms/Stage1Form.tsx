@@ -82,7 +82,7 @@ export default function Stage1Form({ onSubmit, defaultValues }: Stage1FormProps)
             id="name"
             label="Full Name"
             type="text"
-            placeholder="Enter your full name"
+            placeholder="Enter your full name as per PAN"
             registration={register("name")}
             error={errors.name}
           />
