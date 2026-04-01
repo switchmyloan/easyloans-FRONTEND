@@ -12,6 +12,12 @@ export const stage1Schema = yup.object({
     .string()
     .matches(/^[6-9]\d{9}$/, "Enter a valid 10-digit mobile number")
     .required("Mobile number is required"),
+  loan_amount: yup
+    .number()
+    .transform((_value, original) => (original === "" ? undefined : Number(original)))
+    .min(10000, "Minimum loan amount is ₹10,000")
+    .max(1500000, "Maximum loan amount is ₹15,00,000")
+    .required("Loan amount is required"),
   consent_tnc: yup
     .boolean()
     .oneOf([true], "You must agree to the Terms & Conditions and Privacy Policy")
@@ -82,7 +88,23 @@ export const stage2Schema = yup.object({
   loan_purpose: yup
     .string()
     .oneOf(
-      ["Home Renovation", "Medical Emergency", "Education", "Wedding", "Travel", "Debt Consolidation", "Others"],
+      [
+        "Home Renovation",
+        "Medical Emergency",
+        "Wedding or Family Function",
+        "Renovate or Repair Home",
+        "Buy a Gadget or Appliance",
+        "Travel or Vacation",
+        "Education or Coaching Fees",
+        "Start a Small Business or Side Hustle",
+        "Rent or Deposit Payments",
+        "Pay School Fees or Tuition",
+        "Vechical Repair or Fuel Expenses",
+        "Support Family Expenses",
+        "Build or Improve Credit Score",
+        "Just for Short-Term Cash Need",
+        "Others",
+      ],
       "Select a valid loan purpose"
     )
     .required("Loan purpose is required"),

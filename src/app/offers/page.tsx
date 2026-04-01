@@ -170,7 +170,7 @@ export default function OffersPage() {
                 description={kbOffer.description}
                 keyFeature={kbOffer.keyFeature}
                 interestRate={kbOffer.interestRate}
-                onApply={() => handleApply("KreditBee", kbUtmLink || "https://www.kreditbee.in/")}
+                onApply={() => handleApply("KreditBee", kbUtmLink || "https://kredt.be/3ZFfVbz")}
                 delay={0.3}
                 badge={
                   <button

@@ -149,6 +149,7 @@ export default function Home() {
           profile: data.profile,
           monthly_income: data.monthly_income,
           loan_purpose: data.loan_purpose,
+          loan_amount: stage1Data.loan_amount,
         });
 
         // Only navigate to offers on successful API response

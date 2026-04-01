@@ -9,6 +9,28 @@ import { motion } from "framer-motion";
 import FormInput from "@/components/ui/FormInput";
 import ProgressBar from "@/components/ui/ProgressBar";
 
+function formatIndianCurrency(num: number): string {
+  return "₹" + num.toLocaleString("en-IN");
+}
+
+function numberToIndianWords(num: number): string {
+  if (num === 0) return "Zero";
+  const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine",
+    "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+  const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+
+  function convert(n: number): string {
+    if (n < 20) return ones[n];
+    if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 ? " " + ones[n % 10] : "");
+    if (n < 1000) return ones[Math.floor(n / 100)] + " Hundred" + (n % 100 ? " " + convert(n % 100) : "");
+    if (n < 100000) return convert(Math.floor(n / 1000)) + " Thousand" + (n % 1000 ? " " + convert(n % 1000) : "");
+    if (n < 10000000) return convert(Math.floor(n / 100000)) + " Lakh" + (n % 100000 ? " " + convert(n % 100000) : "");
+    return convert(Math.floor(n / 10000000)) + " Crore" + (n % 10000000 ? " " + convert(n % 10000000) : "");
+  }
+
+  return convert(num) + " Only";
+}
+
 interface Stage1FormProps {
   onSubmit: (data: Stage1Data) => void;
   defaultValues?: Partial<Stage1Data>;
@@ -21,11 +43,14 @@ export default function Stage1Form({ onSubmit, defaultValues }: Stage1FormProps)
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<Stage1Data>({
     resolver: yupResolver(stage1Schema),
-    defaultValues,
+    defaultValues: { loan_amount: 240000, ...defaultValues },
   });
+
+  const loanAmount = watch("loan_amount");
 
   return (
     <motion.div
@@ -72,6 +97,34 @@ export default function Stage1Form({ onSubmit, defaultValues }: Stage1FormProps)
             registration={register("mobile")}
             error={errors.mobile}
           />
+
+          {/* Loan Amount Slider */}
+          <div className="flex flex-col gap-2">
+            <label className="text-white/80 text-sm font-medium">Loan Amount</label>
+            <p className="text-white text-2xl font-bold tracking-tight">
+              {formatIndianCurrency(loanAmount)}
+            </p>
+            <p className="text-white/40 text-xs italic">
+              {numberToIndianWords(loanAmount)}
+            </p>
+            <input
+              type="range"
+              min={10000}
+              max={1500000}
+              step={10000}
+              {...register("loan_amount", { valueAsNumber: true })}
+              className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-[#1a1a2e] bg-white/20
+                [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#1a1a2e] [&::-webkit-slider-thumb]:shadow-md
+                [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#1a1a2e] [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:shadow-md"
+            />
+            <div className="flex justify-between text-white/40 text-[11px]">
+              <span>₹10,000</span>
+              <span>₹15,00,000</span>
+            </div>
+            {errors.loan_amount && (
+              <p className="text-red-300 text-[11px]">{errors.loan_amount.message}</p>
+            )}
+          </div>
 
           {/* Consent checkboxes */}
           <div className="flex flex-col gap-3 mt-2">

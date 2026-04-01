@@ -1,5 +1,5 @@
-const BASE_URL = "https://apply.switchmyloan.in/api";
-// const BASE_URL = "http://localhost:8000/api";
+// const BASE_URL = "https://apply.switchmyloan.in/api";
+const BASE_URL = "http://localhost:8000/api";
 
 const PARTNER_HEADERS = {
   "x-partner-shortname": "MoneyTap",
@@ -221,6 +221,7 @@ export interface GetOffersPayload {
   profile: string;
   monthly_income: number;
   loan_purpose: string;
+  loan_amount: number;
 }
 
 // ---------- Offers API response types ----------
@@ -265,7 +266,7 @@ export async function getOffers(
     dateOfBirth: formatDOB(payload.dob),
     gender: GENDER_MAP[payload.gender] || payload.gender,
     jobType: JOB_TYPE_MAP[payload.profile] || payload.profile,
-    loanAmount: "",
+    loanAmount: String(payload.loan_amount),
     mobileNumber: payload.mobile,
     monthlySalary: Number(payload.monthly_income),
     onboardingStep: "",

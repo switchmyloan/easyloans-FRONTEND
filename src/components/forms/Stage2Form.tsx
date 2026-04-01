@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useRef, useEffect } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { stage2Schema } from "@/lib/schemas";
@@ -27,6 +28,104 @@ interface Stage2FormProps {
   onSubmit: (data: Stage2Data) => void;
   defaultValues?: Stage2Defaults;
   isPrefilled?: boolean;
+}
+
+const LOAN_PURPOSES = [
+  "Home Renovation",
+  "Medical Emergency",
+  "Wedding or Family Function",
+  "Renovate or Repair Home",
+  "Buy a Gadget or Appliance",
+  "Travel or Vacation",
+  "Education or Coaching Fees",
+  "Start a Small Business or Side Hustle",
+  "Rent or Deposit Payments",
+  "Pay School Fees or Tuition",
+  "Vechical Repair or Fuel Expenses",
+  "Support Family Expenses",
+  "Build or Improve Credit Score",
+  "Just for Short-Term Cash Need",
+  "Others",
+];
+
+function LoanPurposeDropdown({
+  value,
+  onChange,
+  error,
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  error?: { message?: string };
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div className="flex flex-col gap-1.5" ref={ref}>
+      <label className="text-white/90 text-[13px] font-medium tracking-wide">
+        Loan Purpose
+      </label>
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        className={`w-full rounded-xl px-4 py-3 bg-white/[0.12] backdrop-blur-sm border text-left text-white focus:outline-none focus:bg-white/[0.18] focus:border-white/50 focus:shadow-[0_0_0_3px_rgba(255,255,255,0.08)] transition-all duration-200 flex items-center justify-between ${
+          error ? "border-red-400/80" : "border-white/20"
+        }`}
+      >
+        <span className={value ? "text-white" : "text-white/50"}>
+          {value || "Select purpose"}
+        </span>
+        <svg
+          className={`w-4 h-4 text-white/60 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+
+      {open && (
+        <div className="relative z-50">
+          <ul
+            className="absolute top-0 left-0 w-full max-h-44 overflow-y-auto rounded-xl bg-[#2d1b69] border border-white/20 shadow-xl py-1"
+            style={{ scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.2) transparent" }}
+          >
+            {LOAN_PURPOSES.map((purpose) => (
+              <li
+                key={purpose}
+                onClick={() => {
+                  onChange(purpose);
+                  setOpen(false);
+                }}
+                className={`px-4 py-2.5 text-sm cursor-pointer transition-colors duration-150 ${
+                  value === purpose
+                    ? "bg-white/20 text-white font-medium"
+                    : "text-white/80 hover:bg-white/10"
+                }`}
+              >
+                {purpose}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {error && (
+        <span className="text-red-300 text-xs pl-1">{error.message}</span>
+      )}
+    </div>
+  );
 }
 
 export default function Stage2Form({ onSubmit, defaultValues, isPrefilled }: Stage2FormProps) {
@@ -187,33 +286,18 @@ export default function Stage2Form({ onSubmit, defaultValues, isPrefilled }: Sta
               error={errors.monthly_income}
             />
 
-            {/* Row 6: Loan Purpose */}
-          {/* <div className="grid grid-cols-2 gap-3"> */}
-            <div className="flex flex-col gap-1.5">
-              <label htmlFor="loan_purpose" className="text-white/90 text-[13px] font-medium tracking-wide">
-                Loan Purpose
-              </label>
-              <select
-                id="loan_purpose"
-                {...register("loan_purpose")}
-                className={`w-full rounded-xl px-4 py-3 bg-white/[0.12] backdrop-blur-sm border text-white focus:outline-none focus:bg-white/[0.18] focus:border-white/50 focus:shadow-[0_0_0_3px_rgba(255,255,255,0.08)] transition-all duration-200 ${
-                  errors.loan_purpose ? "border-red-400/80" : "border-white/20"
-                }`}
-              >
-                <option value="" className="text-gray-800">Select purpose</option>
-                <option value="Home Renovation" className="text-gray-800">Home Renovation</option>
-                <option value="Medical Emergency" className="text-gray-800">Medical Emergency</option>
-                <option value="Education" className="text-gray-800">Education</option>
-                <option value="Wedding" className="text-gray-800">Wedding</option>
-                <option value="Travel" className="text-gray-800">Travel</option>
-                <option value="Debt Consolidation" className="text-gray-800">Debt Consolidation</option>
-                <option value="Others" className="text-gray-800">Others</option>
-              </select>
-              {errors.loan_purpose && (
-                <span className="text-red-300 text-xs pl-1">{errors.loan_purpose.message}</span>
+            {/* Row 6: Loan Purpose — Custom Dropdown */}
+            <Controller
+              name="loan_purpose"
+              control={control}
+              render={({ field }) => (
+                <LoanPurposeDropdown
+                  value={field.value}
+                  onChange={field.onChange}
+                  error={errors.loan_purpose}
+                />
               )}
-            </div>
-          {/* </div> */}
+            />
           </div>
           
 
