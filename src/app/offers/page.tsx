@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { OFFERS, getStaticLenderDetail, STATIC_LENDER_LOGOS, getEligibleCoupon, LENDER_MAX_AMOUNT, type KBCoupon } from "@/lib/constants";
-import { getStoredOffers, saveLender, type StaticLender } from "@/lib/api";
+import { getStoredOffers, saveLender, type StaticLender, type LenderResponse } from "@/lib/api";
 import OfferCard from "@/components/offers/OfferCard";
 import ScratchCoupon from "@/components/offers/ScratchCoupon";
 import TrustBadges from "@/components/ui/TrustBadges";
@@ -44,15 +44,27 @@ export default function OffersPage() {
       const kbHasOffer = isApprovedOffer(response.data.KreditBee);
       const mvHasOffer = isApprovedOffer(response.data.MoneyView);
 
+      // Check TrueBalance eligibility from nested response data
+      const isTrueBalanceEligible = (lender?: LenderResponse) => {
+        if (!lender) return false;
+        const resData = (lender.data as { response?: { data?: { isEligible?: boolean } } })?.response?.data;
+        return resData?.isEligible === true;
+      };
+
       // Only include extra lenders if their offer is approved (not duplicate/rejected)
       const extras: StaticLender[] = [];
-      const extraMap: Record<string, { data?: { success?: boolean; message?: string; isDuplicate?: boolean; utm_link?: string }; fallback: string }> = {
-        SmartCoinHighIntent: { data: response.data.SmartCoinHighIntent, fallback: "https://olyv.com/" },
-        TrueBalance: { data: response.data.TrueBalance, fallback: "https://truebalance.io/" },
-        Zype_Dedupe: { data: response.data.Zype_Dedupe, fallback: "https://zype.co.in/" },
-      };
-      for (const [key, { data: lenderData, fallback }] of Object.entries(extraMap)) {
-        if (lenderData && isApprovedOffer(lenderData)) {
+      const extraKeys: { key: string; fallback: string }[] = [
+        { key: "SmartCoinHighIntent", fallback: "https://olyv.com/" },
+        { key: "TrueBalance", fallback: "https://truebalance.io/" },
+        { key: "Zype_Dedupe", fallback: "https://zype.co.in/" },
+      ];
+      for (const { key, fallback } of extraKeys) {
+        const lenderData = response.data[key as keyof typeof response.data] as LenderResponse | undefined;
+        if (!lenderData) continue;
+        const isEligible = key === "TrueBalance"
+          ? isTrueBalanceEligible(lenderData)
+          : isApprovedOffer(lenderData);
+        if (isEligible) {
           extras.push({ name: key, utm_link: lenderData.utm_link || fallback });
         }
       }
