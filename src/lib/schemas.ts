@@ -7,18 +7,23 @@ export const stage1Schema = yup.object({
     .trim()
     .min(2, "Name must be at least 2 characters")
     .matches(/^[A-Za-z\s]+$/, "Name must contain only letters")
+    .test(
+      "full-name",
+      "Please enter both first name and last name",
+      (value) => (value?.trim().split(/\s+/).filter(Boolean).length ?? 0) >= 2
+    )
     .required("Name is required"),
 
-    firstName: yup
+  firstName: yup
     .string()
-    .trim() 
+    .trim()
     .min(2, "First name must be at least 2 characters")
     .matches(/^[A-Za-z\s]+$/, "First name must contain only letters")
     .required("First name is required"),
 
-    lastName: yup
+  lastName: yup
     .string()
-    .trim() 
+    .trim()
     .min(1, "Last name is required")
     .matches(/^[A-Za-z\s]+$/, "Last name must contain only letters")
     .required("Last name is required"),
