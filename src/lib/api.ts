@@ -151,6 +151,10 @@ export interface DraftLeadPayload {
 
 function buildDraftLeadBody(data: DraftLeadPayload) {
   const sessionId = getOrCreateLeadSessionId();
+  const loanPurpose =
+    typeof data.loan_purpose === "string" && data.loan_purpose.trim()
+      ? data.loan_purpose
+      : undefined;
 
   return {
     sessionId,
@@ -172,7 +176,7 @@ function buildDraftLeadBody(data: DraftLeadPayload) {
       typeof data.loan_amount === "number" && !Number.isNaN(data.loan_amount)
         ? data.loan_amount
         : null,
-    loanPurpose: data.loan_purpose || null,
+    ...(loanPurpose ? { loanPurpose } : {}),
     mobileNumber: data.phone || null,
     consent_tnc: data.consent_tnc ?? false,
     consent_credit: data.consent_credit ?? false,
