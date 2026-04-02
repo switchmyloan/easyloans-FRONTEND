@@ -111,7 +111,7 @@ export default function Stage1Form({ onSubmit, defaultValues }: Stage1FormProps)
               type="range"
               min={5000}
               max={1500000}
-              step={10000}
+              step={5000}
               {...register("loan_amount", { valueAsNumber: true })}
               className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-[#1a1a2e] bg-white/20
                 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#1a1a2e] [&::-webkit-slider-thumb]:shadow-md
