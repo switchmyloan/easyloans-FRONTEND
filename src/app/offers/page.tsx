@@ -32,23 +32,28 @@ export default function OffersPage() {
   useEffect(() => {
     const response = getStoredOffers();
     if (response?.data) {
-      const kbMsg = (response.data.KreditBee?.message || "").toLowerCase();
-      const mvMsg = (response.data.MoneyView?.message || "").toLowerCase();
-      const isRejected = (msg: string) =>
-        msg.includes("rejected") || msg.includes("dedupe") || msg.includes("duplicate");
-      const kbHasOffer = !isRejected(kbMsg);
-      const mvHasOffer = !isRejected(mvMsg);
-
-      // Always include these lenders if they exist in data (regardless of status)
-      const extras: StaticLender[] = [];
-      const extraMap: Record<string, string> = {
-        SmartCoinHighIntent: response.data.SmartCoinHighIntent?.utm_link || "https://olyv.com/",
-        TrueBalance: response.data.TrueBalance?.utm_link || "https://truebalance.io/",
-        Zype_Dedupe: response.data.Zype_Dedupe?.utm_link || "https://zype.co.in/",
+      // Only show offers that are truly successful and approved
+      const isApprovedOffer = (lender?: { success?: boolean; message?: string; isDuplicate?: boolean }) => {
+        if (!lender || !lender.success) return false;
+        const msg = (lender.message || "").toLowerCase();
+        if (msg.includes("rejected") || msg.includes("duplicate") || msg.includes("dedupe") || msg.includes("repeat")) return false;
+        if (lender.isDuplicate) return false;
+        // Must contain positive indicators (approved/eligible/success)
+        return msg.includes("approved") || msg.includes("eligible") || msg.includes("success");
       };
-      for (const [key, fallbackLink] of Object.entries(extraMap)) {
-        if (response.data[key as keyof typeof response.data]) {
-          extras.push({ name: key, utm_link: fallbackLink });
+      const kbHasOffer = isApprovedOffer(response.data.KreditBee);
+      const mvHasOffer = isApprovedOffer(response.data.MoneyView);
+
+      // Only include extra lenders if their offer is approved (not duplicate/rejected)
+      const extras: StaticLender[] = [];
+      const extraMap: Record<string, { data?: { success?: boolean; message?: string; isDuplicate?: boolean; utm_link?: string }; fallback: string }> = {
+        SmartCoinHighIntent: { data: response.data.SmartCoinHighIntent, fallback: "https://olyv.com/" },
+        TrueBalance: { data: response.data.TrueBalance, fallback: "https://truebalance.io/" },
+        Zype_Dedupe: { data: response.data.Zype_Dedupe, fallback: "https://zype.co.in/" },
+      };
+      for (const [key, { data: lenderData, fallback }] of Object.entries(extraMap)) {
+        if (lenderData && isApprovedOffer(lenderData)) {
+          extras.push({ name: key, utm_link: lenderData.utm_link || fallback });
         }
       }
 

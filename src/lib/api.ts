@@ -433,6 +433,7 @@ export interface LenderResponse {
   data: unknown;
   statusCode: number;
   utm_link?: string;
+  isDuplicate?: boolean;
 }
 
 export interface OffersApiResponse {

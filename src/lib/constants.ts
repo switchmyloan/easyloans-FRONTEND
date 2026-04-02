@@ -126,13 +126,13 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest Rates start at 1.5%* per month",
   },
   poonawalla: {
-    headline: "Get Instant Personal Loans from ₹15,000 to ₹15 Lakhs",
+    headline: "Get Instant Personal Loans from ₹50,000 to ₹15 Lakhs",
     description: "Personal loans with attractive interest rates and flexible tenure",
     keyFeature: "Pre-approved Offers and Instant Disbursement",
     interestRate: "Interest rate starting from 0.83% per month.",
   },
   HeroFinCorp: {
-    headline: "Get Personal Loans from ₹15,000 to ₹5 Lakhs",
+    headline: "Get Personal Loans from ₹50,000 to ₹5 Lakhs",
     description: "Hassle-free personal loans with quick digital process",
     keyFeature: "No Collateral Required and Flexible EMI Options",
     interestRate: "Interest rate starting from 1.58% per month.",
