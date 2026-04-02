@@ -1,18 +1,21 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { AnimatePresence } from "framer-motion";
 import type { Stage1Data, Stage2Data, AppStage } from "@/lib/types";
 import { LOADING_DELAY_MS } from "@/lib/constants";
 import {
+  Createlead,
   submitLead,
+  onChangeUpdateLead,
   getOffers,
   sendOtp,
   verifyOtp,
   mapLeadToFormDefaults,
   type PrefilledStage2,
+  type DraftLeadPayload,
 } from "@/lib/api";
 
 import LeftPanel from "@/components/layout/LeftPanel";
@@ -43,6 +46,7 @@ export default function Home() {
   const router = useRouter();
   const [stage, setStage] = useState<AppStage>("stage1");
   const [stage1Data, setStage1Data] = useState<Stage1Data | null>(null);
+  const [stage2Data, setStage2Data] = useState<Partial<Stage2Data>>({});
   const [stage2Defaults, setStage2Defaults] = useState<
     PrefilledStage2 | undefined
   >();
@@ -50,6 +54,156 @@ export default function Home() {
   const [apiError, setApiError] = useState<string | null>(null);
   const [otpError, setOtpError] = useState<string | null>(null);
   const [otpData, setOtpData] = useState<{ hashedOtp: string; expiresAt: number } | null>(null);
+  const draftTimerRef = useRef<number | null>(null);
+  const hasCreatedDraftRef = useRef(false);
+  const isDraftSyncInFlightRef = useRef(false);
+  const pendingDraftPayloadRef = useRef<DraftLeadPayload | null>(null);
+  const lastSyncedDraftKeyRef = useRef<string>("");
+  const lastAttemptedDraftKeyRef = useRef<string>("");
+  const lastFailedDraftKeyRef = useRef<string>("");
+
+  const buildDraftPayload = useCallback(
+    (
+      nextStage1Data: Partial<Stage1Data> | null,
+      nextStage2Data: Partial<Stage2Data>
+    ): DraftLeadPayload | null => {
+      if (!nextStage1Data) return null;
+
+      const payload: DraftLeadPayload = {
+        fullName: nextStage1Data.fullName,
+        firstName: nextStage1Data.firstName,
+        lastName: nextStage1Data.lastName,
+        phone: nextStage1Data.mobile,
+        consent_tnc: nextStage1Data.consent_tnc,
+        consent_credit: nextStage1Data.consent_credit,
+        consent_communication: nextStage1Data.consent_communication,
+        loan_amount: nextStage1Data.loan_amount,
+        email: nextStage2Data.email,
+        pan_no: nextStage2Data.pan_no,
+        dob:
+          typeof nextStage2Data.dob === "string"
+            ? nextStage2Data.dob
+            : nextStage2Data.dob instanceof Date
+              ? nextStage2Data.dob.toISOString().split("T")[0]
+              : undefined,
+        gender: nextStage2Data.gender,
+        pincode: nextStage2Data.pincode,
+        profile: nextStage2Data.profile,
+        monthly_income:
+          typeof nextStage2Data.monthly_income === "number"
+            ? nextStage2Data.monthly_income
+            : nextStage2Data.monthly_income
+              ? Number(nextStage2Data.monthly_income)
+              : undefined,
+        loan_purpose: nextStage2Data.loan_purpose,
+      };
+
+      const hasMeaningfulValue = Object.values(payload).some((value) => {
+        if (typeof value === "boolean") return value;
+        if (typeof value === "number") return !Number.isNaN(value);
+        return typeof value === "string" ? value.trim().length > 0 : false;
+      });
+
+      return hasMeaningfulValue ? payload : null;
+    },
+    []
+  );
+
+  const flushDraftSync = useCallback(async () => {
+    if (isDraftSyncInFlightRef.current || !pendingDraftPayloadRef.current) {
+      return;
+    }
+
+    const payload = pendingDraftPayloadRef.current;
+    const payloadKey = JSON.stringify(payload);
+
+    if (payloadKey === lastSyncedDraftKeyRef.current) {
+      pendingDraftPayloadRef.current = null;
+      return;
+    }
+
+    isDraftSyncInFlightRef.current = true;
+    pendingDraftPayloadRef.current = null;
+    lastAttemptedDraftKeyRef.current = payloadKey;
+
+    try {
+      if (hasCreatedDraftRef.current) {
+        await onChangeUpdateLead(payload);
+      } else {
+        await Createlead(payload);
+        hasCreatedDraftRef.current = true;
+      }
+
+      lastSyncedDraftKeyRef.current = payloadKey;
+      lastFailedDraftKeyRef.current = "";
+    } catch (error) {
+      console.error("Draft lead sync error:", error);
+      lastFailedDraftKeyRef.current = payloadKey;
+    } finally {
+      isDraftSyncInFlightRef.current = false;
+    }
+  }, []);
+
+  const scheduleDraftSync = useCallback(
+    (
+      nextStage1Data: Partial<Stage1Data> | null,
+      nextStage2Data: Partial<Stage2Data>
+    ) => {
+      const payload = buildDraftPayload(nextStage1Data, nextStage2Data);
+      if (!payload) return;
+
+      const payloadKey = JSON.stringify(payload);
+
+      if (
+        payloadKey === lastSyncedDraftKeyRef.current ||
+        payloadKey === lastAttemptedDraftKeyRef.current ||
+        payloadKey === lastFailedDraftKeyRef.current
+      ) {
+        return;
+      }
+
+      pendingDraftPayloadRef.current = payload;
+
+      if (draftTimerRef.current) {
+        window.clearTimeout(draftTimerRef.current);
+      }
+
+      draftTimerRef.current = window.setTimeout(() => {
+        void flushDraftSync();
+      }, 500);
+    },
+    [buildDraftPayload, flushDraftSync]
+  );
+
+  const handleStage1Change = useCallback(
+    (data: Partial<Stage1Data>) => {
+      setStage1Data((previous) => {
+        const nextStage1Data = { ...(previous ?? {}), ...data } as Stage1Data;
+        scheduleDraftSync(nextStage1Data, stage2Data);
+        return nextStage1Data;
+      });
+    },
+    [scheduleDraftSync, stage2Data]
+  );
+
+  const handleStage2Change = useCallback(
+    (data: Partial<Stage2Data>) => {
+      setStage2Data((previous) => {
+        const nextStage2Data = { ...previous, ...data };
+        scheduleDraftSync(stage1Data, nextStage2Data);
+        return nextStage2Data;
+      });
+    },
+    [scheduleDraftSync, stage1Data]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (draftTimerRef.current) {
+        clearTimeout(draftTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleStage1 = useCallback(async (data: Stage1Data) => {
     setStage1Data(data);
@@ -84,7 +238,7 @@ export default function Home() {
         setStage("loading");
 
         const response = await submitLead({
-          name: stage1Data.name,
+          name: stage1Data.fullName,
           phone: stage1Data.mobile,
           consent_tnc: stage1Data.consent_tnc,
           consent_credit: stage1Data.consent_credit,
@@ -97,7 +251,7 @@ export default function Home() {
           setStage2Defaults(defaults);
           setIsPrefilled(true);
         } else {
-          const firstName = stage1Data.name.trim().split(/\s+/)[0] || "";
+          const firstName = stage1Data.fullName.trim().split(/\s+/)[0] || "";
           setStage2Defaults({ first_name: firstName });
         }
 
@@ -137,7 +291,7 @@ export default function Home() {
 
       try {
         await getOffers({
-          name: stage1Data.name,
+          name: stage1Data.fullName,
           first_name: data.first_name,
           last_name: data.last_name,
           mobile: stage1Data.mobile,
@@ -194,6 +348,7 @@ export default function Home() {
                 <Stage1Form
                   key="stage1"
                   onSubmit={handleStage1}
+                  onChange={handleStage1Change}
                   defaultValues={stage1Data ?? undefined}
                 />
               )}
@@ -214,6 +369,7 @@ export default function Home() {
                 <Stage2Form
                   key={isPrefilled ? "stage2-prefilled" : "stage2"}
                   onSubmit={handleStage2}
+                  onChange={handleStage2Change}
                   defaultValues={stage2Defaults}
                   isPrefilled={isPrefilled}
                 />

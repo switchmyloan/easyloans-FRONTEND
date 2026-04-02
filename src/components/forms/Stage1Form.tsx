@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { stage1Schema } from "@/lib/schemas";
@@ -84,16 +84,17 @@ function numberToIndianWords(num: number): string {
 
 interface Stage1FormProps {
   onSubmit: (data: Stage1Data) => void;
+  onChange?: (data: Partial<Stage1Data>) => void;
   defaultValues?: Partial<Stage1Data>;
 }
 
 export default function Stage1Form({
   onSubmit,
+  onChange,
   defaultValues,
 }: Stage1FormProps) {
   const [showFullCredit, setShowFullCredit] = useState(false);
   const [showFullComm, setShowFullComm] = useState(false);
-  // const { setValue } = useForm<Stage1Data>();
 
 const {
   register,
@@ -106,6 +107,7 @@ const {
   defaultValues: { loan_amount: 240000, ...defaultValues },
 });
 
+  const lastEmittedRef = useRef("");
   const loanAmount = watch("loan_amount");
 
   const splitFullName = (fullName: string) => {
@@ -119,14 +121,23 @@ const {
     };
   };
 
-  console.log("Full Name value:", watch("fullName"));
-  console.log("First Name value:", watch("firstName"));
-  console.log("Last Name value:", watch("lastName"));
-  // console.log("Mobile , watch("mobile"));
-  // console.log("Loan Amount value:" , watch("loan_amount"));
-  // console.log("Consent T&C value:" , watch("consent_tnc"));
-  // console.log("Consent Credit value:" , watch("consent_credit"));
-  // console.log("Consent Communication value:" , watch("consent_communication"));
+  useEffect(() => {
+    if (!onChange) return;
+
+    const subscription = watch((value, info) => {
+      if (info.type !== "change") return;
+
+      const nextValue = value as Partial<Stage1Data>;
+      const serialized = JSON.stringify(nextValue);
+
+      if (serialized === lastEmittedRef.current) return;
+
+      lastEmittedRef.current = serialized;
+      onChange(nextValue);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [onChange, watch]);
 
   return (
     <motion.div

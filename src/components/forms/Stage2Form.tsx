@@ -26,6 +26,7 @@ interface Stage2Defaults {
 
 interface Stage2FormProps {
   onSubmit: (data: Stage2Data) => void;
+  onChange?: (data: Partial<Stage2Data>) => void;
   defaultValues?: Stage2Defaults;
   isPrefilled?: boolean;
 }
@@ -128,11 +129,17 @@ function LoanPurposeDropdown({
   );
 }
 
-export default function Stage2Form({ onSubmit, defaultValues, isPrefilled }: Stage2FormProps) {
+export default function Stage2Form({
+  onSubmit,
+  onChange,
+  defaultValues,
+  isPrefilled,
+}: Stage2FormProps) {
   const {
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<Stage2Data>({
     resolver: yupResolver(stage2Schema),
@@ -142,6 +149,26 @@ export default function Stage2Form({ onSubmit, defaultValues, isPrefilled }: Sta
       ...defaultValues,
     } as Record<string, unknown>,
   });
+
+  const lastEmittedRef = useRef("");
+
+  useEffect(() => {
+    if (!onChange) return;
+
+    const subscription = watch((value, info) => {
+      if (info.type !== "change") return;
+
+      const nextValue = value as Partial<Stage2Data>;
+      const serialized = JSON.stringify(nextValue);
+
+      if (serialized === lastEmittedRef.current) return;
+
+      lastEmittedRef.current = serialized;
+      onChange(nextValue);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [onChange, watch]);
 
   return (
     <motion.div

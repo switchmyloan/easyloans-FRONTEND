@@ -31,14 +31,154 @@ export interface LeadsResponse {
     found: boolean;
     count: number;
     leads: LeadRecord[];
+    [key: string]: unknown;
   };
   message: string;
   success: boolean;
+  [key: string]: unknown;
 }
 
 // ---------- Stage 1: Lead Generation ----------
 
 const SESSION_KEY = "leadResponse";
+const LEAD_DRAFT_SESSION_KEY = "leadDraftSessionId";
+const LEAD_DRAFT_ID_KEY = "leadDraftId";
+
+function isBrowser(): boolean {
+  return typeof window !== "undefined";
+}
+
+function setSessionValue(key: string, value: string): void {
+  if (!isBrowser()) return;
+  sessionStorage.setItem(key, value);
+}
+
+function getSessionValue(key: string): string | null {
+  if (!isBrowser()) return null;
+  return sessionStorage.getItem(key);
+}
+
+function createClientSessionId(): string {
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
+  ) {
+    return crypto.randomUUID();
+  }
+
+  return `lead_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+}
+
+export function getOrCreateLeadSessionId(): string {
+  const existing = getSessionValue(LEAD_DRAFT_SESSION_KEY);
+  if (existing) return existing;
+
+  const sessionId = createClientSessionId();
+  setSessionValue(LEAD_DRAFT_SESSION_KEY, sessionId);
+
+  return sessionId;
+}
+
+export function getStoredLeadId(): string | null {
+  return getSessionValue(LEAD_DRAFT_ID_KEY);
+}
+
+function setStoredLeadId(leadId: string): void {
+  setSessionValue(LEAD_DRAFT_ID_KEY, leadId);
+}
+
+function findLeadId(value: unknown): string | null {
+  if (!value || typeof value !== "object") return null;
+
+  const record = value as Record<string, unknown>;
+  const candidates = ["leadID", "leadId", "lead_id", "id"];
+
+  for (const key of candidates) {
+    const candidate = record[key];
+    if (typeof candidate === "string" && candidate.trim()) {
+      return candidate;
+    }
+    if (typeof candidate === "number") {
+      return String(candidate);
+    }
+  }
+
+  for (const nestedValue of Object.values(record)) {
+    if (Array.isArray(nestedValue)) {
+      for (const item of nestedValue) {
+        const nestedLeadId = findLeadId(item);
+        if (nestedLeadId) return nestedLeadId;
+      }
+      continue;
+    }
+
+    const nestedLeadId = findLeadId(nestedValue);
+    if (nestedLeadId) return nestedLeadId;
+  }
+
+  return null;
+}
+
+function storeLeadResponse(json: LeadsResponse): void {
+  if (!isBrowser()) return;
+
+  sessionStorage.setItem(SESSION_KEY, JSON.stringify(json));
+
+  const leadId = findLeadId(json);
+  if (leadId) {
+    setStoredLeadId(leadId);
+  }
+}
+
+export interface DraftLeadPayload {
+  fullName?: string;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
+  consent_tnc?: boolean;
+  consent_credit?: boolean;
+  consent_communication?: boolean;
+  email?: string;
+  pan_no?: string;
+  dob?: string;
+  gender?: string;
+  pincode?: string;
+  profile?: string;
+  monthly_income?: number;
+  loan_purpose?: string;
+  loan_amount?: number;
+}
+
+function buildDraftLeadBody(data: DraftLeadPayload) {
+  const sessionId = getOrCreateLeadSessionId();
+
+  return {
+    sessionId,
+    fullName: data.fullName || null,
+    firstName: data.firstName || null,
+    lastName: data.lastName || null,
+    email: data.email || null,
+    panNumber: data.pan_no || null,
+    dateOfBirth: data.dob || null,
+    gender: data.gender || null,
+    pincode: data.pincode || null,
+    jobType: data.profile || null,
+    monthlySalary:
+      typeof data.monthly_income === "number" &&
+      !Number.isNaN(data.monthly_income)
+        ? data.monthly_income
+        : null,
+    loanAmount:
+      typeof data.loan_amount === "number" && !Number.isNaN(data.loan_amount)
+        ? data.loan_amount
+        : null,
+    loanPurpose: data.loan_purpose || null,
+    mobileNumber: data.phone || null,
+    consent_tnc: data.consent_tnc ?? false,
+    consent_credit: data.consent_credit ?? false,
+    consent_communication: data.consent_communication ?? false,
+  };
+}
 
 export async function submitLead(data: {
   name: string;
@@ -67,11 +207,63 @@ export async function submitLead(data: {
     throw new Error(json.message || "Lead generation failed. Please try again.");
   }
 
-  // Store full response in sessionStorage
-  sessionStorage.setItem(SESSION_KEY, JSON.stringify(json));
+  storeLeadResponse(json);
 
   return json;
 }
+
+
+export async function Createlead(
+  data: DraftLeadPayload
+): Promise<LeadsResponse> {
+  const res = await fetch(`${BASE_URL}/onSubmit/applynew-view-draft`, {
+    method: "POST",
+    headers: PARTNER_HEADERS,
+    body: JSON.stringify(buildDraftLeadBody(data)),
+  });
+
+  if (!res.ok) throw new Error("Lead generation failed. Please try again.");
+
+  const json: LeadsResponse = await res.json();
+
+  if (![200, 201].includes(json.statusCode)) {
+    throw new Error(json.message || "Lead generation failed. Please try again.");
+  }
+
+  storeLeadResponse(json);
+
+  return json;
+}
+
+
+export async function onChangeUpdateLead(
+  data: DraftLeadPayload
+): Promise<LeadsResponse> {
+  const leadId = getStoredLeadId();
+
+  if (!leadId) {
+    throw new Error("Draft lead id not found for update.");
+  }
+
+  const res = await fetch(`${BASE_URL}/onSubmit/applynew-view-draft/${leadId}`, {
+    method: "PUT",
+    headers: PARTNER_HEADERS,
+    body: JSON.stringify(buildDraftLeadBody(data)),
+  });
+
+  if (!res.ok) throw new Error("Lead generation failed. Please try again.");
+
+  const json: LeadsResponse = await res.json();
+
+  if (json.statusCode !== 200) {
+    throw new Error(json.message || "Lead generation failed. Please try again.");
+  }
+
+  storeLeadResponse(json);
+
+  return json;
+}
+
 
 export function getStoredLead(): LeadsResponse | null {
   const raw = sessionStorage.getItem(SESSION_KEY);
