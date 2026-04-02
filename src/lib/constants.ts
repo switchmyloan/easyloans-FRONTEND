@@ -114,7 +114,7 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest Rates start at 1%* per month",
   },
   RapidMoney: {
-    headline: "Get ₹5,000 to ₹25,000",
+    headline: "Get Personal Loans from ₹5,000 to ₹25,000",
     description: "Flexible repayment options and loan tenure from 1 month to 6 months",
     keyFeature: "Flexible Repayment Options and Quick Access to Lump Sum Amount",
     interestRate: "Interest rate starting from 3.01% per month.",
