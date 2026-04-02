@@ -15,17 +15,68 @@ function formatIndianCurrency(num: number): string {
 
 function numberToIndianWords(num: number): string {
   if (num === 0) return "Zero";
-  const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine",
-    "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
-  const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+  const ones = [
+    "",
+    "One",
+    "Two",
+    "Three",
+    "Four",
+    "Five",
+    "Six",
+    "Seven",
+    "Eight",
+    "Nine",
+    "Ten",
+    "Eleven",
+    "Twelve",
+    "Thirteen",
+    "Fourteen",
+    "Fifteen",
+    "Sixteen",
+    "Seventeen",
+    "Eighteen",
+    "Nineteen",
+  ];
+  const tens = [
+    "",
+    "",
+    "Twenty",
+    "Thirty",
+    "Forty",
+    "Fifty",
+    "Sixty",
+    "Seventy",
+    "Eighty",
+    "Ninety",
+  ];
 
   function convert(n: number): string {
     if (n < 20) return ones[n];
-    if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 ? " " + ones[n % 10] : "");
-    if (n < 1000) return ones[Math.floor(n / 100)] + " Hundred" + (n % 100 ? " " + convert(n % 100) : "");
-    if (n < 100000) return convert(Math.floor(n / 1000)) + " Thousand" + (n % 1000 ? " " + convert(n % 1000) : "");
-    if (n < 10000000) return convert(Math.floor(n / 100000)) + " Lakh" + (n % 100000 ? " " + convert(n % 100000) : "");
-    return convert(Math.floor(n / 10000000)) + " Crore" + (n % 10000000 ? " " + convert(n % 10000000) : "");
+    if (n < 100)
+      return tens[Math.floor(n / 10)] + (n % 10 ? " " + ones[n % 10] : "");
+    if (n < 1000)
+      return (
+        ones[Math.floor(n / 100)] +
+        " Hundred" +
+        (n % 100 ? " " + convert(n % 100) : "")
+      );
+    if (n < 100000)
+      return (
+        convert(Math.floor(n / 1000)) +
+        " Thousand" +
+        (n % 1000 ? " " + convert(n % 1000) : "")
+      );
+    if (n < 10000000)
+      return (
+        convert(Math.floor(n / 100000)) +
+        " Lakh" +
+        (n % 100000 ? " " + convert(n % 100000) : "")
+      );
+    return (
+      convert(Math.floor(n / 10000000)) +
+      " Crore" +
+      (n % 10000000 ? " " + convert(n % 10000000) : "")
+    );
   }
 
   return convert(num) + " Only";
@@ -36,21 +87,46 @@ interface Stage1FormProps {
   defaultValues?: Partial<Stage1Data>;
 }
 
-export default function Stage1Form({ onSubmit, defaultValues }: Stage1FormProps) {
+export default function Stage1Form({
+  onSubmit,
+  defaultValues,
+}: Stage1FormProps) {
   const [showFullCredit, setShowFullCredit] = useState(false);
   const [showFullComm, setShowFullComm] = useState(false);
+  // const { setValue } = useForm<Stage1Data>();
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors, isSubmitting },
-  } = useForm<Stage1Data>({
-    resolver: yupResolver(stage1Schema),
-    defaultValues: { loan_amount: 240000, ...defaultValues },
-  });
+const {
+  register,
+  handleSubmit,
+  watch,
+  setValue, 
+  formState: { errors, isSubmitting },
+} = useForm<Stage1Data>({
+  resolver: yupResolver(stage1Schema),
+  defaultValues: { loan_amount: 240000, ...defaultValues },
+});
 
   const loanAmount = watch("loan_amount");
+
+  const splitFullName = (fullName: string) => {
+    if (!fullName) return { firstName: "", lastName: "" };
+
+    const parts = fullName.trim().split(/\s+/);
+
+    return {
+      firstName: parts[0] || "",
+      lastName: parts.length > 1 ? parts[parts.length - 1] : "",
+    };
+  };
+
+  console.log("Full Name value:", watch("fullName"));
+  console.log("First Name value:", watch("firstName"));
+  console.log("Last Name value:", watch("lastName"));
+  // console.log("Mobile , watch("mobile"));
+  // console.log("Loan Amount value:" , watch("loan_amount"));
+  // console.log("Consent T&C value:" , watch("consent_tnc"));
+  // console.log("Consent Credit value:" , watch("consent_credit"));
+  // console.log("Consent Communication value:" , watch("consent_communication"));
 
   return (
     <motion.div
@@ -60,12 +136,12 @@ export default function Stage1Form({ onSubmit, defaultValues }: Stage1FormProps)
       transition={{ duration: 0.4, ease: "easeOut" }}
       className="w-full rounded-2xl px-7 sm:px-10 py-9 relative overflow-hidden shadow-2xl shadow-[#4d2adf]/20"
       style={{
-        background: "linear-gradient(135deg, #5b2ee0 0%, #6d45d4 35%, #8b6fc0 70%, #9a85bd 100%)",
+        background:
+          "linear-gradient(135deg, #5b2ee0 0%, #6d45d4 35%, #8b6fc0 70%, #9a85bd 100%)",
       }}
     >
       <div className="absolute -top-16 -right-16 w-48 h-48 bg-white/5 rounded-full blur-2xl pointer-events-none" />
       <div className="absolute -bottom-10 -left-10 w-36 h-36 bg-[#A6FF00]/5 rounded-full blur-2xl pointer-events-none" />
-
 
       <div className="relative z-10">
         <ProgressBar percent={30} />
@@ -83,10 +159,19 @@ export default function Stage1Form({ onSubmit, defaultValues }: Stage1FormProps)
             label="Full Name"
             type="text"
             placeholder="Enter your full name as per PAN"
-            registration={register("name")}
-            error={errors.name}
-          />
+            registration={register("fullName", {
+              onChange: (e) => {
+                const value = e.target.value;
 
+                const { firstName, lastName } = splitFullName(value);
+
+                // set values in form
+                setValue("firstName", firstName);
+                setValue("lastName", lastName);
+              },
+            })}
+            error={errors.fullName}
+          />
           <FormInput
             id="mobile"
             label="Mobile Number"
@@ -100,7 +185,9 @@ export default function Stage1Form({ onSubmit, defaultValues }: Stage1FormProps)
 
           {/* Loan Amount Slider */}
           <div className="flex flex-col gap-2">
-            <label className="text-white/80 text-sm font-medium">Loan Amount</label>
+            <label className="text-white/80 text-sm font-medium">
+              Loan Amount
+            </label>
             <p className="text-white text-2xl font-bold tracking-tight">
               {formatIndianCurrency(loanAmount)}
             </p>
@@ -122,7 +209,9 @@ export default function Stage1Form({ onSubmit, defaultValues }: Stage1FormProps)
               <span>₹15,00,000</span>
             </div>
             {errors.loan_amount && (
-              <p className="text-red-300 text-[11px]">{errors.loan_amount.message}</p>
+              <p className="text-red-300 text-[11px]">
+                {errors.loan_amount.message}
+              </p>
             )}
           </div>
 
@@ -157,7 +246,9 @@ export default function Stage1Form({ onSubmit, defaultValues }: Stage1FormProps)
               </span>
             </label>
             {errors.consent_tnc && (
-              <p className="text-red-300 text-[11px] -mt-2 ml-6">{errors.consent_tnc.message}</p>
+              <p className="text-red-300 text-[11px] -mt-2 ml-6">
+                {errors.consent_tnc.message}
+              </p>
             )}
 
             <div className="flex items-start gap-2.5 group">
@@ -167,10 +258,15 @@ export default function Stage1Form({ onSubmit, defaultValues }: Stage1FormProps)
                 className="mt-1 h-4 w-4 accent-[#A6FF00] rounded cursor-pointer shrink-0"
               />
               <span className="text-white/70 text-[11px] leading-normal">
-                I hereby consent to Cready being appointed as my authorised representative to receive my Credit Information{" "}
+                I hereby consent to Cready being appointed as my authorised
+                representative to receive my Credit Information{" "}
                 {showFullCredit ? (
                   <>
-                    from Experian/Credit/EQUIFAX/CRIF for the purpose of Credit Assessment to Advise on loan offers, or expiry of 6 months; whichever is earlier. I also agree that this consent would be shared with Lending Partners to Process my loan application.{" "}
+                    from Experian/Credit/EQUIFAX/CRIF for the purpose of Credit
+                    Assessment to Advise on loan offers, or expiry of 6 months;
+                    whichever is earlier. I also agree that this consent would
+                    be shared with Lending Partners to Process my loan
+                    application.{" "}
                     <button
                       type="button"
                       onClick={() => setShowFullCredit(false)}
@@ -191,7 +287,9 @@ export default function Stage1Form({ onSubmit, defaultValues }: Stage1FormProps)
               </span>
             </div>
             {errors.consent_credit && (
-              <p className="text-red-300 text-[11px] -mt-2 ml-6">{errors.consent_credit.message}</p>
+              <p className="text-red-300 text-[11px] -mt-2 ml-6">
+                {errors.consent_credit.message}
+              </p>
             )}
 
             <div className="flex items-start gap-2.5 group">
@@ -201,10 +299,12 @@ export default function Stage1Form({ onSubmit, defaultValues }: Stage1FormProps)
                 className="mt-1 h-4 w-4 accent-[#A6FF00] rounded cursor-pointer shrink-0"
               />
               <span className="text-white/70 text-[11px] leading-normal">
-                I hereby consent to receive loan related communication from Cready or its authorized representatives{" "}
+                I hereby consent to receive loan related communication from
+                Cready or its authorized representatives{" "}
                 {showFullComm ? (
                   <>
-                    via Call, SMS, Email, RCS & Voice over Internet Protocol (VoIP) including WhatsApp.{" "}
+                    via Call, SMS, Email, RCS & Voice over Internet Protocol
+                    (VoIP) including WhatsApp.{" "}
                     <button
                       type="button"
                       onClick={() => setShowFullComm(false)}
@@ -225,7 +325,9 @@ export default function Stage1Form({ onSubmit, defaultValues }: Stage1FormProps)
               </span>
             </div>
             {errors.consent_communication && (
-              <p className="text-red-300 text-[11px] -mt-2 ml-6">{errors.consent_communication.message}</p>
+              <p className="text-red-300 text-[11px] -mt-2 ml-6">
+                {errors.consent_communication.message}
+              </p>
             )}
           </div>
 

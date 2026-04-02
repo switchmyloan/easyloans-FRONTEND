@@ -2,12 +2,27 @@ import * as yup from "yup";
 
 // Step 1 — Name + Mobile + Consents
 export const stage1Schema = yup.object({
-  name: yup
+  fullName: yup
     .string()
     .trim()
     .min(2, "Name must be at least 2 characters")
     .matches(/^[A-Za-z\s]+$/, "Name must contain only letters")
     .required("Name is required"),
+
+    firstName: yup
+    .string()
+    .trim() 
+    .min(2, "First name must be at least 2 characters")
+    .matches(/^[A-Za-z\s]+$/, "First name must contain only letters")
+    .required("First name is required"),
+
+    lastName: yup
+    .string()
+    .trim() 
+    .min(1, "Last name is required")
+    .matches(/^[A-Za-z\s]+$/, "Last name must contain only letters")
+    .required("Last name is required"),
+
   mobile: yup
     .string()
     .matches(/^[6-9]\d{9}$/, "Enter a valid 10-digit mobile number")
