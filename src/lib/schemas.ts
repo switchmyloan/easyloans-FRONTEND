@@ -3,7 +3,7 @@ import * as yup from "yup";
 const LETTERS_ONLY_REGEX = /^[A-Za-z]+$/;
 const LETTERS_AND_SPACES_REGEX = /^[A-Za-z\s]+$/;
 const FULL_NAME_EXAMPLE_MESSAGE =
-  "Enter your full name with at least 2 letters in each part, for example Virat Kohli or Anushka Sharma";
+  "Enter your full name with at least 2 letters in each part, for example Vijay Dinanath Chauhan";
 
 // Step 1 — Name + Mobile + Consents
 export const stage1Schema = yup.object({
