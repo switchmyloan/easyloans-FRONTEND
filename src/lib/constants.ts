@@ -201,7 +201,7 @@ export const KB_COUPONS: KBCoupon[] = [
     eligibility: ["salaried", "business"],
   },
   {
-    code: "LIST70/75",
+    code: "LIST70",
     discount: "70% OFF",
     description:
       "70% off processing fee exclusively for business owners! Apply now.",
