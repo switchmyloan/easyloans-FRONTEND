@@ -48,7 +48,7 @@ export const STATIC_LENDER_DETAILS: Record<
   }
 > = {
   SmartCoin: {
-    headline: "Get Personal Loans up to ₹5 Lakhs",
+    headline: "Get Personal Loans from ₹1,000 to ₹5 Lakhs",
     description: "Flexible repayment options and loan tenure from 1 month to 6 months",
     keyFeature: "Flexible Repayment Options and Quick Access to Lump Sum Amount",
     interestRate: "Interest Rates start at 0.1%* per day",
@@ -60,7 +60,7 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest Rates start at 1%* per month",
   },
   Zype: {
-    headline: "Get up to ₹3,000 to ₹3,00,000 in minutes!",
+    headline: "Get Personal Loans from ₹15,000 to ₹5 Lakhs",
     description: "Flexible repayment options and loan tenure from 6 month to 18 months",
     keyFeature: "Flexible Repayment Options and Approval in 60 seconds",
     interestRate: "Interest Rates start at 0.05%* per day",
@@ -126,13 +126,13 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest Rates start at 1.5%* per month",
   },
   poonawalla: {
-    headline: "Get Instant Personal Loans up to ₹15 Lakhs",
+    headline: "Get Instant Personal Loans from ₹15,000 to ₹15 Lakhs",
     description: "Personal loans with attractive interest rates and flexible tenure",
     keyFeature: "Pre-approved Offers and Instant Disbursement",
     interestRate: "Interest rate starting from 0.83% per month.",
   },
   HeroFinCorp: {
-    headline: "Get Personal Loans up to ₹5 Lakhs",
+    headline: "Get Personal Loans from ₹15,000 to ₹5 Lakhs",
     description: "Hassle-free personal loans with quick digital process",
     keyFeature: "No Collateral Required and Flexible EMI Options",
     interestRate: "Interest rate starting from 1.58% per month.",
@@ -144,23 +144,48 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest Rates start at 10.5%* per annum",
   },
   SmartCoinHighIntent: {
-    headline: "Get Personal Loans up to ₹5 Lakhs",
+    headline: "Get Personal Loans from ₹1,000 to ₹5 Lakhs",
     description: "Flexible repayment options and loan tenure from 1 month to 6 months",
     keyFeature: "Flexible Repayment Options and Quick Access to Lump Sum Amount",
     interestRate: "Interest rate starting from 1.5% per month.",
   },
   TrueBalance: {
-    headline: "Get Personal Loans up to ₹2-5 Lakhs",
+    headline: "Get Personal Loans from ₹1,000 to ₹5 Lakhs",
     description: "Quick personal loans with minimal documentation and fast disbursement",
     keyFeature: "Instant Approval and Same Day Disbursement",
     interestRate: "Interest rate starting from 2.4% per month.",
   },
   Zype_Dedupe: {
-    headline: "Get Personal Loans up to ₹5 Lakhs",
+    headline: "Get Personal Loans from ₹15,000 to ₹5 Lakhs",
     description: "Flexible repayment options and loan tenure from 6 month to 18 months",
     keyFeature: "Flexible Repayment Options and Approval in 60 seconds",
     interestRate: "Interest rate starting from 1.5% per month.",
   },
+};
+
+// Max loan amount each lender supports (used for filtering/priority sorting)
+export const LENDER_MAX_AMOUNT: Record<string, number> = {
+  KreditBee: 1000000,       // ₹10 Lakhs
+  MoneyView: 1000000,       // ₹10 Lakhs
+  poonawalla: 1500000,      // ₹15 Lakhs
+  HeroFinCorp: 500000,      // ₹5 Lakhs
+  SmartCoinHighIntent: 500000, // ₹5 Lakhs
+  Zype_Dedupe: 500000,      // ₹5 Lakhs
+  TrueBalance: 500000,      // ₹5 Lakhs
+  RapidMoney: 25000,        // ₹25,000
+  AdityaBirlaCapital: 4000000, // ₹40 Lakhs
+  RamFinCorp: 100000,       // ₹1 Lakh
+  SmartCoin: 500000,        // ₹5 Lakhs
+  Zype: 500000,             // ₹5 Lakhs
+  Fibe: 500000,             // ₹5 Lakhs
+  LendingPlate: 50000,      // ₹50,000
+  MPokket: 30000,           // ₹30,000
+  FiMoney: 500000,          // ₹5 Lakhs
+  MyFloat: 25000,           // ₹25,000
+  Loan112: 200000,          // ₹2 Lakhs
+  Vivifi: 500000,           // ₹5 Lakhs
+  PocketCredit: 50000,      // ₹50,000
+  CreditPlus: 100000,       // ₹1 Lakh
 };
 
 const DEFAULT_LENDER_DETAIL = {

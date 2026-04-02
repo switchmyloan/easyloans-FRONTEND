@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { OFFERS, getStaticLenderDetail, STATIC_LENDER_LOGOS, getEligibleCoupon, type KBCoupon } from "@/lib/constants";
+import { OFFERS, getStaticLenderDetail, STATIC_LENDER_LOGOS, getEligibleCoupon, LENDER_MAX_AMOUNT, type KBCoupon } from "@/lib/constants";
 import { getStoredOffers, saveLender, type StaticLender } from "@/lib/api";
 import OfferCard from "@/components/offers/OfferCard";
 import ScratchCoupon from "@/components/offers/ScratchCoupon";
@@ -27,6 +27,7 @@ export default function OffersPage() {
   const [staticLenders, setStaticLenders] = useState<StaticLender[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [showAllOffers, setShowAllOffers] = useState(false);
+  const [filterAmount, setFilterAmount] = useState<number>(0); // auto-set from Stage1 loan_amount
 
   useEffect(() => {
     const response = getStoredOffers();
@@ -86,6 +87,10 @@ export default function OffersPage() {
     const profile = sessionStorage.getItem("userProfile") || "Salaried";
     setCoupon(getEligibleCoupon(profile));
 
+    // Load user's requested loan amount for filtering
+    const storedAmount = Number(sessionStorage.getItem("userLoanAmount") || "0");
+    if (storedAmount > 0) setFilterAmount(storedAmount);
+
     setLoaded(true);
   }, []);
 
@@ -96,8 +101,30 @@ export default function OffersPage() {
   const hasStaticLenders = staticLenders.length > 0;
   const showStaticOnly = !showKB && !showMV && hasStaticLenders;
 
+  // Sort static lenders by filter amount priority:
+  // Lenders whose max amount >= filterAmount come first, sorted by closest match
+  // Lenders whose max amount < filterAmount go below
+  const sortedStaticLenders = [...staticLenders].sort((a, b) => {
+    if (filterAmount <= 0) return 0; // no filter, keep original order
+    const maxA = LENDER_MAX_AMOUNT[a.name] ?? Infinity;
+    const maxB = LENDER_MAX_AMOUNT[b.name] ?? Infinity;
+    const aCovers = maxA >= filterAmount;
+    const bCovers = maxB >= filterAmount;
+    // Lenders that cover the amount come first
+    if (aCovers && !bCovers) return -1;
+    if (!aCovers && bCovers) return 1;
+    // Among those that cover, sort by closest max (smaller max = better fit)
+    if (aCovers && bCovers) return maxA - maxB;
+    // Among those that don't cover, sort by largest max first
+    return maxB - maxA;
+  });
+
+  // Also determine KB/MV priority based on filter
+  const kbCovers = filterAmount > 0 ? (LENDER_MAX_AMOUNT["KreditBee"] ?? Infinity) >= filterAmount : true;
+  const mvCovers = filterAmount > 0 ? (LENDER_MAX_AMOUNT["MoneyView"] ?? Infinity) >= filterAmount : true;
+
   // Decide if we need wider container for grid
-  const totalCards = (showKB ? 1 : 0) + (showMV ? 1 : 0) + staticLenders.length;
+  const totalCards = (showKB ? 1 : 0) + (showMV ? 1 : 0) + sortedStaticLenders.length;
   const multipleCards = totalCards > 1;
 
   const handleApply = async (lenderName: string, url?: string) => {
@@ -154,67 +181,78 @@ export default function OffersPage() {
         {/* KreditBee & MoneyView offer cards */}
         {(showKB || showMV) && (
           <div className={showKB && showMV ? "grid grid-cols-1 sm:grid-cols-2 gap-4" : "space-y-4"}>
-            {showKB && (
-              <OfferCard
-                lenderName={kbOffer.lenderName}
-                compact={showKB && showMV}
-                recommended
-                lenderLogo={
-                  <img
-                    src={kbOffer.logo}
-                    alt={kbOffer.lenderName}
-                    className="h-6 w-auto"
-                  />
-                }
-                headline={kbOffer.headline}
-                description={kbOffer.description}
-                keyFeature={kbOffer.keyFeature}
-                interestRate={kbOffer.interestRate}
-                onApply={() => handleApply("KreditBee", kbUtmLink || "https://kredt.be/3ZFfVbz")}
-                delay={0.3}
-                badge={
-                  <button
-                    onClick={() => setShowScratch(true)}
-                    className="scratch-badge bg-indigo-600 text-white text-[11px] font-semibold px-3 py-1.5 rounded-lg cursor-pointer flex items-center gap-1.5 hover:bg-indigo-700 transition-colors"
-                  >
-                    <svg
-                      className="w-3.5 h-3.5"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+            {/* Render KB and MV in priority order based on filter */}
+            {(showKB && showMV && !mvCovers && kbCovers
+              ? ["KB", "MV"]
+              : showKB && showMV && !kbCovers && mvCovers
+              ? ["MV", "KB"]
+              : ["KB", "MV"]
+            ).map((key) => {
+              if (key === "KB" && showKB) return (
+                <OfferCard
+                  key="KreditBee"
+                  lenderName={kbOffer.lenderName}
+                  compact={showKB && showMV}
+                  recommended
+                  lenderLogo={
+                    <img
+                      src={kbOffer.logo}
+                      alt={kbOffer.lenderName}
+                      className="h-6 w-auto"
+                    />
+                  }
+                  headline={kbOffer.headline}
+                  description={kbOffer.description}
+                  keyFeature={kbOffer.keyFeature}
+                  interestRate={kbOffer.interestRate}
+                  onApply={() => handleApply("KreditBee", kbUtmLink || "https://kredt.be/3ZFfVbz")}
+                  delay={0.3}
+                  badge={
+                    <button
+                      onClick={() => setShowScratch(true)}
+                      className="scratch-badge bg-indigo-600 text-white text-[11px] font-semibold px-3 py-1.5 rounded-lg cursor-pointer flex items-center gap-1.5 hover:bg-indigo-700 transition-colors"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"
-                      />
-                    </svg>
-                    Scratch & Win
-                  </button>
-                }
-              />
-            )}
-            {showMV && (
-              <OfferCard
-                lenderName={mvOffer.lenderName}
-                compact={showKB && showMV}
-                recommended
-                lenderLogo={
-                  <img
-                    src={mvOffer.logo}
-                    alt={mvOffer.lenderName}
-                    className="h-6 w-auto"
-                  />
-                }
-                headline={mvOffer.headline}
-                description={mvOffer.description}
-                keyFeature={mvOffer.keyFeature}
-                interestRate={mvOffer.interestRate}
-                onApply={() => handleApply("MoneyView", mvUtmLink || "https://moneyview.in/")}
-                delay={showKB ? 0.45 : 0.3}
-              />
-            )}
+                      <svg
+                        className="w-3.5 h-3.5"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"
+                        />
+                      </svg>
+                      Scratch & Win
+                    </button>
+                  }
+                />
+              );
+              if (key === "MV" && showMV) return (
+                <OfferCard
+                  key="MoneyView"
+                  lenderName={mvOffer.lenderName}
+                  compact={showKB && showMV}
+                  recommended
+                  lenderLogo={
+                    <img
+                      src={mvOffer.logo}
+                      alt={mvOffer.lenderName}
+                      className="h-6 w-auto"
+                    />
+                  }
+                  headline={mvOffer.headline}
+                  description={mvOffer.description}
+                  keyFeature={mvOffer.keyFeature}
+                  interestRate={mvOffer.interestRate}
+                  onApply={() => handleApply("MoneyView", mvUtmLink || "https://moneyview.in/")}
+                  delay={showKB ? 0.45 : 0.3}
+                />
+              );
+              return null;
+            })}
           </div>
         )}
 
@@ -243,15 +281,15 @@ export default function OffersPage() {
 
             {/* Show static lenders: always if no KB/MV, or after clicking "View All Offers" */}
             {(showStaticOnly || showAllOffers) && (
-              <div className={staticLenders.length > 1 ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4" : "space-y-4 mt-4"}>
-                {staticLenders.map((lender, i) => {
+              <div className={sortedStaticLenders.length > 1 ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-4" : "space-y-4 mt-4"}>
+                {sortedStaticLenders.map((lender, i) => {
                   const detail = getStaticLenderDetail(lender.name);
                   const logo = STATIC_LENDER_LOGOS[lender.name];
                   return (
                     <OfferCard
                       key={lender.name}
                       lenderName={DISPLAY_NAMES[lender.name] || lender.name}
-                      compact={staticLenders.length > 1}
+                      compact={sortedStaticLenders.length > 1}
                       logoDarkBg={logo?.darkBg}
                       lenderLogo={
                         logo ? (

@@ -291,6 +291,7 @@ export async function getOffers(
 
   sessionStorage.setItem(OFFERS_SESSION_KEY, JSON.stringify(json));
   sessionStorage.setItem("userPhone", payload.mobile);
+  sessionStorage.setItem("userLoanAmount", String(payload.loan_amount));
   return json;
 }
 

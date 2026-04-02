@@ -109,7 +109,7 @@ export default function Stage1Form({ onSubmit, defaultValues }: Stage1FormProps)
             </p>
             <input
               type="range"
-              min={10000}
+              min={5000}
               max={1500000}
               step={10000}
               {...register("loan_amount", { valueAsNumber: true })}
@@ -118,7 +118,7 @@ export default function Stage1Form({ onSubmit, defaultValues }: Stage1FormProps)
                 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#1a1a2e] [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:shadow-md"
             />
             <div className="flex justify-between text-white/40 text-[11px]">
-              <span>₹10,000</span>
+              <span>₹5,000</span>
               <span>₹15,00,000</span>
             </div>
             {errors.loan_amount && (
