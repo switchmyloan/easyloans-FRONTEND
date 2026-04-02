@@ -377,7 +377,7 @@ export default function Home() {
             </AnimatePresence>
 
             <footer className="text-center text-gray-400 text-[11px] mt-6">
-              Copyright &copy; 2025 SwitchMyLoan Pvt. Ltd. All Rights Reserved.
+              Copyright &copy; 2026 SwitchMyLoan Pvt. Ltd. All Rights Reserved.
             </footer>
           </div>
         )}

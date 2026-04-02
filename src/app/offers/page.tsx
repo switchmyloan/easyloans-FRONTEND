@@ -328,7 +328,7 @@ export default function OffersPage() {
         >
           <TrustBadges />
           <p className="text-center text-gray-400 text-[11px] mt-5">
-            Copyright &copy; 2025 SwitchMyLoan Pvt. Ltd. All Rights Reserved.
+            Copyright &copy; 2026 SwitchMyLoan Pvt. Ltd. All Rights Reserved.
           </p>
         </motion.div>
       </div>
