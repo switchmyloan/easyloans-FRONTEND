@@ -31,22 +31,19 @@ export default function OfferCard({
   compact = false,
   recommended = false,
 }: OfferCardProps) {
-  const recommendedRibbon = recommended ? (
-    <div className="absolute top-[-1] left-0 z-10">
-      <span className="inline-block bg-green-100 text-green-700 text-[11px] font-semibold px-3 py-1 rounded-md">
-        Recommended
-      </span>
-    </div>
-  ) : null;
   if (compact) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay, duration: 0.4 }}
-        className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow relative flex flex-col h-full"
+        className={`bg-white rounded-2xl border shadow-sm hover:shadow-md transition-shadow relative flex flex-col h-full overflow-hidden ${recommended ? "border-emerald-300 ring-1 ring-emerald-200" : "border-gray-200"}`}
       >
-        {recommendedRibbon}
+        {recommended && (
+          <div className="bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 text-center">
+            Recommended
+          </div>
+        )}
         {badge && (
           <div className="absolute top-4 right-4 z-10">{badge}</div>
         )}
@@ -99,11 +96,12 @@ export default function OfferCard({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4 }}
-      className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow relative"
+      className={`bg-white rounded-2xl border shadow-sm hover:shadow-md transition-shadow relative overflow-hidden ${recommended ? "border-emerald-300 ring-1 ring-emerald-200" : "border-gray-200"}`}
     >
-      {recommendedRibbon}
-      {badge && (
-        <div className="absolute top-4 right-4 z-10">{badge}</div>
+      {recommended && (
+        <div className="bg-emerald-500 text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 text-center">
+          Recommended
+        </div>
       )}
 
       <div className="flex items-start gap-4 p-5 sm:p-6">
