@@ -446,6 +446,7 @@ export interface OffersApiResponse {
     SmartCoinHighIntent?: LenderResponse;
     TrueBalance?: LenderResponse;
     Zype_Dedupe?: LenderResponse;
+    isSalaried: boolean;
     staticLenders: StaticLender[];
   };
 }
@@ -455,6 +456,8 @@ const OFFERS_SESSION_KEY = "offersResponse";
 export async function getOffers(
   payload: GetOffersPayload
 ): Promise<OffersApiResponse> {
+  const isSalaried = payload.profile === "Salaried";
+
   const body = {
     name: payload.name,
     firstName: payload.first_name,
@@ -463,6 +466,7 @@ export async function getOffers(
     dateOfBirth: formatDOB(payload.dob),
     gender: GENDER_MAP[payload.gender] || payload.gender,
     jobType: JOB_TYPE_MAP[payload.profile] || payload.profile,
+    isSalaried,
     loanAmount: String(payload.loan_amount),
     mobileNumber: payload.mobile,
     monthlySalary: Number(payload.monthly_income),
@@ -489,6 +493,23 @@ export async function getOffers(
   sessionStorage.setItem(OFFERS_SESSION_KEY, JSON.stringify(json));
   sessionStorage.setItem("userPhone", payload.mobile);
   sessionStorage.setItem("userLoanAmount", String(payload.loan_amount));
+
+  // Store user data for lender-specific apply APIs (e.g. KreditBee)
+  sessionStorage.setItem("userFormData", JSON.stringify({
+    firstName: payload.first_name,
+    lastName: payload.last_name,
+    mobileNumber: payload.mobile,
+    email: payload.email,
+    panNumber: payload.pan_no,
+    dateOfBirth: formatDOB(payload.dob),
+    gender: payload.gender,
+    pincode: payload.pincode,
+    jobType: JOB_TYPE_MAP[payload.profile] || payload.profile,
+    monthlySalary: String(payload.monthly_income),
+    loanAmount: String(payload.loan_amount),
+    loanPurpose: payload.loan_purpose,
+  }));
+
   return json;
 }
 
@@ -500,6 +521,42 @@ export function getStoredOffers(): OffersApiResponse | null {
   } catch {
     return null;
   }
+}
+
+// ---------- Save Lender (on Apply Now click) ----------
+
+// ---------- Apply to KreditBee ----------
+
+export interface KreditBeeApplyResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: {
+    KreditBee: {
+      success: boolean;
+      message: string;
+      data: unknown;
+      statusCode: number;
+    };
+  };
+}
+
+export async function applyToKreditBee(): Promise<KreditBeeApplyResponse> {
+  const raw = sessionStorage.getItem("userFormData");
+  if (!raw) throw new Error("User data not found. Please fill the form first.");
+
+  const userData = JSON.parse(raw);
+
+  const res = await fetch(`${BASE_URL}/onSubmit/kreditbee`, {
+    method: "POST",
+    headers: PARTNER_HEADERS,
+    body: JSON.stringify(userData),
+  });
+
+  if (!res.ok) throw new Error("Failed to apply to KreditBee. Please try again.");
+
+  const json: KreditBeeApplyResponse = await res.json();
+  return json;
 }
 
 // ---------- Save Lender (on Apply Now click) ----------

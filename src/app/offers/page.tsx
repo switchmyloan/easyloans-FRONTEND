@@ -3,11 +3,12 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { OFFERS, getStaticLenderDetail, STATIC_LENDER_LOGOS, getEligibleCoupon, LENDER_MAX_AMOUNT, type KBCoupon } from "@/lib/constants";
-import { getStoredOffers, saveLender, type StaticLender, type LenderResponse } from "@/lib/api";
+import { getStoredOffers, saveLender, applyToKreditBee, type StaticLender, type LenderResponse } from "@/lib/api";
 import OfferCard from "@/components/offers/OfferCard";
 import ScratchCoupon from "@/components/offers/ScratchCoupon";
 import TrustBadges from "@/components/ui/TrustBadges";
 import { motion } from "framer-motion";
+import toast, { Toaster } from "react-hot-toast";
 import GradientBanner from "@/components/ui/GradientBanner";
 
 const DISPLAY_NAMES: Record<string, string> = {
@@ -23,13 +24,19 @@ export default function OffersPage() {
   const [showKB, setShowKB] = useState(false);
   const [showMV, setShowMV] = useState(false);
   const [showPoonawalla, setShowPoonawalla] = useState(false);
+  const [showZype, setShowZype] = useState(false);
+  const [showTB, setShowTB] = useState(false);
+  const [isSalaried, setIsSalaried] = useState(false);
   const [kbUtmLink, setKbUtmLink] = useState<string | undefined>();
   const [mvUtmLink, setMvUtmLink] = useState<string | undefined>();
   const [poonawallaUtmLink, setPoonawallaUtmLink] = useState<string | undefined>();
+  const [zypeUtmLink, setZypeUtmLink] = useState<string | undefined>();
+  const [tbUtmLink, setTbUtmLink] = useState<string | undefined>();
   const [staticLenders, setStaticLenders] = useState<StaticLender[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [showAllOffers, setShowAllOffers] = useState(false);
   const [filterAmount, setFilterAmount] = useState<number>(0); // auto-set from Stage1 loan_amount
+  const [kbApplying, setKbApplying] = useState(false);
 
   useEffect(() => {
     const response = getStoredOffers();
@@ -53,20 +60,37 @@ export default function OffersPage() {
         return resData?.isEligible === true;
       };
 
-      // Only include extra lenders if their offer is approved (not duplicate/rejected)
+      // Track salaried status from API response
+      setIsSalaried(response.data.isSalaried === true);
+
+      // Promote Zype_Dedupe as a top-level card — always show when present (only returned for salaried users)
+      const zyp = response.data.Zype_Dedupe;
+      if (zyp) {
+        setShowZype(true);
+        setZypeUtmLink(zyp.utm_link || "https://zype.co.in/");
+      }
+
+      // Promote TrueBalance as a top-level card only for salaried users
+      const tb = response.data.TrueBalance;
+      const tbEligible = tb && isTrueBalanceEligible(tb);
+      if (tbEligible && response.data.isSalaried === true) {
+        setShowTB(true);
+        setTbUtmLink(tb.utm_link || "https://truebalance.io/");
+      }
+
+      // Only include extra lenders (excluding promoted ones) if their offer is approved
       const extras: StaticLender[] = [];
+      // For self-employed, keep TrueBalance in the static grid
+      if (tbEligible && response.data.isSalaried !== true) {
+        extras.push({ name: "TrueBalance", utm_link: tb.utm_link || "https://truebalance.io/" });
+      }
       const extraKeys: { key: string; fallback: string }[] = [
         { key: "SmartCoinHighIntent", fallback: "https://olyv.com/" },
-        { key: "TrueBalance", fallback: "https://truebalance.io/" },
-        { key: "Zype_Dedupe", fallback: "https://zype.co.in/" },
       ];
       for (const { key, fallback } of extraKeys) {
         const lenderData = response.data[key as keyof typeof response.data] as LenderResponse | undefined;
         if (!lenderData) continue;
-        const isEligible = key === "TrueBalance"
-          ? isTrueBalanceEligible(lenderData)
-          : isApprovedOffer(lenderData);
-        if (isEligible) {
+        if (isApprovedOffer(lenderData)) {
           extras.push({ name: key, utm_link: lenderData.utm_link || fallback });
         }
       }
@@ -75,7 +99,8 @@ export default function OffersPage() {
       setShowKB(true);
       if (kbHasOffer) setKbUtmLink(response.data.KreditBee?.utm_link);
 
-      if (mvHasOffer) {
+      // Show MoneyView when approved, or always when salaried and present in response
+      if (mvHasOffer || (response.data.isSalaried === true && response.data.MoneyView)) {
         setShowMV(true);
         setMvUtmLink(response.data.MoneyView?.utm_link);
       }
@@ -84,24 +109,23 @@ export default function OffersPage() {
       const LENDER_ORDER = [
         "poonawalla",
         "HeroFinCorp",
-        "SmartCoinHighIntent",
-        "Zype_Dedupe",
         "TrueBalance",
+        "SmartCoinHighIntent",
         "RapidMoney",
       ];
       const allStatic = [...(response.data.staticLenders || []), ...extras];
       allStatic.sort((a, b) => {
         const ai = LENDER_ORDER.indexOf(a.name);
         const bi = LENDER_ORDER.indexOf(b.name);
-        // Known lenders first in defined order, unknown lenders at the end
         return (ai === -1 ? LENDER_ORDER.length : ai) - (bi === -1 ? LENDER_ORDER.length : bi);
       });
       // Load user's requested loan amount for filtering
       const storedAmount = Number(sessionStorage.getItem("userLoanAmount") || "0");
       if (storedAmount > 0) setFilterAmount(storedAmount);
 
-      // Extract Poonawalla to show beside KreditBee in top row only if loan amount > 2 Lac
-      if (storedAmount > 200000) {
+      // Promote Poonawalla when salaried (part of salaried sequence) or loan amount > 2 Lac
+      const shouldPromotePoonawalla = response.data.isSalaried === true || storedAmount > 200000;
+      if (shouldPromotePoonawalla) {
         const poonawallaEntry = allStatic.find((l) => l.name === "poonawalla");
         if (poonawallaEntry) {
           setShowPoonawalla(true);
@@ -112,7 +136,6 @@ export default function OffersPage() {
           setStaticLenders(remainingStatic);
         }
       } else {
-        // Keep Poonawalla in static lenders section
         if (allStatic.length > 0) {
           setStaticLenders(allStatic);
         }
@@ -135,8 +158,13 @@ export default function OffersPage() {
   const mvOffer = OFFERS.find((o) => o.lenderName === "MoneyView")!;
   const poonawallaDetail = getStaticLenderDetail("poonawalla");
   const poonawallaLogo = STATIC_LENDER_LOGOS["poonawalla"];
+  const zypeDetail = getStaticLenderDetail("Zype_Dedupe");
+  const zypeLogo = STATIC_LENDER_LOGOS["Zype_Dedupe"];
+  const tbDetail = getStaticLenderDetail("TrueBalance");
+  const tbLogo = STATIC_LENDER_LOGOS["TrueBalance"];
   const hasStaticLenders = staticLenders.length > 0;
-  const showStaticOnly = !showKB && !showMV && !showPoonawalla && hasStaticLenders;
+  const hasPromotedCards = showKB || showMV || showPoonawalla || showZype || showTB;
+  const showStaticOnly = !hasPromotedCards && hasStaticLenders;
 
   // Sort static lenders by filter amount priority:
   // Lenders whose max amount >= filterAmount come first, sorted by closest match
@@ -164,7 +192,8 @@ export default function OffersPage() {
   const mvCovers = filterAmount > 0 ? (LENDER_MAX_AMOUNT["MoneyView"] ?? Infinity) >= filterAmount : true;
 
   // Decide if we need wider container for grid
-  const totalCards = (showKB ? 1 : 0) + (showMV ? 1 : 0) + (showPoonawalla ? 1 : 0) + sortedStaticLenders.length;
+  const promotedCount = (showKB ? 1 : 0) + (showZype ? 1 : 0) + (showPoonawalla ? 1 : 0) + (showTB ? 1 : 0) + (showMV ? 1 : 0);
+  const totalCards = promotedCount + sortedStaticLenders.length;
   const multipleCards = totalCards > 1;
 
   const handleApply = async (lenderName: string, url?: string) => {
@@ -174,8 +203,39 @@ export default function OffersPage() {
     if (url) window.open(url, "_blank");
   };
 
+  const handleKreditBeeApply = async () => {
+    setKbApplying(true);
+    try {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveLender(phone, "KreditBee");
+      const res = await applyToKreditBee();
+      console.log("KreditBee apply response:", res);
+
+      const kbMessage = res.data?.KreditBee?.message || "";
+      const isApproved = kbMessage.toLowerCase().includes("approved");
+      const isDuplicate = kbMessage.toLowerCase().includes("duplicate");
+      const isRejected = kbMessage.toLowerCase().includes("rejected");
+
+      if (isApproved && !isDuplicate && !isRejected) {
+        const url = kbUtmLink || "https://kredt.be/3ZFfVbz";
+        window.open(url, "_blank");
+      } else {
+        toast.error(kbMessage || "Your application was not approved.", {
+          duration: 5000,
+          style: { maxWidth: 400 },
+        });
+      }
+    } catch (err) {
+      console.error("KreditBee apply failed:", err);
+      toast.error("Something went wrong. Please try again.", { duration: 4000 });
+    } finally {
+      setKbApplying(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-[#f8f9fb]">
+      <Toaster position="top-center" />
       <div className={`mx-auto px-4 sm:px-6 py-10 sm:py-14 ${multipleCards ? "max-w-6xl" : "max-w-2xl"}`}>
         {/* Header */}
         <motion.div
@@ -218,15 +278,32 @@ export default function OffersPage() {
           </p>
         </motion.div>
 
-        {/* KreditBee, Poonawalla & MoneyView offer cards */}
-        {(showKB || showMV || showPoonawalla) && (
-          <div className={(showKB ? 1 : 0) + (showPoonawalla ? 1 : 0) + (showMV ? 1 : 0) > 1 ? "grid grid-cols-1 sm:grid-cols-2 gap-4" : "space-y-4"}>
+        {/* Salaried profile label */}
+        {isSalaried && hasPromotedCards && (
+          <motion.div
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mb-4"
+          >
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-lg border border-emerald-200">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              Best Lenders for Salaried Professionals
+            </span>
+          </motion.div>
+        )}
+
+        {/* Promoted offer cards — Order: KreditBee, Zype, Poonawalla, TrueBalance, MoneyView */}
+        {hasPromotedCards && (
+          <div className={promotedCount > 1 ? "grid grid-cols-1 sm:grid-cols-2 gap-4" : "space-y-4"}>
             {/* KreditBee */}
             {showKB && (
               <OfferCard
                 key="KreditBee"
                 lenderName={kbOffer.lenderName}
-                compact={(showKB ? 1 : 0) + (showPoonawalla ? 1 : 0) + (showMV ? 1 : 0) > 1}
+                compact={promotedCount > 1}
                 lenderLogo={
                   <img
                     src={kbOffer.logo}
@@ -238,7 +315,8 @@ export default function OffersPage() {
                 description={kbOffer.description}
                 keyFeature={kbOffer.keyFeature}
                 interestRate={kbOffer.interestRate}
-                onApply={() => handleApply("KreditBee", kbUtmLink || "https://kredt.be/3ZFfVbz")}
+                onApply={handleKreditBeeApply}
+                applying={kbApplying}
                 delay={0.3}
                 recommended
                 badge={
@@ -264,12 +342,35 @@ export default function OffersPage() {
                 }
               />
             )}
-            {/* Poonawalla - beside KreditBee */}
+            {/* Zype — only present when isSalaried */}
+            {showZype && (
+              <OfferCard
+                key="Zype"
+                lenderName="Zype"
+                compact={promotedCount > 1}
+                logoDarkBg={zypeLogo?.darkBg}
+                lenderLogo={
+                  zypeLogo ? (
+                    <img src={zypeLogo.src} alt="Zype" className="h-6 w-auto" />
+                  ) : (
+                    <span className="text-xl font-bold text-gray-600">Z</span>
+                  )
+                }
+                headline={zypeDetail.headline}
+                description={zypeDetail.description}
+                keyFeature={zypeDetail.keyFeature}
+                interestRate={zypeDetail.interestRate}
+                onApply={() => handleApply("Zype_Dedupe", zypeUtmLink)}
+                delay={0.35}
+                recommended
+              />
+            )}
+            {/* Poonawalla */}
             {showPoonawalla && (
               <OfferCard
                 key="Poonawalla"
                 lenderName="Poonawalla"
-                compact={(showKB ? 1 : 0) + (showPoonawalla ? 1 : 0) + (showMV ? 1 : 0) > 1}
+                compact={promotedCount > 1}
                 logoDarkBg={poonawallaLogo?.darkBg}
                 lenderLogo={
                   poonawallaLogo ? (
@@ -287,12 +388,35 @@ export default function OffersPage() {
                 recommended
               />
             )}
+            {/* TrueBalance */}
+            {showTB && (
+              <OfferCard
+                key="TrueBalance"
+                lenderName="TrueBalance"
+                compact={promotedCount > 1}
+                logoDarkBg={tbLogo?.darkBg}
+                lenderLogo={
+                  tbLogo ? (
+                    <img src={tbLogo.src} alt="TrueBalance" className="h-6 w-auto" />
+                  ) : (
+                    <span className="text-xl font-bold text-gray-600">T</span>
+                  )
+                }
+                headline={tbDetail.headline}
+                description={tbDetail.description}
+                keyFeature={tbDetail.keyFeature}
+                interestRate={tbDetail.interestRate}
+                onApply={() => handleApply("TrueBalance", tbUtmLink)}
+                delay={0.45}
+                recommended
+              />
+            )}
             {/* MoneyView */}
             {showMV && (
               <OfferCard
                 key="MoneyView"
                 lenderName={mvOffer.lenderName}
-                compact={(showKB ? 1 : 0) + (showPoonawalla ? 1 : 0) + (showMV ? 1 : 0) > 1}
+                compact={promotedCount > 1}
                 lenderLogo={
                   <img
                     src={mvOffer.logo}
@@ -305,7 +429,7 @@ export default function OffersPage() {
                 keyFeature={mvOffer.keyFeature}
                 interestRate={mvOffer.interestRate}
                 onApply={() => handleApply("MoneyView", mvUtmLink || "https://moneyview.in/")}
-                delay={showKB ? 0.5 : 0.3}
+                delay={0.5}
                 recommended
               />
             )}
@@ -315,8 +439,8 @@ export default function OffersPage() {
         {/* Static / extra lenders */}
         {hasStaticLenders && (
           <>
-            {/* Show "View All Offers" button when KB or MV is visible */}
-            {(showKB || showMV || showPoonawalla) && !showAllOffers && (
+            {/* Show "View All Offers" button when promoted cards are visible */}
+            {hasPromotedCards && !showAllOffers && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

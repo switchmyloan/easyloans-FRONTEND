@@ -15,6 +15,7 @@ interface OfferCardProps {
   logoDarkBg?: boolean;
   compact?: boolean;
   recommended?: boolean;
+  applying?: boolean;
 }
 
 export default function OfferCard({
@@ -30,6 +31,7 @@ export default function OfferCard({
   logoDarkBg,
   compact = false,
   recommended = false,
+  applying = false,
 }: OfferCardProps) {
   if (compact) {
     return (
@@ -82,9 +84,10 @@ export default function OfferCard({
         <div className="p-5 pt-0">
           <button
             onClick={onApply}
-            className="w-full px-4 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-sm font-semibold rounded-xl transition-colors active:scale-[0.97] cursor-pointer"
+            disabled={applying}
+            className="w-full px-4 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-sm font-semibold rounded-xl transition-colors active:scale-[0.97] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Apply Now
+            {applying ? "Applying..." : "Apply Now"}
           </button>
         </div>
       </motion.div>
@@ -134,9 +137,10 @@ export default function OfferCard({
         </div>
         <button
           onClick={onApply}
-          className="px-6 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-sm font-semibold rounded-xl transition-colors flex-shrink-0 active:scale-[0.97] cursor-pointer"
+          disabled={applying}
+          className="px-6 py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-sm font-semibold rounded-xl transition-colors flex-shrink-0 active:scale-[0.97] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          Apply Now
+          {applying ? "Applying..." : "Apply Now"}
         </button>
       </div>
     </motion.div>
