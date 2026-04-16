@@ -22,6 +22,7 @@ export interface LeadRecord {
   income: string | null;
   first_name: string | null;
   last_name: string | null;
+  mrn: string | null;
   [key: string]: unknown;
 }
 
@@ -128,6 +129,18 @@ function storeLeadResponse(json: LeadsResponse): void {
   if (leadId) {
     setStoredLeadId(leadId);
   }
+
+  // Store MRN from the first lead if available
+  const lead = json.data?.leads?.[0];
+  console.log("[MRN] storeLeadResponse — lead.mrn:", lead?.mrn ?? "not present");
+  if (lead?.mrn) {
+    sessionStorage.setItem("userMrn", lead.mrn);
+    console.log("[MRN] Stored in sessionStorage:", lead.mrn);
+  }
+}
+
+export function getStoredMrn(): string | null {
+  return getSessionValue("userMrn");
 }
 
 export interface DraftLeadPayload {
@@ -178,6 +191,7 @@ function buildDraftLeadBody(data: DraftLeadPayload) {
         : null,
     ...(loanPurpose ? { loanPurpose } : {}),
     mobileNumber: data.phone || null,
+    mrn: getStoredMrn() || null,
     consent_tnc: data.consent_tnc ?? false,
     consent_credit: data.consent_credit ?? false,
     consent_communication: data.consent_communication ?? false,
@@ -220,10 +234,13 @@ export async function submitLead(data: {
 export async function Createlead(
   data: DraftLeadPayload
 ): Promise<LeadsResponse> {
+  const draftBody = buildDraftLeadBody(data);
+  console.log("[MRN] POST /applynew-view-draft — mrn:", draftBody.mrn);
+
   const res = await fetch(`${BASE_URL}/onSubmit/applynew-view-draft`, {
     method: "POST",
     headers: PARTNER_HEADERS,
-    body: JSON.stringify(buildDraftLeadBody(data)),
+    body: JSON.stringify(draftBody),
   });
 
   if (!res.ok) throw new Error("Lead generation failed. Please try again.");
@@ -249,10 +266,13 @@ export async function onChangeUpdateLead(
     throw new Error("Draft lead id not found for update.");
   }
 
+  const draftBody = buildDraftLeadBody(data);
+  console.log("[MRN] PUT /applynew-view-draft/%s — mrn:", leadId, draftBody.mrn);
+
   const res = await fetch(`${BASE_URL}/onSubmit/applynew-view-draft/${leadId}`, {
     method: "PUT",
     headers: PARTNER_HEADERS,
-    body: JSON.stringify(buildDraftLeadBody(data)),
+    body: JSON.stringify(draftBody),
   });
 
   if (!res.ok) throw new Error("Lead generation failed. Please try again.");
@@ -418,6 +438,7 @@ export interface GetOffersPayload {
   monthly_income: number;
   loan_purpose: string;
   loan_amount: number;
+  mrn?: string | null;
 }
 
 // ---------- Offers API response types ----------
@@ -458,6 +479,9 @@ export async function getOffers(
 ): Promise<OffersApiResponse> {
   const isSalaried = payload.profile === "Salaried";
 
+  const mrn = payload.mrn || getStoredMrn();
+  console.log("[MRN] POST /get-offer-kb-mv — mrn:", mrn);
+
   const body = {
     name: payload.name,
     firstName: payload.first_name,
@@ -474,6 +498,7 @@ export async function getOffers(
     panNumber: payload.pan_no,
     pincode: payload.pincode,
     loanPurpose: payload.loan_purpose,
+    ...(mrn ? { mrn } : {}),
   };
 
   const res = await fetch(`${BASE_URL}/onSubmit/get-offer-kb-mv`, {
@@ -563,12 +588,15 @@ export async function applyToKreditBee(): Promise<KreditBeeApplyResponse> {
 
 export async function saveLender(phoneNumber: string, lenderName: string): Promise<void> {
   try {
+    const mrn = getStoredMrn();
+    console.log("[MRN] POST /save-lender — mrn:", mrn);
     await fetch(`${BASE_URL}/onSubmit/save-lender`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         phoneNumber,
         lenders: [{ lenderName }],
+        ...(mrn ? { mrn } : {}),
       }),
     });
   } catch (err) {

@@ -99,8 +99,11 @@ export default function OffersPage() {
       setShowKB(true);
       if (kbHasOffer) setKbUtmLink(response.data.KreditBee?.utm_link);
 
-      // Show MoneyView when approved, or always when salaried and present in response
-      if (mvHasOffer || (response.data.isSalaried === true && response.data.MoneyView)) {
+      // Show MoneyView when approved, or when salaried and present in response —
+      // but never when the lead was rejected.
+      const mvMessage = (response.data.MoneyView?.message || "").toLowerCase();
+      const mvRejected = mvMessage.includes("rejected");
+      if (!mvRejected && (mvHasOffer || (response.data.isSalaried === true && response.data.MoneyView))) {
         setShowMV(true);
         setMvUtmLink(response.data.MoneyView?.utm_link);
       }
@@ -123,8 +126,8 @@ export default function OffersPage() {
       const storedAmount = Number(sessionStorage.getItem("userLoanAmount") || "0");
       if (storedAmount > 0) setFilterAmount(storedAmount);
 
-      // Promote Poonawalla when salaried (part of salaried sequence) or loan amount > 2 Lac
-      const shouldPromotePoonawalla = response.data.isSalaried === true || storedAmount > 200000;
+      // Promote Poonawalla when salaried (part of salaried sequence) or loan amount > 50k
+      const shouldPromotePoonawalla = response.data.isSalaried === true || storedAmount > 50000;
       if (shouldPromotePoonawalla) {
         const poonawallaEntry = allStatic.find((l) => l.name === "poonawalla");
         if (poonawallaEntry) {
@@ -169,7 +172,7 @@ export default function OffersPage() {
   // Sort static lenders by filter amount priority:
   // Lenders whose max amount >= filterAmount come first, sorted by closest match
   // Lenders whose max amount < filterAmount go below
-  // For loan amounts > 2 Lac, Poonawalla is placed second among eligible lenders
+  // For loan amounts > 50k, Poonawalla is placed second among eligible lenders
   const sortedStaticLenders = [...staticLenders].sort((a, b) => {
     if (filterAmount <= 0) return 0; // no filter, keep original order
     const maxA = LENDER_MAX_AMOUNT[a.name] ?? Infinity;

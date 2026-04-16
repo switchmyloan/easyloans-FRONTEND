@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/dist/client/link";
+
 export default function LeftPanel() {
   return (
     <div className="hidden lg:flex lg:w-[52%] flex-col justify-center relative overflow-hidden sticky top-0 h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/40">
@@ -11,7 +13,9 @@ export default function LeftPanel() {
       <div className="relative z-10 max-w-lg ml-auto mr-12 xl:mr-20 px-6">
         {/* Logo */}
         <div className="mb-12">
-          <img src="/cready.png" alt="Cready" className="h-9 w-auto" />
+          <Link href="https://www.cready.in/" target="_blank" >
+            <img src="/cready.png" alt="Cready" className="h-9 w-auto" />
+          </Link>
         </div>
 
         {/* Text content */}
