@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { OFFERS, getStaticLenderDetail, STATIC_LENDER_LOGOS, getEligibleCoupon, LENDER_MAX_AMOUNT, type KBCoupon } from "@/lib/constants";
-import { getStoredOffers, saveLender, applyToKreditBee, type StaticLender, type LenderResponse } from "@/lib/api";
+import { getStoredOffers, saveLender, applyToKreditBee, applyToMoneyView, type StaticLender, type LenderResponse } from "@/lib/api";
 import OfferCard from "@/components/offers/OfferCard";
 import ScratchCoupon from "@/components/offers/ScratchCoupon";
 import TrustBadges from "@/components/ui/TrustBadges";
@@ -37,6 +37,7 @@ export default function OffersPage() {
   const [showAllOffers, setShowAllOffers] = useState(false);
   const [filterAmount, setFilterAmount] = useState<number>(0); // auto-set from Stage1 loan_amount
   const [kbApplying, setKbApplying] = useState(false);
+  const [mvApplying, setMvApplying] = useState(false);
 
   useEffect(() => {
     const response = getStoredOffers();
@@ -100,9 +101,9 @@ export default function OffersPage() {
       if (kbHasOffer) setKbUtmLink(response.data.KreditBee?.utm_link);
 
       // Show MoneyView when approved, or when salaried and present in response —
-      // but never when the lead was rejected.
+      // but never when the lead was rejected or is a duplicate.
       const mvMessage = (response.data.MoneyView?.message || "").toLowerCase();
-      const mvRejected = mvMessage.includes("rejected");
+      const mvRejected = mvMessage.includes("rejected") || mvMessage.includes("duplicate") || mvMessage.includes("dedupe");
       if (!mvRejected && (mvHasOffer || (response.data.isSalaried === true && response.data.MoneyView))) {
         setShowMV(true);
         setMvUtmLink(response.data.MoneyView?.utm_link);
@@ -233,6 +234,36 @@ export default function OffersPage() {
       toast.error("Something went wrong. Please try again.", { duration: 4000 });
     } finally {
       setKbApplying(false);
+    }
+  };
+
+  const handleMoneyViewApply = async () => {
+    setMvApplying(true);
+    try {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveLender(phone, "MoneyView");
+      const res = await applyToMoneyView();
+      console.log("MoneyView apply response:", res);
+
+      const mvMessage = res.data?.MoneyView?.message || "";
+      const isApproved = mvMessage.toLowerCase().includes("approved");
+      const isDuplicate = mvMessage.toLowerCase().includes("duplicate");
+      const isRejected = mvMessage.toLowerCase().includes("rejected");
+
+      if (isApproved && !isDuplicate && !isRejected) {
+        const url = mvUtmLink || "https://moneyview.in/";
+        window.open(url, "_blank");
+      } else {
+        toast.error(mvMessage || "Your application was not approved.", {
+          duration: 5000,
+          style: { maxWidth: 400 },
+        });
+      }
+    } catch (err) {
+      console.error("MoneyView apply failed:", err);
+      toast.error("Something went wrong. Please try again.", { duration: 4000 });
+    } finally {
+      setMvApplying(false);
     }
   };
 
@@ -431,7 +462,8 @@ export default function OffersPage() {
                 description={mvOffer.description}
                 keyFeature={mvOffer.keyFeature}
                 interestRate={mvOffer.interestRate}
-                onApply={() => handleApply("MoneyView", mvUtmLink || "https://moneyview.in/")}
+                onApply={handleMoneyViewApply}
+                applying={mvApplying}
                 delay={0.5}
                 recommended
               />

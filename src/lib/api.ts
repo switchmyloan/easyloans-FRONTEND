@@ -584,6 +584,53 @@ export async function applyToKreditBee(): Promise<KreditBeeApplyResponse> {
   return json;
 }
 
+// ---------- Apply to MoneyView ----------
+
+export interface MoneyViewApplyResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: {
+    MoneyView: {
+      success: boolean;
+      message: string;
+      data: unknown;
+      statusCode: number;
+    };
+  };
+}
+
+export async function applyToMoneyView(): Promise<MoneyViewApplyResponse> {
+  const raw = sessionStorage.getItem("userFormData");
+  if (!raw) throw new Error("User data not found. Please fill the form first.");
+
+  const userData = JSON.parse(raw);
+
+  const body = {
+    firstName: userData.firstName,
+    lastName: userData.lastName,
+    mobileNumber: userData.mobileNumber,
+    panNumber: userData.panNumber,
+    gender: (userData.gender || "").toLowerCase(),
+    dateOfBirth: userData.dateOfBirth,
+    jobType: (userData.jobType || "").toLowerCase(),
+    monthlySalary: Number(userData.monthlySalary),
+    pincode: userData.pincode,
+    email: userData.email,
+  };
+
+  const res = await fetch(`${BASE_URL}/onSubmit/money-view`, {
+    method: "POST",
+    headers: PARTNER_HEADERS,
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) throw new Error("Failed to apply to MoneyView. Please try again.");
+
+  const json: MoneyViewApplyResponse = await res.json();
+  return json;
+}
+
 // ---------- Save Lender (on Apply Now click) ----------
 
 export async function saveLender(phoneNumber: string, lenderName: string): Promise<void> {
