@@ -5,6 +5,11 @@ import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Stage1Data, Stage2Data, AppStage } from "@/lib/types";
 import { LOADING_DELAY_MS } from "@/lib/constants";
+import {
+  sendOtp,
+  verifyOtp,
+  type SendOtpResponse,
+} from "@/lib/api";
 
 import LeftPanel from "@/components/layout/LeftPanel";
 import MobileHeader from "@/components/layout/MobileHeader";
@@ -33,24 +38,51 @@ const LoadingScreen = dynamic(
 export default function Home() {
   const [stage, setStage] = useState<AppStage>("stage1");
   const [stage1Data, setStage1Data] = useState<Stage1Data | null>(null);
+  const [otpData, setOtpData] = useState<SendOtpResponse["data"] | null>(null);
 
   const handleStage1 = useCallback(async (data: Stage1Data) => {
     setStage1Data(data);
+    try {
+      const res = await sendOtp(data.mobile);
+      setOtpData(res.data);
+    } catch (err) {
+      console.error("sendOtp failed:", err);
+    }
     setStage("otp");
   }, []);
 
   const handleOtpVerify = useCallback(
-    async (_otp: string) => {
-      if (!stage1Data) return;
+    async (otp: string) => {
+      if (!stage1Data || !otpData) return;
+      try {
+        await verifyOtp({
+          otp,
+          hashedOtp: otpData.hashedOtp,
+          expiresAt: otpData.expiresAt,
+          mobileNumber: stage1Data.mobile,
+          sessionId:
+            typeof window !== "undefined"
+              ? sessionStorage.getItem("leadDraftSessionId") || undefined
+              : undefined,
+        });
+      } catch (err) {
+        console.error("verifyOtp failed:", err);
+      }
       setStage("loading");
       setTimeout(() => setStage("stage2"), LOADING_DELAY_MS);
     },
-    [stage1Data]
+    [stage1Data, otpData]
   );
 
   const handleOtpResend = useCallback(async () => {
-    // Template: no-op
-  }, []);
+    if (!stage1Data) return;
+    try {
+      const res = await sendOtp(stage1Data.mobile);
+      setOtpData(res.data);
+    } catch (err) {
+      console.error("sendOtp failed:", err);
+    }
+  }, [stage1Data]);
 
   const handleStage2 = useCallback(async (_data: Stage2Data) => {
     setStage("success");

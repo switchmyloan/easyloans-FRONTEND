@@ -384,6 +384,10 @@ export async function verifyOtp(payload: {
   otp: string;
   hashedOtp: string;
   expiresAt: number;
+  // Optional — sent so the backend can flip `otpVerified` on the matching
+  // apply_new_draft_leads row (used by the Lending User Journey report).
+  mobileNumber?: string;
+  sessionId?: string;
 }): Promise<VerifyOtpResponse> {
   const res = await fetch(`${BASE_URL}/onSubmit/verify-otp`, {
     method: "POST",
