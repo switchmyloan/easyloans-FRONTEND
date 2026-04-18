@@ -36,6 +36,7 @@ export const STATIC_LENDER_LOGOS: Record<
   SmartCoinHighIntent: { src: "/olyv.png" },
   TrueBalance: { src: "/truebalance.png" },
   Zype_Dedupe: { src: "/zype.png" },
+  UnitySmallFinanceBank: { src: "/unity_bank.png" },
 };
 
 export const STATIC_LENDER_DETAILS: Record<
@@ -161,6 +162,12 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Flexible Repayment Options and Approval in 60 seconds",
     interestRate: "Interest rate starting from 1.5% per month.",
   },
+  UnitySmallFinanceBank: {
+    headline: "Get Personal Loans from ₹1,00,000 to ₹5,00,000",
+    description: "Flexible repayment options and loan tenure from 6 to 36 months",
+    keyFeature: "Instant Approval and Same Day Disbursement",
+    interestRate: "Interest rate starting from 1.3% per month.",
+  },
 };
 
 // Max loan amount each lender supports (used for filtering/priority sorting)
@@ -172,6 +179,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   SmartCoinHighIntent: 500000, // ₹5 Lakhs
   Zype_Dedupe: 500000,      // ₹5 Lakhs
   TrueBalance: 500000,      // ₹5 Lakhs
+  UnitySmallFinanceBank: 500000, // ₹5 Lakhs
   RapidMoney: 25000,        // ₹25,000
   AdityaBirlaCapital: 4000000, // ₹40 Lakhs
   RamFinCorp: 100000,       // ₹1 Lakh

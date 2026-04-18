@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { OFFERS, getStaticLenderDetail, STATIC_LENDER_LOGOS, getEligibleCoupon, LENDER_MAX_AMOUNT, type KBCoupon } from "@/lib/constants";
-import { getStoredOffers, saveLender, applyToKreditBee, applyToMoneyView, type StaticLender, type LenderResponse } from "@/lib/api";
+import { getStoredOffers, getStoredMrn, saveLender, applyToKreditBee, applyToMoneyView, type StaticLender, type LenderResponse } from "@/lib/api";
 import OfferCard from "@/components/offers/OfferCard";
 import ScratchCoupon from "@/components/offers/ScratchCoupon";
 import TrustBadges from "@/components/ui/TrustBadges";
@@ -15,7 +15,15 @@ const DISPLAY_NAMES: Record<string, string> = {
   poonawalla: "Poonawalla",
   SmartCoinHighIntent: "SmartCoin",
   Zype_Dedupe: "Zype",
+  UnitySmallFinanceBank: "Unity Small Finance Bank",
 };
+
+const UNITY_BASE_URL =
+  "https://loans.theunitybank.com/unity-pl-ui/page/exclusion/login/logindetails?utm_source=partnership&utm_medium=switchmyloan&utm_campaign=";
+
+function buildUnityUtmLink(mrn: string | null): string {
+  return `${UNITY_BASE_URL}${encodeURIComponent(mrn || "partner")}`;
+}
 
 export default function OffersPage() {
   const router = useRouter();
@@ -85,6 +93,11 @@ export default function OffersPage() {
       if (tbEligible && response.data.isSalaried !== true) {
         extras.push({ name: "TrueBalance", utm_link: tb.utm_link || "https://truebalance.io/" });
       }
+      // Always include Unity Small Finance Bank — UTM campaign carries the user's MRN
+      extras.push({
+        name: "UnitySmallFinanceBank",
+        utm_link: buildUnityUtmLink(getStoredMrn()),
+      });
       const extraKeys: { key: string; fallback: string }[] = [
         { key: "SmartCoinHighIntent", fallback: "https://olyv.com/" },
       ];
