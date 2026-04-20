@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/dist/client/link";
 
 const STATS = [
@@ -41,11 +42,14 @@ export default function LeftPanel() {
           </p>
         </div>
 
-        <div className="relative rounded-2xl overflow-hidden shadow-xl shadow-gray-200/60 border border-gray-100/80 mb-6">
-          <img
-            src="/customers.jpg"
+        <div className="relative rounded-2xl overflow-hidden shadow-xl shadow-gray-200/60 border border-gray-100/80 mb-6 aspect-[3/2]">
+          <Image
+            src="/ttpublic.png"
             alt="Loans for gig workers, salaried, shop owners, self-employed and drivers"
-            className="w-full h-auto object-cover"
+            fill
+            sizes="(min-width: 1280px) 42vw, 52vw"
+            className="object-cover"
+            priority
           />
           <div className="absolute top-3 left-3 bg-white/95 backdrop-blur px-3 py-1.5 rounded-full shadow-md border border-gray-100 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
