@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/dist/client/link";
+import Link from "next/link";
 
 const STATS = [
   { value: "5 min", label: "Approval" },
@@ -20,6 +20,8 @@ const PARTNERS = [
 ];
 
 export default function LeftPanel() {
+  const marqueePartners = [...PARTNERS, ...PARTNERS];
+
   return (
     <div className="hidden lg:flex lg:w-[52%] flex-col relative overflow-hidden sticky top-0 h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/40">
       <div className="absolute -top-20 -left-20 w-72 h-72 bg-[#6232FF]/5 rounded-full blur-3xl" />
@@ -28,7 +30,13 @@ export default function LeftPanel() {
       <div className="relative z-10 flex flex-col h-full px-10 xl:px-16 py-10">
         <div className="mb-8">
           <Link href="https://www.cready.in/" target="_blank">
-            <img src="/cready.png" alt="Cready" className="h-9 w-auto" />
+            <Image
+              src="/cready.png"
+              alt="Cready"
+              width={128}
+              height={36}
+              className="h-9 w-auto"
+            />
           </Link>
         </div>
 
@@ -38,7 +46,7 @@ export default function LeftPanel() {
             tailored to your journey.
           </h2>
           <p className="text-base text-gray-600 leading-snug">
-            From gig workers to shop owners — we have got you covered.
+            From gig workers to shop owners  we have got you covered.
           </p>
         </div>
 
@@ -77,19 +85,24 @@ export default function LeftPanel() {
           <p className="text-[11px] uppercase tracking-wider text-gray-400 font-semibold mb-3">
             Our lending partners
           </p>
-          <div className="flex items-center flex-wrap gap-2">
-            {PARTNERS.map((logo) => (
-              <div
-                key={logo.alt}
-                className="flex items-center justify-center bg-white h-8 px-3 rounded-full shadow-sm border border-gray-100"
-              >
-                <img
-                  src={logo.src}
-                  alt={logo.alt}
-                  className="h-3 w-auto object-contain max-w-[70px]"
-                />
-              </div>
-            ))}
+          <div className="partner-marquee-mask">
+            <div className="partner-marquee-track">
+              {marqueePartners.map((logo, index) => (
+                <div
+                  key={`${logo.alt}-${index}`}
+                  className="flex h-8 shrink-0 items-center justify-center rounded-full border border-gray-100 bg-white px-3 shadow-sm"
+                  aria-hidden={index >= PARTNERS.length}
+                >
+                  <Image
+                    src={logo.src}
+                    alt={index < PARTNERS.length ? logo.alt : ""}
+                    width={70}
+                    height={20}
+                    className="h-5 w-auto max-w-[70px] object-contain"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
