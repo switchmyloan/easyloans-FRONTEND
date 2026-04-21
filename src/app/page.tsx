@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Stage1Data, Stage2Data, AppStage } from "@/lib/types";
@@ -37,6 +38,7 @@ const LoadingScreen = dynamic(
 );
 
 export default function Home() {
+  const router = useRouter();
   const [stage, setStage] = useState<AppStage>("stage1");
   const [stage1Data, setStage1Data] = useState<Stage1Data | null>(null);
   const [otpData, setOtpData] = useState<SendOtpResponse["data"] | null>(null);
@@ -87,11 +89,7 @@ export default function Home() {
 
   const handleStage2 = useCallback(
     async (data: Stage2Data) => {
-      console.log("[Stage2] handleStage2 called — stage1Data:", stage1Data, "data:", data);
-      if (!stage1Data) {
-        console.warn("[Stage2] aborted: stage1Data is null");
-        return;
-      }
+      if (!stage1Data) return;
 
       const dobStr =
         data.dob instanceof Date
@@ -114,12 +112,12 @@ export default function Home() {
           loanAmount: Number(stage1Data.loan_amount),
           loanPurpose: data.loan_purpose,
         });
-        setStage("success");
+        router.push("/short-ticket/offers");
       } catch (err) {
         console.error("getOfferShortTicket failed:", err);
       }
     },
-    [stage1Data]
+    [stage1Data, router]
   );
 
   const stage2Defaults = stage1Data

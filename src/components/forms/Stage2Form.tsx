@@ -207,12 +207,7 @@ export default function Stage2Form({
           </div>
         )} */}
 
-        <form
-          onSubmit={handleSubmit(onSubmit, (validationErrors) => {
-            console.warn("[Stage2Form] validation failed:", validationErrors);
-          })}
-          className="flex flex-col gap-3"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
           {/* Row 1: First Name + Last Name */}
           <div className="grid grid-cols-2 gap-3">
             <FormInput
