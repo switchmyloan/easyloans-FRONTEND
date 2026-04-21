@@ -635,6 +635,128 @@ export async function applyToMoneyView(): Promise<MoneyViewApplyResponse> {
   return json;
 }
 
+// ---------- Short Ticket (WhatsApp / campaign flow) ----------
+
+export interface ShortTicketPayload {
+  firstName: string;
+  lastName: string;
+  mobileNumber: string;
+  email: string;
+  dateOfBirth: string;
+  panNumber: string;
+  gender: string;
+  pincode: string;
+  jobType: string;
+  isSalaried: boolean;
+  monthlySalary: number;
+  loanAmount: number;
+  loanPurpose: string;
+  mrn?: string | null;
+  utm_source?: string | null;
+  utm_medium?: string | null;
+  utm_campaign?: string | null;
+  utm_content?: string | null;
+  utm_term?: string | null;
+}
+
+export interface ShortTicketLender {
+  name?: string;
+  success?: boolean;
+  is_offer?: boolean;
+  message?: string;
+  utm_link?: string;
+  data?: unknown;
+  statusCode?: number;
+  [key: string]: unknown;
+}
+
+export interface ShortTicketData {
+  isSalaried: boolean;
+  priorityOrder: string[];
+  staticLenders: StaticLender[];
+  RapidMoney?: ShortTicketLender;
+  RamFinCorp?: ShortTicketLender;
+  KreditBee?: ShortTicketLender;
+  TrueBalance?: ShortTicketLender;
+  MPokket?: ShortTicketLender;
+  CreditPlus?: ShortTicketLender;
+  Loan112?: ShortTicketLender;
+  [key: string]: unknown;
+}
+
+export interface ShortTicketResponse {
+  statusCode: number;
+  data: ShortTicketData;
+  message?: string;
+  success?: boolean;
+}
+
+const SHORT_TICKET_SESSION_KEY = "shortTicketOffers";
+
+export async function getOfferShortTicket(
+  payload: ShortTicketPayload
+): Promise<ShortTicketResponse> {
+  const mrn = payload.mrn || getStoredMrn();
+
+  const body = {
+    firstName: payload.firstName,
+    lastName: payload.lastName,
+    mobileNumber: payload.mobileNumber,
+    email: payload.email,
+    dateOfBirth: payload.dateOfBirth,
+    panNumber: payload.panNumber,
+    gender: payload.gender,
+    pincode: payload.pincode,
+    jobType: payload.jobType,
+    isSalaried: payload.isSalaried,
+    monthlySalary: Number(payload.monthlySalary),
+    loanAmount: Number(payload.loanAmount),
+    loanPurpose: payload.loanPurpose,
+    ...(mrn ? { mrn } : {}),
+    ...(payload.utm_source ? { utm_source: payload.utm_source } : {}),
+    ...(payload.utm_medium ? { utm_medium: payload.utm_medium } : {}),
+    ...(payload.utm_campaign ? { utm_campaign: payload.utm_campaign } : {}),
+    ...(payload.utm_content ? { utm_content: payload.utm_content } : {}),
+    ...(payload.utm_term ? { utm_term: payload.utm_term } : {}),
+  };
+
+  console.log("[ShortTicket] POST /get-offer-short-ticket — body:", body);
+
+  const res = await fetch(`${BASE_URL}/onSubmit/get-offer-short-ticket`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) throw new Error("Failed to fetch offers. Please try again.");
+
+  const json: ShortTicketResponse = await res.json();
+
+  if (json.statusCode !== 200) {
+    throw new Error(json.message || "Failed to fetch offers. Please try again.");
+  }
+
+  if (isBrowser()) {
+    sessionStorage.setItem(SHORT_TICKET_SESSION_KEY, JSON.stringify(json));
+    sessionStorage.setItem("userPhone", payload.mobileNumber);
+    sessionStorage.setItem("userLoanAmount", String(payload.loanAmount));
+    if (mrn) sessionStorage.setItem("userMrn", mrn);
+  }
+
+  return json;
+}
+
+export function getStoredShortTicketOffers(): ShortTicketResponse | null {
+  if (!isBrowser()) return null;
+  const raw = sessionStorage.getItem(SHORT_TICKET_SESSION_KEY);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
 // ---------- Save Lender (on Apply Now click) ----------
 
 export async function saveLender(phoneNumber: string, lenderName: string): Promise<void> {
