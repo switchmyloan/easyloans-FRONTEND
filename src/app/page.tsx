@@ -8,6 +8,7 @@ import { LOADING_DELAY_MS } from "@/lib/constants";
 import {
   sendOtp,
   verifyOtp,
+  getOfferShortTicket,
   type SendOtpResponse,
 } from "@/lib/api";
 
@@ -84,9 +85,42 @@ export default function Home() {
     }
   }, [stage1Data]);
 
-  const handleStage2 = useCallback(async (_data: Stage2Data) => {
-    setStage("success");
-  }, []);
+  const handleStage2 = useCallback(
+    async (data: Stage2Data) => {
+      console.log("[Stage2] handleStage2 called — stage1Data:", stage1Data, "data:", data);
+      if (!stage1Data) {
+        console.warn("[Stage2] aborted: stage1Data is null");
+        return;
+      }
+
+      const dobStr =
+        data.dob instanceof Date
+          ? data.dob.toISOString().split("T")[0]
+          : String(data.dob);
+
+      try {
+        await getOfferShortTicket({
+          firstName: data.first_name,
+          lastName: data.last_name,
+          mobileNumber: stage1Data.mobile,
+          email: data.email,
+          dateOfBirth: dobStr,
+          panNumber: data.pan_no,
+          gender: data.gender.toUpperCase(),
+          pincode: data.pincode,
+          jobType: data.profile.toUpperCase().replace(/\s+/g, "_"),
+          isSalaried: data.profile === "Salaried",
+          monthlySalary: Number(data.monthly_income),
+          loanAmount: Number(stage1Data.loan_amount),
+          loanPurpose: data.loan_purpose,
+        });
+        setStage("success");
+      } catch (err) {
+        console.error("getOfferShortTicket failed:", err);
+      }
+    },
+    [stage1Data]
+  );
 
   const stage2Defaults = stage1Data
     ? { first_name: stage1Data.firstName, last_name: stage1Data.lastName }
