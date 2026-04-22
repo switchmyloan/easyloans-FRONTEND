@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 import {
   getOfferShortTicket,
-  saveLender,
+  saveShortLender,
   type ShortTicketLender,
   type ShortTicketPayload,
   type ShortTicketResponse,
@@ -199,7 +199,7 @@ export default function ShortTicketPage() {
 
   const handleApply = async (lenderName: string, url?: string) => {
     const phone = payload?.mobileNumber || "";
-    await saveLender(phone, lenderName);
+    await saveShortLender(phone, lenderName);
     if (url) {
       window.open(url, "_blank");
     } else {

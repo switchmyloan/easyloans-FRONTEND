@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Toaster } from "react-hot-toast";
 import {
   getStoredShortTicketOffers,
-  saveLender,
+  saveShortLender,
   type ShortTicketLender,
 } from "@/lib/api";
 import {
@@ -174,20 +174,20 @@ export default function ShortTicketOffersPage() {
 
   const handleApply = async (lenderName: string, url: string) => {
     const phone = sessionStorage.getItem("userPhone") || "";
-    await saveLender(phone, lenderName);
+    await saveShortLender(phone, lenderName);
     if (url) window.open(url, "_blank");
   };
 
   const handleKreditBeeApply = async (url: string) => {
     const phone = sessionStorage.getItem("userPhone") || "";
     // Fire-and-forget analytics call
-    fetch("https://apply.switchmyloan.in/api/onSubmit/kreditbee", {
+    fetch("https://apply.switchmyloan.in/api/onSubmit/short-kreditbee", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ phone, lender: "KreditBee" }),
     }).catch((err) => console.error("Analytics API call failed:", err));
 
-    await saveLender(phone, "KreditBee");
+    await saveShortLender(phone, "KreditBee");
     if (url) window.open(url, "_blank");
   };
 

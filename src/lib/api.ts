@@ -904,3 +904,74 @@ export async function saveLender(phoneNumber: string, lenderName: string): Promi
     console.error("Failed to save lender:", err);
   }
 }
+
+// ---------- Short variants: save lender / KreditBee / MoneyView ----------
+
+export async function saveShortLender(
+  phoneNumber: string,
+  lenderName: string
+): Promise<void> {
+  try {
+    const mrn = getStoredMrn();
+    await fetch(`${BASE_URL}/onSubmit/short-save-lender`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        phoneNumber,
+        lenders: [{ lenderName }],
+        ...(mrn ? { mrn } : {}),
+      }),
+    });
+  } catch (err) {
+    console.error("Failed to save short lender:", err);
+  }
+}
+
+export async function applyToShortKreditBee(): Promise<KreditBeeApplyResponse> {
+  const raw = sessionStorage.getItem("userFormData");
+  if (!raw) throw new Error("User data not found. Please fill the form first.");
+
+  const userData = JSON.parse(raw);
+
+  const res = await fetch(`${BASE_URL}/onSubmit/short-kreditbee`, {
+    method: "POST",
+    headers: PARTNER_HEADERS,
+    body: JSON.stringify(userData),
+  });
+
+  if (!res.ok) throw new Error("Failed to apply to KreditBee. Please try again.");
+
+  const json: KreditBeeApplyResponse = await res.json();
+  return json;
+}
+
+export async function applyToShortMoneyView(): Promise<MoneyViewApplyResponse> {
+  const raw = sessionStorage.getItem("userFormData");
+  if (!raw) throw new Error("User data not found. Please fill the form first.");
+
+  const userData = JSON.parse(raw);
+
+  const body = {
+    firstName: userData.firstName,
+    lastName: userData.lastName,
+    mobileNumber: userData.mobileNumber,
+    panNumber: userData.panNumber,
+    gender: (userData.gender || "").toLowerCase(),
+    dateOfBirth: userData.dateOfBirth,
+    jobType: (userData.jobType || "").toLowerCase(),
+    monthlySalary: Number(userData.monthlySalary),
+    pincode: userData.pincode,
+    email: userData.email,
+  };
+
+  const res = await fetch(`${BASE_URL}/onSubmit/short-money-view`, {
+    method: "POST",
+    headers: PARTNER_HEADERS,
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) throw new Error("Failed to apply to MoneyView. Please try again.");
+
+  const json: MoneyViewApplyResponse = await res.json();
+  return json;
+}
