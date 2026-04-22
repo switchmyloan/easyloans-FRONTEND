@@ -1,104 +1,111 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
-
-const STATS = [
-  { value: "5 min", label: "Approval" },
-  { value: "15L", label: "Upto Amount" },
-  { value: "0.83%", label: "Starting Rate" },
-];
-
-const PARTNERS = [
-  { src: "/hero.webp", alt: "Hero Fincorp" },
-  { src: "/poonawalla.svg", alt: "Poonawalla" },
-  { src: "/true.webp", alt: "Truebalance" },
-  { src: "/olyv.png", alt: "Olyv" },
-  { src: "/zype.png", alt: "Zype" },
-  { src: "/kreditbee-logo.svg", alt: "KreditBee" },
-  { src: "/moneyview-logo.svg", alt: "MoneyView" },
-];
+import Link from "next/dist/client/link";
 
 export default function LeftPanel() {
-  const marqueePartners = [...PARTNERS, ...PARTNERS];
-
   return (
-    <div className="hidden lg:flex lg:w-[52%] flex-col relative overflow-hidden sticky top-0 h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/40">
+    <div className="hidden lg:flex lg:w-[52%] flex-col justify-center relative overflow-hidden sticky top-0 h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/40">
+      {/* Decorative blobs */}
       <div className="absolute -top-20 -left-20 w-72 h-72 bg-[#6232FF]/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-10 right-10 w-56 h-56 bg-[#A6FF00]/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 right-10 w-56 h-56 bg-[#A6FF00]/8 rounded-full blur-3xl" />
+      <div className="absolute top-1/3 right-0 w-40 h-40 bg-[#1fe1e9]/8 rounded-full blur-2xl" />
 
-      <div className="relative z-10 flex flex-col h-full px-10 xl:px-16 py-10">
-        <div className="mb-8">
-          <Link href="https://www.cready.in/" target="_blank">
-            <Image
-              src="/cready.png"
-              alt="Cready"
-              width={128}
-              height={36}
-              className="h-9 w-auto"
-            />
+      <div className="relative z-10 max-w-lg ml-auto mr-12 xl:mr-20 px-6">
+        {/* Logo */}
+        <div className="mb-12">
+          <Link href="https://www.cready.in/" target="_blank" >
+            <img src="/cready.png" alt="Cready" className="h-9 w-auto" />
           </Link>
         </div>
 
-        <div className="mb-6">
-          <h2 className="text-2xl xl:text-[28px] font-medium leading-snug text-gray-800 mb-2">
-            Loans for <span className="text-[#6232FF] font-semibold">every Indian</span>,
-            tailored to your journey.
+        {/* Text content */}
+        <div className="mb-10">
+          <h2 className="text-2xl xl:text-[28px] font-medium leading-snug text-gray-800 mb-3">
+            <span className="text-[#6232FF] font-semibold">cready</span>, with personal
+            loans that actually feel personal.
           </h2>
-          <p className="text-base text-gray-600 leading-snug">
-            From gig workers to shop owners  we have got you covered.
+          <p className="font-bold text-lg xl:text-xl text-gray-900 leading-snug">
+            Made for your life. Built around your moments.
           </p>
         </div>
 
-        <div className="relative rounded-2xl overflow-hidden shadow-xl shadow-gray-200/60 border border-gray-100/80 mb-6 aspect-[3/2]">
-          <Image
-            src="/ttpublic.png"
-            alt="Loans for gig workers, salaried, shop owners, self-employed and drivers"
-            fill
-            sizes="(min-width: 1280px) 42vw, 52vw"
-            className="object-cover"
-            priority
-          />
-          <div className="absolute top-3 left-3 bg-white/95 backdrop-blur px-3 py-1.5 rounded-full shadow-md border border-gray-100 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-semibold text-gray-800">10L+ approvals</span>
-          </div>
-        </div>
+        {/* Hero card */}
+        <div className="relative">
+          <div className="bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100/80 p-6 relative overflow-hidden">
+            {/* Background pattern */}
+            <div className="absolute inset-0 opacity-[0.03]" style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, #6232FF 1px, transparent 0)`,
+              backgroundSize: "24px 24px",
+            }} />
 
-        <div className="bg-white rounded-2xl shadow-md border border-gray-100/80 p-4 mb-5">
-          <div className="grid grid-cols-3 gap-3">
-            {STATS.map((s, i) => (
-              <div
-                key={s.label}
-                className={`text-center ${i === 1 ? "border-x border-gray-100" : ""}`}
-              >
-                <div className="text-xl xl:text-2xl font-bold text-[#6232FF]">
-                  {s.value}
+            <div className="relative z-10">
+              {/* Stats row */}
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-[#6232FF]">5 min</div>
+                  <div className="text-xs text-gray-500 mt-0.5">Approval Time</div>
                 </div>
-                <div className="text-[11px] text-gray-500 mt-0.5">{s.label}</div>
+                <div className="text-center border-x border-gray-100">
+                  <div className="text-2xl font-bold text-[#6232FF]">2L</div>
+                  <div className="text-xs text-gray-500 mt-0.5">Upto Loan Amount</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-[#6232FF]">0.83%</div>
+                  <div className="text-xs text-gray-500 mt-0.5">Starting Rate</div>
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
 
-        <div className="mt-auto">
-          <p className="text-[11px] uppercase tracking-wider text-gray-400 font-semibold mb-3">
-            Our lending partners
-          </p>
-          <div className="partner-marquee-mask">
-            <div className="partner-marquee-track">
-              {marqueePartners.map((logo, index) => (
+              {/* Features */}
+              <div className="space-y-3">
+                {[
+                  { icon: "M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z", label: "RBI Registered & 100% Secure", color: "bg-emerald-50 text-emerald-600" },
+                  { icon: "M13 10V3L4 14h7v7l9-11h-7z", label: "Instant Digital Process", color: "bg-amber-50 text-amber-600" },
+                  { icon: "M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z", label: "Best Rates from Top Lenders", color: "bg-blue-50 text-blue-600" },
+                ].map((f) => (
+                  <div key={f.label} className="flex items-center gap-3">
+                    <div className={`w-9 h-9 rounded-xl ${f.color} flex items-center justify-center flex-shrink-0`}>
+                      <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d={f.icon} />
+                      </svg>
+                    </div>
+                    <span className="text-sm font-medium text-gray-700">{f.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Floating badge */}
+          <div className="absolute -top-4 -left-3 animate-float">
+            <div className="bg-white px-4 py-2.5 rounded-2xl shadow-lg shadow-gray-200/80 border border-gray-100 flex items-center gap-2.5">
+              <span className="text-sm font-semibold text-gray-800">Loan approved in 5 min!</span>
+              <span className="bg-[#1fe1e9] rounded-full p-1 flex items-center justify-center">
+                <svg width="14" height="14" fill="none" viewBox="0 0 16 16">
+                  <path d="M6.5 11.5L3.5 8.5L4.56 7.44L6.5 9.38L11.44 4.44L12.5 5.5L6.5 11.5Z" fill="#fff" />
+                </svg>
+              </span>
+            </div>
+          </div>
+          {/* Partner pills */}
+          <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 w-full max-w-2xl animate-float-delayed">
+            <div className="flex items-center justify-center gap-2 px-4">
+              {[
+                { src: "/hero.webp", alt: "Hero Fincorp" },
+                { src: "/poonawalla.svg", alt: "Poonawalla" },
+                { src: "/true.webp", alt: "Truebalance" },
+                { src: "/olyv.png", alt: "Olyv" },
+                { src: "/zype.png", alt: "Zype" },
+                { src: "/kreditbee-logo.svg", alt: "KreditBee" },
+                { src: "/moneyview-logo.svg", alt: "MoneyView" },
+              ].map((logo, index) => (
                 <div
-                  key={`${logo.alt}-${index}`}
-                  className="flex h-8 shrink-0 items-center justify-center rounded-full border border-gray-100 bg-white px-3 shadow-sm"
-                  aria-hidden={index >= PARTNERS.length}
+                  key={index}
+                  className="flex items-center justify-center bg-white h-9 px-4 rounded-full shadow-sm border border-gray-100 flex-shrink-0"
                 >
-                  <Image
+                  <img
                     src={logo.src}
-                    alt={index < PARTNERS.length ? logo.alt : ""}
-                    width={70}
-                    height={20}
-                    className="h-5 w-auto max-w-[70px] object-contain"
+                    alt={logo.alt}
+                    className="h-3.5 w-auto object-contain max-w-[80px]"
                   />
                 </div>
               ))}

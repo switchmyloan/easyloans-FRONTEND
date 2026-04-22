@@ -45,7 +45,7 @@ export const stage1Schema = yup.object({
     .number()
     .transform((_value, original) => (original === "" ? undefined : Number(original)))
     .min(5000, "Minimum loan amount is ₹5,000")
-    .max(1500000, "Maximum loan amount is ₹15,00,000")
+    .max(200000, "Maximum loan amount is ₹2,00,000")
     .required("Loan amount is required"),
   consent_tnc: yup
     .boolean()

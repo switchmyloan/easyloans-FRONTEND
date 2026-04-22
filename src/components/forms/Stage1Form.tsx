@@ -104,7 +104,7 @@ const {
   formState: { errors, isSubmitting },
 } = useForm<Stage1Data>({
   resolver: yupResolver(stage1Schema),
-  defaultValues: { loan_amount: 240000, ...defaultValues },
+  defaultValues: { loan_amount: 5000, ...defaultValues },
 });
 
   const lastEmittedRef = useRef("");
@@ -208,7 +208,7 @@ const {
             <input
               type="range"
               min={5000}
-              max={1500000}
+              max={200000}
               step={5000}
               {...register("loan_amount", { valueAsNumber: true })}
               className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-[#1a1a2e] bg-white/20
@@ -217,7 +217,7 @@ const {
             />
             <div className="flex justify-between text-white/40 text-[11px]">
               <span>₹5,000</span>
-              <span>₹15,00,000</span>
+              <span>₹2,00,000</span>
             </div>
             {errors.loan_amount && (
               <p className="text-red-300 text-[11px]">
