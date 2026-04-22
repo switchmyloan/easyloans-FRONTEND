@@ -20,7 +20,7 @@ export default function MobileHeader() {
         <div className="absolute -left-8 bottom-0 h-24 w-24 rounded-full bg-[#a6ff00]/20 blur-3xl" />
 
         <div className="relative z-10">
-          <div className="mb-4 flex items-center justify-center">
+          <div className="mb-0 flex items-center justify-center">
             <Image
               src="/cready.png"
               alt="Cready"
@@ -29,59 +29,6 @@ export default function MobileHeader() {
               className="h-8 w-auto"
               priority
             />
-          </div>
-
-          <div className="grid gap-4">
-            <div className="rounded-[24px] border border-white/70 bg-white/80 p-3 shadow-[0_14px_30px_rgba(15,23,42,0.06)] backdrop-blur">
-              <div className="mb-3 flex items-start justify-between gap-3">
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#6232FF]/70">
-                    Instant personal loans
-                  </p>
-                  <h2 className="mt-1 max-w-[16rem] text-lg font-semibold leading-tight text-slate-900">
-                    Fast approvals designed for everyday earners.
-                  </h2>
-                </div>
-                <div className="rounded-full bg-[#6232FF]/8 px-2.5 py-1 text-[10px] font-semibold text-[#6232FF]">
-                  Up to 15L
-                </div>
-              </div>
-
-              <div className="relative overflow-hidden rounded-[18px] aspect-[4/3]">
-                <Image
-                  src="/ttpublic.png"
-                  alt="Loan offers for gig workers, salaried users, shop owners and self-employed customers"
-                  fill
-                  sizes="100vw"
-                  className="object-cover"
-                  priority
-                />
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/65 via-slate-950/25 to-transparent p-3">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.9)]" />
-                    <span className="text-xs font-semibold text-white">
-                      10L+ approvals across trusted lenders
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2">
-              {[
-                { value: "5 min", label: "Approval" },
-                { value: "15L", label: "Upto Amount" },
-                { value: "0.83%", label: "Starting Rate" },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className="rounded-2xl border border-white/70 bg-white/85 px-3 py-2.5 text-center shadow-[0_10px_24px_rgba(15,23,42,0.05)] backdrop-blur"
-                >
-                  <p className="text-sm font-bold text-[#6232FF]">{item.value}</p>
-                  <p className="mt-0.5 text-[10px] text-slate-500">{item.label}</p>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </div>

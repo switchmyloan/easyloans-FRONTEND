@@ -96,16 +96,16 @@ export default function Stage1Form({
   const [showFullCredit, setShowFullCredit] = useState(false);
   const [showFullComm, setShowFullComm] = useState(false);
 
-const {
-  register,
-  handleSubmit,
-  watch,
-  setValue, 
-  formState: { errors, isSubmitting },
-} = useForm<Stage1Data>({
-  resolver: yupResolver(stage1Schema),
-  defaultValues: { loan_amount: 5000, ...defaultValues },
-});
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<Stage1Data>({
+    resolver: yupResolver(stage1Schema),
+    defaultValues: { loan_amount: 5000, ...defaultValues },
+  });
 
   const lastEmittedRef = useRef("");
   const loanAmount = watch("loan_amount");
@@ -232,6 +232,7 @@ const {
               <input
                 type="checkbox"
                 {...register("consent_tnc")}
+                defaultChecked={true}
                 className="mt-1 h-4 w-4 accent-[#A6FF00] rounded cursor-pointer shrink-0"
               />
               <span className="text-white/70 text-[11px] leading-normal group-hover:text-white/90 transition-colors">
@@ -266,6 +267,7 @@ const {
               <input
                 type="checkbox"
                 {...register("consent_credit")}
+                defaultChecked={true}
                 className="mt-1 h-4 w-4 accent-[#A6FF00] rounded cursor-pointer shrink-0"
               />
               <span className="text-white/70 text-[11px] leading-normal">
@@ -307,6 +309,7 @@ const {
               <input
                 type="checkbox"
                 {...register("consent_communication")}
+                defaultChecked={true}
                 className="mt-1 h-4 w-4 accent-[#A6FF00] rounded cursor-pointer shrink-0"
               />
               <span className="text-white/70 text-[11px] leading-normal">
