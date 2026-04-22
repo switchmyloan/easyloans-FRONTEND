@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
@@ -10,6 +10,7 @@ import {
   sendOtp,
   verifyOtp,
   getOfferShortTicket,
+  saveShortDraftLead,
   type SendOtpResponse,
 } from "@/lib/api";
 
@@ -43,8 +44,89 @@ export default function Home() {
   const [stage1Data, setStage1Data] = useState<Stage1Data | null>(null);
   const [otpData, setOtpData] = useState<SendOtpResponse["data"] | null>(null);
 
+  const stage1DraftRef = useRef<Partial<Stage1Data>>({});
+  const stage2DraftRef = useRef<Partial<Stage2Data>>({});
+  const draftTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const buildDraftPayload = useCallback(() => {
+    const s1 = stage1DraftRef.current;
+    const s2 = stage2DraftRef.current;
+
+    const dobStr =
+      s2.dob instanceof Date
+        ? s2.dob.toISOString().split("T")[0]
+        : typeof s2.dob === "string"
+          ? s2.dob
+          : undefined;
+
+    return {
+      fullName: s1.fullName,
+      firstName: s2.first_name || s1.firstName,
+      lastName: s2.last_name || s1.lastName,
+      phone: s1.mobile,
+      email: s2.email,
+      pan_no: s2.pan_no,
+      dob: dobStr,
+      gender: s2.gender,
+      pincode: s2.pincode,
+      profile: s2.profile,
+      monthly_income:
+        typeof s2.monthly_income === "number" ? s2.monthly_income : undefined,
+      loan_purpose: s2.loan_purpose,
+      loan_amount:
+        typeof s1.loan_amount === "number" ? s1.loan_amount : undefined,
+      consent_tnc: s1.consent_tnc,
+      consent_credit: s1.consent_credit,
+      consent_communication: s1.consent_communication,
+    };
+  }, []);
+
+  const scheduleDraftSave = useCallback(() => {
+    if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
+    draftTimerRef.current = setTimeout(() => {
+      saveShortDraftLead(buildDraftPayload());
+    }, 600);
+  }, [buildDraftPayload]);
+
+  useEffect(() => {
+    return () => {
+      if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
+    };
+  }, []);
+
+  const handleStage1Change = useCallback(
+    (data: Partial<Stage1Data>) => {
+      stage1DraftRef.current = { ...stage1DraftRef.current, ...data };
+      scheduleDraftSave();
+    },
+    [scheduleDraftSave]
+  );
+
+  const handleStage2Change = useCallback(
+    (data: Partial<Stage2Data>) => {
+      stage2DraftRef.current = { ...stage2DraftRef.current, ...data };
+      scheduleDraftSave();
+    },
+    [scheduleDraftSave]
+  );
+
   const handleStage1 = useCallback(async (data: Stage1Data) => {
     setStage1Data(data);
+    stage1DraftRef.current = { ...stage1DraftRef.current, ...data };
+    try {
+      await saveShortDraftLead({
+        fullName: data.fullName,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.mobile,
+        loan_amount: data.loan_amount,
+        consent_tnc: data.consent_tnc,
+        consent_credit: data.consent_credit,
+        consent_communication: data.consent_communication,
+      });
+    } catch (err) {
+      console.warn("saveShortDraftLead (stage1) failed:", err);
+    }
     try {
       const res = await sendOtp(data.mobile);
       setOtpData(res.data);
@@ -66,6 +148,10 @@ export default function Home() {
           sessionId:
             typeof window !== "undefined"
               ? sessionStorage.getItem("leadDraftSessionId") || undefined
+              : undefined,
+          shortSessionId:
+            typeof window !== "undefined"
+              ? sessionStorage.getItem("shortLeadDraftSessionId") || undefined
               : undefined,
         });
       } catch (err) {
@@ -96,6 +182,13 @@ export default function Home() {
           ? data.dob.toISOString().split("T")[0]
           : String(data.dob);
 
+      stage2DraftRef.current = { ...stage2DraftRef.current, ...data };
+      try {
+        await saveShortDraftLead(buildDraftPayload());
+      } catch (err) {
+        console.warn("saveShortDraftLead (stage2) failed:", err);
+      }
+
       try {
         await getOfferShortTicket({
           firstName: data.first_name,
@@ -117,7 +210,7 @@ export default function Home() {
         console.error("getOfferShortTicket failed:", err);
       }
     },
-    [stage1Data, router]
+    [stage1Data, router, buildDraftPayload]
   );
 
   const stage2Defaults = stage1Data
@@ -148,6 +241,7 @@ export default function Home() {
                   <Stage1Form
                     key="stage1"
                     onSubmit={handleStage1}
+                    onChange={handleStage1Change}
                     defaultValues={stage1Data ?? undefined}
                   />
                 )}
@@ -164,6 +258,7 @@ export default function Home() {
                   <Stage2Form
                     key="stage2"
                     onSubmit={handleStage2}
+                    onChange={handleStage2Change}
                     defaultValues={stage2Defaults}
                   />
                 )}

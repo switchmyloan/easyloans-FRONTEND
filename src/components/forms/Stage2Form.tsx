@@ -215,7 +215,15 @@ export default function Stage2Form({
               label="First Name"
               type="text"
               placeholder="Rahul"
-              registration={register("first_name")}
+              autoComplete="given-name"
+              registration={register("first_name", {
+                onChange: (e) => {
+                  const sanitized = e.target.value.replace(/[^A-Za-z]/g, "");
+                  if (sanitized !== e.target.value) {
+                    e.target.value = sanitized;
+                  }
+                },
+              })}
               error={errors.first_name}
             />
             <FormInput
@@ -223,7 +231,15 @@ export default function Stage2Form({
               label="Last Name"
               type="text"
               placeholder="Kumar"
-              registration={register("last_name")}
+              autoComplete="family-name"
+              registration={register("last_name", {
+                onChange: (e) => {
+                  const sanitized = e.target.value.replace(/[^A-Za-z]/g, "");
+                  if (sanitized !== e.target.value) {
+                    e.target.value = sanitized;
+                  }
+                },
+              })}
               error={errors.last_name}
             />
           </div>
@@ -258,8 +274,17 @@ export default function Stage2Form({
               label="Pincode"
               type="text"
               maxLength={6}
+              inputMode="numeric"
+              autoComplete="postal-code"
               placeholder="400001"
-              registration={register("pincode")}
+              registration={register("pincode", {
+                onChange: (e) => {
+                  const digits = e.target.value.replace(/\D/g, "").slice(0, 6);
+                  if (digits !== e.target.value) {
+                    e.target.value = digits;
+                  }
+                },
+              })}
               error={errors.pincode}
             />
             <FormInput
@@ -270,7 +295,13 @@ export default function Stage2Form({
               placeholder="ABCDE1234F"
               registration={register("pan_no", {
                 onChange: (e) => {
-                  e.target.value = e.target.value.toUpperCase();
+                  const sanitized = e.target.value
+                    .toUpperCase()
+                    .replace(/[^A-Z0-9]/g, "")
+                    .slice(0, 10);
+                  if (sanitized !== e.target.value) {
+                    e.target.value = sanitized;
+                  }
                 },
               })}
               error={errors.pan_no}
@@ -286,7 +317,16 @@ export default function Stage2Form({
               type="date"
               registration={register("dob")}
               error={errors.dob}
-              max={new Date().toISOString().split("T")[0]}
+              max={
+                new Date(new Date().setFullYear(new Date().getFullYear() - 18))
+                  .toISOString()
+                  .split("T")[0]
+              }
+              min={
+                new Date(new Date().setFullYear(new Date().getFullYear() - 75))
+                  .toISOString()
+                  .split("T")[0]
+              }
             />
             <Controller
               name="profile"
@@ -306,10 +346,26 @@ export default function Stage2Form({
             <FormInput
               id="monthly_income"
               label="Monthly Salary"
-              type="number"
+              type="text"
+              inputMode="numeric"
+              maxLength={9}
               placeholder="45000"
               // prefix="₹"
-              registration={register("monthly_income")}
+              registration={register("monthly_income", {
+                setValueAs: (value) => {
+                  if (value === "" || value === null || value === undefined) {
+                    return undefined;
+                  }
+                  const digits = String(value).replace(/\D/g, "");
+                  return digits === "" ? undefined : Number(digits);
+                },
+                onChange: (e) => {
+                  const digits = e.target.value.replace(/\D/g, "").slice(0, 9);
+                  if (digits !== e.target.value) {
+                    e.target.value = digits;
+                  }
+                },
+              })}
               error={errors.monthly_income}
             />
 

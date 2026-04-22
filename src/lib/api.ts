@@ -288,6 +288,129 @@ export async function onChangeUpdateLead(
   return json;
 }
 
+// ---------- Short ticket draft (cready short form) ----------
+
+const SHORT_LEAD_DRAFT_SESSION_KEY = "shortLeadDraftSessionId";
+const SHORT_LEAD_DRAFT_ID_KEY = "shortLeadDraftId";
+
+function getOrCreateShortLeadSessionId(): string {
+  const existing = getSessionValue(SHORT_LEAD_DRAFT_SESSION_KEY);
+  if (existing) return existing;
+
+  const sessionId = createClientSessionId();
+  setSessionValue(SHORT_LEAD_DRAFT_SESSION_KEY, sessionId);
+  return sessionId;
+}
+
+export function getStoredShortLeadId(): string | null {
+  return getSessionValue(SHORT_LEAD_DRAFT_ID_KEY);
+}
+
+function setStoredShortLeadId(leadId: string): void {
+  setSessionValue(SHORT_LEAD_DRAFT_ID_KEY, leadId);
+}
+
+function buildShortDraftLeadBody(data: DraftLeadPayload) {
+  const sessionId = getOrCreateShortLeadSessionId();
+  const loanPurpose =
+    typeof data.loan_purpose === "string" && data.loan_purpose.trim()
+      ? data.loan_purpose
+      : undefined;
+
+  return {
+    sessionId,
+    fullName: data.fullName || null,
+    firstName: data.firstName || null,
+    lastName: data.lastName || null,
+    email: data.email || null,
+    panNumber: data.pan_no || null,
+    dateOfBirth: data.dob || null,
+    gender: data.gender || null,
+    pincode: data.pincode || null,
+    jobType: data.profile || null,
+    monthlySalary:
+      typeof data.monthly_income === "number" &&
+      !Number.isNaN(data.monthly_income)
+        ? data.monthly_income
+        : null,
+    loanAmount:
+      typeof data.loan_amount === "number" && !Number.isNaN(data.loan_amount)
+        ? data.loan_amount
+        : null,
+    ...(loanPurpose ? { loanPurpose } : {}),
+    mobileNumber: data.phone || null,
+    mrn: getStoredMrn() || null,
+    consent_tnc: data.consent_tnc ?? false,
+    consent_credit: data.consent_credit ?? false,
+    consent_communication: data.consent_communication ?? false,
+  };
+}
+
+// Coalesce concurrent creates so a single session produces only one row,
+// even if the user types fast and the first POST hasn't returned yet.
+let shortDraftCreateInFlight: Promise<string | null> | null = null;
+
+async function createShortDraftOnce(
+  data: DraftLeadPayload
+): Promise<string | null> {
+  const existing = getStoredShortLeadId();
+  if (existing) return existing;
+
+  if (shortDraftCreateInFlight) return shortDraftCreateInFlight;
+
+  shortDraftCreateInFlight = (async () => {
+    const body = buildShortDraftLeadBody(data);
+    const res = await fetch(
+      `${BASE_URL}/onSubmit/short-applynew-view-draft`,
+      {
+        method: "POST",
+        headers: PARTNER_HEADERS,
+        body: JSON.stringify(body),
+      }
+    );
+
+    if (!res.ok) return null;
+    const json = await res.json();
+    const leadId = findLeadId(json);
+    if (leadId) setStoredShortLeadId(leadId);
+    return leadId;
+  })().finally(() => {
+    shortDraftCreateInFlight = null;
+  });
+
+  return shortDraftCreateInFlight;
+}
+
+async function updateShortDraft(
+  leadId: string,
+  data: DraftLeadPayload
+): Promise<void> {
+  const body = buildShortDraftLeadBody(data);
+  await fetch(`${BASE_URL}/onSubmit/short-applynew-view-draft/${leadId}`, {
+    method: "PUT",
+    headers: PARTNER_HEADERS,
+    body: JSON.stringify(body),
+  });
+}
+
+// Single entry point for the short-ticket form: creates on first call, updates
+// thereafter. Uses sessionStorage so repeat submits in the same session reuse
+// the same row.
+export async function saveShortDraftLead(
+  data: DraftLeadPayload
+): Promise<void> {
+  try {
+    const existingId = getStoredShortLeadId();
+    if (existingId) {
+      await updateShortDraft(existingId, data);
+      return;
+    }
+    await createShortDraftOnce(data);
+  } catch (err) {
+    console.warn("saveShortDraftLead failed:", err);
+  }
+}
+
 
 export function getStoredLead(): LeadsResponse | null {
   const raw = sessionStorage.getItem(SESSION_KEY);
@@ -388,6 +511,8 @@ export async function verifyOtp(payload: {
   // apply_new_draft_leads row (used by the Lending User Journey report).
   mobileNumber?: string;
   sessionId?: string;
+  // sessionId of the short draft (short_apply_new_draft_leads) if applicable.
+  shortSessionId?: string;
 }): Promise<VerifyOtpResponse> {
   const res = await fetch(`${BASE_URL}/onSubmit/verify-otp`, {
     method: "POST",

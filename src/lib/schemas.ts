@@ -67,18 +67,24 @@ export const stage2Schema = yup.object({
     .string()
     .trim()
     .min(2, "First name must be at least 2 characters")
-    .matches(/^[A-Za-z\s]+$/, "First name must contain only letters")
+    .max(50, "First name is too long")
+    .matches(/^[A-Za-z]+$/, "First name must contain only letters")
     .required("First name is required"),
   last_name: yup
     .string()
     .trim()
-    .min(1, "Last name is required")
-    .matches(/^[A-Za-z\s]+$/, "Last name must contain only letters")
+    .min(2, "Last name must be at least 2 characters")
+    .max(50, "Last name is too long")
+    .matches(/^[A-Za-z]+$/, "Last name must contain only letters")
     .required("Last name is required"),
   email: yup
     .string()
     .trim()
     .email("Invalid email")
+    .matches(
+      /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,
+      "Invalid email"
+    )
     .required("Email is required"),
   gender: yup
     .string()
@@ -100,6 +106,10 @@ export const stage2Schema = yup.object({
       new Date(new Date().setFullYear(new Date().getFullYear() - 18)),
       "You must be at least 18 years old"
     )
+    .min(
+      new Date(new Date().setFullYear(new Date().getFullYear() - 75)),
+      "Enter a valid date of birth"
+    )
     .required("Date of Birth is required"),
   profile: yup
     .string()
@@ -110,9 +120,16 @@ export const stage2Schema = yup.object({
     .required("Job Type is required"),
   monthly_income: yup
     .number()
+    .transform((_value, original) =>
+      original === "" || original === null || original === undefined
+        ? undefined
+        : Number(String(original).replace(/\D/g, ""))
+    )
     .typeError("Income must be a number")
+    .integer("Income must be a whole number")
     .positive("Income must be positive")
     .min(1000, "Income must be at least ₹1,000")
+    .max(100000000, "Enter a valid monthly income")
     .required("Monthly Income is required"),
   loan_purpose: yup
     .string()

@@ -170,13 +170,17 @@ export default function Stage1Form({
             label="Full Name"
             type="text"
             placeholder="Enter your full name as per PAN"
+            autoComplete="name"
             registration={register("fullName", {
               onChange: (e) => {
-                const value = e.target.value;
+                const sanitized = e.target.value
+                  .replace(/[^A-Za-z ]/g, "")
+                  .replace(/\s{2,}/g, " ");
+                if (sanitized !== e.target.value) {
+                  e.target.value = sanitized;
+                }
 
-                const { firstName, lastName } = splitFullName(value);
-
-                // set values in form
+                const { firstName, lastName } = splitFullName(sanitized);
                 setValue("firstName", firstName);
                 setValue("lastName", lastName);
               },
@@ -188,9 +192,18 @@ export default function Stage1Form({
             label="Mobile Number"
             type="tel"
             maxLength={10}
+            inputMode="numeric"
+            autoComplete="tel"
             placeholder="10-digit mobile number"
             // prefix="+91"
-            registration={register("mobile")}
+            registration={register("mobile", {
+              onChange: (e) => {
+                const digits = e.target.value.replace(/\D/g, "").slice(0, 10);
+                if (digits !== e.target.value) {
+                  e.target.value = digits;
+                }
+              },
+            })}
             error={errors.mobile}
           />
 
