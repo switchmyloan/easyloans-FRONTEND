@@ -178,6 +178,19 @@ export default function ShortTicketOffersPage() {
     if (url) window.open(url, "_blank");
   };
 
+  const handleKreditBeeApply = async (url: string) => {
+    const phone = sessionStorage.getItem("userPhone") || "";
+    // Fire-and-forget analytics call
+    fetch("https://apply.switchmyloan.in/api/onSubmit/kreditbee", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone, lender: "KreditBee" }),
+    }).catch((err) => console.error("Analytics API call failed:", err));
+
+    await saveLender(phone, "KreditBee");
+    if (url) window.open(url, "_blank");
+  };
+
   if (!loaded) return null;
 
   const multipleCards = offers.length > 1;
@@ -287,7 +300,11 @@ export default function ShortTicketOffersPage() {
                 description={offer.description}
                 keyFeature={offer.keyFeature}
                 interestRate={offer.interestRate}
-                onApply={() => handleApply(offer.name, offer.utmLink)}
+                onApply={
+                  offer.name === "KreditBee"
+                    ? () => handleKreditBeeApply(offer.utmLink)
+                    : () => handleApply(offer.name, offer.utmLink)
+                }
                 delay={0.15 + i * 0.08}
                 recommended={i < 2}
               />

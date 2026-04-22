@@ -741,6 +741,9 @@ export async function getOfferShortTicket(
     sessionStorage.setItem("userPhone", payload.mobileNumber);
     sessionStorage.setItem("userLoanAmount", String(payload.loanAmount));
     if (mrn) sessionStorage.setItem("userMrn", mrn);
+
+    // Also store user form data for subsequent API calls, like the main flow does
+    sessionStorage.setItem("userFormData", JSON.stringify(payload));
   }
 
   return json;
