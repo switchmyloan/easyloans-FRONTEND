@@ -4,13 +4,13 @@ import Image from "next/image";
 
 export default function MobileHeader() {
   const lenders = [
-    { src: "/hero.webp", alt: "Hero Fincorp" },
-    { src: "/poonawalla.svg", alt: "Poonawalla" },
-    { src: "/true.webp", alt: "Truebalance" },
-    { src: "/olyv.png", alt: "Olyv" },
-    { src: "/zype.png", alt: "Zype" },
+    { src: "/ramfinCorp.png", alt: "RamfinCorp" },
     { src: "/kreditbee-logo.svg", alt: "KreditBee" },
-    { src: "/moneyview-logo.svg", alt: "MoneyView" },
+    { src: "/true.webp", alt: "Truebalance" },
+    { src: "/mpoket.svg", alt: "Mpoket" },
+    { src: "/credit.svg", alt: "Credit" },
+    { src: "/logo_Loan112.svg", alt: "Loan112" },
+    { src: "/rapid-black.webp", alt: "RapidMoney" },
   ];
 
   return (

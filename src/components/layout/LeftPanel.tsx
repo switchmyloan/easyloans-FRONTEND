@@ -21,11 +21,10 @@ export default function LeftPanel() {
         {/* Text content */}
         <div className="mb-10">
           <h2 className="text-2xl xl:text-[28px] font-medium leading-snug text-gray-800 mb-3">
-            <span className="text-[#6232FF] font-semibold">cready</span>, with personal
-            loans that actually feel personal.
+            <span className="text-[#6232FF] font-semibold">cready</span>, small loans for your everyday needs.
           </h2>
           <p className="font-bold text-lg xl:text-xl text-gray-900 leading-snug">
-            Made for your life. Built around your moments.
+             Fast approval. Easy process. Instatnt disbursal
           </p>
         </div>
 
@@ -88,15 +87,15 @@ export default function LeftPanel() {
           </div>
           {/* Partner pills */}
           <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 w-full max-w-2xl animate-float-delayed">
-            <div className="flex items-center justify-center gap-2 px-4">
+            <div className="flex items-center justify-center gap-2 px-4 ">
               {[
-                { src: "/hero.webp", alt: "Hero Fincorp" },
-                { src: "/poonawalla.svg", alt: "Poonawalla" },
-                { src: "/true.webp", alt: "Truebalance" },
-                { src: "/olyv.png", alt: "Olyv" },
-                { src: "/zype.png", alt: "Zype" },
+                { src: "/ramfinCorp.png", alt: "RamfinCorp" },
                 { src: "/kreditbee-logo.svg", alt: "KreditBee" },
-                { src: "/moneyview-logo.svg", alt: "MoneyView" },
+                { src: "/true.webp", alt: "Truebalance" },
+                { src: "/mpoket.svg", alt: "Mpoket" },
+                { src: "/credit.svg", alt: "Credit" },
+                { src: "/logo_Loan112.svg", alt: "Loan112" },
+                { src: "/rapid-black.webp", alt: "RapidMoney" },
               ].map((logo, index) => (
                 <div
                   key={index}
