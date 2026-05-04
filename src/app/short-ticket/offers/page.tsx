@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import {
+  applyToShortKreditBee,
+  applyToShortMoneyView,
   getStoredShortTicketOffers,
   saveShortLender,
   type ShortTicketLender,
@@ -98,6 +100,8 @@ export default function ShortTicketOffersPage() {
   const [offers, setOffers] = useState<EligibleOffer[]>([]);
   const [isSalaried, setIsSalaried] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [kbApplying, setKbApplying] = useState(false);
+  const [mvApplying, setMvApplying] = useState(false);
 
   useEffect(() => {
     const response = getStoredShortTicketOffers();
@@ -178,17 +182,78 @@ export default function ShortTicketOffersPage() {
     if (url) window.open(url, "_blank");
   };
 
-  const handleKreditBeeApply = async (url: string) => {
-    const phone = sessionStorage.getItem("userPhone") || "";
-    // Fire-and-forget analytics call
-    fetch("https://apply.switchmyloan.in/api/onSubmit/short-kreditbee", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone, lender: "KreditBee" }),
-    }).catch((err) => console.error("Analytics API call failed:", err));
+  const handleKreditBeeApply = async (fallbackUrl: string) => {
+    setKbApplying(true);
+    try {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveShortLender(phone, "KreditBee");
+      const res = await applyToShortKreditBee();
 
-    await saveShortLender(phone, "KreditBee");
-    if (url) window.open(url, "_blank");
+      const kb = res.data?.KreditBee;
+      const kbMessage = (kb?.message || "").toLowerCase();
+      const leadStatus = (
+        (kb?.data as { response?: { model?: { leadStatus?: string } } })
+          ?.response?.model?.leadStatus || ""
+      ).toLowerCase();
+
+      const isKbSuccess = kb?.success === true;
+      const isNotApproved =
+        kbMessage.includes("not approved") ||
+        kbMessage.includes("rejected") ||
+        leadStatus === "not approved" ||
+        leadStatus === "rejected";
+      const isApproved =
+        !isNotApproved &&
+        (kbMessage.includes("approved") || leadStatus === "approved");
+      const isDuplicate = kbMessage.includes("duplicate");
+
+      if (isKbSuccess && isApproved && !isDuplicate) {
+        const url =
+          ((kb?.data as { utm_link?: string })?.utm_link as string) ||
+          fallbackUrl ||
+          "https://kredt.be/3ZFfVbz";
+        window.open(url, "_blank");
+      } else {
+        toast.error(kb?.message || "Your application was not approved.", {
+          duration: 5000,
+          style: { maxWidth: 400 },
+        });
+      }
+    } catch (err) {
+      console.error("Short KreditBee apply failed:", err);
+      toast.error("Something went wrong. Please try again.", { duration: 4000 });
+    } finally {
+      setKbApplying(false);
+    }
+  };
+
+  const handleMoneyViewApply = async (fallbackUrl: string) => {
+    setMvApplying(true);
+    try {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveShortLender(phone, "MoneyView");
+      const res = await applyToShortMoneyView();
+
+      const mvMessage = (res.data?.MoneyView?.message || "").toLowerCase();
+      const isApproved = mvMessage.includes("approved");
+      const isDuplicate = mvMessage.includes("duplicate");
+      const isRejected = mvMessage.includes("rejected");
+
+      if (isApproved && !isDuplicate && !isRejected) {
+        const url = fallbackUrl || "https://moneyview.in/";
+        window.open(url, "_blank");
+      } else {
+        toast.error(
+          res.data?.MoneyView?.message || "Your application was not approved.",
+          { duration: 5000, style: { maxWidth: 400 } }
+        );
+      }
+    } catch (err) {
+      console.error("Short MoneyView apply failed:", err);
+      toast.error("Something went wrong. Please try again.", { duration: 4000 });
+    } finally {
+      setMvApplying(false);
+    }
   };
 
   if (!loaded) return null;
@@ -303,7 +368,16 @@ export default function ShortTicketOffersPage() {
                 onApply={
                   offer.name === "KreditBee"
                     ? () => handleKreditBeeApply(offer.utmLink)
-                    : () => handleApply(offer.name, offer.utmLink)
+                    : offer.name === "MoneyView"
+                      ? () => handleMoneyViewApply(offer.utmLink)
+                      : () => handleApply(offer.name, offer.utmLink)
+                }
+                applying={
+                  offer.name === "KreditBee"
+                    ? kbApplying
+                    : offer.name === "MoneyView"
+                      ? mvApplying
+                      : undefined
                 }
                 delay={0.15 + i * 0.08}
                 recommended={i < 2}
