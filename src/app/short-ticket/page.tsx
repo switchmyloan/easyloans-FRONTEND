@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
@@ -68,7 +68,7 @@ function extractUtmLink(lender?: ShortTicketLender): string | undefined {
   return undefined;
 }
 
-export default function ShortTicketPage() {
+function ShortTicketContent() {
   const searchParams = useSearchParams();
   const [response, setResponse] = useState<ShortTicketResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -390,5 +390,13 @@ export default function ShortTicketPage() {
 
       <GradientBanner />
     </main>
+  );
+}
+
+export default function ShortTicketPage() {
+  return (
+    <Suspense fallback={<LoadingScreen />}>
+      <ShortTicketContent />
+    </Suspense>
   );
 }
