@@ -17,6 +17,7 @@ import {
   getStaticLenderDetail,
 } from "@/lib/constants";
 import OfferCard from "@/components/offers/OfferCard";
+import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
 import TrustBadges from "@/components/ui/TrustBadges";
 import GradientBanner from "@/components/ui/GradientBanner";
 
@@ -34,6 +35,15 @@ function getUtmLink(
   name: string,
   lender: ShortTicketLender | undefined
 ): string | null {
+  // KreditBee is always shown on the lender selection screen.
+  // Eligibility is checked via API on click; success → KB web journey,
+  // failure → NotEligibleScreen.
+  if (name === "KreditBee") {
+    const directLink =
+      typeof lender?.utm_link === "string" ? lender.utm_link : null;
+    return directLink || FALLBACK_UTM.KreditBee;
+  }
+
   if (!lender) return null;
   const directLink =
     typeof lender.utm_link === "string" ? lender.utm_link : null;
@@ -41,14 +51,6 @@ function getUtmLink(
   switch (name) {
     case "RapidMoney":
       return directLink || FALLBACK_UTM.RapidMoney;
-
-    case "KreditBee": {
-      const msg = (lender.message || "").toLowerCase();
-      if (lender.is_offer !== true) return null;
-      if (msg.includes("rejected") || msg.includes("duplicate")) return null;
-      if (!msg.includes("approved") && !msg.includes("eligible")) return null;
-      return directLink || FALLBACK_UTM.KreditBee;
-    }
 
     case "TrueBalance": {
       const nested = (
@@ -102,6 +104,7 @@ export default function ShortTicketOffersPage() {
   const [loaded, setLoaded] = useState(false);
   const [kbApplying, setKbApplying] = useState(false);
   const [mvApplying, setMvApplying] = useState(false);
+  const [showNotEligible, setShowNotEligible] = useState(false);
 
   useEffect(() => {
     const response = getStoredShortTicketOffers();
@@ -141,9 +144,9 @@ export default function ShortTicketOffersPage() {
       };
     };
 
-    const order =
+    const baseOrder =
       Array.isArray(data.priorityOrder) && data.priorityOrder.length > 0
-        ? data.priorityOrder
+        ? [...data.priorityOrder]
         : [
             "RapidMoney",
             "RamFinCorp",
@@ -153,6 +156,12 @@ export default function ShortTicketOffersPage() {
             "CreditPlus",
             "Loan112",
           ];
+
+    // KreditBee must always appear on the lender selection screen
+    // (eligibility is determined by API call on click).
+    const order = baseOrder.includes("KreditBee")
+      ? baseOrder
+      : ["KreditBee", ...baseOrder];
 
     const eligible: EligibleOffer[] = [];
     const seen = new Set<string>();
@@ -213,6 +222,8 @@ export default function ShortTicketOffersPage() {
           fallbackUrl ||
           "https://kredt.be/3ZFfVbz";
         window.open(url, "_blank");
+      } else if (isNotApproved || !isKbSuccess) {
+        setShowNotEligible(true);
       } else {
         toast.error(kb?.message || "Your application was not approved.", {
           duration: 5000,
@@ -398,6 +409,18 @@ export default function ShortTicketOffersPage() {
           </p>
         </motion.div>
       </div>
+      {showNotEligible && (
+        <NotEligibleScreen
+          onClose={() => setShowNotEligible(false)}
+          onExplore={() => {
+            setShowNotEligible(false);
+            if (typeof window !== "undefined") {
+              window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+            }
+          }}
+        />
+      )}
+
       <GradientBanner />
     </main>
   );
