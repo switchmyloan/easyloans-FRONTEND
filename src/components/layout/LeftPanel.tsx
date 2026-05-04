@@ -24,7 +24,7 @@ export default function LeftPanel() {
             <span className="text-[#6232FF] font-semibold">cready</span>, small loans for your everyday needs.
           </h2>
           <p className="font-bold text-lg xl:text-xl text-gray-900 leading-snug">
-             Fast approval. Easy process. Instatnt disbursal
+            Fast approval. Easy process. Instatnt disbursal
           </p>
         </div>
 
@@ -90,12 +90,13 @@ export default function LeftPanel() {
             <div className="flex items-center justify-center gap-2 px-4 ">
               {[
                 { src: "/ramfinCorp.png", alt: "RamfinCorp" },
+                { src: "/rapid-black.webp", alt: "RapidMoney" },
                 { src: "/kreditbee-logo.svg", alt: "KreditBee" },
                 { src: "/true.webp", alt: "Truebalance" },
                 { src: "/mpoket.svg", alt: "Mpoket" },
                 { src: "/credit.svg", alt: "Credit" },
                 { src: "/logo_Loan112.svg", alt: "Loan112" },
-                { src: "/rapid-black.webp", alt: "RapidMoney" },
+
               ].map((logo, index) => (
                 <div
                   key={index}

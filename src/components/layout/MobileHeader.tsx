@@ -5,12 +5,13 @@ import Image from "next/image";
 export default function MobileHeader() {
   const lenders = [
     { src: "/ramfinCorp.png", alt: "RamfinCorp" },
+    { src: "/rapid-black.webp", alt: "RapidMoney" },
     { src: "/kreditbee-logo.svg", alt: "KreditBee" },
     { src: "/true.webp", alt: "Truebalance" },
     { src: "/mpoket.svg", alt: "Mpoket" },
     { src: "/credit.svg", alt: "Credit" },
     { src: "/logo_Loan112.svg", alt: "Loan112" },
-    { src: "/rapid-black.webp", alt: "RapidMoney" },
+
   ];
 
   return (

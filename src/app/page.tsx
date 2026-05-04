@@ -11,7 +11,10 @@ import {
   verifyOtp,
   getOfferShortTicket,
   saveShortDraftLead,
+  submitLead,
+  mapLeadToFormDefaults,
   type SendOtpResponse,
+  type PrefilledStage2,
 } from "@/lib/api";
 
 import LeftPanel from "@/components/layout/LeftPanel";
@@ -43,6 +46,7 @@ export default function Home() {
   const [stage, setStage] = useState<AppStage>("stage1");
   const [stage1Data, setStage1Data] = useState<Stage1Data | null>(null);
   const [otpData, setOtpData] = useState<SendOtpResponse["data"] | null>(null);
+  const [prefilledStage2, setPrefilledStage2] = useState<PrefilledStage2 | null>(null);
 
   const stage1DraftRef = useRef<Partial<Stage1Data>>({});
   const stage2DraftRef = useRef<Partial<Stage2Data>>({});
@@ -113,6 +117,24 @@ export default function Home() {
   const handleStage1 = useCallback(async (data: Stage1Data) => {
     setStage1Data(data);
     stage1DraftRef.current = { ...stage1DraftRef.current, ...data };
+    try {
+      const leadRes = await submitLead({
+        name: data.fullName,
+        phone: data.mobile,
+        consent_tnc: data.consent_tnc,
+        consent_credit: data.consent_credit,
+        consent_communication: data.consent_communication,
+      });
+      const lead = leadRes.data?.found ? leadRes.data.leads?.[0] : undefined;
+      if (lead) {
+        setPrefilledStage2(mapLeadToFormDefaults(lead));
+      } else {
+        setPrefilledStage2(null);
+      }
+    } catch (err) {
+      console.warn("submitLead (stage1) failed:", err);
+      setPrefilledStage2(null);
+    }
     try {
       await saveShortDraftLead({
         fullName: data.fullName,
@@ -214,7 +236,19 @@ export default function Home() {
   );
 
   const stage2Defaults = stage1Data
-    ? { first_name: stage1Data.firstName, last_name: stage1Data.lastName }
+    ? {
+        first_name: prefilledStage2?.first_name || stage1Data.firstName,
+        last_name: prefilledStage2?.last_name || stage1Data.lastName,
+        ...(prefilledStage2?.email ? { email: prefilledStage2.email } : {}),
+        ...(prefilledStage2?.gender ? { gender: prefilledStage2.gender } : {}),
+        ...(prefilledStage2?.pincode ? { pincode: prefilledStage2.pincode } : {}),
+        ...(prefilledStage2?.pan_no ? { pan_no: prefilledStage2.pan_no } : {}),
+        ...(prefilledStage2?.dob ? { dob: prefilledStage2.dob } : {}),
+        ...(prefilledStage2?.profile ? { profile: prefilledStage2.profile } : {}),
+        ...(typeof prefilledStage2?.monthly_income === "number"
+          ? { monthly_income: prefilledStage2.monthly_income }
+          : {}),
+      }
     : undefined;
 
   return (
@@ -260,6 +294,7 @@ export default function Home() {
                     onSubmit={handleStage2}
                     onChange={handleStage2Change}
                     defaultValues={stage2Defaults}
+                    isPrefilled={Boolean(prefilledStage2)}
                   />
                 )}
                 {stage === "success" && (
@@ -301,6 +336,7 @@ export default function Home() {
                       type="button"
                       onClick={() => {
                         setStage1Data(null);
+                        setPrefilledStage2(null);
                         setStage("stage1");
                       }}
                       className="mt-7 px-5 py-2.5 bg-white text-gray-800 text-sm font-semibold rounded-xl hover:bg-gray-50 active:scale-[0.98] transition-all cursor-pointer"
