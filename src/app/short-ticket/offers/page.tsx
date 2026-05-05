@@ -35,15 +35,6 @@ function getUtmLink(
   name: string,
   lender: ShortTicketLender | undefined
 ): string | null {
-  // KreditBee is always shown on the lender selection screen.
-  // Eligibility is checked via API on click; success → KB web journey,
-  // failure → NotEligibleScreen.
-  if (name === "KreditBee") {
-    const directLink =
-      typeof lender?.utm_link === "string" ? lender.utm_link : null;
-    return directLink || FALLBACK_UTM.KreditBee;
-  }
-
   if (!lender) return null;
   const directLink =
     typeof lender.utm_link === "string" ? lender.utm_link : null;
@@ -51,6 +42,14 @@ function getUtmLink(
   switch (name) {
     case "RapidMoney":
       return directLink || FALLBACK_UTM.RapidMoney;
+
+    case "KreditBee": {
+      // Backend (get-offer-short-ticket) runs only the KB dedupe check and sets
+      // is_offer=true when the user is NOT a dedupe (fresh lead). Full eligibility
+      // is run when the user clicks the KB card → /onSubmit/short-kreditbee.
+      if (lender.is_offer !== true) return null;
+      return directLink || FALLBACK_UTM.KreditBee;
+    }
 
     case "TrueBalance": {
       const nested = (
@@ -144,9 +143,9 @@ export default function ShortTicketOffersPage() {
       };
     };
 
-    const baseOrder =
+    const order =
       Array.isArray(data.priorityOrder) && data.priorityOrder.length > 0
-        ? [...data.priorityOrder]
+        ? data.priorityOrder
         : [
             "RapidMoney",
             "RamFinCorp",
@@ -156,12 +155,6 @@ export default function ShortTicketOffersPage() {
             "CreditPlus",
             "Loan112",
           ];
-
-    // KreditBee must always appear on the lender selection screen
-    // (eligibility is determined by API call on click).
-    const order = baseOrder.includes("KreditBee")
-      ? baseOrder
-      : ["KreditBee", ...baseOrder];
 
     const eligible: EligibleOffer[] = [];
     const seen = new Set<string>();
@@ -195,8 +188,10 @@ export default function ShortTicketOffersPage() {
     setKbApplying(true);
     try {
       const phone = sessionStorage.getItem("userPhone") || "";
+      console.log("[KB-ShortTicket] Click → calling saveShortLender + applyToShortKreditBee", { phone });
       await saveShortLender(phone, "KreditBee");
       const res = await applyToShortKreditBee();
+      console.log("[KB-ShortTicket] applyToShortKreditBee response:", res);
 
       const kb = res.data?.KreditBee;
       const kbMessage = (kb?.message || "").toLowerCase();
