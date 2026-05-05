@@ -46,6 +46,7 @@ export default function Home() {
   const [stage, setStage] = useState<AppStage>("stage1");
   const [stage1Data, setStage1Data] = useState<Stage1Data | null>(null);
   const [otpData, setOtpData] = useState<SendOtpResponse["data"] | null>(null);
+  const [otpError, setOtpError] = useState<string | null>(null);
   const [prefilledStage2, setPrefilledStage2] = useState<PrefilledStage2 | null>(null);
 
   const stage1DraftRef = useRef<Partial<Stage1Data>>({});
@@ -161,6 +162,7 @@ export default function Home() {
   const handleOtpVerify = useCallback(
     async (otp: string) => {
       if (!stage1Data || !otpData) return;
+      setOtpError(null);
       try {
         await verifyOtp({
           otp,
@@ -178,6 +180,8 @@ export default function Home() {
         });
       } catch (err) {
         console.error("verifyOtp failed:", err);
+        setOtpError(err instanceof Error ? err.message : "Invalid OTP. Please try again.");
+        return;
       }
       setStage("loading");
       setTimeout(() => setStage("stage2"), LOADING_DELAY_MS);
@@ -187,6 +191,7 @@ export default function Home() {
 
   const handleOtpResend = useCallback(async () => {
     if (!stage1Data) return;
+    setOtpError(null);
     try {
       const res = await sendOtp(stage1Data.mobile);
       setOtpData(res.data);
@@ -285,7 +290,11 @@ export default function Home() {
                     mobile={stage1Data.mobile}
                     onVerify={handleOtpVerify}
                     onResend={handleOtpResend}
-                    onBack={() => setStage("stage1")}
+                    onBack={() => {
+                      setOtpError(null);
+                      setStage("stage1");
+                    }}
+                    error={otpError}
                   />
                 )}
                 {stage === "stage2" && (
