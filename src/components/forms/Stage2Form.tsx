@@ -193,7 +193,7 @@ export default function Stage2Form({
         <p className="text-white/50 text-xs mb-5">
           {isPrefilled
             ? "We found your info on file — verify and update if needed"
-            : "Complete your profile to see loan offers"}
+            : "Complete your profile to see loan offers.."}
         </p>
 
         {/* {isPrefilled && (

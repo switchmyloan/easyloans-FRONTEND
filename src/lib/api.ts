@@ -520,15 +520,25 @@ export async function verifyOtp(payload: {
     body: JSON.stringify(payload),
   });
 
-  if (!res.ok) throw new Error("OTP verification failed. Please try again.");
-
-  const json: VerifyOtpResponse = await res.json();
-
-  if (json.statusCode !== 200 || !json.data.isVerified) {
-    throw new Error(json.message || "Invalid OTP.");
+  // Read body even for non-2xx responses so we surface the API's "Invalid OTP"
+  // message instead of a generic one.
+  let json: Partial<VerifyOtpResponse> = {};
+  try {
+    json = await res.json();
+  } catch {
+    // body wasn't JSON
   }
 
-  return json;
+  console.log("[verifyOtp] HTTP", res.status, "body:", json);
+
+  const isVerified = json?.data?.isVerified === true;
+  const ok = res.ok && json?.statusCode === 200 && isVerified;
+
+  if (!ok) {
+    throw new Error(json?.message || "Invalid OTP.");
+  }
+
+  return json as VerifyOtpResponse;
 }
 
 // ---------- Stage 2: Get offers ----------
