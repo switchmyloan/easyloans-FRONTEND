@@ -52,12 +52,10 @@ function getUtmLink(
     }
 
     case "TrueBalance": {
-      const nested = (
-        lender.data as {
-          response?: { data?: { isEligible?: boolean } };
-        } | undefined
-      )?.response?.data;
-      if (nested?.isEligible !== true) return null;
+      // is_offer is set by the controller on dedupe success (isRepeat=false
+      // AND isEligible=true). Same pattern as KreditBee above; replaces the
+      // earlier nested data.response.data.isEligible probe.
+      if (lender.is_offer !== true) return null;
       return directLink || FALLBACK_UTM.TrueBalance;
     }
 

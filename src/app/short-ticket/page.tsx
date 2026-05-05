@@ -50,6 +50,11 @@ const REQUIRED_PARAMS: (keyof ShortTicketPayload)[] = [
 function isEligibleLender(name: string, lender?: ShortTicketLender): boolean {
   if (!lender) return false;
   if (STATIC_ONLY_LENDERS.has(name)) return Boolean(lender.utm_link || lender.name);
+  // TrueBalance API hard-codes success=false on its return path, so we gate
+  // visibility on the controller-set is_offer flag (true on dedupe success:
+  // isRepeat=false AND isEligible=true). Same intent as the KreditBee branch
+  // below.
+  if (name === "TrueBalance") return lender.is_offer === true;
   if (lender.success === false) return false;
   const msg = (lender.message || "").toLowerCase();
   if (msg.includes("rejected") || msg.includes("duplicate") || msg.includes("dedupe")) {
