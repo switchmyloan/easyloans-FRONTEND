@@ -915,6 +915,41 @@ export async function saveLender(phoneNumber: string, lenderName: string): Promi
   }
 }
 
+// ---------- Track Shown Offers (short-ticket) ----------
+//
+// Captures the lenders actually rendered on the short-ticket /offers page
+// (after client-side filtering). Updates the latest shortOfferLeads row
+// for this phone with a `shown_offers` JSON payload. Fire-and-forget —
+// never blocks the UI.
+
+export interface ShownOfferEntry {
+  lenderName: string;
+  section: "promoted" | "static";
+  utmLink?: string | null;
+  wasApproved?: boolean | null;
+}
+
+export async function trackShortShownOffers(
+  phoneNumber: string,
+  shownOffers: ShownOfferEntry[]
+): Promise<void> {
+  try {
+    if (!phoneNumber || !shownOffers.length) return;
+    const mrn = getStoredMrn();
+    await fetch(`${BASE_URL}/onSubmit/short-track-shown-offers`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        phone: phoneNumber,
+        ...(mrn ? { mrn } : {}),
+        shown_offers: shownOffers,
+      }),
+    });
+  } catch (err) {
+    console.error("Failed to track short shown offers:", err);
+  }
+}
+
 // ---------- Short variants: save lender / KreditBee / MoneyView ----------
 
 export async function saveShortLender(

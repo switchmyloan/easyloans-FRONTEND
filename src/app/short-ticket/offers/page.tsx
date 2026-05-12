@@ -9,7 +9,9 @@ import {
   applyToShortMoneyView,
   getStoredShortTicketOffers,
   saveShortLender,
+  trackShortShownOffers,
   type ShortTicketLender,
+  type ShownOfferEntry,
 } from "@/lib/api";
 import {
   OFFERS,
@@ -173,6 +175,21 @@ export default function ShortTicketOffersPage() {
     }
 
     setOffers(eligible);
+
+    try {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      if (phone && eligible.length) {
+        const shownOffers: ShownOfferEntry[] = eligible.map((o) => ({
+          lenderName: o.name,
+          section: "promoted",
+          utmLink: o.utmLink || null,
+        }));
+        void trackShortShownOffers(phone, shownOffers);
+      }
+    } catch (err) {
+      console.error("trackShortShownOffers build failed:", err);
+    }
+
     setLoaded(true);
   }, [router]);
 
