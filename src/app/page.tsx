@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
@@ -42,6 +42,14 @@ const LoadingScreen = dynamic(
 );
 
 export default function Home() {
+  return (
+    <Suspense fallback={<div className="min-h-screen" />}>
+      <HomeContent />
+    </Suspense>
+  );
+}
+
+function HomeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [stage, setStage] = useState<AppStage>("stage1");
@@ -302,9 +310,7 @@ export default function Home() {
             stage === "otp" ||
             stage === "stage2" ||
             stage === "success") && (
-            <div
-              className={`w-full ${stage === "stage2" ? "max-w-[540px]" : "max-w-[460px]"}`}
-            >
+            <div className="w-full max-w-[460px]">
               <MobileHeader />
 
               <AnimatePresence mode="wait">

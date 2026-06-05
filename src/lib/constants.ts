@@ -38,6 +38,9 @@ export const STATIC_LENDER_LOGOS: Record<
   Zype_Dedupe: { src: "/zype.png" },
   UnitySmallFinanceBank: { src: "/unity_bank.png" },
   CreditPlus: { src: "/credit.svg" },
+  KreditBee: { src: "/kreditbee-logo.svg" },
+  MPokket: { src: "/mpoket.svg" },
+  Loan112: { src: "/logo_Loan112.svg" },
 };
 
 export const STATIC_LENDER_DETAILS: Record<

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { AnimatePresence } from "framer-motion";
@@ -60,6 +60,14 @@ function ApiErrorBanner({ message }: { message: string }) {
 }
 
 export default function ShortTicketForm() {
+  return (
+    <Suspense fallback={<div className="w-full max-w-md" />}>
+      <ShortTicketFormContent />
+    </Suspense>
+  );
+}
+
+function ShortTicketFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [stage, setStage] = useState<AppStage>("stage1");

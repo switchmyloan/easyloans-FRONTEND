@@ -79,15 +79,15 @@ function LoanPurposeDropdown({
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className={`w-full rounded-xl px-4 py-3 bg-white/[0.12] backdrop-blur-sm border text-left text-white focus:outline-none focus:bg-white/[0.18] focus:border-white/50 focus:shadow-[0_0_0_3px_rgba(255,255,255,0.08)] transition-all duration-200 flex items-center justify-between ${
+        className={`w-full rounded-xl px-4 py-2 bg-white/[0.12] backdrop-blur-sm border text-left text-white focus:outline-none focus:bg-white/[0.18] focus:border-white/50 focus:shadow-[0_0_0_3px_rgba(255,255,255,0.08)] transition-all duration-200 flex items-center justify-between gap-2 ${
           error ? "border-red-400/80" : "border-white/20"
         }`}
       >
-        <span className={value ? "text-white" : "text-white/50"}>
+        <span className={`truncate text-sm ${value ? "text-white" : "text-white/50"}`}>
           {value || "Select purpose"}
         </span>
         <svg
-          className={`w-4 h-4 text-white/60 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`w-4 h-4 shrink-0 text-white/60 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -176,7 +176,7 @@ export default function Stage2Form({
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -16 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
-      className="w-full rounded-2xl px-5 sm:px-8 py-6 relative overflow-hidden shadow-2xl shadow-[#4d2adf]/20"
+      className="w-full rounded-3xl px-5 sm:px-8 py-6 relative overflow-hidden shadow-2xl shadow-[#4d2adf]/20"
       style={{
         background: "linear-gradient(135deg, #5b2ee0 0%, #6d45d4 35%, #8b6fc0 70%, #9a85bd 100%)",
       }}
@@ -187,13 +187,13 @@ export default function Stage2Form({
       <div className="relative z-10">
         <ProgressBar percent={75} />
 
-        <h2 className="text-white text-lg font-semibold mt-5 mb-0.5">
+        <h2 className="text-white text-lg font-semibold mt-2 mb-0.5">
           {isPrefilled ? "Review your details" : "A few more details..."}
         </h2>
         <p className="text-white/50 text-xs mb-5">
           {isPrefilled
             ? "We found your info on file — verify and update if needed"
-            : "Complete your profile to see loan offers.."}
+            : "Complete your profile to see loan offers"}
         </p>
 
         {/* {isPrefilled && (
@@ -215,15 +215,7 @@ export default function Stage2Form({
               label="First Name"
               type="text"
               placeholder="Rahul"
-              autoComplete="given-name"
-              registration={register("first_name", {
-                onChange: (e) => {
-                  const sanitized = e.target.value.replace(/[^A-Za-z]/g, "");
-                  if (sanitized !== e.target.value) {
-                    e.target.value = sanitized;
-                  }
-                },
-              })}
+              registration={register("first_name")}
               error={errors.first_name}
             />
             <FormInput
@@ -231,15 +223,7 @@ export default function Stage2Form({
               label="Last Name"
               type="text"
               placeholder="Kumar"
-              autoComplete="family-name"
-              registration={register("last_name", {
-                onChange: (e) => {
-                  const sanitized = e.target.value.replace(/[^A-Za-z]/g, "");
-                  if (sanitized !== e.target.value) {
-                    e.target.value = sanitized;
-                  }
-                },
-              })}
+              registration={register("last_name")}
               error={errors.last_name}
             />
           </div>
@@ -274,17 +258,8 @@ export default function Stage2Form({
               label="Pincode"
               type="text"
               maxLength={6}
-              inputMode="numeric"
-              autoComplete="postal-code"
               placeholder="400001"
-              registration={register("pincode", {
-                onChange: (e) => {
-                  const digits = e.target.value.replace(/\D/g, "").slice(0, 6);
-                  if (digits !== e.target.value) {
-                    e.target.value = digits;
-                  }
-                },
-              })}
+              registration={register("pincode")}
               error={errors.pincode}
             />
             <FormInput
@@ -295,13 +270,7 @@ export default function Stage2Form({
               placeholder="ABCDE1234F"
               registration={register("pan_no", {
                 onChange: (e) => {
-                  const sanitized = e.target.value
-                    .toUpperCase()
-                    .replace(/[^A-Z0-9]/g, "")
-                    .slice(0, 10);
-                  if (sanitized !== e.target.value) {
-                    e.target.value = sanitized;
-                  }
+                  e.target.value = e.target.value.toUpperCase();
                 },
               })}
               error={errors.pan_no}
@@ -314,19 +283,21 @@ export default function Stage2Form({
             <FormInput
               id="dob"
               label="Date of Birth"
-              type="date"
+              type="text"
+              placeholder="DD-MM-YYYY"
               registration={register("dob")}
               error={errors.dob}
-              max={
-                new Date(new Date().setFullYear(new Date().getFullYear() - 18))
-                  .toISOString()
-                  .split("T")[0]
-              }
-              min={
-                new Date(new Date().setFullYear(new Date().getFullYear() - 75))
-                  .toISOString()
-                  .split("T")[0]
-              }
+              maxLength={10}
+              onInput={(e) => {
+                let value = e.currentTarget.value.replace(/\D/g, "");
+                if (value.length > 2) {
+                  value = value.slice(0, 2) + "-" + value.slice(2);
+                }
+                if (value.length > 5) {
+                  value = value.slice(0, 5) + "-" + value.slice(5, 9);
+                }
+                e.currentTarget.value = value;
+              }}
             />
             <Controller
               name="profile"
@@ -346,26 +317,10 @@ export default function Stage2Form({
             <FormInput
               id="monthly_income"
               label="Monthly Salary"
-              type="text"
-              inputMode="numeric"
-              maxLength={9}
+              type="number"
               placeholder="45000"
               // prefix="₹"
-              registration={register("monthly_income", {
-                setValueAs: (value) => {
-                  if (value === "" || value === null || value === undefined) {
-                    return undefined;
-                  }
-                  const digits = String(value).replace(/\D/g, "");
-                  return digits === "" ? undefined : Number(digits);
-                },
-                onChange: (e) => {
-                  const digits = e.target.value.replace(/\D/g, "").slice(0, 9);
-                  if (digits !== e.target.value) {
-                    e.target.value = digits;
-                  }
-                },
-              })}
+              registration={register("monthly_income")}
               error={errors.monthly_income}
             />
 
@@ -382,12 +337,12 @@ export default function Stage2Form({
               )}
             />
           </div>
-          
+
 
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full mt-3 font-semibold py-3 rounded-xl active:scale-[0.98] transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-black/10 text-gray-800"
+            className="w-full  font-semibold py-2.5 rounded-xl active:scale-[0.98] transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-black/10 text-gray-800"
             style={{
               background: "linear-gradient(88.52deg, #E1E4F3 -17.33%, #A6FF00 100%)",
             }}

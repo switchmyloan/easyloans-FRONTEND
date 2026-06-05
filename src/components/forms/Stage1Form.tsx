@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { stage1Schema } from "@/lib/schemas";
@@ -90,7 +90,15 @@ interface Stage1FormProps {
   defaultValues?: Partial<Stage1Data>;
 }
 
-export default function Stage1Form({
+export default function Stage1Form(props: Stage1FormProps) {
+  return (
+    <Suspense fallback={<div className="w-full h-96" />}>
+      <Stage1FormContent {...props} />
+    </Suspense>
+  );
+}
+
+function Stage1FormContent({
   onSubmit,
   onChange,
   defaultValues,
