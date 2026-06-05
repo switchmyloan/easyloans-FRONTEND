@@ -809,12 +809,13 @@ export interface ShortTicketData {
   isSalaried: boolean;
   priorityOrder: string[];
   staticLenders: StaticLender[];
+    CreditPlus?: ShortTicketLender;
   RapidMoney?: ShortTicketLender;
   RamFinCorp?: ShortTicketLender;
   KreditBee?: ShortTicketLender;
   TrueBalance?: ShortTicketLender;
   MPokket?: ShortTicketLender;
-  CreditPlus?: ShortTicketLender;
+
   Loan112?: ShortTicketLender;
   [key: string]: unknown;
 }
@@ -876,6 +877,10 @@ export async function getOfferShortTicket(
     sessionStorage.setItem("userPhone", payload.mobileNumber);
     sessionStorage.setItem("userLoanAmount", String(payload.loanAmount));
     if (mrn) sessionStorage.setItem("userMrn", mrn);
+
+    // Store UTM params separately for easy access
+    if (payload.utm_medium) sessionStorage.setItem("utm_medium", payload.utm_medium);
+    if (payload.utm_source) sessionStorage.setItem("utm_source", payload.utm_source);
 
     // Also store user form data for subsequent API calls, like the main flow does
     sessionStorage.setItem("userFormData", JSON.stringify(payload));

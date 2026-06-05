@@ -37,6 +37,7 @@ export const STATIC_LENDER_LOGOS: Record<
   TrueBalance: { src: "/truebalance.png" },
   Zype_Dedupe: { src: "/zype.png" },
   UnitySmallFinanceBank: { src: "/unity_bank.png" },
+  CreditPlus: { src: "/credit.svg" },
 };
 
 export const STATIC_LENDER_DETAILS: Record<
@@ -79,7 +80,7 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest Rates start at 1.5%* per month",
   },
   CreditPlus: {
-    headline: "Get up to ₹1,00,000 in minutes!",
+    headline: "Get Personal Loans upto ₹1,000 to ₹100,000",
     description: "Hassle-free personal loans with minimal documentation",
     keyFeature: "Zero Prepayment Charges and Flexible Tenure",
     interestRate: "Interest Rates start at 1.2%* per month",

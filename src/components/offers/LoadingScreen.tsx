@@ -1,205 +1,333 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 
 const steps = [
-  { text: "Connecting to Partners...", icon: "satellite" },
-  { text: "Verifying your details...", icon: "shield" },
-  { text: "Checking your credit eligibility...", icon: "kreditbee" },
-  { text: "Preparing your offers...", icon: "gift" },
+  {
+    title: "Connecting to trusted partners",
+    subtitle: "Secure channel established",
+  },
+  {
+    title: "Verifying your details",
+    subtitle: "Information verified successfully",
+  },
+  {
+    title: "Checking your credit eligibility",
+    subtitle: "Analysing your credit profile",
+  },
+  {
+    title: "Preparing your offers",
+    subtitle: "Almost there...",
+  },
 ];
 
-function StepIcon({ type }: { type: string }) {
-  switch (type) {
-    case "satellite":
-      return (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304 0a3.75 3.75 0 010 5.303m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.808-3.808-9.98 0-13.789m13.788 0c3.808 3.808 3.808 9.981 0 13.79M12 12h.008v.007H12V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-        </svg>
-      );
-    case "shield":
-      return (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-        </svg>
-      );
-    case "kreditbee":
-      return <span className="text-xs font-bold">KB</span>;
-    case "moneyview":
-      return <span className="text-xs font-bold">MV</span>;
-    case "gift":
-      return (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13V6a4 4 0 00-4-4 4 4 0 004 4zm0 0V6a4 4 0 014-4 4 4 0 01-4 4zm-8 4h16M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
-        </svg>
-      );
-    default:
-      return null;
-  }
-}
+const partnerLogos = [
+  { name: "KreditBee", src: "/kreditbee-logo.svg" },
+  { name: "Moneyview", src: "/moneyview-logo.svg" },
+  { name: "IDFC First Bank", src: "/idfc.svg" },
+  { name: "Hero Fincorp", src: "/hero.webp" },
+  { name: "Poonawalla Fincorp", src: "/poonawalla.svg" },
+  { name: "True Balance", src: "/true.webp" },
+  { name: "Olyv", src: "/olyv.png" },
+  { name: "Zype", src: "/zype.png" },
+  { name: "LendingPlate", src: "/lending.png" },
+];
 
 export default function LoadingScreen() {
   const [currentStep, setCurrentStep] = useState(0);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentStep((prev) => (prev < steps.length - 1 ? prev + 1 : prev));
-    }, 550);
-    return () => clearInterval(interval);
-  }, []);
+    const timer = setInterval(() => {
+      setProgress((oldProgress) => {
+        if (oldProgress >= 100) {
+          clearInterval(timer);
+          return 100;
+        }
 
-  const progress = ((currentStep + 1) / steps.length) * 100;
+        const diff = Math.random() * 6;
+        const nextProgress = Math.min(oldProgress + diff, 100);
+
+        const stepIndex = Math.floor(
+          (nextProgress / 100) * steps.length
+        );
+
+        if (stepIndex < steps.length && stepIndex !== currentStep) {
+          setCurrentStep(stepIndex);
+        }
+
+        return nextProgress;
+      });
+    }, 220);
+
+    return () => clearInterval(timer);
+  }, [currentStep]);
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center"
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden px-4"
       style={{
-        background: "linear-gradient(135deg, #f8f9ff 0%, #f0edff 50%, #f5f3ff 100%)",
+        background:
+          "radial-gradient(circle at center, #ede9fe 0%, #ddd6fe 45%, #c4b5fd 100%)",
       }}
     >
-      <div className="flex flex-col items-center w-full max-w-sm px-6">
-        {/* Animated satellite icon */}
-        <motion.div
-          animate={{ rotate: [0, 5, -5, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-          className="relative mb-8"
-        >
-          <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#6232FF]/10 to-[#6232FF]/5 flex items-center justify-center">
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#6232FF]/20 to-[#6232FF]/10 flex items-center justify-center">
+
+      {/* Main Scan Card */}
+     <motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{
+    opacity: 1,
+    y: [0, -10, 0],
+  }}
+  transition={{
+    opacity: { duration: 0.5 },
+    y: {
+      duration: 4,
+      repeat: Infinity,
+      ease: "easeInOut",
+    },
+  }}
+  exit={{ opacity: 0 }}
+  className="relative w-full max-w-[320px] overflow-hidden rounded-[28px] border border-white/50 bg-white shadow-[0_20px_60px_rgba(79,70,229,0.18)] backdrop-blur-2xl"
+>
+        {/* Global Scan Line Container */}
+        <div className="absolute inset-0 z-50 pointer-events-none overflow-hidden rounded-[28px]">
+          {/* Soft Wide Glow */}
+          <motion.div
+            initial={{ y: "-100%" }}
+            animate={{ y: "100%" }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+            className="absolute inset-x-0 h-32 top-0"
+
+          />
+
+          {/* Sharp Beam Line */}
+          <motion.div
+            initial={{ y: "0%" }}
+            animate={{ y: "380px" }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "linear",
+            }}
+            className="absolute left-0 right-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-indigo-500/80 to-transparent shadow-[0_0_12px_rgba(99,102,241,0.8)]"
+          />
+        </div>
+
+        {/* Soft Glow */}
+        <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white to-indigo-50/60" />
+
+
+
+        {/* Noise Overlay */}
+        <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay pointer-events-none bg-[url('/noise.png')]" />
+
+        {/* Content */}
+        <div className="relative z-40 px-4 py-4">
+
+          {/* Top Icon */}
+          <div className="flex justify-center mb-4">
+            <div className="relative w-18 h-18 flex items-center justify-center">
+
               <motion.div
-                animate={{ scale: [1, 1.1, 1] }}
-                transition={{ duration: 2, repeat: Infinity }}
-                className="w-10 h-10 rounded-full bg-gradient-to-br from-[#6232FF] to-[#4d2adf] flex items-center justify-center shadow-lg shadow-[#6232FF]/30"
-              >
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304 0a3.75 3.75 0 010 5.303m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.808-3.808-9.98 0-13.789m13.788 0c3.808 3.808 3.808 9.981 0 13.79M12 12h.008v.007H12V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                animate={{
+                  scale: [1, 1.12, 1],
+                  opacity: [0.25, 0.45, 0.25],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+                className="absolute inset-0 rounded-full bg-indigo-400 blur-2xl"
+              />
+
+              <div className="absolute w-14 h-14 rounded-full border border-indigo-200 animate-[spin_14s_linear_infinite]" />
+              <div className="absolute w-9 h-9 rounded-full border border-indigo-300 animate-[spin_10s_linear_infinite_reverse]" />
+
+              <div className="relative z-10 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-b from-indigo-600 to-indigo-800 shadow-xl shadow-indigo-500/30">
+                <svg
+                  className="w-4 h-4 text-white animate-pulse"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304 0a3.75 3.75 0 010 5.303m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546"
+                  />
                 </svg>
-              </motion.div>
+              </div>
+
+              <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-lime-400 shadow-[0_0_16px_rgba(163,230,53,0.8)]" />
             </div>
           </div>
-          {/* Pulse rings */}
-          <motion.div
-            animate={{ scale: [1, 1.5], opacity: [0.3, 0] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="absolute inset-0 rounded-full border-2 border-[#6232FF]/20"
-          />
-          <motion.div
-            animate={{ scale: [1, 1.8], opacity: [0.2, 0] }}
-            transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-            className="absolute inset-0 rounded-full border-2 border-[#6232FF]/10"
-          />
-        </motion.div>
 
-        {/* Title */}
-        {/* <motion.h2
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="text-2xl font-bold text-gray-900 mb-1"
-        >
-          Fetching your data
-        </motion.h2>
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="text-gray-400 text-sm mb-8"
-        >
-          via Satekkite secure gateway
-        </motion.p> */}
+          {/* Heading */}
+          <div className="text-center">
+            <h2 className="text-[17px] font-black tracking-tight text-slate-900 leading-tight">
+              Unlocking your best loan options ✨
+            </h2>
 
-        {/* Progress bar */}
-        <div className="w-full h-1.5 bg-gray-200 rounded-full mb-6 overflow-hidden">
-          <motion.div
-            className="h-full rounded-full bg-gradient-to-r from-[#6232FF] to-[#A6FF00]"
-            initial={{ width: "0%" }}
-            animate={{ width: `${progress}%` }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-          />
-        </div>
+            <p className="mt-1 text-[11px] font-medium text-slate-500">
+              Securely matching you with verified lending partners
+            </p>
+          </div>
 
-        {/* Step checklist */}
-        <div className="w-full space-y-2.5">
-          {steps.map((step, i) => (
-            <motion.div
-              key={step.text}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: i <= currentStep ? 1 : 0.3, x: 0 }}
-              transition={{ delay: i * 0.1, duration: 0.3 }}
-              className="flex items-center gap-3"
-            >
-              <div
-                className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-300 ${
-                  i < currentStep
-                    ? "bg-emerald-100 text-emerald-600"
-                    : i === currentStep
-                      ? "bg-[#6232FF] text-white shadow-md shadow-[#6232FF]/20"
-                      : "bg-gray-100 text-gray-400"
-                }`}
-              >
-                {i < currentStep ? (
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                ) : (
-                  <StepIcon type={step.icon} />
-                )}
-              </div>
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={`${step.text}-${i <= currentStep}`}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className={`text-sm transition-colors duration-300 ${
-                    i < currentStep
-                      ? "text-emerald-600 font-medium"
-                      : i === currentStep
-                        ? "text-gray-800 font-medium"
-                        : "text-gray-400"
-                  }`}
+          {/* Progress */}
+          <div className="mt-4">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="text-xs font-semibold tracking-wide text-slate-500 uppercase">
+                Processing
+              </span>
+
+              <span className="text-sm font-black text-indigo-700">
+                {Math.round(progress)}%
+              </span>
+            </div>
+
+            <div className="h-2.5 overflow-hidden rounded-full bg-slate-100 p-[2px] shadow-inner">
+              <motion.div
+                className="h-full rounded-full bg-gradient-to-r from-indigo-600 via-purple-600 to-lime-400"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Steps */}
+          <div className="mt-4 space-y-2">
+            {steps.slice(0, 3).map((step, i) => {
+              const isCompleted = i < currentStep;
+              const isActive = i === currentStep;
+
+              return (
+                <motion.div
+                  key={step.title}
+                  animate={{
+                    scale: isActive ? 1.015 : 1,
+                  }}
+                  transition={{ duration: 0.25 }}
+                  className={`relative overflow-hidden rounded-lg border px-2.5 py-2 transition-all duration-300 ${isActive
+                    ? "border-indigo-200 bg-indigo-50/70 shadow-md shadow-indigo-100"
+                    : isCompleted
+                      ? "border-emerald-100 bg-emerald-50/60"
+                      : "border-slate-100 bg-white/70"
+                    }`}
                 >
-                  {i < currentStep ? step.text.replace("...", "") + " ✓" : step.text}
-                </motion.span>
-              </AnimatePresence>
-            </motion.div>
-          ))}
-        </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
 
-        {/* Partner logos */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1 }}
-          className="flex flex-wrap items-center gap-2 mt-8 pt-6 border-t border-gray-200 w-full justify-center"
-        >
-          
-          <div className="px-2 py-1.5 bg-white rounded-lg shadow-sm border border-gray-100">
-            <img src="/kreditbee-logo.svg" alt="KreditBee" className="h-4 w-auto" />
+                      {/* Status */}
+                      <div
+                        className={`flex h-6 w-6 items-center justify-center rounded-full ${isCompleted
+                          ? "bg-emerald-500 text-white"
+                          : isActive
+                            ? "bg-indigo-600 text-white"
+                            : "bg-slate-200 text-slate-500"
+                          }`}
+                      >
+                        {isCompleted ? (
+                          <svg
+                            className="w-3.5 h-3.5"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            strokeWidth={3}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M5 13l4 4L19 7"
+                            />
+                          </svg>
+                        ) : isActive ? (
+                          <svg
+                            className="w-3.5 h-3.5 animate-spin"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                            />
+                          </svg>
+                        ) : (
+                          <div className="w-2 h-2 rounded-full bg-slate-500" />
+                        )}
+                      </div>
+
+                      {/* Text */}
+                      <div>
+                        <p className={`text-[12px] font-bold ${isActive || isCompleted
+                          ? "text-slate-800"
+                          : "text-slate-500"
+                          }`}
+                        >
+                          {step.title}
+                        </p>
+
+                        <p className={`text-[10px] ${isCompleted
+                          ? "text-emerald-600"
+                          : isActive
+                            ? "text-indigo-600"
+                            : "text-slate-400"
+                          }`}
+                        >
+                          {step.subtitle}
+                        </p>
+                      </div>
+                    </div>
+
+                    {(isCompleted || isActive) && (
+                      <div className="h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_12px_rgba(74,222,128,0.8)]" />
+                    )}
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
-          <div className="px-2 py-1.5 bg-white rounded-lg shadow-sm border border-gray-100">
-            <img src="/moneyview-logo.svg" alt="MoneyView" className="h-4 w-auto" />
+
+
+
+          {/* Partners */}
+          <div className="mt-4 border-t border-slate-100 pt-3">
+            <p className="mb-2.5 text-center text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">
+              Trusted Lending Partners
+            </p>
+
+            <div className="flex flex-wrap items-center justify-center gap-1.5">
+              {partnerLogos.map((logo) => (
+                <div
+                  key={logo.name}
+                  className="flex items-center justify-center rounded-md border border-slate-100 bg-white px-2 py-1 shadow-sm"
+                >
+                  <img
+                    src={logo.src}
+                    alt={logo.name}
+                    className="h-3 w-auto object-contain opacity-90"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="px-2 py-1.5 bg-white rounded-lg shadow-sm border border-gray-100">
-            <img src="/hero.webp" alt="Hero Fincorp" className="h-4 w-auto" />
-          </div>
-          <div className="px-2 py-1.5 bg-white rounded-lg shadow-sm border border-gray-100">
-            <img src="/poonawalla.svg" alt="Poonawalla" className="h-4 w-auto" />
-          </div>
-          <div className="px-2 py-1.5 bg-white rounded-lg shadow-sm border border-gray-100">
-            <img src="/true.webp" alt="Truebalance" className="h-4 w-auto" />
-          </div>
-          <div className="px-2 py-1.5 bg-white rounded-lg shadow-sm border border-gray-100">
-            <img src="/olyv.png" alt="Olyv" className="h-4 w-auto" />
-          </div>
-          <div className="px-2 py-1.5 bg-white rounded-lg shadow-sm border border-gray-100">
-            <img src="/zype.png" alt="Zype" className="h-4 w-auto" />
-          </div>
-        </motion.div>
-      </div>
-    </motion.div>
+        </div>
+      </motion.div>
+    </div>
   );
 }

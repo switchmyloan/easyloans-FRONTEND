@@ -127,3 +127,21 @@ input[type="number"] {
     width: 100%;
   }
 }
+
+/* Marquee — infinite horizontal scroll. Pair with two stacked copies of the
+   content to get a seamless loop (translate -50% lands on the start of copy 2
+   which mirrors copy 1). */
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 18s linear infinite;
+  will-change: transform;
+}
+
+/* Arrow move animation for Next button */
+@keyframes arrowMove {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(4px); }
+}

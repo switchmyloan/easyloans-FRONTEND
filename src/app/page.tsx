@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import type { Stage1Data, Stage2Data, AppStage } from "@/lib/types";
@@ -43,6 +43,7 @@ const LoadingScreen = dynamic(
 
 export default function Home() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [stage, setStage] = useState<AppStage>("stage1");
   const [stage1Data, setStage1Data] = useState<Stage1Data | null>(null);
   const [otpData, setOtpData] = useState<SendOtpResponse["data"] | null>(null);
@@ -52,6 +53,15 @@ export default function Home() {
   const stage1DraftRef = useRef<Partial<Stage1Data>>({});
   const stage2DraftRef = useRef<Partial<Stage2Data>>({});
   const draftTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Effect to capture utm_medium from URL and store in sessionStorage
+  useEffect(() => {
+    const utmMedium = searchParams.get("utm_medium");
+    console.log("utmMedium from landing page URL:", utmMedium);
+    if (utmMedium) {
+      sessionStorage.setItem("utm_medium", utmMedium);
+    }
+  }, [searchParams]);
 
   const buildDraftPayload = useCallback(() => {
     const s1 = stage1DraftRef.current;
@@ -258,10 +268,32 @@ export default function Home() {
 
   return (
     <>
-      <div className="min-h-screen flex flex-col lg:flex-row bg-white">
+      <div className="relative flex min-h-screen w-full flex-col overflow-hidden lg:flex-row">
+        {/* extra blur glow effects */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          {/* left yellow glow */}
+          <div className="absolute left-[-180px] top-[20%] h-[380px] w-[380px] rounded-full bg-[#FEF3D5] blur-3xl" />
+
+          {/* top purple glow */}
+          <div className="absolute left-[30%] top-[-120px] h-[360px] w-[480px] rounded-full bg-violet-400/50 blur-3xl" />
+
+          {/* bottom purple glow */}
+          <div className="absolute bottom-[-180px] left-[10%] h-[500px] w-[500px] rounded-full bg-purple-300/30 blur-3xl" />
+
+          {/* soft center white glow */}
+          <div className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/20 blur-3xl" />
+
+          {/* curved lines */}
+          <div className="absolute bottom-[-120px] left-[-100px] h-[500px] w-[900px] rotate-6 rounded-[100%] border border-white/30" />
+          <div className="absolute bottom-[-180px] left-[-140px] h-[600px] w-[1100px] rotate-6 rounded-[100%] border border-white/20" />
+
+          {/* right yellow glow */}
+          <div className="absolute right-[-300px] bottom-[-10%] h-[420px] w-[420px] rounded-full bg-[#f7e9c4] blur-3xl" />
+        </div>
+
         <LeftPanel />
 
-        <main className="flex-1 flex items-center justify-center px-4 py-8 sm:px-8 lg:px-12 relative">
+        <main className="relative z-10 flex-1 flex items-center justify-center px-4 py-8 sm:px-8 lg:px-12">
           <AnimatePresence mode="wait">
             {stage === "loading" && <LoadingScreen key="loading" />}
           </AnimatePresence>
