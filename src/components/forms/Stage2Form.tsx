@@ -10,6 +10,7 @@ import FormInput from "@/components/ui/FormInput";
 import GenderToggle from "@/components/ui/GenderToggle";
 import JobTypeToggle from "@/components/ui/JobTypeToggle";
 import ProgressBar from "@/components/ui/ProgressBar";
+import AnimatedSubmitButton from "@/components/ui/AnimatedSubmitButton";
 
 interface Stage2Defaults {
   first_name?: string;
@@ -339,17 +340,11 @@ export default function Stage2Form({
           </div>
 
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full  font-semibold py-2.5 rounded-xl active:scale-[0.98] transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-black/10 text-gray-800"
-            style={{
-              background: "linear-gradient(88.52deg, #E1E4F3 -17.33%, #A6FF00 100%)",
-            }}
-          >
-            {isSubmitting ? "Submitting..." : "Get Loan Offers"}
-            {!isSubmitting && <span>&rarr;</span>}
-          </button>
+          <AnimatedSubmitButton
+            isSubmitting={isSubmitting}
+            defaultText="Get Loan Offers"
+            submittedText="Submitted!"
+          />
         </form>
       </div>
     </motion.div>

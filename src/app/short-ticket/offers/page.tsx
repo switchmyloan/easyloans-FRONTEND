@@ -25,7 +25,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   KreditBee: "Kreditbee",
   TrueBalance: "TrueBalance",
   MPokket: "mPokket",
-  CreditPlus: "CreditPlus",
+  CreditPlus: "Creditt+",
   Loan112: "Loan112",
 };
 
@@ -46,7 +46,6 @@ const CREDITPLUS_PRIORITY_ORDER = [
   "RapidMoney",
   "KreditBee",
   "RamFinCorp",
-  
   "TrueBalance",
   "MPokket",
   "Loan112",
