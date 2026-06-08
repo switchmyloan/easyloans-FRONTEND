@@ -14,7 +14,7 @@ const TRUST_BADGES: TrustBadge[] = [
     subtitle: "NBFC Partner",
     icon: (
       <Image
-        src="/logo/reservebank.png"
+        src="/reservebank.png"
         alt="RBI"
         width={24}
         height={24}
@@ -32,7 +32,7 @@ const TRUST_BADGES: TrustBadge[] = [
     subtitle: "27001 Certified",
     icon: (
       <Image
-        src="/logo/iso.png"
+        src="/iso.png"
         alt="ISO"
         width={24}
         height={24}
@@ -43,17 +43,14 @@ const TRUST_BADGES: TrustBadge[] = [
 ];
 
 const PARTNER_LOGOS = [
-  "/herofincorp.webp",
-  "/kreditbee-logo.svg",
-  "/moneyview-logo.svg",
-  "/olyv.png",
-  "/poonawalla.svg",
-  "/ramfinCorp.png",
-  "/truebalance.webp",
-  "/zype.png",
-  "/unity_bank.png",
-  "/kk.png",
-  "/vivifi.webp",
+   "/ramfinCorp.png",
+   "/rapid-black.webp",
+   "/kreditbee-logo.svg",
+    "/truebalance.webp",
+    "/mpoket.svg",
+    "/credit.svg",
+    "/logo_Loan112.svg",
+
 ];
 
 const CARD_CLASS_NAME =

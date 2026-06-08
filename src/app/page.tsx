@@ -18,10 +18,10 @@ import {
 } from "@/lib/api";
 
 import LeftPanel from "@/components/layout/LeftPanel";
-import MobileHeader from "@/components/layout/MobileHeader";
 import Stage1Form from "@/components/forms/Stage1Form";
 import OtpForm from "@/components/forms/OtpForm";
 import GradientBanner from "@/components/ui/GradientBanner";
+import { Clock3, IndianRupee, TrendingUp, ShieldCheck } from "lucide-react";
 
 const Stage2Form = dynamic(() => import("@/components/forms/Stage2Form"), {
   loading: () => (
@@ -311,7 +311,7 @@ function HomeContent() {
             stage === "stage2" ||
             stage === "success") && (
             <div className="w-full max-w-[460px]">
-              <MobileHeader />
+         
 
               <AnimatePresence mode="wait">
                 {stage === "stage1" && (
@@ -398,6 +398,75 @@ function HomeContent() {
                 Copyright &copy; 2026 SwitchMyLoan Pvt. Ltd. All Rights
                 Reserved.
               </footer>
+
+              {/* Mobile: Bottom section with headline and stats */}
+              <div className="lg:hidden mt-8 space-y-5">
+                {/* Headline */}
+                <div className="text-center">
+                  <h2 className="text-2xl font-extrabold text-[#161a6d]">
+                    Small Loans
+                  </h2>
+                  <h2 className="text-2xl font-extrabold bg-gradient-to-r from-[#8560ff] via-[#664cff] to-[#4d3cff] bg-clip-text text-transparent">
+                    when you need them.
+                  </h2>
+                  <p className="mt-2 text-sm text-gray-500">
+                    Built around your moments.<br />
+                    Backed by trust. Driven by technology.
+                  </p>
+                </div>
+
+                {/* Stats Card */}
+                <div className="relative overflow-hidden rounded-xl border border-white/80 bg-white/60 backdrop-blur-xl shadow-[0_24px_80px_rgba(116,82,255,0.12)]">
+                  <div className="grid grid-cols-3">
+                    {/* 5 min */}
+                    <div className="relative flex flex-col items-center px-3 py-4 text-center">
+                      <div className="flex h-6 w-6 items-center justify-center text-[#6b4cff]">
+                        <Clock3 className="h-6 w-6 stroke-2" />
+                      </div>
+                      <div className="mt-2 flex flex-col items-center">
+                        <p className="text-sm font-semibold text-[#4e35d3]">5 min</p>
+                        <p className="mt-1 text-[10px] font-medium text-[#8088ad]">Approval Time*</p>
+                      </div>
+                      <div className="absolute right-0 top-1/2 h-12 w-px -translate-y-1/2 bg-[#e7defd]" />
+                    </div>
+
+                    {/* ₹15 Lakh */}
+                    <div className="relative flex flex-col items-center px-3 py-4 text-center">
+                      <div className="flex h-6 w-6 items-center justify-center text-[#6b4cff]">
+                        <IndianRupee className="h-6 w-6 stroke-2" />
+                      </div>
+                      <div className="mt-2 flex flex-col items-center">
+                        <p className="mb-0.5 text-[10px] font-medium text-[#868eb0]">Up to</p>
+                        <p className="text-sm font-semibold text-[#4e35d3]">₹2 Lakh</p>
+                        <p className="mt-1 text-[10px] font-medium text-[#8088ad]">Loan Amount</p>
+                      </div>
+                      <div className="absolute right-0 top-1/2 h-12 w-px -translate-y-1/2 bg-[#e7defd]" />
+                    </div>
+
+                    {/* 0.83% */}
+                    <div className="flex flex-col items-center px-3 py-4 text-center">
+                      <div className="flex h-6 w-6 items-center justify-center text-[#6b4cff]">
+                        <TrendingUp className="h-6 w-6 stroke-2" />
+                      </div>
+                      <div className="mt-2 flex flex-col items-center">
+                        <p className="text-sm font-semibold text-[#4e35d3]">0.83%</p>
+                        <p className="mt-1 text-[10px] font-medium text-[#8088ad]">Starting Rate*</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Data Safety Notice */}
+                <div className="flex flex-col items-center text-center text-[#717aa2]">
+                  <div className="mb-1 text-[#6e4dff]">
+                    <ShieldCheck className="h-5 w-5" strokeWidth={2} />
+                  </div>
+                  <p className="text-xs font-medium text-[#5d648f]">
+                    Your data is safe with us.
+                  </p>
+                  <p className="text-xs text-[#717aa2]">We never share your information.</p>
+                </div>
+              </div>
             </div>
           )}
         </main>
