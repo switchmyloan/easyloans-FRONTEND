@@ -62,13 +62,19 @@ function HomeContent() {
   const stage2DraftRef = useRef<Partial<Stage2Data>>({});
   const draftTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Effect to capture utm_medium from URL and store in sessionStorage
+  // Effect to capture UTM params from URL and store in sessionStorage
   useEffect(() => {
+    const utmSource = searchParams.get("utm_source");
     const utmMedium = searchParams.get("utm_medium");
-    console.log("utmMedium from landing page URL:", utmMedium);
-    if (utmMedium) {
-      sessionStorage.setItem("utm_medium", utmMedium);
-    }
+    const utmCampaign = searchParams.get("utm_campaign");
+    const utmContent = searchParams.get("utm_content");
+    const utmTerm = searchParams.get("utm_term");
+
+    if (utmSource) sessionStorage.setItem("utm_source", utmSource);
+    if (utmMedium) sessionStorage.setItem("utm_medium", utmMedium);
+    if (utmCampaign) sessionStorage.setItem("utm_campaign", utmCampaign);
+    if (utmContent) sessionStorage.setItem("utm_content", utmContent);
+    if (utmTerm) sessionStorage.setItem("utm_term", utmTerm);
   }, [searchParams]);
 
   const buildDraftPayload = useCallback(() => {
@@ -234,6 +240,13 @@ function HomeContent() {
         console.warn("saveShortDraftLead (stage2) failed:", err);
       }
 
+      // Get UTM params from sessionStorage
+      const utmSource = sessionStorage.getItem("utm_source");
+      const utmMedium = sessionStorage.getItem("utm_medium");
+      const utmCampaign = sessionStorage.getItem("utm_campaign");
+      const utmContent = sessionStorage.getItem("utm_content");
+      const utmTerm = sessionStorage.getItem("utm_term");
+
       try {
         await getOfferShortTicket({
           firstName: data.first_name,
@@ -249,6 +262,11 @@ function HomeContent() {
           monthlySalary: Number(data.monthly_income),
           loanAmount: Number(stage1Data.loan_amount),
           loanPurpose: data.loan_purpose,
+          utm_source: utmSource,
+          utm_medium: utmMedium,
+          utm_campaign: utmCampaign,
+          utm_content: utmContent,
+          utm_term: utmTerm,
         });
         router.push("/short-ticket/offers");
       } catch (err) {
