@@ -53,8 +53,10 @@ export async function getAnalyticsInstance(): Promise<Analytics | null> {
  * or messaging is unsupported.
  */
 export async function requestFcmToken(): Promise<string | null> {
-  const messaging = await getMessagingInstance();
-  if (!messaging) return null;
+  if (typeof window === "undefined" || !("Notification" in window)) {
+    console.warn("[firebase] Notifications unsupported in this environment.");
+    return null;
+  }
 
   if (!VAPID_KEY) {
     console.warn(
@@ -63,36 +65,64 @@ export async function requestFcmToken(): Promise<string | null> {
     return null;
   }
 
+  // IMPORTANT: request permission FIRST — synchronously inside the user gesture,
+  // before any other `await`. The browser consumes the user-activation on the
+  // first await, after which it silently suppresses the permission popup
+  // (Chrome's "quieter" UI) — that's the "no popup appears" symptom. So we must
+  // not await getMessagingInstance() (a feature-support check) before this call.
   const permission = await Notification.requestPermission();
-  if (permission !== "granted") return null;
-
-  const serviceWorkerRegistration = await navigator.serviceWorker.register(
-    "/firebase-messaging-sw.js",
-  );
-
-  // register() resolves before the worker is *active*. Calling getToken() too
-  // early throws "no active Service Worker" (PushManager.subscribe AbortError),
-  // so wait until the worker is activated before requesting the token.
-  await navigator.serviceWorker.ready;
-  if (!serviceWorkerRegistration.active) {
-    await new Promise<void>((resolve) => {
-      const worker =
-        serviceWorkerRegistration.installing ||
-        serviceWorkerRegistration.waiting;
-      if (!worker) {
-        resolve();
-        return;
-      }
-      worker.addEventListener("statechange", () => {
-        if (worker.state === "activated") resolve();
-      });
-    });
+  if (permission !== "granted") {
+    console.warn(
+      `[firebase] Notification permission not granted (state: "${permission}").`,
+    );
+    return null;
   }
 
-  const token = await getToken(messaging, {
-    vapidKey: VAPID_KEY,
-    serviceWorkerRegistration,
-  });
+  const messaging = await getMessagingInstance();
+  if (!messaging) {
+    console.warn("[firebase] Firebase Messaging unsupported in this browser.");
+    return null;
+  }
 
-  return token || null;
+  try {
+    const serviceWorkerRegistration = await navigator.serviceWorker.register(
+      "/firebase-messaging-sw.js",
+    );
+
+    // register() resolves before the worker is *active*. Calling getToken() too
+    // early throws "no active Service Worker" (PushManager.subscribe AbortError),
+    // so wait until the worker is activated before requesting the token.
+    await navigator.serviceWorker.ready;
+    if (!serviceWorkerRegistration.active) {
+      await new Promise<void>((resolve) => {
+        const worker =
+          serviceWorkerRegistration.installing ||
+          serviceWorkerRegistration.waiting;
+        if (!worker) {
+          resolve();
+          return;
+        }
+        worker.addEventListener("statechange", () => {
+          if (worker.state === "activated") resolve();
+        });
+      });
+    }
+
+    const token = await getToken(messaging, {
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration,
+    });
+
+    if (!token) {
+      console.warn("[firebase] getToken() returned empty — no FCM token issued.");
+      return null;
+    }
+    return token;
+  } catch (err) {
+    // Surface the real failure (VAPID mismatch, blocked push service, SW
+    // registration failure, etc.) instead of letting it vanish into an
+    // unhandled rejection. Re-throw so the UI can report it.
+    console.error("[firebase] Failed to obtain FCM token:", err);
+    throw err instanceof Error ? err : new Error(String(err));
+  }
 }

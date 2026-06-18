@@ -11,7 +11,10 @@ interface UsePushNotifications {
   token: string | null;
   /** Current notification permission state. */
   permission: PermissionState;
-  /** Prompt the user for permission and fetch a token. */
+  /** Last error raised while obtaining a token (null when none). */
+  error: Error | null;
+  /** Prompt the user for permission and fetch a token. Resolves to the token
+   *  (or null) and never rejects — read `error` for the failure reason. */
   requestPermission: () => Promise<string | null>;
 }
 
@@ -20,22 +23,35 @@ interface UsePushNotifications {
  * - tracks notification permission
  * - listens for foreground messages (shows a toast)
  * - exposes requestPermission() to obtain the device token
+ *
+ * requestPermission() must be called from a user gesture (click/tap/key) —
+ * browsers suppress permission prompts requested on bare page load.
  */
 export function usePushNotifications(
   onForegroundMessage?: (title: string, body: string) => void,
 ): UsePushNotifications {
   const [token, setToken] = useState<string | null>(null);
   const [permission, setPermission] = useState<PermissionState>("default");
+  const [error, setError] = useState<Error | null>(null);
   const onForegroundRef = useRef(onForegroundMessage);
   onForegroundRef.current = onForegroundMessage;
 
   const requestPermission = useCallback(async () => {
-    const fcmToken = await requestFcmToken();
-    setToken(fcmToken);
-    if (typeof Notification !== "undefined") {
-      setPermission(Notification.permission as PermissionState);
+    setError(null);
+    try {
+      const fcmToken = await requestFcmToken();
+      setToken(fcmToken);
+      return fcmToken;
+    } catch (err) {
+      const normalised = err instanceof Error ? err : new Error(String(err));
+      console.error("[FCM] requestPermission failed:", normalised);
+      setError(normalised);
+      return null;
+    } finally {
+      if (typeof Notification !== "undefined") {
+        setPermission(Notification.permission as PermissionState);
+      }
     }
-    return fcmToken;
   }, []);
 
   // Initialise permission state on mount.
@@ -46,9 +62,15 @@ export function usePushNotifications(
     }
     setPermission(Notification.permission as PermissionState);
 
-    // If already granted, silently refresh the token.
+    // If already granted, silently refresh the token (no gesture needed).
     if (Notification.permission === "granted") {
-      requestFcmToken().then(setToken);
+      requestFcmToken()
+        .then(setToken)
+        .catch((err) => {
+          const normalised = err instanceof Error ? err : new Error(String(err));
+          console.error("[FCM] token refresh failed:", normalised);
+          setError(normalised);
+        });
     }
   }, []);
 
@@ -68,5 +90,5 @@ export function usePushNotifications(
     return () => unsubscribe?.();
   }, []);
 
-  return { token, permission, requestPermission };
+  return { token, permission, error, requestPermission };
 }
