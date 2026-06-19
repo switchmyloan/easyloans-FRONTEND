@@ -8,7 +8,7 @@ import OfferCard from "@/components/offers/OfferCard";
 import ScratchCoupon from "@/components/offers/ScratchCoupon";
 import TrustBadges from "@/components/ui/TrustBadges";
 import { motion } from "framer-motion";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import GradientBanner from "@/components/ui/GradientBanner";
 
 const DISPLAY_NAMES: Record<string, string> = {
@@ -282,7 +282,6 @@ export default function OffersPage() {
 
   return (
     <main className="min-h-screen bg-[#f8f9fb]">
-      <Toaster position="top-center" />
       <div className={`mx-auto px-4 sm:px-6 py-10 sm:py-14 ${multipleCards ? "max-w-6xl" : "max-w-2xl"}`}>
         {/* Header */}
         <motion.div

@@ -16,7 +16,7 @@ import OfferCard from "@/components/offers/OfferCard";
 import TrustBadges from "@/components/ui/TrustBadges";
 import GradientBanner from "@/components/ui/GradientBanner";
 import { motion } from "framer-motion";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { Clock, Contact, Lock } from "lucide-react";
 
 const DISPLAY_NAMES: Record<string, string> = {
@@ -379,8 +379,6 @@ export default function ShortTicketOffersPage() {
           <div className="absolute bottom-[-180px] left-[-140px] h-[600px] w-[1100px] rotate-6 rounded-[100%] border border-white/20" />
           <div className="absolute right-[-300px] bottom-[-5%] h-[420px] w-[420px] rounded-full bg-[#f7e9c4]/50 blur-3xl" />
         </div>
-
-        <Toaster position="top-center" />
 
         <div className={`relative mx-auto px-3 z-10 sm:px-5 py-4 sm:py-6 w-full ${multipleCards || showHeroFlow ? "max-w-6xl" : "max-w-xl"}`}>
 
