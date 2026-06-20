@@ -34,6 +34,7 @@ export const STATIC_LENDER_LOGOS: Record<
   AdityaBirlaCapital: { src: "/adityabirlacapitalloan.svg" },
   RamFinCorp: { src: "/ramfinCorp.png" },
   SmartCoinHighIntent: { src: "/olyv.png" },
+  SmartCoin: { src: "/olyv.png" },
   TrueBalance: { src: "/truebalance.png" },
   Zype_Dedupe: { src: "/zype.png" },
   UnitySmallFinanceBank: { src: "/unity_bank.png" },
@@ -41,6 +42,7 @@ export const STATIC_LENDER_LOGOS: Record<
   KreditBee: { src: "/kreditbee-logo.svg" },
   MPokket: { src: "/mpoket.svg" },
   Loan112: { src: "/logo_Loan112.svg" },
+  LendingPlate: { src: "/lending.png" },
 };
 
 export const STATIC_LENDER_DETAILS: Record<

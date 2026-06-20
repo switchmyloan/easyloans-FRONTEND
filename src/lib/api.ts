@@ -809,14 +809,15 @@ export interface ShortTicketData {
   isSalaried: boolean;
   priorityOrder: string[];
   staticLenders: StaticLender[];
-    CreditPlus?: ShortTicketLender;
+  CreditPlus?: ShortTicketLender;
   RapidMoney?: ShortTicketLender;
   RamFinCorp?: ShortTicketLender;
   KreditBee?: ShortTicketLender;
   TrueBalance?: ShortTicketLender;
   MPokket?: ShortTicketLender;
-
   Loan112?: ShortTicketLender;
+  SmartCoin?: ShortTicketLender;
+  LendingPlate?: ShortTicketLender;
   [key: string]: unknown;
 }
 
