@@ -4,6 +4,7 @@ import {
   getToken,
   isSupported as isMessagingSupported,
   type Messaging,
+  type MessagePayload,
 } from "firebase/messaging";
 import {
   getAnalytics,
@@ -125,4 +126,40 @@ export async function requestFcmToken(): Promise<string | null> {
     console.error("[firebase] Failed to obtain FCM token:", err);
     throw err instanceof Error ? err : new Error(String(err));
   }
+}
+
+/**
+ * Raise an OS-level system notification for a *foreground* message.
+ *
+ * FCM only auto-displays system notifications for background messages (via the
+ * service worker's onBackgroundMessage). When the tab is focused the message is
+ * delivered to onMessage instead and nothing is shown at the OS level — so we
+ * display it ourselves here, reusing the active firebase-messaging service
+ * worker so the existing `notificationclick` handler still routes the click.
+ */
+export async function showForegroundSystemNotification(
+  payload: MessagePayload,
+): Promise<void> {
+  if (typeof window === "undefined" || !("Notification" in window)) return;
+  if (Notification.permission !== "granted") return;
+  if (!("serviceWorker" in navigator)) return;
+
+  const registration =
+    (await navigator.serviceWorker.getRegistration("/firebase-messaging-sw.js")) ||
+    (await navigator.serviceWorker.ready);
+  if (!registration) return;
+
+  const notification = payload.notification;
+  const data = (payload.data ?? {}) as Record<string, string>;
+  const link = data.link || data.url || "/";
+
+  await registration.showNotification(notification?.title || "Cready", {
+    body: notification?.body || "",
+    icon: notification?.image || "/cready.png",
+    badge: "/cready.png",
+    // Coalesce same-content messages so a foreground + background race can't
+    // stack two identical OS notifications.
+    tag: notification?.title || "cready",
+    data: { url: link },
+  });
 }

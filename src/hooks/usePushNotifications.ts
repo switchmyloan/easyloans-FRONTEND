@@ -2,7 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { onMessage } from "firebase/messaging";
-import { getMessagingInstance, requestFcmToken } from "@/lib/firebase";
+import {
+  getMessagingInstance,
+  requestFcmToken,
+  showForegroundSystemNotification,
+} from "@/lib/firebase";
 
 type PermissionState = "default" | "granted" | "denied" | "unsupported";
 
@@ -83,7 +87,11 @@ export function usePushNotifications(
       unsubscribe = onMessage(messaging, (payload) => {
         const title = payload.notification?.title || "Cready";
         const body = payload.notification?.body || "";
+        // In-page toast (visible even if OS notifications are muted)...
         onForegroundRef.current?.(title, body);
+        // ...plus a real OS notification, since FCM does NOT auto-display one
+        // for foreground messages (only background ones go through the SW).
+        void showForegroundSystemNotification(payload);
       });
     });
 
