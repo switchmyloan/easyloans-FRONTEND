@@ -970,6 +970,7 @@ export async function saveShortLender(
 ): Promise<void> {
   try {
     const mrn = getStoredMrn();
+    const shortOfferLeadId = sessionStorage.getItem("shortOfferLeadId");
     await fetch(`${BASE_URL}/onSubmit/short-save-lender`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -977,6 +978,7 @@ export async function saveShortLender(
         phoneNumber,
         lenders: [{ lenderName }],
         ...(mrn ? { mrn } : {}),
+        ...(shortOfferLeadId ? { shortOfferLeadId } : {}),
       }),
     });
   } catch (err) {
@@ -1011,6 +1013,7 @@ export async function applyToShortMoneyView(): Promise<MoneyViewApplyResponse> {
   if (!raw) throw new Error("User data not found. Please fill the form first.");
 
   const userData = JSON.parse(raw);
+  const shortOfferLeadId = sessionStorage.getItem("shortOfferLeadId");
 
   const body = {
     firstName: userData.firstName,
@@ -1023,6 +1026,7 @@ export async function applyToShortMoneyView(): Promise<MoneyViewApplyResponse> {
     monthlySalary: Number(userData.monthlySalary),
     pincode: userData.pincode,
     email: userData.email,
+    ...(shortOfferLeadId ? { shortOfferLeadId } : {}),
   };
 
   const res = await fetch(`${BASE_URL}/onSubmit/short-money-view`, {
