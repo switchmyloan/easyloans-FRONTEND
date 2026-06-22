@@ -809,6 +809,7 @@ export interface ShortTicketData {
   isSalaried: boolean;
   priorityOrder: string[];
   staticLenders: StaticLender[];
+  shortOfferLeadId?: string;
   CreditPlus?: ShortTicketLender;
   RapidMoney?: ShortTicketLender;
   RamFinCorp?: ShortTicketLender;
@@ -878,6 +879,11 @@ export async function getOfferShortTicket(
     sessionStorage.setItem("userPhone", payload.mobileNumber);
     sessionStorage.setItem("userLoanAmount", String(payload.loanAmount));
     if (mrn) sessionStorage.setItem("userMrn", mrn);
+
+    // Store shortOfferLeadId for subsequent lender API calls
+    if (json.data?.shortOfferLeadId) {
+      sessionStorage.setItem("shortOfferLeadId", json.data.shortOfferLeadId);
+    }
 
     // Store UTM params separately for easy access
     if (payload.utm_medium) sessionStorage.setItem("utm_medium", payload.utm_medium);
@@ -983,11 +989,15 @@ export async function applyToShortKreditBee(): Promise<KreditBeeApplyResponse> {
   if (!raw) throw new Error("User data not found. Please fill the form first.");
 
   const userData = JSON.parse(raw);
+  const shortOfferLeadId = sessionStorage.getItem("shortOfferLeadId");
 
   const res = await fetch(`${BASE_URL}/onSubmit/short-kreditbee`, {
     method: "POST",
     headers: PARTNER_HEADERS,
-    body: JSON.stringify(userData),
+    body: JSON.stringify({
+      ...userData,
+      ...(shortOfferLeadId ? { shortOfferLeadId } : {}),
+    }),
   });
 
   if (!res.ok) throw new Error("Failed to apply to KreditBee. Please try again.");

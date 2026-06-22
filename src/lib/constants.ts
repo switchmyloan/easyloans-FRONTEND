@@ -54,6 +54,12 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: string;
   }
 > = {
+  KreditBee: {
+    headline: "Get Personal Loans up to ₹6,000 to ₹10 Lakhs",
+    description: "Flexible repayment options and loan tenure up to 24 months",
+    keyFeature: "Instant Disbursement and Flexible EMI Options",
+    interestRate: "Interest rate starting from 1% per month",
+  },
   SmartCoin: {
     headline: "Get Personal Loans from ₹1,000 to ₹5 Lakhs",
     description: "Flexible repayment options and loan tenure from 1 month to 6 months",

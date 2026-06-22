@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getStaticLenderDetail, STATIC_LENDER_LOGOS } from "@/lib/constants";
+import { getStaticLenderDetail, STATIC_LENDER_LOGOS, getEligibleCoupon, type KBCoupon } from "@/lib/constants";
 import {
   getStoredShortTicketOffers,
   saveShortLender,
@@ -12,6 +12,7 @@ import {
   type ShownOfferEntry,
 } from "@/lib/api";
 import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
+import ScratchCoupon from "@/components/offers/ScratchCoupon";
 import OfferCard from "@/components/offers/OfferCard";
 import TrustBadges from "@/components/ui/TrustBadges";
 import GradientBanner from "@/components/ui/GradientBanner";
@@ -174,6 +175,8 @@ export default function ShortTicketOffersPage() {
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
   const [priorityVisible, setPriorityVisible] = useState(0);
   const [showAll, setShowAll] = useState(false);
+  const [showScratch, setShowScratch] = useState(false);
+  const [coupon, setCoupon] = useState<KBCoupon | null>(null);
 
   useEffect(() => {
     const response = getStoredShortTicketOffers();
@@ -307,6 +310,10 @@ export default function ShortTicketOffersPage() {
     setPriorityVisible(initialVisible);
     setOrderedLenders(ordered);
 
+    // Pick a profile-based KreditBee coupon
+    const profile = isSalariedFlag ? "Salaried" : "Self Employed";
+    setCoupon(getEligibleCoupon(profile));
+
     // Track shown offers
     try {
       const phone = sessionStorage.getItem("userPhone") || "";
@@ -371,7 +378,10 @@ export default function ShortTicketOffersPage() {
       const isDuplicate = kbMessage.includes("duplicate");
 
       if (isKbSuccess && isApproved && !isDuplicate) {
-        window.open("https://www.kreditbee.in/", "_blank");
+        // Use UTM link from orderedLenders if available, otherwise use fallback
+        const kbLender = orderedLenders.find((l) => l.name === "KreditBee");
+        const redirectUrl = kbLender?.utm_link || FALLBACK_UTM.KreditBee;
+        window.open(redirectUrl, "_blank");
       } else if (isNotApproved || !isKbSuccess) {
         setShowNotEligible("Kreditbee");
       } else {
@@ -523,11 +533,22 @@ export default function ShortTicketOffersPage() {
                           <span className="text-lg font-bold text-gray-600">{heroDisplayName.charAt(0)}</span>
                         )}
                       </div>
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 flex-wrap">
                         <p className="text-[12px] font-semibold text-[#111827]">{heroDisplayName}</p>
                         <span className="inline-flex items-center gap-0.5 rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[9px] font-semibold text-violet-700">
                           Highly Recommended
                         </span>
+                        {heroLender.name === "KreditBee" && (
+                          <button
+                            onClick={() => setShowScratch(true)}
+                            className="inline-flex items-center gap-1 bg-indigo-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full cursor-pointer hover:bg-indigo-700 transition-colors"
+                          >
+                            <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                            </svg>
+                            Scratch & Win
+                          </button>
+                        )}
                       </div>
                     </div>
 
@@ -728,6 +749,17 @@ export default function ShortTicketOffersPage() {
                     applying={isApplying}
                     applied={isApplied}
                     badgeText={idx === 0 && !showHeroCard ? "Matched Offer" : undefined}
+                    badge={isKB ? (
+                      <button
+                        onClick={() => setShowScratch(true)}
+                        className="scratch-badge bg-indigo-600 text-white text-[10px] font-semibold px-2 py-1 rounded-lg cursor-pointer flex items-center gap-1 hover:bg-indigo-700 transition-colors"
+                      >
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
+                        </svg>
+                        Scratch & Win
+                      </button>
+                    ) : undefined}
                   />
                 );
               })}
@@ -779,6 +811,16 @@ export default function ShortTicketOffersPage() {
             setShowNotEligible(null);
             setShowAll(true);
           }}
+        />
+      )}
+
+      {/* Scratch Coupon modal */}
+      {showScratch && coupon && (
+        <ScratchCoupon
+          discount={coupon.discount}
+          description={coupon.description}
+          couponCode={coupon.code}
+          onClose={() => setShowScratch(false)}
         />
       )}
     </>
