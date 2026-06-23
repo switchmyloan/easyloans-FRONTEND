@@ -1040,3 +1040,596 @@ export async function applyToShortMoneyView(): Promise<MoneyViewApplyResponse> {
   const json: MoneyViewApplyResponse = await res.json();
   return json;
 }
+
+// ---------- Short Ticket Dashboard APIs ----------
+
+const SHORT_EXISTING_USER_SESSION_KEY = "shortExistingUserOffers";
+
+export interface ShortExistingUserData {
+  firstName: string;
+  lastName: string;
+  mobileNumber: string;
+  email: string;
+  gender: string;
+  pincode: string;
+  panNumber: string;
+  dateOfBirth: string;
+  jobType: string;
+  monthlySalary: number;
+  loanPurpose: string;
+  loanAmount: number;
+  isSalaried: boolean;
+  mrn: string | null;
+  utm_source: string | null;
+  utm_medium: string | null;
+  utm_campaign: string | null;
+  utm_content: string | null;
+  utm_term: string | null;
+}
+
+export interface ShortSelectedLender {
+  lenderName: string;
+  status: string | null;
+  mrn: string | null;
+  createdAt: string;
+}
+
+export interface ShortShownOffer {
+  lenderName: string;
+  section: "promoted" | "static";
+  utmLink: string | null;
+  wasApproved?: boolean;
+}
+
+export interface ShortExistingUserOffersResponse {
+  statusCode: number;
+  data: {
+    found: boolean;
+    exists?: boolean;
+    user?: ShortExistingUserData;
+    staticLenders?: StaticLender[];
+    isSalaried?: boolean;
+    shownOffers?: ShortShownOffer[];
+    selectedLenders?: ShortSelectedLender[];
+    shortOfferLeadId?: string;
+    KreditBee?: ShortTicketLender;
+    RapidMoney?: ShortTicketLender;
+    TrueBalance?: ShortTicketLender;
+    SmartCoin?: ShortTicketLender;
+    RamFinCorp?: ShortTicketLender;
+    MPokket?: ShortTicketLender;
+    CreditPlus?: ShortTicketLender;
+    Loan112?: ShortTicketLender;
+    LendingPlate?: ShortTicketLender;
+    [key: string]: unknown;
+  };
+  message: string;
+  success: boolean;
+}
+
+/**
+ * Fetches existing offers for a short ticket user by mobile number.
+ * Stores the response in sessionStorage for dashboard components.
+ */
+export async function getExistingShortUserOffer(
+  mobileNumber: string
+): Promise<ShortExistingUserOffersResponse> {
+  const res = await fetch(`${BASE_URL}/onSubmit/get-existing-short-user-offer`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ mobileNumber }),
+  });
+
+  if (!res.ok) throw new Error("Failed to fetch user data. Please try again.");
+
+  // Check if response is JSON before parsing
+  const contentType = res.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    throw new Error("Server returned invalid response. Please try again.");
+  }
+
+  const json: ShortExistingUserOffersResponse = await res.json();
+
+  if (json.statusCode !== 200) {
+    throw new Error(json.message || "Failed to fetch user data.");
+  }
+
+  // Store the response in session
+  if (isBrowser()) {
+    sessionStorage.setItem(SHORT_EXISTING_USER_SESSION_KEY, JSON.stringify(json));
+
+    // Store shortOfferLeadId for save-lender API calls
+    if (json.data.shortOfferLeadId) {
+      sessionStorage.setItem("shortOfferLeadId", json.data.shortOfferLeadId);
+    }
+
+    // If user found, store their data
+    const userExists = json.data.found || json.data.exists;
+    if (userExists && json.data.user) {
+      sessionStorage.setItem("userFirstName", json.data.user.firstName);
+      sessionStorage.setItem("userPhone", json.data.user.mobileNumber);
+      sessionStorage.setItem("userLoanAmount", String(json.data.user.loanAmount));
+      sessionStorage.setItem("userFormData", JSON.stringify({
+        firstName: json.data.user.firstName,
+        lastName: json.data.user.lastName,
+        mobileNumber: json.data.user.mobileNumber,
+        email: json.data.user.email,
+        panNumber: json.data.user.panNumber,
+        dateOfBirth: json.data.user.dateOfBirth,
+        gender: json.data.user.gender,
+        pincode: json.data.user.pincode,
+        jobType: json.data.user.jobType,
+        monthlySalary: String(json.data.user.monthlySalary),
+        loanAmount: String(json.data.user.loanAmount),
+        loanPurpose: json.data.user.loanPurpose,
+      }));
+      if (json.data.user.mrn) {
+        sessionStorage.setItem("userMrn", json.data.user.mrn);
+      }
+    }
+  }
+
+  return json;
+}
+
+export function getStoredShortExistingUserOffers(): ShortExistingUserOffersResponse | null {
+  if (!isBrowser()) return null;
+  const raw = sessionStorage.getItem(SHORT_EXISTING_USER_SESSION_KEY);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+// ---------- Short Dashboard Link APIs ----------
+
+export interface ShortDashboardLinkGenerateResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: {
+    token: string;
+    link: string;
+    expiresAt: string;
+  };
+}
+
+/**
+ * Generates a short dashboard magic link for a user.
+ * Returns the token and full link URL.
+ */
+export async function generateShortDashboardLink(
+  mobileNumber: string
+): Promise<ShortDashboardLinkGenerateResponse> {
+  const res = await fetch(`${BASE_URL}/onSubmit/short-dashboard-link`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ mobileNumber }),
+  });
+
+  if (!res.ok) throw new Error("Failed to generate dashboard link. Please try again.");
+
+  const json: ShortDashboardLinkGenerateResponse = await res.json();
+
+  if (json.statusCode !== 200 || !json.success) {
+    throw new Error(json.message || "Failed to generate dashboard link.");
+  }
+
+  return json;
+}
+
+export interface ShortDashboardLinkResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: {
+    valid: boolean;
+    exists?: boolean;
+    reason?: string;
+    requiresLogin?: boolean;
+    user?: ShortExistingUserData;
+    selectedLenders?: ShortSelectedLender[];
+    shownOffers?: ShortShownOffer[];
+    staticLenders?: StaticLender[];
+    isSalaried?: boolean;
+    shortOfferLeadId?: string;
+    KreditBee?: ShortTicketLender;
+    RapidMoney?: ShortTicketLender;
+    TrueBalance?: ShortTicketLender;
+    SmartCoin?: ShortTicketLender;
+    RamFinCorp?: ShortTicketLender;
+    MPokket?: ShortTicketLender;
+    CreditPlus?: ShortTicketLender;
+    Loan112?: ShortTicketLender;
+    LendingPlate?: ShortTicketLender;
+    [key: string]: unknown;
+  };
+}
+
+/**
+ * Resolves a short dashboard magic-link token.
+ * If valid, stores the data in sessionStorage (same format as getExistingShortUserOffer).
+ * Returns { valid: true, data } on success, or { valid: false, reason } on failure.
+ */
+export async function resolveShortDashboardLink(
+  token: string
+): Promise<{ valid: true; data: ShortDashboardLinkResponse["data"] } | { valid: false; reason: string }> {
+  try {
+    const res = await fetch(`${BASE_URL}/onSubmit/short-dashboard-link/${token}`, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    // Check if response is JSON before parsing
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      console.warn("resolveShortDashboardLink: Server returned non-JSON response");
+      return { valid: false, reason: "invalid" };
+    }
+
+    const json: ShortDashboardLinkResponse = await res.json();
+
+    if (!json?.data?.valid) {
+      return { valid: false, reason: json?.data?.reason || "invalid" };
+    }
+
+    // Store the response in session (same format as getExistingShortUserOffer)
+    if (isBrowser()) {
+      // Transform to match ShortExistingUserOffersResponse format
+      const storedData: ShortExistingUserOffersResponse = {
+        statusCode: json.statusCode,
+        success: json.success,
+        message: json.message,
+        data: {
+          found: true,
+          exists: true,
+          user: json.data.user,
+          staticLenders: json.data.staticLenders,
+          isSalaried: json.data.isSalaried,
+          shownOffers: json.data.shownOffers,
+          selectedLenders: json.data.selectedLenders,
+          shortOfferLeadId: json.data.shortOfferLeadId,
+          // Copy all lender responses
+          ...Object.fromEntries(
+            Object.entries(json.data).filter(
+              ([key]) =>
+                ![
+                  "valid",
+                  "exists",
+                  "reason",
+                  "user",
+                  "selectedLenders",
+                  "shownOffers",
+                  "staticLenders",
+                  "isSalaried",
+                  "requiresLogin",
+                  "shortOfferLeadId",
+                ].includes(key)
+            )
+          ),
+        },
+      };
+
+      sessionStorage.setItem(SHORT_EXISTING_USER_SESSION_KEY, JSON.stringify(storedData));
+
+      // Store dashboard link state for child pages
+      sessionStorage.setItem("shortDashboardLinkToken", token);
+      sessionStorage.setItem(
+        "shortDashboardRequiresLogin",
+        json.data.requiresLogin ? "true" : "false"
+      );
+
+      // Store shortOfferLeadId for save-lender API calls
+      if (json.data.shortOfferLeadId) {
+        sessionStorage.setItem("shortOfferLeadId", json.data.shortOfferLeadId);
+      }
+
+      // Store individual user data items
+      if (json.data.user) {
+        const user = json.data.user;
+        if (user.firstName) sessionStorage.setItem("userFirstName", user.firstName);
+        if (user.mobileNumber) sessionStorage.setItem("userPhone", user.mobileNumber);
+        if (user.loanAmount) sessionStorage.setItem("userLoanAmount", String(user.loanAmount));
+        sessionStorage.setItem(
+          "userFormData",
+          JSON.stringify({
+            firstName: user.firstName,
+            lastName: user.lastName,
+            mobileNumber: user.mobileNumber,
+            email: user.email,
+            panNumber: user.panNumber,
+            dateOfBirth: user.dateOfBirth,
+            gender: user.gender,
+            pincode: user.pincode,
+            jobType: user.jobType,
+            monthlySalary: user.monthlySalary ? String(user.monthlySalary) : "",
+            loanAmount: user.loanAmount ? String(user.loanAmount) : "",
+            loanPurpose: user.loanPurpose,
+          })
+        );
+        if (user.mrn) sessionStorage.setItem("userMrn", user.mrn);
+      }
+    }
+
+    return { valid: true, data: json.data };
+  } catch (error) {
+    console.error("Failed to resolve short dashboard link:", error);
+    return { valid: false, reason: "error" };
+  }
+}
+
+// Get stored short dashboard link state
+export function getStoredShortDashboardLinkState(): {
+  token: string | null;
+  requiresLogin: boolean;
+} {
+  if (!isBrowser()) return { token: null, requiresLogin: false };
+  const token = sessionStorage.getItem("shortDashboardLinkToken");
+  const requiresLogin = sessionStorage.getItem("shortDashboardRequiresLogin") === "true";
+  return { token, requiresLogin };
+}
+
+// Clear short dashboard requiresLogin flag
+export function clearShortDashboardRequiresLogin(): void {
+  if (isBrowser()) {
+    sessionStorage.setItem("shortDashboardRequiresLogin", "false");
+  }
+}
+
+// ---------- High Ticket Dashboard Link APIs (for shared dashboard) ----------
+
+// Get stored dashboard link state (high-ticket version)
+export function getStoredDashboardLinkState(): {
+  token: string | null;
+  requiresLogin: boolean;
+} {
+  if (!isBrowser()) return { token: null, requiresLogin: false };
+  const token = sessionStorage.getItem("dashboardLinkToken");
+  const requiresLogin = sessionStorage.getItem("dashboardRequiresLogin") === "true";
+  return { token, requiresLogin };
+}
+
+export interface DashboardOtpSendResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: {
+    hashedOtp: string;
+    expiresAt: number;
+    maskedPhone: string;
+  };
+}
+
+/**
+ * Sends OTP to the phone associated with the dashboard link token.
+ * Used when requiresLogin === true (link expired but still valid for viewing).
+ */
+export async function sendDashboardLinkOtp(
+  token: string
+): Promise<{ success: true; data: DashboardOtpSendResponse["data"] } | { success: false; message: string }> {
+  try {
+    const res = await fetch(`${BASE_URL}/onSubmit/dashboard-link/${token}/send-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    const json: DashboardOtpSendResponse = await res.json();
+
+    if (json.success && json.data) {
+      return { success: true, data: json.data };
+    }
+    return { success: false, message: json.message || "Failed to send OTP" };
+  } catch (error) {
+    console.error("Failed to send dashboard link OTP:", error);
+    return { success: false, message: "Network error" };
+  }
+}
+
+export interface DashboardOtpVerifyResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: {
+    valid: boolean;
+    isVerified: boolean;
+    user?: ShortExistingUserData;
+    dashboardExpiresAt?: string;
+    [key: string]: unknown;
+  };
+}
+
+/**
+ * Verifies OTP and renews the dashboard link.
+ * On success, returns fresh data with requiresLogin: false and updates sessionStorage.
+ */
+export async function verifyDashboardLinkOtp(
+  token: string,
+  otp: string,
+  hashedOtp: string,
+  expiresAt: number
+): Promise<{ success: true; data: DashboardOtpVerifyResponse["data"] } | { success: false; message: string }> {
+  try {
+    const res = await fetch(`${BASE_URL}/onSubmit/dashboard-link/${token}/verify-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ otp, hashedOtp, expiresAt }),
+    });
+
+    const json: DashboardOtpVerifyResponse = await res.json();
+
+    if (json.success && json.data?.isVerified) {
+      // Clear the requiresLogin flag since user is now verified
+      if (isBrowser()) {
+        sessionStorage.setItem("dashboardRequiresLogin", "false");
+      }
+      return { success: true, data: json.data };
+    }
+    return { success: false, message: json.message || "Invalid OTP" };
+  } catch (error) {
+    console.error("Failed to verify dashboard link OTP:", error);
+    return { success: false, message: "Network error" };
+  }
+}
+
+// ---------- Short Dashboard Link OTP ----------
+
+export interface ShortDashboardOtpSendResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: {
+    hashedOtp: string;
+    expiresAt: number;
+    maskedPhone: string;
+  };
+}
+
+/**
+ * Sends OTP to the phone associated with the short dashboard link token.
+ * Used when requiresLogin === true (link expired but still valid for viewing).
+ */
+export async function sendShortDashboardLinkOtp(
+  token: string
+): Promise<{ success: true; data: ShortDashboardOtpSendResponse["data"] } | { success: false; message: string }> {
+  try {
+    const res = await fetch(`${BASE_URL}/onSubmit/short-dashboard-link/${token}/send-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    });
+
+    // Check if response is JSON before parsing
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      return { success: false, message: "Server error" };
+    }
+
+    const json: ShortDashboardOtpSendResponse = await res.json();
+
+    if (json.success && json.data) {
+      return { success: true, data: json.data };
+    }
+    return { success: false, message: json.message || "Failed to send OTP" };
+  } catch (error) {
+    console.error("Failed to send short dashboard link OTP:", error);
+    return { success: false, message: "Network error" };
+  }
+}
+
+export interface ShortDashboardOtpVerifyResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: ShortDashboardLinkResponse["data"] & {
+    isVerified: boolean;
+    dashboardExpiresAt?: string;
+  };
+}
+
+/**
+ * Verifies OTP and renews the short dashboard link.
+ * On success, returns fresh data with requiresLogin: false and updates sessionStorage.
+ */
+// ---------- Credit Card Tracking ----------
+
+export interface CreditCardClickPayload {
+  card_id: string;
+  card_name: string;
+  bank: string;
+  lc2_code: string;
+  cta_link: string;
+}
+
+/**
+ * Tracks credit card CTA clicks for analytics.
+ * Fire-and-forget — never blocks the UI.
+ */
+export async function trackCreditCardClick(payload: CreditCardClickPayload): Promise<void> {
+  try {
+    await fetch(`${BASE_URL}/onSubmit/track-credit-card-click`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+  } catch (err) {
+    console.error("Failed to track credit card click:", err);
+  }
+}
+
+export async function verifyShortDashboardLinkOtp(
+  token: string,
+  otp: string,
+  hashedOtp: string,
+  expiresAt: number
+): Promise<{ success: true; data: ShortDashboardOtpVerifyResponse["data"] } | { success: false; message: string }> {
+  try {
+    const res = await fetch(`${BASE_URL}/onSubmit/short-dashboard-link/${token}/verify-otp`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ otp, hashedOtp, expiresAt }),
+    });
+
+    // Check if response is JSON before parsing
+    const contentType = res.headers.get("content-type");
+    if (!contentType || !contentType.includes("application/json")) {
+      return { success: false, message: "Server error" };
+    }
+
+    const json: ShortDashboardOtpVerifyResponse = await res.json();
+
+    if (json.success && json.data?.isVerified) {
+      // Update sessionStorage with renewed data
+      if (isBrowser()) {
+        const storedData: ShortExistingUserOffersResponse = {
+          statusCode: json.statusCode,
+          success: json.success,
+          message: json.message,
+          data: {
+            found: true,
+            exists: true,
+            user: json.data.user,
+            staticLenders: json.data.staticLenders,
+            isSalaried: json.data.isSalaried,
+            shownOffers: json.data.shownOffers,
+            selectedLenders: json.data.selectedLenders,
+            shortOfferLeadId: json.data.shortOfferLeadId,
+            ...Object.fromEntries(
+              Object.entries(json.data).filter(
+                ([key]) =>
+                  ![
+                    "valid",
+                    "exists",
+                    "reason",
+                    "user",
+                    "selectedLenders",
+                    "shownOffers",
+                    "staticLenders",
+                    "isSalaried",
+                    "requiresLogin",
+                    "isVerified",
+                    "dashboardExpiresAt",
+                    "shortOfferLeadId",
+                  ].includes(key)
+              )
+            ),
+          },
+        };
+        sessionStorage.setItem(SHORT_EXISTING_USER_SESSION_KEY, JSON.stringify(storedData));
+
+        // Store shortOfferLeadId for save-lender API calls
+        if (json.data.shortOfferLeadId) {
+          sessionStorage.setItem("shortOfferLeadId", json.data.shortOfferLeadId);
+        }
+
+        // Clear the requiresLogin flag since user is now verified
+        sessionStorage.setItem("shortDashboardRequiresLogin", "false");
+      }
+      return { success: true, data: json.data };
+    }
+    return { success: false, message: json.message || "Invalid OTP" };
+  } catch (error) {
+    console.error("Failed to verify short dashboard link OTP:", error);
+    return { success: false, message: "Network error" };
+  }
+}

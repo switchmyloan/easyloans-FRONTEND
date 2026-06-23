@@ -13,6 +13,7 @@ import {
   saveShortDraftLead,
   submitLead,
   mapLeadToFormDefaults,
+  getExistingShortUserOffer,
   type SendOtpResponse,
   type PrefilledStage2,
 } from "@/lib/api";
@@ -236,10 +237,35 @@ function ShortTicketFormContent() {
         setOtpError(err instanceof Error ? err.message : "Invalid OTP. Please try again.");
         return;
       }
+
+      // Check for existing user offers (returning user detection)
+      try {
+        const existingUserResponse = await getExistingShortUserOffer(stage1Data.mobile);
+        const userExists = existingUserResponse.data.found || existingUserResponse.data.exists;
+
+        if (userExists) {
+          // Returning user - mark as OTP verified (they just verified OTP here)
+          // This prevents the dashboard from triggering another OTP flow
+          sessionStorage.setItem("dashboardOtpVerified", "true");
+          sessionStorage.setItem("dashboardRequiresLogin", "false");
+          // Also clear short dashboard link state to prevent magic-link OTP flow
+          sessionStorage.setItem("shortDashboardRequiresLogin", "false");
+          sessionStorage.removeItem("shortDashboardLinkToken");
+
+          // Redirect to dashboard
+          router.push("/dashboard");
+          return;
+        }
+      } catch (err) {
+        // If check fails, continue with normal flow (new user)
+        console.warn("getExistingShortUserOffer check failed:", err);
+      }
+
+      // New user - continue to stage2
       setStage("loading");
       setTimeout(() => setStage("stage2"), LOADING_DELAY_MS);
     },
-    [stage1Data, otpData]
+    [stage1Data, otpData, router]
   );
 
   const handleOtpResend = useCallback(async () => {
