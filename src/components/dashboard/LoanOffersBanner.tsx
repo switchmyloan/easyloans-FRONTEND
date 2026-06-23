@@ -4,9 +4,10 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { Gift, Sparkle, Sparkles } from "lucide-react";
+import { Lock, Zap, CheckCircle, Clock, ChevronRight } from "lucide-react";
 import { STATIC_LENDER_LOGOS } from "@/lib/constants";
 import { getStoredShortExistingUserOffers } from "@/lib/api";
+import RingImageSection from "./RingImageSection";
 
 // ============================================================
 // Types
@@ -31,11 +32,6 @@ interface ShownOffer {
 }
 
 // ============================================================
-// Constants
-// ============================================================
-const DEFAULT_MATCH_PERCENTAGE = 92;
-
-// ============================================================
 // Utility Functions
 // ============================================================
 function mapSelectedLenderToPreviousLender(selected: SelectedLender): PreviousLender {
@@ -54,19 +50,13 @@ function mapShownOfferToLender(offer: ShownOffer): PreviousLender {
   };
 }
 
-/**
- * Sort selected lenders by createdAt descending (most recent first)
- * and deduplicate by lenderName (keep the most recent entry for each lender)
- */
 function sortAndDeduplicateSelectedLenders(lenders: SelectedLender[]): SelectedLender[] {
-  // Sort by createdAt descending (most recent first)
   const sorted = [...lenders].sort((a, b) => {
     const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
     const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
     return dateB - dateA;
   });
 
-  // Deduplicate: keep only the first (most recent) occurrence of each lenderName
   const seen = new Set<string>();
   return sorted.filter((lender) => {
     if (seen.has(lender.lenderName)) {
@@ -77,28 +67,18 @@ function sortAndDeduplicateSelectedLenders(lenders: SelectedLender[]): SelectedL
   });
 }
 
+// Format lender name for display (add spaces before capitals)
+function formatLenderName(name: string): string {
+  return name.replace(/([A-Z])/g, ' $1').trim();
+}
+
 // ============================================================
 // LoanOffersBanner Component
 // ============================================================
-interface LoanOffersBannerProps {
-  previousLenders?: PreviousLender[];
-  newOffersCount?: number;
-  matchPercentage?: number;
-}
-
-export default function LoanOffersBanner({
-  previousLenders,
-  newOffersCount,
-  matchPercentage = DEFAULT_MATCH_PERCENTAGE,
-}: LoanOffersBannerProps) {
-  // Most recent clicked lender (shown as main/big)
+export default function LoanOffersBanner() {
   const [mainLender, setMainLender] = useState<PreviousLender | null>(null);
-  // Rest of clicked lenders (shown in floating box, up to 3)
-  const [otherClickedLenders, setOtherClickedLenders] = useState<PreviousLender[]>([]);
-  // Shown offers from API (used when no selected lenders)
+  const [otherLenders, setOtherLenders] = useState<PreviousLender[]>([]);
   const [shownOffersLenders, setShownOffersLenders] = useState<PreviousLender[]>([]);
-  // Total offers count
-  const [totalOffersCount, setTotalOffersCount] = useState<number>(0);
 
   useEffect(() => {
     const existingUserData = getStoredShortExistingUserOffers();
@@ -107,410 +87,256 @@ export default function LoanOffersBanner({
     if (userExists && existingUserData?.data) {
       const data = existingUserData.data;
 
-      // Get shownOffers for total count and fallback display
       const shownOffers = (data.shownOffers || []) as ShownOffer[];
-      setTotalOffersCount(shownOffers.length);
-
       if (shownOffers.length > 0) {
         setShownOffersLenders(shownOffers.map(mapShownOfferToLender));
       }
 
-      // Get selectedLenders and sort by createdAt (most recent first)
       const selectedLenders = (data.selectedLenders || []) as SelectedLender[];
 
       if (selectedLenders.length > 0) {
-        // Sort and deduplicate by lenderName, keeping most recent
         const sortedLenders = sortAndDeduplicateSelectedLenders(selectedLenders);
         const mapped = sortedLenders.map(mapSelectedLenderToPreviousLender);
-
-        // First one is the most recent (main/big lender)
         setMainLender(mapped[0] || null);
-        // Rest go to floating box (up to 3)
-        setOtherClickedLenders(mapped.slice(1, 4));
+        // Set other lenders (up to 3) for "More offers" section
+        setOtherLenders(mapped.slice(1, 4));
       }
     }
   }, []);
 
-  // Determine what to show:
-  // If user has clicked lenders, show those
-  // Otherwise, fall back to shownOffers
   const hasClickedLenders = mainLender !== null;
+  const displayLender = hasClickedLenders ? mainLender : shownOffersLenders[0];
 
-  // Main lenders to show (for "previously showed interest" section)
-  const displayLenders: PreviousLender[] = hasClickedLenders
-    ? [mainLender, ...otherClickedLenders]
-    : shownOffersLenders.slice(0, 4);
+  // Get lender logo
+  const lenderLogo = displayLender
+    ? STATIC_LENDER_LOGOS[displayLender.id] || STATIC_LENDER_LOGOS[displayLender.name]
+    : null;
 
-  // Floating logos: if clicked, show other clicked lenders; else show shownOffers
-  const floatingLogosLenders = hasClickedLenders
-    ? otherClickedLenders.slice(0, 3)
-    : shownOffersLenders.slice(0, 3);
+  // Combine otherLenders with shownOffersLenders to get at least 3 offers
+  const moreOffers = (() => {
+    const combined: PreviousLender[] = [...otherLenders];
+    const existingIds = new Set([displayLender?.id, ...otherLenders.map(l => l.id)]);
 
-  // Offers count
-  const offersCount = newOffersCount ?? totalOffersCount;
+    // Add from shownOffers if we need more
+    for (const lender of shownOffersLenders) {
+      if (combined.length >= 3) break;
+      if (!existingIds.has(lender.id)) {
+        combined.push(lender);
+        existingIds.add(lender.id);
+      }
+    }
+
+    return combined.slice(0, 3);
+  })();
+
+  // If no lender data, don't render
+  if (!displayLender) {
+    return null;
+  }
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.1 }}
-      className="relative overflow-hidden rounded-2xl p-5 sm:p-6 mb-6"
+      className="relative overflow-hidden rounded-2xl mb-6 border border-violet-200/60 shadow-lg shadow-violet-100/50"
       style={{
-        background: "linear-gradient(135deg, #F5F0FF 0%, #EDE5FF 50%, #E8DEFF 100%)",
+        background: "linear-gradient(135deg, #F8F5FF 0%, #F0E8FF 50%, #E8DEFF 100%)",
       }}
     >
-      {/* Top Recommendation Tag */}
-      <div className="absolute top-0 left-0 z-10">
+      {/* Top Tag */}
+    <div className="absolute top-0 left-0 z-10">
         <span className="inline-flex items-center gap-1 bg-gradient-to-r from-violet-600 to-[#C894FF] text-white shadow-lg shadow-violet-500/20 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-br-xl rounded-tl-[18px]">
           <svg className="w-2.5 h-2.5 text-amber-300" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 2l2.39 7.36H22l-6.18 4.49L18.21 22 12 17.27 5.79 22l2.39-8.15L2 9.36h7.61z" />
           </svg>
           Personalized just for you
         </span>
+      </div> 
+
+      {/* Background decorative dots */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-10 left-1/4 w-1 h-1 bg-violet-300 rounded-full opacity-50" />
+        <div className="absolute top-20 left-1/3 w-1.5 h-1.5 bg-violet-200 rounded-full opacity-40" />
+        <div className="absolute bottom-20 left-1/5 w-1 h-1 bg-violet-300 rounded-full opacity-50" />
+        <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-violet-200 rounded-full opacity-40" />
       </div>
 
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-10 -right-10 w-40 h-40 bg-violet-200/30 rounded-full blur-2xl" />
-        <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-violet-200/30 rounded-full blur-2xl" />
-      </div>
-
-      {/* Mobile Layout - Side by side */}
-      <div className="relative flex sm:hidden flex-row items-start justify-between gap-3 mt-6">
-        {/* Left Content */}
-        <div className="flex-1 min-w-0">
-          <p className="text-gray-900 font-semibold text-xs mb-2">You previously showed interest in</p>
-
-          {/* Lender Logos */}
-          <div className="flex flex-wrap items-center gap-1.5 mb-3">
-            {displayLenders.map((lender: PreviousLender) => {
-              const logoData = STATIC_LENDER_LOGOS[lender.id] || STATIC_LENDER_LOGOS[lender.name];
-              if (!logoData) return null;
-              return (
-                <div
-                  key={lender.id}
-                  className="w-8 h-8 bg-white rounded-lg shadow-sm flex items-center justify-center p-1"
-                >
-                  <Image
-                    src={logoData.src}
-                    alt={lender.name}
-                    width={24}
-                    height={24}
-                    className="object-contain w-full h-full"
-                  />
-                </div>
-              );
-            })}
-          </div>
-
-          <p className="text-[11px] text-slate-600 mb-3">
-            <span className="font-semibold text-violet-600">{offersCount} new offers</span> found for you
+      <div className="flex flex-col lg:flex-row">
+        {/* Left Section - Main Content */}
+        <div className="flex-1 p-4 sm:p-6 lg:p-8 pt-9 sm:pt-12">
+          {/* Interest Text */}
+          <p className="text-black font-bold text-[11px] sm:text-sm mb-1 mt-1">
+            You&apos;ve shown interest in
           </p>
 
-          {/* Single Button */}
-          <Link
-            href="/dashboard/offers"
-            className="inline-flex items-center gap-1 px-4 py-2 bg-white border border-violet-200 text-violet-700 font-semibold rounded-lg text-xs"
-          >
-            Explore New Offers <span>→</span>
-          </Link>
-        </div>
+          {/* Lender Name with Logo */}
+          <div className="flex items-center gap-2 mb-1">
+            {lenderLogo && (
+              <div className="w-7 h-7 sm:w-10 sm:h-10 bg-white rounded-lg shadow-sm flex items-center justify-center p-0.5 sm:p-1 shrink-0">
+                <Image
+                  src={lenderLogo.src}
+                  alt={displayLender.name}
+                  width={32}
+                  height={32}
+                  className="object-contain w-full h-full"
+                />
+              </div>
+            )}
+            <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold text-violet-900 tracking-tight leading-tight">
+              {formatLenderName(displayLender.name)}
+              <sup className="text-[8px] sm:text-sm font-normal ml-0.5">®</sup>
+            </h2>
+          </div>
 
-        {/* Right - Gauge Card */}
-        <div className="shrink-0">
-          <div className="bg-white rounded-xl px-3 py-3 shadow-lg">
-            <div className="flex justify-center mb-1">
-              <svg className="w-16 h-10" viewBox="0 0 100 55">
-                <path d="M 10 50 A 40 40 0 0 1 22 22" fill="none" stroke="#dc2626" strokeWidth="7" strokeLinecap="round" />
-                <path d="M 22 22 A 40 40 0 0 1 40 10" fill="none" stroke="#f97316" strokeWidth="7" />
-                <path d="M 40 10 A 40 40 0 0 1 60 10" fill="none" stroke="#facc15" strokeWidth="7" />
-                <path d="M 60 10 A 40 40 0 0 1 78 22" fill="none" stroke="#84cc16" strokeWidth="7" />
-                <path d="M 78 22 A 40 40 0 0 1 90 50" fill="none" stroke="#22c55e" strokeWidth="7" strokeLinecap="round" />
-                <motion.g
-                  initial={{ rotate: -90 }}
-                  animate={{ rotate: -90 + (matchPercentage / 100) * 180 }}
-                  transition={{ duration: 1.2, ease: "easeOut" }}
-                  style={{ transformOrigin: "50px 50px" }}
-                >
-                  <line x1="50" y1="50" x2="50" y2="18" stroke="#1f2937" strokeWidth="2" strokeLinecap="round" />
-                  <circle cx="50" cy="50" r="3.5" fill="#1f2937" />
-                </motion.g>
-              </svg>
+          {/* Subtitle */}
+          <p className="text-gray-600 text-[10px] sm:text-sm">
+            Continue now and get your loan
+          </p>
+
+          {/* Instantly in Minutes */}
+          <div className="flex items-center gap-1 text-violet-600 font-semibold text-sm sm:text-lg mb-3 sm:mb-5">
+            <span>Instantly</span>
+            <span className="text-violet-800 font-bold">in Minutes!</span>
+            <Zap className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-yellow-500 fill-yellow-500" />
+          </div>
+
+          {/* Feature Badges - Scrollable on mobile */}
+          <div className="flex items-center gap-1 sm:gap-1 mb-3 sm:mb-5 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
+            <div className="flex items-center gap-1 sm:gap-1.5 bg-white rounded-md px-2 py-1 sm:px-2.5 sm:py-1.5 shrink-0">
+              <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-violet-50 flex items-center justify-center">
+                <Zap className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-violet-600" />
+              </div>
+              <span className="text-[8px] sm:text-[10px] text-gray-700 font-medium whitespace-nowrap">Instant Approval</span>
             </div>
-            <div className="text-center">
-              <p className="text-[10px] font-semibold text-slate-800">Good Match</p>
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 }}
-                className="text-xl font-bold text-green-600 leading-none"
-              >
-                {matchPercentage}%
-              </motion.p>
+            <div className="flex items-center gap-1 sm:gap-1.5 bg-white rounded-md px-2 py-1 sm:px-2.5 sm:py-1.5 shrink-0">
+              <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-violet-50 flex items-center justify-center">
+                <CheckCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-violet-600" />
+              </div>
+              <span className="text-[8px] sm:text-[10px] text-gray-700 font-medium whitespace-nowrap">Minimal Documents</span>
+            </div>
+            <div className="flex items-center gap-1 sm:gap-1.5 bg-white rounded-md px-2 py-1 sm:px-2.5 sm:py-1.5 shrink-0">
+              <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-violet-50 flex items-center justify-center">
+                <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-violet-600" />
+              </div>
+              <span className="text-[8px] sm:text-[10px] text-gray-700 font-medium whitespace-nowrap">Quick Disbursal</span>
             </div>
           </div>
+
+          {/* CTA Button */}
+          <Link
+            href="/dashboard/offers"
+            className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 sm:px-8 py-2.5 rounded-md text-white font-semibold text-xs sm:text-sm shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] group bg-gradient-to-r from-[#dfff45] via-[#9b6bff] to-[#7c3aed] mt-2"
+          >
+            Continue with {formatLenderName(displayLender.name)}
+            <span className="group-hover:translate-x-1 transition-transform">→</span>
+          </Link>
+
+          {/* Trust Badge */}
+          <div className="flex items-center justify-center sm:justify-start gap-1.5 mt-2 text-[10px] sm:text-xs text-gray-600">
+            <Lock className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gray-500" />
+            <span>100% Secure & Trusted</span>
+          </div>
         </div>
+
+        {/* Center Section - R Ring Image with floating bubbles (hidden on mobile) */}
+        <div className="hidden lg:block mt-10">
+          <RingImageSection />
+        </div>
+
+        {/* Right Section - More Offers */}
+        {moreOffers.length > 0 && (
+          <div className="hidden xl:block w-64 p-5">
+            <h3 className="text-xs font-semibold text-gray-800 mb-4">More offers you may like</h3>
+
+            <div className="space-y-3">
+              {moreOffers.map((lender) => {
+                const logo = STATIC_LENDER_LOGOS[lender.id] || STATIC_LENDER_LOGOS[lender.name];
+                return (
+                  <Link
+                    key={lender.id}
+                    href="/dashboard/offers"
+                    className="flex items-center justify-between p-3 bg-white rounded-xl hover:shadow-md transition-all group border border-gray-100"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center p-1.5">
+                        {logo ? (
+                          <Image
+                            src={logo.src}
+                            alt={lender.name}
+                            width={32}
+                            height={32}
+                            className="object-contain"
+                          />
+                        ) : (
+                          <span className="text-sm font-bold text-violet-600">{lender.prefix}</span>
+                        )}
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-semibold text-gray-800">{formatLenderName(lender.name)}</p>
+                        <p className="text-[8px] text-gray-500">Quick approval</p>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-violet-600 transition-colors" />
+                  </Link>
+                );
+              })}
+            </div>
+
+            <Link
+              href="/dashboard/offers"
+              className="inline-flex items-center gap-1 text-violet-600 text-xs font-medium mt-4 hover:text-violet-700"
+            >
+              View all offers
+              <span>→</span>
+            </Link>
+          </div>
+        )}
       </div>
 
-      {/* Desktop/Tablet Layout */}
-      <div className="relative hidden sm:flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 sm:gap-6">
-        {/* Left Content */}
-        <div className="flex-1 w-full lg:max-w-xl mt-4">
-          <p className="text-gray-900 font-semibold text-sm mb-3">You previously showed interest in</p>
 
-          {/* Lender Logos */}
-          <div className="flex flex-wrap items-center gap-3 mb-4">
-            {displayLenders.map((lender: PreviousLender) => {
-              const logoData = STATIC_LENDER_LOGOS[lender.id] || STATIC_LENDER_LOGOS[lender.name];
-              if (!logoData) return null;
+
+      {/* Mobile More Offers Section */}
+      {moreOffers.length > 0 && (
+        <div className="xl:hidden border-t border-violet-100 bg-white/40 backdrop-blur-sm p-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-semibold text-gray-800">More offers you may like</h3>
+            <Link href="/dashboard/offers" className="text-violet-600 text-xs font-medium">
+              View all →
+            </Link>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
+            {moreOffers.map((lender) => {
+              const logo = STATIC_LENDER_LOGOS[lender.id] || STATIC_LENDER_LOGOS[lender.name];
               return (
-                <div
+                <Link
                   key={lender.id}
-                  className="w-16 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center p-2"
+                  href="/dashboard/offers"
+                  className="shrink-0 flex items-center gap-2 p-3 bg-white rounded-xl shadow-sm min-w-[160px]"
                 >
-                  <Image
-                    src={logoData.src}
-                    alt={lender.name}
-                    width={32}
-                    height={32}
-                    className="object-contain w-full h-full"
-                  />
-                </div>
+                  <div className="w-8 h-8 bg-gray-50 rounded-lg flex items-center justify-center p-1">
+                    {logo ? (
+                      <Image
+                        src={logo.src}
+                        alt={lender.name}
+                        width={24}
+                        height={24}
+                        className="object-contain"
+                      />
+                    ) : (
+                      <span className="text-xs font-bold text-violet-600">{lender.prefix}</span>
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-gray-800">{formatLenderName(lender.name)}</p>
+                    <p className="text-[10px] text-gray-500">Quick approval</p>
+                  </div>
+                </Link>
               );
             })}
           </div>
-
-          <div className="flex items-center gap-3 mb-5">
-            <div className="w-11 h-11 rounded-2xl flex items-center justify-center shrink-0">
-              <Gift className="w-5 h-5 text-violet-600 stroke-[2.5]" />
-            </div>
-            <div>
-              <p className="text-xs text-slate-500">
-                We found{" "}
-                <span className="font-semibold text-violet-600">
-                  {offersCount} new personalized offers
-                </span>
-              </p>
-              <p className="text-xs text-slate-500">
-                that may give you better rates and faster approvals.
-              </p>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="flex flex-row gap-3">
-            <Link
-              href="/dashboard/offers"
-              className="px-5 py-2.5 rounded-lg transition-all text-sm shadow-md hover:shadow-lg hover:scale-[1.02] bg-gradient-to-r from-[#D9F941] to-[#7C3AED] text-white font-semibold text-center"
-            >
-              Apply Now →
-            </Link>
-            <Link
-              href="/dashboard/offers"
-              className="px-5 py-2.5 bg-white border border-violet-200 text-violet-700 font-semibold rounded-lg hover:bg-violet-50 transition-colors text-sm text-center"
-            >
-              View Previous Offers
-            </Link>
-          </div>
-
-          {/* Trust Banner */}
-          <div className="flex flex-wrap items-center gap-2 mt-4 text-xs text-gray-600">
-            <div className="flex items-center gap-1.5">
-              <svg className="w-3.5 h-3.5 text-indigo-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-              <span className="font-medium">Trusted by 65L+ customers</span>
-            </div>
-            <div className="flex -space-x-1.5">
-              {[
-                { bg: "bg-rose-200", txt: "text-rose-700", c: "A" },
-                { bg: "bg-amber-200", txt: "text-amber-700", c: "P" },
-                { bg: "bg-sky-200", txt: "text-sky-700", c: "R" },
-                { bg: "bg-purple-200", txt: "text-purple-700", c: "S" },
-              ].map((a, i) => (
-                <span
-                  key={i}
-                  className={`w-5 h-5 rounded-full border border-white flex items-center justify-center text-[9px] font-bold ${a.bg} ${a.txt}`}
-                >
-                  {a.c}
-                </span>
-              ))}
-            </div>
-            <span className="text-amber-500 font-semibold">4.8 ★</span>
-            <span className="text-gray-300">|</span>
-            <span>RBI Registered NBFC</span>
-          </div>
         </div>
-
-        {/* Floating Box with Logos */}
-        <div
-          className="relative shrink-0 hidden lg:flex items-end justify-center"
-          style={{ width: "240px", height: "240px" }}
-        >
-          {/* Floating Logos - showing first 3 from recommendation offers */}
-          {floatingLogosLenders.map((lender: PreviousLender, index: number) => {
-            const logoData = STATIC_LENDER_LOGOS[lender.id] || STATIC_LENDER_LOGOS[lender.name];
-            if (!logoData) return null;
-
-            // Position configs for 3 logos floating above box
-            const positions = [
-              { left: "10%", bottom: "55%", rotate: -8, delay: 0.2 },
-              { left: "35%", bottom: "70%", rotate: 0, delay: 0.4 },
-              { left: "60%", bottom: "55%", rotate: 8, delay: 0.3 },
-            ];
-            const pos = positions[index];
-
-            return (
-              <motion.div
-                key={lender.id}
-                initial={{ opacity: 0, y: 30, scale: 0.8 }}
-                animate={{
-                  opacity: 1,
-                  y: [0, -6, 0],
-                  scale: 1,
-                  rotate: pos.rotate
-                }}
-                transition={{
-                  delay: pos.delay,
-                  y: {
-                    duration: 2 + index * 0.3,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                  }
-                }}
-                className="absolute w-12 h-12 bg-white rounded-xl shadow-lg flex items-center justify-center p-2 border border-gray-100"
-                style={{
-                  left: pos.left,
-                  bottom: pos.bottom,
-                  zIndex: 10 + index
-                }}
-              >
-                <Image
-                  src={logoData.src}
-                  alt={lender.name}
-                  width={82}
-                  height={82}
-                  className="object-contain w-[82px] h-[82px]"
-                />
-              </motion.div>
-            );
-          })}
-
-          {/* Sparkles */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0.5, 1, 0.5] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="absolute top-4 right-2"
-          >
-            <Sparkles className="w-4 h-4 text-amber-400" />
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0.3, 0.8, 0.3] }}
-            transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
-            className="absolute top-8 left-4"
-          >
-            <Sparkle className="w-3 h-3 text-violet-400" />
-          </motion.div>
-
-          {/* Box Image */}
-          <motion.img
-            src="/box.png"
-            alt="box"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
-            className="w-54 h-54 object-contain drop-shadow-xl"
-          />
-        </div>
-
-        {/* Gauge Card */}
-        <div className="shrink-0 flex justify-center lg:justify-end">
-          <div className="bg-white rounded-2xl px-4 py-5 shadow-lg w-[150px]">
-            {/* Gauge */}
-            <div className="flex justify-center mb-2 sm:mb-3">
-              <svg className="w-20 h-12 sm:w-24 sm:h-14" viewBox="0 0 100 55">
-                {/* Red */}
-                <path
-                  d="M 10 50 A 40 40 0 0 1 22 22"
-                  fill="none"
-                  stroke="#dc2626"
-                  strokeWidth="7"
-                  strokeLinecap="round"
-                />
-                {/* Orange */}
-                <path
-                  d="M 22 22 A 40 40 0 0 1 40 10"
-                  fill="none"
-                  stroke="#f97316"
-                  strokeWidth="7"
-                />
-                {/* Yellow */}
-                <path
-                  d="M 40 10 A 40 40 0 0 1 60 10"
-                  fill="none"
-                  stroke="#facc15"
-                  strokeWidth="7"
-                />
-                {/* Light Green */}
-                <path
-                  d="M 60 10 A 40 40 0 0 1 78 22"
-                  fill="none"
-                  stroke="#84cc16"
-                  strokeWidth="7"
-                />
-                {/* Green */}
-                <path
-                  d="M 78 22 A 40 40 0 0 1 90 50"
-                  fill="none"
-                  stroke="#22c55e"
-                  strokeWidth="7"
-                  strokeLinecap="round"
-                />
-                {/* Needle */}
-                <motion.g
-                  initial={{ rotate: -90 }}
-                  animate={{ rotate: -90 + (matchPercentage / 100) * 180 }}
-                  transition={{ duration: 1.2, ease: "easeOut" }}
-                  style={{ transformOrigin: "50px 50px" }}
-                >
-                  <line
-                    x1="50"
-                    y1="50"
-                    x2="50"
-                    y2="18"
-                    stroke="#1f2937"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                  <circle cx="50" cy="50" r="3.5" fill="#1f2937" />
-                </motion.g>
-              </svg>
-            </div>
-
-            {/* Text */}
-            <div className="text-center">
-              <p className="text-[13px] sm:text-[14px] font-semibold text-slate-800">
-                Good Match
-              </p>
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8 }}
-                className="text-[28px] sm:text-[34px] font-bold text-green-600 leading-none mt-1"
-              >
-                {matchPercentage}%
-              </motion.p>
-              <p className="text-[12px] sm:text-[13px] text-slate-700 font-medium mt-2 leading-tight">
-                High chance of
-                <br />
-                approval
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+      )}
     </motion.div>
   );
 }

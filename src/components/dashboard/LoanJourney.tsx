@@ -69,7 +69,7 @@ export default function LoanJourney() {
       existingUserData?.data?.found || existingUserData?.data?.exists;
 
     if (userExists && existingUserData?.data) {
-      const timeline = existingUserData.data.timeline || [];
+      const timeline = (existingUserData.data.timeline || []) as TimelineEvent[];
       const journeySteps = processTimeline(timeline);
       setSteps(journeySteps);
     }

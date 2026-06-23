@@ -1,18 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
-import LoanOffersBanner, { type PreviousLender } from "./LoanOffersBanner";
+import LoanOffersBanner from "./LoanOffersBanner";
 
 interface DashboardHeaderProps {
   firstName?: string;
-  previousLenders?: PreviousLender[];
-  newOffersCount?: number;
 }
 
 export default function DashboardHeader({
   firstName,
-  previousLenders = [],
-  newOffersCount = 0,
 }: DashboardHeaderProps) {
   const displayName = firstName
     ? firstName.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())
@@ -37,10 +33,7 @@ export default function DashboardHeader({
         </p>
       </motion.div>
 
-      <LoanOffersBanner
-        previousLenders={previousLenders}
-        newOffersCount={newOffersCount}
-      />
+      <LoanOffersBanner />
     </div>
   );
 }

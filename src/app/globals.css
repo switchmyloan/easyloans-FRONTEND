@@ -145,3 +145,12 @@ input[type="number"] {
   0%, 100% { transform: translateX(0); }
   50% { transform: translateX(4px); }
 }
+
+/* Hide scrollbar while keeping scroll functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari, Opera */
+}
