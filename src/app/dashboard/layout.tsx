@@ -8,7 +8,6 @@ import {
   getStoredShortDashboardLinkState,
   sendShortDashboardLinkOtp,
   verifyShortDashboardLinkOtp,
-  getExistingShortUserOffer,
 } from "@/lib/api";
 
 // Context to provide guardActivity function to child components
@@ -95,17 +94,6 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         // Store verified state in sessionStorage
         sessionStorage.setItem("dashboardOtpVerified", "true");
         sessionStorage.setItem("shortDashboardRequiresLogin", "false");
-
-        // Fetch fresh offers after OTP verification
-        const userPhone = result.data?.user?.mobileNumber || sessionStorage.getItem("userPhone");
-        if (userPhone) {
-          try {
-            await getExistingShortUserOffer(userPhone);
-          } catch (err) {
-            console.error("Failed to fetch offers after OTP verification:", err);
-          }
-        }
-
         // Resolve the pending activity promise
         if (otpPromiseResolver) {
           otpPromiseResolver.resolve(true);
@@ -180,9 +168,6 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
       setOtpPromiseResolver({ resolve });
     });
   }, [isOtpVerified, tokenFromUrl]);
-
-  // Suppress unused variable warning
-  void handleOtpCancel;
 
   return (
     <OtpGuardContext.Provider value={{ guardActivity }}>

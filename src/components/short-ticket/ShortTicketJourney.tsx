@@ -214,6 +214,7 @@ function ShortTicketJourneyContent() {
 
   const handleOtpVerify = useCallback(
     async (otp: string) => {
+      console.log("otp:", otp);
       if (!stage1Data || !otpData) return;
       setOtpError(null);
       try {

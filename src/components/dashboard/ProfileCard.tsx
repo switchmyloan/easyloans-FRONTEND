@@ -4,9 +4,10 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Phone, Mail, Wallet, Calendar, ChevronRight, CheckCircle2 } from "lucide-react";
+import { getStoredShortExistingUserOffers } from "@/lib/api";
 
 // ============================================================
-// Types (TODO: Move to lib/types.ts when APIs are ready)
+// Types
 // ============================================================
 export interface ExistingUserData {
   firstName: string;
@@ -22,24 +23,6 @@ export interface ExistingUserData {
   loanAmount: number;
   loanPurpose: string;
 }
-
-// ============================================================
-// Dummy Data (TODO: Replace with API call when ready)
-// ============================================================
-const DUMMY_USER: ExistingUserData = {
-  firstName: "Rahul",
-  lastName: "Sharma",
-  email: "rahul.sharma@email.com",
-  mobileNumber: "9876543210",
-  gender: "Male",
-  pincode: "110001",
-  panNumber: "ABCDE1234F",
-  dateOfBirth: "1995-05-15",
-  jobType: "Salaried",
-  monthlySalary: 50000,
-  loanAmount: 200000,
-  loanPurpose: "Personal",
-};
 
 // ============================================================
 // Utility Functions
@@ -92,22 +75,6 @@ function calculateProfileCompletion(user: ExistingUserData): number {
 }
 
 // ============================================================
-// API Placeholder (TODO: Replace with actual API)
-// ============================================================
-function getStoredExistingUserOffers(): { data?: { found?: boolean; exists?: boolean; user?: ExistingUserData } } | null {
-  // TODO: Replace with actual API call
-  // import { getStoredExistingUserOffers } from "@/lib/api";
-
-  // For now, return dummy data
-  return {
-    data: {
-      found: true,
-      user: DUMMY_USER,
-    },
-  };
-}
-
-// ============================================================
 // ProfileCard Component
 // ============================================================
 export default function ProfileCard() {
@@ -115,7 +82,7 @@ export default function ProfileCard() {
   const [completion, setCompletion] = useState(0);
 
   useEffect(() => {
-    const existingUserData = getStoredExistingUserOffers();
+    const existingUserData = getStoredShortExistingUserOffers();
     const userExists = existingUserData?.data?.found || existingUserData?.data?.exists;
 
     if (userExists && existingUserData?.data?.user) {

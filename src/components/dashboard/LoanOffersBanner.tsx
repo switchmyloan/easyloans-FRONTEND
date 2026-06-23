@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Gift, Sparkle, Sparkles } from "lucide-react";
 import { STATIC_LENDER_LOGOS } from "@/lib/constants";
+import { getStoredShortExistingUserOffers } from "@/lib/api";
 
 // ============================================================
 // Types
@@ -18,25 +19,21 @@ export interface PreviousLender {
 
 interface SelectedLender {
   lenderName: string;
-  [key: string]: unknown;
+  createdAt?: string;
+  status?: string | null;
+  mrn?: string;
 }
 
 interface ShownOffer {
   lenderName: string;
-  [key: string]: unknown;
+  section?: string;
+  utmLink?: string | null;
 }
 
 // ============================================================
-// Dummy Data (TODO: Replace with API data)
+// Constants
 // ============================================================
-const DUMMY_PREVIOUS_LENDERS: PreviousLender[] = [
-  { id: "KreditBee", name: "KreditBee", prefix: "KB" },
-  { id: "RapidMoney", name: "RapidMoney", prefix: "RM" },
-  { id: "TrueBalance", name: "TrueBalance", prefix: "TB" },
-];
-
-const DUMMY_OFFER_COUNT = 5;
-const DUMMY_MATCH_PERCENTAGE = 92;
+const DEFAULT_MATCH_PERCENTAGE = 92;
 
 // ============================================================
 // Utility Functions
@@ -57,33 +54,27 @@ function mapShownOfferToLender(offer: ShownOffer): PreviousLender {
   };
 }
 
-// ============================================================
-// API Placeholder (TODO: Replace with actual API)
-// ============================================================
-function getStoredShortTicketOffers(): {
-  data?: {
-    found?: boolean;
-    exists?: boolean;
-    selectedLenders?: SelectedLender[];
-    shownOffers?: ShownOffer[];
-    [key: string]: unknown;
-  };
-} | null {
-  // TODO: Replace with actual API call
-  return {
-    data: {
-      found: true,
-      selectedLenders: [
-        { lenderName: "KreditBee" },
-        { lenderName: "RapidMoney" },
-      ],
-      shownOffers: [
-        { lenderName: "KreditBee" },
-        { lenderName: "RapidMoney" },
-        { lenderName: "TrueBalance" },
-      ],
-    },
-  };
+/**
+ * Sort selected lenders by createdAt descending (most recent first)
+ * and deduplicate by lenderName (keep the most recent entry for each lender)
+ */
+function sortAndDeduplicateSelectedLenders(lenders: SelectedLender[]): SelectedLender[] {
+  // Sort by createdAt descending (most recent first)
+  const sorted = [...lenders].sort((a, b) => {
+    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+    return dateB - dateA;
+  });
+
+  // Deduplicate: keep only the first (most recent) occurrence of each lenderName
+  const seen = new Set<string>();
+  return sorted.filter((lender) => {
+    if (seen.has(lender.lenderName)) {
+      return false;
+    }
+    seen.add(lender.lenderName);
+    return true;
+  });
 }
 
 // ============================================================
@@ -98,44 +89,65 @@ interface LoanOffersBannerProps {
 export default function LoanOffersBanner({
   previousLenders,
   newOffersCount,
-  matchPercentage = DUMMY_MATCH_PERCENTAGE,
+  matchPercentage = DEFAULT_MATCH_PERCENTAGE,
 }: LoanOffersBannerProps) {
-  const [selectedLendersState, setSelectedLendersState] = useState<PreviousLender[]>([]);
-  const [floatingLenders, setFloatingLenders] = useState<PreviousLender[]>([]);
+  // Most recent clicked lender (shown as main/big)
+  const [mainLender, setMainLender] = useState<PreviousLender | null>(null);
+  // Rest of clicked lenders (shown in floating box, up to 3)
+  const [otherClickedLenders, setOtherClickedLenders] = useState<PreviousLender[]>([]);
+  // Shown offers from API (used when no selected lenders)
+  const [shownOffersLenders, setShownOffersLenders] = useState<PreviousLender[]>([]);
+  // Total offers count
+  const [totalOffersCount, setTotalOffersCount] = useState<number>(0);
 
   useEffect(() => {
-    const existingUserData = getStoredShortTicketOffers();
+    const existingUserData = getStoredShortExistingUserOffers();
     const userExists = existingUserData?.data?.found || existingUserData?.data?.exists;
 
     if (userExists && existingUserData?.data) {
       const data = existingUserData.data;
 
-      // Use selectedLenders from API for "previously showed interest" section
-      const selectedLenders = data.selectedLenders || [];
-      if (selectedLenders.length > 0) {
-        const mappedSelectedLenders = selectedLenders.map(mapSelectedLenderToPreviousLender);
-        setSelectedLendersState(mappedSelectedLenders);
+      // Get shownOffers for total count and fallback display
+      const shownOffers = (data.shownOffers || []) as ShownOffer[];
+      setTotalOffersCount(shownOffers.length);
+
+      if (shownOffers.length > 0) {
+        setShownOffersLenders(shownOffers.map(mapShownOfferToLender));
       }
 
-      // Use shownOffers from API for floating logos (first 3)
-      const shownOffers = data.shownOffers || [];
-      if (shownOffers.length > 0) {
-        const floatingLogos = shownOffers.slice(0, 3).map(mapShownOfferToLender);
-        setFloatingLenders(floatingLogos);
+      // Get selectedLenders and sort by createdAt (most recent first)
+      const selectedLenders = (data.selectedLenders || []) as SelectedLender[];
+
+      if (selectedLenders.length > 0) {
+        // Sort and deduplicate by lenderName, keeping most recent
+        const sortedLenders = sortAndDeduplicateSelectedLenders(selectedLenders);
+        const mapped = sortedLenders.map(mapSelectedLenderToPreviousLender);
+
+        // First one is the most recent (main/big lender)
+        setMainLender(mapped[0] || null);
+        // Rest go to floating box (up to 3)
+        setOtherClickedLenders(mapped.slice(1, 4));
       }
     }
   }, []);
 
-  // Use selectedLenders from API, fallback to props or dummy
-  const lenders = selectedLendersState.length > 0
-    ? selectedLendersState
-    : (previousLenders && previousLenders.length > 0 ? previousLenders : DUMMY_PREVIOUS_LENDERS);
-  const offersCount = newOffersCount ?? DUMMY_OFFER_COUNT;
+  // Determine what to show:
+  // If user has clicked lenders, show those
+  // Otherwise, fall back to shownOffers
+  const hasClickedLenders = mainLender !== null;
 
-  // Use recommendation offers for floating logos, fallback to previous lenders or dummy
-  const floatingLogosLenders = floatingLenders.length > 0
-    ? floatingLenders
-    : (previousLenders && previousLenders.length > 0 ? previousLenders.slice(0, 3) : DUMMY_PREVIOUS_LENDERS);
+  // Main lenders to show (for "previously showed interest" section)
+  const displayLenders: PreviousLender[] = hasClickedLenders
+    ? [mainLender, ...otherClickedLenders]
+    : shownOffersLenders.slice(0, 4);
+
+  // Floating logos: if clicked, show other clicked lenders; else show shownOffers
+  const floatingLogosLenders = hasClickedLenders
+    ? otherClickedLenders.slice(0, 3)
+    : shownOffersLenders.slice(0, 3);
+
+  // Offers count
+  const offersCount = newOffersCount ?? totalOffersCount;
 
   return (
     <motion.div
@@ -171,7 +183,7 @@ export default function LoanOffersBanner({
 
           {/* Lender Logos */}
           <div className="flex flex-wrap items-center gap-1.5 mb-3">
-            {lenders.map((lender) => {
+            {displayLenders.map((lender: PreviousLender) => {
               const logoData = STATIC_LENDER_LOGOS[lender.id] || STATIC_LENDER_LOGOS[lender.name];
               if (!logoData) return null;
               return (
@@ -248,7 +260,7 @@ export default function LoanOffersBanner({
 
           {/* Lender Logos */}
           <div className="flex flex-wrap items-center gap-3 mb-4">
-            {lenders.map((lender) => {
+            {displayLenders.map((lender: PreviousLender) => {
               const logoData = STATIC_LENDER_LOGOS[lender.id] || STATIC_LENDER_LOGOS[lender.name];
               if (!logoData) return null;
               return (
@@ -336,7 +348,7 @@ export default function LoanOffersBanner({
           style={{ width: "240px", height: "240px" }}
         >
           {/* Floating Logos - showing first 3 from recommendation offers */}
-          {floatingLogosLenders.map((lender, index) => {
+          {floatingLogosLenders.map((lender: PreviousLender, index: number) => {
             const logoData = STATIC_LENDER_LOGOS[lender.id] || STATIC_LENDER_LOGOS[lender.name];
             if (!logoData) return null;
 

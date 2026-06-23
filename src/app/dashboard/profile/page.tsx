@@ -21,6 +21,7 @@ import {
   Zap,
   Headphones,
 } from "lucide-react";
+import { getStoredShortExistingUserOffers } from "@/lib/api";
 
 // ============================================================
 // Types
@@ -39,24 +40,6 @@ interface ExistingUserData {
   loanAmount: number;
   loanPurpose: string;
 }
-
-// ============================================================
-// Dummy Data (TODO: Replace with API data)
-// ============================================================
-const DUMMY_USER: ExistingUserData = {
-  firstName: "Rahul",
-  lastName: "Sharma",
-  email: "rahul.sharma@email.com",
-  mobileNumber: "9876543210",
-  gender: "MALE",
-  pincode: "110001",
-  panNumber: "ABCDE1234F",
-  dateOfBirth: "1995-05-15",
-  jobType: "SALARIED",
-  monthlySalary: 50000,
-  loanAmount: 200000,
-  loanPurpose: "Personal Expenses",
-};
 
 // ============================================================
 // Helper Functions
@@ -139,24 +122,6 @@ function calculateProfileCompletion(user: ExistingUserData): number {
 }
 
 // ============================================================
-// API Placeholder (TODO: Replace with actual API)
-// ============================================================
-function getStoredShortTicketOffers(): {
-  data?: {
-    found?: boolean;
-    exists?: boolean;
-    user?: ExistingUserData;
-  };
-} | null {
-  return {
-    data: {
-      found: true,
-      user: DUMMY_USER,
-    },
-  };
-}
-
-// ============================================================
 // Sub-Components
 // ============================================================
 interface InfoItemProps {
@@ -217,7 +182,7 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const existingUserData = getStoredShortTicketOffers();
+    const existingUserData = getStoredShortExistingUserOffers();
     const userExists = existingUserData?.data?.found || existingUserData?.data?.exists;
 
     if (userExists && existingUserData?.data?.user) {

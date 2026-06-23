@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Check } from "lucide-react";
+import { getStoredShortExistingUserOffers } from "@/lib/api";
 
 // ============================================================
 // Types
@@ -19,17 +20,6 @@ interface JourneyStep {
   timestamp: string;
   status: "completed" | "in_progress";
 }
-
-// ============================================================
-// Dummy Data (TODO: Replace with API data)
-// ============================================================
-const DUMMY_TIMELINE: TimelineEvent[] = [
-  { event: "lead_created", label: "Application Started", at: "2024-06-15T10:30:00Z" },
-  { event: "otp_verified", label: "OTP Verified", at: "2024-06-15T10:32:00Z" },
-  { event: "profile_completed", label: "Profile Completed", at: "2024-06-15T10:35:00Z" },
-  { event: "offers_shown", label: "Offers Displayed", at: "2024-06-15T10:36:00Z" },
-  { event: "lender_applied", label: "Applied to Lender", at: "2024-06-16T14:20:00Z" },
-];
 
 // ============================================================
 // Utility Functions
@@ -68,33 +58,13 @@ function processTimeline(timeline: TimelineEvent[]): JourneyStep[] {
 }
 
 // ============================================================
-// API Placeholder (TODO: Replace with actual API)
-// ============================================================
-function getStoredShortTicketOffers(): {
-  data?: {
-    found?: boolean;
-    exists?: boolean;
-    timeline?: TimelineEvent[];
-    [key: string]: unknown;
-  };
-} | null {
-  // TODO: Replace with actual API call
-  return {
-    data: {
-      found: true,
-      timeline: DUMMY_TIMELINE,
-    },
-  };
-}
-
-// ============================================================
 // LoanJourney Component
 // ============================================================
 export default function LoanJourney() {
   const [steps, setSteps] = useState<JourneyStep[]>([]);
 
   useEffect(() => {
-    const existingUserData = getStoredShortTicketOffers();
+    const existingUserData = getStoredShortExistingUserOffers();
     const userExists =
       existingUserData?.data?.found || existingUserData?.data?.exists;
 

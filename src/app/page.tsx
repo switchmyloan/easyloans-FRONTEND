@@ -13,6 +13,7 @@ import {
   saveShortDraftLead,
   submitLead,
   mapLeadToFormDefaults,
+  getExistingShortUserOffer,
   type SendOtpResponse,
   type PrefilledStage2,
 } from "@/lib/api";
@@ -185,6 +186,7 @@ function HomeContent() {
 
   const handleOtpVerify = useCallback(
     async (otp: string) => {
+      console.log("otp:", otp);
       if (!stage1Data || !otpData) return;
       setOtpError(null);
       try {
@@ -207,10 +209,33 @@ function HomeContent() {
         setOtpError(err instanceof Error ? err.message : "Invalid OTP. Please try again.");
         return;
       }
+
+      // Check for existing user offers (returning user detection)
+      try {
+        const existingUserResponse = await getExistingShortUserOffer(stage1Data.mobile);
+        const userExists = existingUserResponse.data.found || existingUserResponse.data.exists;
+
+        if (userExists) {
+          // Returning user - mark as OTP verified
+          sessionStorage.setItem("dashboardOtpVerified", "true");
+          sessionStorage.setItem("dashboardRequiresLogin", "false");
+          sessionStorage.setItem("shortDashboardRequiresLogin", "false");
+          sessionStorage.removeItem("shortDashboardLinkToken");
+
+          // Redirect to dashboard
+          router.push("/dashboard");
+          return;
+        }
+      } catch (err) {
+        // If check fails, continue with normal flow (new user)
+        console.warn("getExistingShortUserOffer check failed:", err);
+      }
+
+      // New user - continue to stage2
       setStage("loading");
       setTimeout(() => setStage("stage2"), LOADING_DELAY_MS);
     },
-    [stage1Data, otpData]
+    [stage1Data, otpData, router]
   );
 
   const handleOtpResend = useCallback(async () => {
