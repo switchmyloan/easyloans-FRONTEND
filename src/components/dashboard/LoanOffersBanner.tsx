@@ -170,24 +170,18 @@ export default function LoanOffersBanner() {
             You&apos;ve shown interest in
           </p>
 
-          {/* Lender Name with Logo */}
-          <div className="flex items-center gap-2 mb-1">
-            {lenderLogo && (
-              <div className="w-7 h-7 sm:w-10 sm:h-10 bg-white rounded-lg shadow-sm flex items-center justify-center p-0.5 sm:p-1 shrink-0">
-                <Image
-                  src={lenderLogo.src}
-                  alt={displayLender.name}
-                  width={32}
-                  height={32}
-                  className="object-contain w-full h-full"
-                />
-              </div>
-            )}
-            <h2 className="text-xl sm:text-3xl lg:text-4xl font-bold text-violet-900 tracking-tight leading-tight">
-              {formatLenderName(displayLender.name)}
-              <sup className="text-[8px] sm:text-sm font-normal ml-0.5">®</sup>
-            </h2>
-          </div>
+          {/* Lender Logo */}
+          {lenderLogo && (
+            <div className="mb-2">
+              <Image
+                src={lenderLogo.src}
+                alt={displayLender.name}
+                width={120}
+                height={40}
+                className="object-contain h-10 sm:h-12 w-auto"
+              />
+            </div>
+          )}
 
           {/* Subtitle */}
           <p className="text-gray-600 text-[10px] sm:text-sm">

@@ -23,7 +23,7 @@ const TRUST_BADGES: TrustBadge[] = [
     subtitle: "NBFC Partner",
     icon: (
       <Image
-        src="/logo/reservebank.png"
+        src="/reservebank.png"
         alt="RBI"
         width={26}
         height={26}
@@ -36,7 +36,7 @@ const TRUST_BADGES: TrustBadge[] = [
     subtitle: "27001 Certified",
     icon: (
       <Image
-        src="/logo/iso.png"
+        src="/iso.png"
         alt="ISO"
         width={24}
         height={24}

@@ -28,7 +28,7 @@ export const STATIC_LENDER_LOGOS: Record<
   string,
   { src: string; darkBg?: boolean }
 > = {
-  RapidMoney: { src: "/dark_rapid_money_logo.webp", darkBg: true },
+  RapidMoney: { src: "/rapid-black.webp", darkBg: true },
   poonawalla: { src: "/poonawalla.svg" },
   HeroFinCorp: { src: "/herofincorp.svg", darkBg: true },
   AdityaBirlaCapital: { src: "/adityabirlacapitalloan.svg" },
