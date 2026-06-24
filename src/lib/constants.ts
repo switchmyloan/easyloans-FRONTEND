@@ -28,7 +28,7 @@ export const STATIC_LENDER_LOGOS: Record<
   string,
   { src: string; darkBg?: boolean }
 > = {
-  RapidMoney: { src: "/rapid-black.webp", darkBg: true },
+  RapidMoney: { src: "/rapidmoney.svg", darkBg: true },
   poonawalla: { src: "/poonawalla.svg" },
   HeroFinCorp: { src: "/herofincorp.svg", darkBg: true },
   AdityaBirlaCapital: { src: "/adityabirlacapitalloan.svg" },
@@ -181,6 +181,35 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest rate starting from 1.3% per month.",
   },
 };
+
+// Short feature tags for each lender (displayed in offer cards)
+export const LENDER_FEATURE_TAGS: Record<string, string> = {
+  KreditBee: "High approval chances",
+  MoneyView: "Flexible loan options",
+  poonawalla: "No hidden charges",
+  HeroFinCorp: "Flexible loan options",
+  SmartCoinHighIntent: "Quick approval",
+  SmartCoin: "Quick approval",
+  Zype_Dedupe: "High approval chances",
+  Zype: "High approval chances",
+  TrueBalance: "Quick approval",
+  UnitySmallFinanceBank: "No hidden charges",
+  RapidMoney: "Quick approval",
+  AdityaBirlaCapital: "No hidden charges",
+  RamFinCorp: "Flexible loan options",
+  Fibe: "Flexible loan options",
+  LendingPlate: "Quick approval",
+  MPokket: "High approval chances",
+  FiMoney: "Flexible loan options",
+  MyFloat: "Quick approval",
+  Loan112: "No hidden charges",
+  Vivifi: "Flexible loan options",
+  PocketCredit: "Quick approval",
+  CreditPlus: "No hidden charges",
+};
+
+// Default feature tag if lender not found
+export const DEFAULT_FEATURE_TAG = "Quick approval";
 
 // Max loan amount each lender supports (used for filtering/priority sorting)
 export const LENDER_MAX_AMOUNT: Record<string, number> = {

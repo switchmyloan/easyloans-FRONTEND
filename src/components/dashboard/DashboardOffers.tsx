@@ -183,7 +183,13 @@ export default function DashboardOffers() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className={`grid gap-4 grid-cols-1 ${
+          lendersToShow.length === 1
+            ? 'sm:grid-cols-1 max-w-xl'
+            : lendersToShow.length === 2
+              ? 'sm:grid-cols-2'
+              : 'sm:grid-cols-2 lg:grid-cols-3'
+        }`}>
           {lendersToShow.map((offer, idx) => {
             const lenderName = offer.name;
             const displayName = DISPLAY_NAMES[lenderName] || lenderName;

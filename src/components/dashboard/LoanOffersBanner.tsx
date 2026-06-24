@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Lock, Zap, CheckCircle, Clock, ChevronRight } from "lucide-react";
-import { STATIC_LENDER_LOGOS } from "@/lib/constants";
+import { STATIC_LENDER_LOGOS, LENDER_FEATURE_TAGS, DEFAULT_FEATURE_TAG } from "@/lib/constants";
 import { getStoredShortExistingUserOffers } from "@/lib/api";
 import RingImageSection from "./RingImageSection";
 
@@ -162,7 +162,7 @@ export default function LoanOffersBanner() {
         <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-violet-200 rounded-full opacity-40" />
       </div>
 
-      <div className="flex flex-col lg:flex-row">
+      <div className="flex flex-col lg:flex-row ">
         {/* Left Section - Main Content */}
         <div className="flex-1 p-4 sm:p-6 lg:p-8 pt-9 sm:pt-12">
           {/* Interest Text */}
@@ -189,7 +189,7 @@ export default function LoanOffersBanner() {
           </p>
 
           {/* Instantly in Minutes */}
-          <div className="flex items-center gap-1 text-violet-600 font-semibold text-sm sm:text-lg mb-3 sm:mb-5">
+          <div className="flex items-center gap-1 text-violet-600 font-semibold text-sm sm:text-[24px] mb-3 sm:mb-5">
             <span>Instantly</span>
             <span className="text-violet-800 font-bold">in Minutes!</span>
             <Zap className="w-3.5 h-3.5 sm:w-5 sm:h-5 text-yellow-500 fill-yellow-500" />
@@ -238,6 +238,13 @@ export default function LoanOffersBanner() {
           <RingImageSection />
         </div>
 
+        {/* Vertical Divider Line */}
+        {moreOffers.length > 0 && (
+          <div className="hidden xl:flex items-center py-8">
+            <div className="w-px h-68 bg-gradient-to-b from-transparent via-violet-300 to-transparent" />
+          </div>
+        )}
+
         {/* Right Section - More Offers */}
         {moreOffers.length > 0 && (
           <div className="hidden xl:block w-64 p-5">
@@ -250,16 +257,16 @@ export default function LoanOffersBanner() {
                   <Link
                     key={lender.id}
                     href="/dashboard/offers"
-                    className="flex items-center justify-between p-3 bg-white rounded-xl hover:shadow-md transition-all group border border-gray-100"
+                    className="flex items-center justify-between p-2 bg-white rounded-xl hover:shadow-md transition-all group border border-gray-100"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center p-1.5">
+                      <div className="w-10 h-10  flex items-center justify-center ">
                         {logo ? (
                           <Image
                             src={logo.src}
                             alt={lender.name}
-                            width={32}
-                            height={32}
+                            width={42}
+                            height={42}
                             className="object-contain"
                           />
                         ) : (
@@ -268,7 +275,7 @@ export default function LoanOffersBanner() {
                       </div>
                       <div>
                         <p className="text-[10px] font-semibold text-gray-800">{formatLenderName(lender.name)}</p>
-                        <p className="text-[8px] text-gray-500">Quick approval</p>
+                        <p className="text-[10px] font-semibold text-gray-500">{LENDER_FEATURE_TAGS[lender.id] || DEFAULT_FEATURE_TAG}</p>
                       </div>
                     </div>
                     <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-violet-600 transition-colors" />
@@ -323,7 +330,7 @@ export default function LoanOffersBanner() {
                   </div>
                   <div>
                     <p className="text-xs font-semibold text-gray-800">{formatLenderName(lender.name)}</p>
-                    <p className="text-[10px] text-gray-500">Quick approval</p>
+                    <p className="text-[10px] text-gray-500">{LENDER_FEATURE_TAGS[lender.id] || DEFAULT_FEATURE_TAG}</p>
                   </div>
                 </Link>
               );
