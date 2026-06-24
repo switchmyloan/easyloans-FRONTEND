@@ -49,7 +49,7 @@ const PARTNER_LOGOS = [
     "/truebalance.webp",
     "/mpoket.svg",
     "/credit.svg",
-    "/logo_Loan112.svg",
+    // "/logo_Loan112.svg",
 
 ];
 

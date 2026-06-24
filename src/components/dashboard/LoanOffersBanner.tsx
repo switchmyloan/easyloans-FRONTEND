@@ -196,20 +196,20 @@ export default function LoanOffersBanner() {
           </div>
 
           {/* Feature Badges - Scrollable on mobile */}
-          <div className="flex items-center gap-1 sm:gap-1 mb-3 sm:mb-5 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
-            <div className="flex items-center gap-1 sm:gap-1.5 bg-white rounded-md px-2 py-1 sm:px-2.5 sm:py-1.5 shrink-0">
+          <div className="flex items-center gap-1 sm:gap-3 mb-2 sm:mb-1 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
+            <div className="flex items-center gap-1 sm:gap-1.5 bg-white rounded-md px-2 py-1 sm:px-2 sm:py-1.5 shrink-0">
               <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-violet-50 flex items-center justify-center">
                 <Zap className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-violet-600" />
               </div>
               <span className="text-[8px] sm:text-[10px] text-gray-700 font-medium whitespace-nowrap">Instant Approval</span>
             </div>
-            <div className="flex items-center gap-1 sm:gap-1.5 bg-white rounded-md px-2 py-1 sm:px-2.5 sm:py-1.5 shrink-0">
+            <div className="flex items-center gap-1 sm:gap-1.5 bg-white rounded-md px-2 py-1 sm:px-2 sm:py-1.5 shrink-0">
               <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-violet-50 flex items-center justify-center">
                 <CheckCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-violet-600" />
               </div>
               <span className="text-[8px] sm:text-[10px] text-gray-700 font-medium whitespace-nowrap">Minimal Documents</span>
             </div>
-            <div className="flex items-center gap-1 sm:gap-1.5 bg-white rounded-md px-2 py-1 sm:px-2.5 sm:py-1.5 shrink-0">
+            <div className="flex items-center gap-1 sm:gap-1.5 bg-white rounded-md px-2 py-1 sm:px-2 sm:py-1.5 shrink-0">
               <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-violet-50 flex items-center justify-center">
                 <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-violet-600" />
               </div>
@@ -235,7 +235,7 @@ export default function LoanOffersBanner() {
 
         {/* Center Section - R Ring Image with floating bubbles (hidden on mobile) */}
         <div className="hidden lg:block mt-10">
-          <RingImageSection />
+          <RingImageSection lenderName={displayLender?.name} />
         </div>
 
         {/* Vertical Divider Line */}

@@ -37,7 +37,7 @@ const SHORT_TICKET_LENDER_ORDER = [
   "RamFinCorp",
   "CreditPlus",
   "MPokket",
-  "Loan112",
+  // "Loan112",
   "SmartCoin",
   "LendingPlate",
 ];

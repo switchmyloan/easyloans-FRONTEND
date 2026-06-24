@@ -4,7 +4,37 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { CheckCircle } from "lucide-react";
 
-export default function RingImageSection() {
+// Mapping of lender names (lowercase, no spaces) to their ring images
+// Add the image file to /public/ and update the path here
+const LENDER_RING_IMAGES: Record<string, string> = {
+  rapidmoney: "/RR-ring.png",
+  ramfincorp: "/RC-ring.png",
+  kreditbee: "/KB-ring.png",
+  truebalance: "/TB-ring.png",
+  mpokket: "/MP-ring.png",
+  creditplus: "/CP-ring.png",
+  loan112: "/L1-ring.png",
+  lendingplate: "/LP-ring.png",
+  smartcoin: "/SC-ring.png",
+};
+
+// Default fallback image (used if lender not found in mapping)
+const DEFAULT_RING_IMAGE = "/RR-ring.png";
+
+// Normalize lender name: lowercase and remove spaces
+function normalizeLenderName(name: string): string {
+  return name.toLowerCase().replace(/\s+/g, "");
+}
+
+interface RingImageSectionProps {
+  lenderName?: string;
+}
+
+export default function RingImageSection({ lenderName }: RingImageSectionProps) {
+  // Get the ring image for the lender, fallback to default
+  const ringImage = lenderName
+    ? (LENDER_RING_IMAGES[normalizeLenderName(lenderName)] || DEFAULT_RING_IMAGE)
+    : DEFAULT_RING_IMAGE;
   return (
     <div
       className="hidden lg:flex items-center justify-center px-4 relative"
@@ -15,10 +45,10 @@ export default function RingImageSection() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
-        className="absolute top-2 right-20 bg-white rounded-xl px-3 py-2 shadow-lg border border-gray-100 z-10"
+        className="absolute top-2 right-20 bg-white/70 rounded-xl px-3 py-2 shadow-lg border border-gray-100 z-10"
       >
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-violet-100 rounded-full flex items-center justify-center">
+          <div className="w-6 h-6 bg-violet-200 rounded-full flex items-center justify-center">
             <span className="text-violet-600 text-xs">💬</span>
           </div>
           <span className="text-[8px] font-medium text-gray-700">
@@ -34,7 +64,7 @@ export default function RingImageSection() {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.4 }}
-        className="absolute left-6 top-1/3 bg-white rounded-xl px-3 py-2 shadow-lg border border-gray-100 z-10"
+        className="absolute left-6 top-1/3 bg-white/70 rounded-xl px-3 py-2 shadow-lg border border-gray-100 z-10"
       >
         <div className="flex items-center gap-2">
           <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
@@ -53,7 +83,7 @@ export default function RingImageSection() {
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.5 }}
-        className="absolute right-6 bottom-30 bg-white rounded-xl px-3 py-2 shadow-lg border border-gray-100 z-10"
+        className="absolute right-2 bottom-30 bg-white/70 rounded-xl px-3 py-2 shadow-lg border border-gray-100 z-10"
       >
         <div className="flex items-center gap-2">
           <div className="w-6 h-6 bg-violet-100 rounded-full flex items-center justify-center">
@@ -87,7 +117,7 @@ export default function RingImageSection() {
         className="relative"
       >
         <Image
-          src="/R-ring.png"
+          src={ringImage}
           alt="Loan offers"
           width={600}
           height={600}

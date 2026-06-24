@@ -27,7 +27,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   TrueBalance: "TrueBalance",
   MPokket: "mPokket",
   CreditPlus: "Creditt+",
-  Loan112: "Loan112",
+  // Loan112: "Loan112",
   SmartCoin: "Olyv",
   LendingPlate: "LendingPlate",
 };
@@ -40,7 +40,7 @@ const LENDER_ORDER = [
   "TrueBalance",
   "CreditPlus",
   "MPokket",
-  "Loan112",
+  // "Loan112",
   "SmartCoin",
   "LendingPlate",
 ];
@@ -53,7 +53,7 @@ const CREDITPLUS_PRIORITY_ORDER = [
   "RamFinCorp",
   "TrueBalance",
   "MPokket",
-  "Loan112",
+  // "Loan112",
   "SmartCoin",
   "LendingPlate",
 ];
@@ -66,7 +66,7 @@ const KB_PRIORITY_ORDER = [
   "CreditPlus",
   "TrueBalance",
   "MPokket",
-  "Loan112",
+  // "Loan112",
   "SmartCoin",
   "LendingPlate",
 ];
@@ -79,7 +79,7 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "CreditPlus",
   "TrueBalance",
   "MPokket",
-  "Loan112",
+  // "Loan112",
   "SmartCoin",
   "LendingPlate",
 ];
@@ -90,7 +90,7 @@ const FALLBACK_UTM: Record<string, string> = {
   TrueBalance: "https://truebalance.io/",
   MPokket: "https://mpokket.com/",
   CreditPlus: "https://www.creditplus.in/",
-  Loan112: "https://loan112.com/",
+  // Loan112: "https://loan112.com/",
   RapidMoney: "https://web.rapidmoney.in/",
   SmartCoin: "https://olyv.app/",
   LendingPlate: "https://lendingplate.com/",
@@ -133,9 +133,9 @@ function getUtmLink(
       if (lender.success !== true) return null;
       return directLink || FALLBACK_UTM.CreditPlus;
 
-    case "Loan112":
-      if (lender.success !== true) return null;
-      return directLink || FALLBACK_UTM.Loan112;
+    // case "Loan112":
+    //   if (lender.success !== true) return null;
+    //   return directLink || FALLBACK_UTM.Loan112;
 
     case "SmartCoin": {
       // SmartCoin (Olyv) - show if not a duplicate (isDuplicate: false means eligible)
@@ -216,7 +216,7 @@ export default function ShortTicketOffersPage() {
     if (data.TrueBalance?.utm_link) utmMap["TrueBalance"] = data.TrueBalance.utm_link;
     if (data.CreditPlus?.utm_link) utmMap["CreditPlus"] = data.CreditPlus.utm_link;
     if (data.MPokket?.utm_link) utmMap["MPokket"] = data.MPokket.utm_link;
-    if (data.Loan112?.utm_link) utmMap["Loan112"] = data.Loan112.utm_link;
+    // if (data.Loan112?.utm_link) utmMap["Loan112"] = data.Loan112.utm_link;
     if (data.SmartCoin?.utm_link) utmMap["SmartCoin"] = data.SmartCoin.utm_link;
     if (data.LendingPlate?.utm_link) utmMap["LendingPlate"] = data.LendingPlate.utm_link;
 
@@ -282,10 +282,10 @@ export default function ShortTicketOffersPage() {
           ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.MPokket });
           break;
 
-        case "Loan112":
-          if (lender?.success !== true) break;
-          ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.Loan112 });
-          break;
+        // case "Loan112":
+        //   if (lender?.success !== true) break;
+        //   ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.Loan112 });
+        //   break;
 
         case "SmartCoin": {
           // SmartCoin (Olyv) - show if not a duplicate (isDuplicate: false means eligible)

@@ -41,7 +41,7 @@ export const STATIC_LENDER_LOGOS: Record<
   CreditPlus: { src: "/credit.svg" },
   KreditBee: { src: "/kreditbee-logo.svg" },
   MPokket: { src: "/mpoket.svg" },
-  Loan112: { src: "/logo_Loan112.svg" },
+  // Loan112: { src: "/logo_Loan112.svg" },
   LendingPlate: { src: "/lending.png" },
 };
 
@@ -108,12 +108,12 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Salary Advance and Flexible Repayment",
     interestRate: "Interest Rates start at 0.1%* per day",
   },
-  Loan112: {
-    headline: "Get up to ₹2,00,000 with quick approval!",
-    description: "Instant personal loans with easy EMI options",
-    keyFeature: "Easy EMI Options and No Hidden Charges",
-    interestRate: "Interest Rates start at 1%* per month",
-  },
+  // Loan112: {
+  //   headline: "Get up to ₹2,00,000 with quick approval!",
+  //   description: "Instant personal loans with easy EMI options",
+  //   keyFeature: "Easy EMI Options and No Hidden Charges",
+  //   interestRate: "Interest Rates start at 1%* per month",
+  // },
   Vivifi: {
     headline: "Get up to ₹5,00,000 in minutes!",
     description: "Digital personal loans with flexible tenure options",
@@ -202,7 +202,7 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   MPokket: "High approval chances",
   FiMoney: "Flexible loan options",
   MyFloat: "Quick approval",
-  Loan112: "No hidden charges",
+  // Loan112: "No hidden charges",
   Vivifi: "Flexible loan options",
   PocketCredit: "Quick approval",
   CreditPlus: "No hidden charges",
@@ -231,7 +231,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   MPokket: 30000,           // ₹30,000
   FiMoney: 500000,          // ₹5 Lakhs
   MyFloat: 25000,           // ₹25,000
-  Loan112: 200000,          // ₹2 Lakhs
+  // Loan112: 200000,          // ₹2 Lakhs
   Vivifi: 500000,           // ₹5 Lakhs
   PocketCredit: 50000,      // ₹50,000
   CreditPlus: 100000,       // ₹1 Lakh

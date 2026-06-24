@@ -816,7 +816,7 @@ export interface ShortTicketData {
   KreditBee?: ShortTicketLender;
   TrueBalance?: ShortTicketLender;
   MPokket?: ShortTicketLender;
-  Loan112?: ShortTicketLender;
+  // Loan112?: ShortTicketLender;
   SmartCoin?: ShortTicketLender;
   LendingPlate?: ShortTicketLender;
   [key: string]: unknown;
@@ -1099,7 +1099,7 @@ export interface ShortExistingUserOffersResponse {
     RamFinCorp?: ShortTicketLender;
     MPokket?: ShortTicketLender;
     CreditPlus?: ShortTicketLender;
-    Loan112?: ShortTicketLender;
+    // Loan112?: ShortTicketLender;
     LendingPlate?: ShortTicketLender;
     [key: string]: unknown;
   };
@@ -1242,7 +1242,7 @@ export interface ShortDashboardLinkResponse {
     RamFinCorp?: ShortTicketLender;
     MPokket?: ShortTicketLender;
     CreditPlus?: ShortTicketLender;
-    Loan112?: ShortTicketLender;
+    // Loan112?: ShortTicketLender;
     LendingPlate?: ShortTicketLender;
     [key: string]: unknown;
   };
