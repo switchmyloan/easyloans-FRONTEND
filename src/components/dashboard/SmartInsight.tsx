@@ -4,109 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Lightbulb } from "lucide-react";
-
-// ============================================================
-// Types
-// ============================================================
-interface ShortTicketLenderResponse {
-  success?: boolean;
-  is_offer?: boolean;
-  isDedupe?: boolean;
-  isDuplicate?: boolean;
-  data?: {
-    response?: {
-      data?: {
-        isEligible?: boolean;
-      };
-    };
-  };
-}
-
-interface StaticLender {
-  name: string;
-  [key: string]: unknown;
-}
-
-// ============================================================
-// Short-Ticket Lender Order
-// ============================================================
-const SHORT_TICKET_LENDER_ORDER = [
-  "RapidMoney",
-  "KreditBee",
-  "TrueBalance",
-  "RamFinCorp",
-  "CreditPlus",
-  "MPokket",
-  // "Loan112",
-  "SmartCoin",
-  "LendingPlate",
-];
-
-// ============================================================
-// Utility Functions
-// ============================================================
-function getLenderKeys(lenderName: string): string[] {
-  const keysToCheck = [lenderName];
-  if (lenderName === "TrueBalance") keysToCheck.push("trueBalance");
-  if (lenderName === "SmartCoin") keysToCheck.push("smartCoin", "SmartCoinHighIntent");
-  if (lenderName === "KreditBee") keysToCheck.push("kreditBee");
-  return keysToCheck;
-}
-
-function isTrueBalanceEligible(lender: ShortTicketLenderResponse): boolean {
-  const resData = lender.data?.response?.data;
-  return resData?.isEligible === true;
-}
-
-function isRealOffer(lenderName: string, data: Record<string, unknown>): boolean {
-  const keysToCheck = getLenderKeys(lenderName);
-
-  for (const key of keysToCheck) {
-    const lender = data[key] as ShortTicketLenderResponse | undefined;
-    if (!lender) continue;
-
-    // TrueBalance uses nested isEligible field instead of success
-    if (lenderName === "TrueBalance") {
-      return isTrueBalanceEligible(lender);
-    }
-
-    const hasOffer = lender.is_offer === true;
-    const isSuccess = lender.success === true;
-    const notDedupe = lender.isDedupe !== true;
-    const notDuplicate = lender.isDuplicate !== true;
-
-    if (hasOffer || (isSuccess && notDedupe && notDuplicate)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// ============================================================
-// API Placeholder (TODO: Replace with actual API)
-// ============================================================
-function getStoredShortTicketOffers(): {
-  data?: {
-    found?: boolean;
-    exists?: boolean;
-    staticLenders?: StaticLender[];
-    [key: string]: unknown;
-  };
-} | null {
-  // TODO: Replace with actual API call
-  // For now, return dummy data with some offers
-  return {
-    data: {
-      found: true,
-      KreditBee: { success: true, is_offer: true },
-      RapidMoney: { success: true },
-      TrueBalance: { data: { response: { data: { isEligible: true } } } },
-      SmartCoin: { success: true },
-      MPokket: { success: true },
-      staticLenders: [],
-    },
-  };
-}
+import { getStoredShortExistingUserOffers } from "@/lib/api";
 
 // ============================================================
 // SmartInsight Component
@@ -115,32 +13,15 @@ export default function SmartInsight() {
   const [offersCount, setOffersCount] = useState(0);
 
   useEffect(() => {
-    const existingUserData = getStoredShortTicketOffers();
+    const existingUserData = getStoredShortExistingUserOffers();
     const userExists = existingUserData?.data?.found || existingUserData?.data?.exists;
 
     if (userExists && existingUserData?.data) {
       const data = existingUserData.data;
-      const addedLenders = new Set<string>();
-      let count = 0;
 
-      // Count real offers (success=true, !isDedupe, !isDuplicate)
-      for (const lenderName of SHORT_TICKET_LENDER_ORDER) {
-        if (isRealOffer(lenderName, data as Record<string, unknown>)) {
-          count++;
-          addedLenders.add(lenderName);
-        }
-      }
-
-      // Count static lenders (not already counted)
-      const staticLenders = (data.staticLenders || []) as StaticLender[];
-      for (const sl of staticLenders) {
-        if (!addedLenders.has(sl.name)) {
-          count++;
-          addedLenders.add(sl.name);
-        }
-      }
-
-      setOffersCount(count);
+      // Count from shownOffers array - these are the actual offers shown to the user
+      const shownOffers = data.shownOffers || [];
+      setOffersCount(shownOffers.length);
     }
   }, []);
 
