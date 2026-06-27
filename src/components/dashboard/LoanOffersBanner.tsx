@@ -6,8 +6,20 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Lock, Zap, CheckCircle, Clock, ChevronRight } from "lucide-react";
 import { STATIC_LENDER_LOGOS, LENDER_FEATURE_TAGS, DEFAULT_FEATURE_TAG } from "@/lib/constants";
-import { getStoredShortExistingUserOffers } from "@/lib/api";
+import { getStoredShortExistingUserOffers, saveShortLender } from "@/lib/api";
+import { useOtpGuard } from "@/app/dashboard/layout";
 import RingImageSection from "./RingImageSection";
+
+// Lender UTM links — used when an offer doesn't carry its own utmLink. Same set
+// the offer cards use, so the banner hero redirects to the right place.
+const FALLBACK_UTM_LINKS: Record<string, string> = {
+  SmartCoin: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
+  SmartCoinHighIntent: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
+  TrueBalance: "https://truebalance.io/",
+  RapidMoney: "https://web.rapidmoney.in/borrower/login?utm_source=creadylandingpage&utm_extsource=abc&utm_medium=rapidmoney&utm_campaign=xyz&utm_campaignID=def",
+  KreditBee: "https://www.kreditbee.in/signin",
+  CreditPlus: "https://loan.credittnow.com/?utm_source=cready&utm_medium=website",
+};
 
 // ============================================================
 // Types
@@ -76,6 +88,7 @@ function formatLenderName(name: string): string {
 // LoanOffersBanner Component
 // ============================================================
 export default function LoanOffersBanner() {
+  const { guardActivity } = useOtpGuard();
   const [mainLender, setMainLender] = useState<PreviousLender | null>(null);
   const [otherLenders, setOtherLenders] = useState<PreviousLender[]>([]);
   const [shownOffersLenders, setShownOffersLenders] = useState<PreviousLender[]>([]);
@@ -89,6 +102,7 @@ export default function LoanOffersBanner() {
 
       const shownOffers = (data.shownOffers || []) as ShownOffer[];
       if (shownOffers.length > 0) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setShownOffersLenders(shownOffers.map(mapShownOfferToLender));
       }
 
@@ -128,6 +142,26 @@ export default function LoanOffersBanner() {
 
     return combined.slice(0, 3);
   })();
+
+  // Apply to the hero lender — redirect to its UTM link (KreditBee → its signin),
+  // same as the offer cards. OTP-gated; saves the lender first. The link comes
+  // from the shown offer, falling back to FALLBACK_UTM_LINKS.
+  const handleHeroApply = async () => {
+    if (!displayLender) return;
+    const allowed = await guardActivity();
+    if (!allowed) return;
+
+    const phone = sessionStorage.getItem("userPhone") || "";
+    await saveShortLender(phone, displayLender.id);
+
+    const data = getStoredShortExistingUserOffers()?.data as Record<string, unknown> | undefined;
+    const shownOffers = (data?.shownOffers || []) as ShownOffer[];
+    const match = shownOffers.find((o) => o.lenderName === displayLender.id);
+    // Prefer the backend's per-lender utm_link, then the shown-offer link, then fallback.
+    const lenderData = data?.[displayLender.id] as { utm_link?: string } | undefined;
+    const url = lenderData?.utm_link || match?.utmLink || FALLBACK_UTM_LINKS[displayLender.id];
+    if (url) window.open(url, "_blank");
+  };
 
   // If no lender data, don't render
   if (!displayLender) {
@@ -217,14 +251,15 @@ export default function LoanOffersBanner() {
             </div>
           </div>
 
-          {/* CTA Button */}
-          <Link
-            href="/dashboard/offers"
-            className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 sm:px-8 py-2.5 rounded-md text-white font-semibold text-xs sm:text-sm shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] group bg-gradient-to-r from-[#dfff45] via-[#9b6bff] to-[#7c3aed] mt-2"
+          {/* CTA Button — redirects to the hero lender's UTM link */}
+          <button
+            type="button"
+            onClick={handleHeroApply}
+            className="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-5 sm:px-8 py-2.5 rounded-md text-white font-semibold text-xs sm:text-sm shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] group bg-gradient-to-r from-[#dfff45] via-[#9b6bff] to-[#7c3aed] mt-2 cursor-pointer"
           >
-            Continue with exploring more offers
+            Apply Now
             <span className="group-hover:translate-x-1 transition-transform">→</span>
-          </Link>
+          </button>
 
           {/* Trust Badge */}
           <div className="flex items-center justify-center sm:justify-start gap-1.5 mt-2 text-[10px] sm:text-xs text-gray-600">

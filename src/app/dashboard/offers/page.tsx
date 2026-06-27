@@ -50,8 +50,9 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   SmartCoin: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
   SmartCoinHighIntent: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
   TrueBalance: "https://truebalance.io/",
-  RapidMoney: "https://rapidmoney.in/",
+  RapidMoney: "https://web.rapidmoney.in/borrower/login?utm_source=creadylandingpage&utm_extsource=abc&utm_medium=rapidmoney&utm_campaign=xyz&utm_campaignID=def",
   KreditBee: "https://www.kreditbee.in/signin",
+  CreditPlus: "https://loan.credittnow.com/?utm_source=cready&utm_medium=website",
 };
 
 const LENDER_CUSTOM_BADGE: Record<string, string> = {
@@ -65,8 +66,15 @@ const BADGE_VISIBLE_COUNT = 3;
 // ============================================================
 // Utility Functions
 // ============================================================
-function mapShownOfferToDashboardOffer(shownOffer: ShownOffer): DashboardOffer {
-  const utmLink = shownOffer.utmLink || FALLBACK_UTM_LINKS[shownOffer.lenderName] || undefined;
+function mapShownOfferToDashboardOffer(
+  shownOffer: ShownOffer,
+  data: Record<string, unknown>
+): DashboardOffer {
+  // Prefer the backend's per-lender utm_link (data.<Lender>.utm_link), then the
+  // shown-offer link, then the static fallback — same as the offers page.
+  const lenderData = data[shownOffer.lenderName] as { utm_link?: string } | undefined;
+  const utmLink =
+    lenderData?.utm_link || shownOffer.utmLink || FALLBACK_UTM_LINKS[shownOffer.lenderName] || undefined;
   return {
     name: shownOffer.lenderName,
     utmLink,
@@ -89,9 +97,10 @@ export default function DashboardOffersPage() {
     const userExists = existingUserData?.data?.found || existingUserData?.data?.exists;
 
     if (userExists && existingUserData?.data) {
-      const shownOffers = existingUserData.data.shownOffers || [];
+      const data = existingUserData.data as Record<string, unknown>;
+      const shownOffers = (data.shownOffers || []) as ShownOffer[];
       if (shownOffers.length > 0) {
-        const mappedOffers = shownOffers.map(mapShownOfferToDashboardOffer);
+        const mappedOffers = shownOffers.map((o) => mapShownOfferToDashboardOffer(o, data));
         setOffers(mappedOffers);
       } else {
         setOffers([]);
