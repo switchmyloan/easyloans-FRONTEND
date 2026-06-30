@@ -1,5 +1,5 @@
-// const BASE_URL = "https://apply.switchmyloan.in/api";
-const BASE_URL = "http://localhost:8000/api";
+const BASE_URL = "https://apply.switchmyloan.in/api";
+// const BASE_URL = "http://localhost:8000/api";
 
 const PARTNER_HEADERS = {
   "x-partner-shortname": "MoneyTap",
