@@ -30,6 +30,9 @@ const DISPLAY_NAMES: Record<string, string> = {
   // Loan112: "Loan112",
   SmartCoin: "Olyv",
   LendingPlate: "LendingPlate",
+  SpeedoLoan: "SpeedoLoan",
+  LoanWalle: "LoanWalle",
+  Cashvia: "Cashvia",
 };
 
 // Default render order
@@ -43,6 +46,9 @@ const LENDER_ORDER = [
   // "Loan112",
   "SmartCoin",
   "LendingPlate",
+  "SpeedoLoan",
+  "LoanWalle",
+  "Cashvia"
 ];
 
 // When utm_medium=creditplus: CreditPlus first
@@ -94,6 +100,17 @@ const FALLBACK_UTM: Record<string, string> = {
   RapidMoney: "https://web.rapidmoney.in/",
   SmartCoin: "https://olyv.app/",
   LendingPlate: "https://lendingplate.com/",
+  SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
+  LoanWalle: "https://www.loanwalle.com/personal-loan?utm_source=CREADY&utm_medium=affiliate&utm_campaign=mcl-aff&click_id=landing-page",
+  Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
+};
+
+// Map API names to internal lender names
+const STATIC_LENDER_NAME_MAP: Record<string, string> = {
+  "Speedoloan": "SpeedoLoan",
+  "Fintech Cloud": "LoanWalle",
+  "Cashvia": "Cashvia",
+  "RapidMoney": "RapidMoney",
 };
 
 function getUtmLink(
@@ -220,6 +237,13 @@ export default function ShortTicketOffersPage() {
     if (data.SmartCoin?.utm_link) utmMap["SmartCoin"] = data.SmartCoin.utm_link;
     if (data.LendingPlate?.utm_link) utmMap["LendingPlate"] = data.LendingPlate.utm_link;
 
+    // Process static lenders from API
+    const staticLenders = (data as { staticLenders?: Array<{ name: string; utm_link: string }> }).staticLenders || [];
+    for (const sl of staticLenders) {
+      const internalName = STATIC_LENDER_NAME_MAP[sl.name] || sl.name;
+      if (sl.utm_link) utmMap[internalName] = sl.utm_link;
+    }
+
     // Check utm_medium for priority ordering
     const utmMedium = (sessionStorage.getItem("utm_medium") || "").toLowerCase();
     const isCreditPlusMediumLocal = utmMedium === "creditplus";
@@ -301,6 +325,17 @@ export default function ShortTicketOffersPage() {
           if (lender?.success !== true) break;
           ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.LendingPlate });
           break;
+
+        // Static lenders - always show if utm_link exists in staticLenders
+        case "SpeedoLoan":
+        case "LoanWalle":
+        case "Cashvia": {
+          const staticUtm = utmMap[name];
+          if (staticUtm) {
+            ordered.push({ name, utm_link: staticUtm });
+          }
+          break;
+        }
 
         default:
           if (utmLink) ordered.push({ name, utm_link: utmLink });

@@ -43,6 +43,9 @@ export const STATIC_LENDER_LOGOS: Record<
   MPokket: { src: "/mpoket.svg" },
   // Loan112: { src: "/logo_Loan112.svg" },
   LendingPlate: { src: "/lending.png" },
+  SpeedoLoan: { src: "/speedoloan.png" },
+  LoanWalle: { src: "/loanwalle.svg" },
+  Cashvia: { src: "/cashvia1.png" },
 };
 
 export const STATIC_LENDER_DETAILS: Record<
@@ -180,6 +183,24 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Instant Approval and Same Day Disbursement",
     interestRate: "Interest rate starting from 1.3% per month.",
   },
+  SpeedoLoan: {
+    headline: "Get up to ₹1,00,000 with quick approval!",
+    description: "Personal loans with fast disbursement and no hidden charges",
+    keyFeature: "Quick Approval and No Hidden Charges",
+    interestRate: "Interest Rates start at 1%* per day",
+  },
+  LoanWalle: {
+    headline: "Get up to ₹3,00,000 with quick approval!",
+    description: "Personal loans with fast disbursement and No Prepayment Charges",
+    keyFeature: "Quick Approval and No Prepayment Charges",
+    interestRate: "Interest Rates start at 1.00%* per day",
+  },
+  Cashvia: {
+    headline: "Get up to ₹5,00,000 with quick approval!",
+    description: "Personal loans with fast disbursement and minimal documentation",
+    keyFeature: "Quick Approval and Minimal Documentation",
+    interestRate: "Interest Rates start at 1.0%* per month",
+  },
 };
 
 // Short feature tags for each lender (displayed in offer cards)
@@ -206,6 +227,10 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   Vivifi: "Flexible loan options",
   PocketCredit: "Quick approval",
   CreditPlus: "No hidden charges",
+  SpeedoLoan: "Quick approval",
+  LoanWalle: "Quick approval",
+  Cashvia: "Minimal documentation",
+
 };
 
 // Default feature tag if lender not found
@@ -234,7 +259,10 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   // Loan112: 200000,          // ₹2 Lakhs
   Vivifi: 500000,           // ₹5 Lakhs
   PocketCredit: 50000,      // ₹50,000
-  CreditPlus: 100000,       // ₹1 Lakh
+  CreditPlus: 100000,   
+  SpeedoLoan: 100000,      // ₹1 Lakh
+  LoanWalle: 300000,      // ₹3 Lakhs
+  Cashvia: 500000,      // ₹5 Lakhs
 };
 
 const DEFAULT_LENDER_DETAIL = {

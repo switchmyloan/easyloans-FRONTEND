@@ -16,6 +16,9 @@ const LENDER_RING_IMAGES: Record<string, string> = {
   loan112: "/L1-ring.png",
   lendingplate: "/LP-ring.png",
   smartcoin: "/SC-ring.png",
+  speedoloan: "/SL-ring.png",
+  loanwalle: "/LW-ring.png",
+  cashvia: "/C-ring.png",
 };
 
 // Default fallback image (used if lender not found in mapping)

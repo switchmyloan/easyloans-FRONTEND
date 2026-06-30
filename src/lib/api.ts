@@ -1,6 +1,5 @@
-// const BASE_URL = "https://apply.switchmyloan.in/api";
-const BASE_URL = "http://localhost:8000/api";
-
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+console.log(BASE_URL, "vvvv")
 const PARTNER_HEADERS = {
   "x-partner-shortname": "MoneyTap",
   "x-partner-secret": "MoneyTap@123",
