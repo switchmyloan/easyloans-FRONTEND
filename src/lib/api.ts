@@ -460,7 +460,14 @@ export function mapLeadToFormDefaults(lead: LeadRecord): PrefilledStage2 {
     defaults.gender = REVERSE_GENDER_MAP[lead.gender] || lead.gender;
   if (lead.pincode) defaults.pincode = lead.pincode;
   if (lead.pan) defaults.pan_no = lead.pan;
-  if (lead.dob) defaults.dob = new Date(lead.dob).toISOString().split("T")[0];
+  if (lead.dob) {
+    // Convert from API format (YYYY-MM-DD) to form format (DD-MM-YYYY)
+    const date = new Date(lead.dob);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    defaults.dob = `${day}-${month}-${year}`;
+  }
   if (lead.profession)
     defaults.profile = REVERSE_JOB_MAP[lead.profession] || lead.profession;
   if (lead.income) defaults.monthly_income = Math.round(parseFloat(lead.income));
