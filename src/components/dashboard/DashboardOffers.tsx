@@ -45,6 +45,9 @@ const DISPLAY_NAMES: Record<string, string> = {
   SmartCoin: "Olyv",
   SmartCoinHighIntent: "Olyv",
   LendingPlate: "LendingPlate",
+  SpeedoLoan: "SpeedoLoan",
+  LoanWalle: "LoanWalle",
+  Cashvia: "Cashvia",
 };
 
 const DASHBOARD_VISIBLE_COUNT = 3;
@@ -56,6 +59,9 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   RapidMoney: "https://web.rapidmoney.in/borrower/login?utm_source=creadylandingpage&utm_extsource=abc&utm_medium=rapidmoney&utm_campaign=xyz&utm_campaignID=def",
   KreditBee: "https://www.kreditbee.in/signin",
   CreditPlus: "https://loan.credittnow.com/?utm_source=cready&utm_medium=website",
+  SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
+  LoanWalle: "https://www.loanwalle.com/personal-loan?utm_source=CREADY&utm_medium=affiliate&utm_campaign=mcl-aff&click_id=landing-page",
+  Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
 };
 
 const LENDER_CUSTOM_BADGE: Record<string, string> = {
@@ -100,12 +106,25 @@ export default function DashboardOffers() {
     if (userExists && existingUserData?.data) {
       const data = existingUserData.data as Record<string, unknown>;
       const shownOffers = (data.shownOffers || []) as ShownOffer[];
-      if (shownOffers.length > 0) {
-        const mappedOffers = shownOffers.map((o) => mapShownOfferToDashboardOffer(o, data));
-        setOffers(mappedOffers);
-      } else {
-        setOffers([]);
+
+      // Map existing shown offers
+      const mappedOffers = shownOffers.map((o) => mapShownOfferToDashboardOffer(o, data));
+
+      // Add static lenders that should always be shown (like RapidMoney, SpeedoLoan, LoanWalle, Cashvia)
+      const ALWAYS_SHOW_STATIC_LENDERS = ["RapidMoney", "SpeedoLoan", "LoanWalle", "Cashvia"];
+      const existingLenderNames = new Set(mappedOffers.map((o) => o.name));
+
+      for (const lenderName of ALWAYS_SHOW_STATIC_LENDERS) {
+        if (!existingLenderNames.has(lenderName)) {
+          mappedOffers.push({
+            name: lenderName,
+            utmLink: FALLBACK_UTM_LINKS[lenderName],
+            isOffer: false,
+          });
+        }
       }
+
+      setOffers(mappedOffers);
     } else {
       setOffers([]);
     }

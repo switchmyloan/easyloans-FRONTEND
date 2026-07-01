@@ -326,16 +326,18 @@ export default function ShortTicketOffersPage() {
           ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.LendingPlate });
           break;
 
-        // Static lenders - always show if utm_link exists in staticLenders
+        // Static lenders - always show (like RapidMoney)
         case "SpeedoLoan":
-        case "LoanWalle":
-        case "Cashvia": {
-          const staticUtm = utmMap[name];
-          if (staticUtm) {
-            ordered.push({ name, utm_link: staticUtm });
-          }
+          ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.SpeedoLoan });
           break;
-        }
+
+        case "LoanWalle":
+          ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.LoanWalle });
+          break;
+
+        case "Cashvia":
+          ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.Cashvia });
+          break;
 
         default:
           if (utmLink) ordered.push({ name, utm_link: utmLink });

@@ -44,7 +44,7 @@ export const STATIC_LENDER_LOGOS: Record<
   // Loan112: { src: "/logo_Loan112.svg" },
   LendingPlate: { src: "/lending.png" },
   SpeedoLoan: { src: "/speedoloan.png" },
-  LoanWalle: { src: "/loanwalle.svg" },
+  LoanWalle: { src: "/loanwalleblack.webp" },
   Cashvia: { src: "/cashvia1.png" },
 };
 

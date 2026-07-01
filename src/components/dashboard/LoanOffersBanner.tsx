@@ -19,6 +19,9 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   RapidMoney: "https://web.rapidmoney.in/borrower/login?utm_source=creadylandingpage&utm_extsource=abc&utm_medium=rapidmoney&utm_campaign=xyz&utm_campaignID=def",
   KreditBee: "https://www.kreditbee.in/signin",
   CreditPlus: "https://loan.credittnow.com/?utm_source=cready&utm_medium=website",
+  SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
+  LoanWalle: "https://www.loanwalle.com/personal-loan?utm_source=CREADY&utm_medium=affiliate&utm_campaign=mcl-aff&click_id=landing-page",
+  Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
 };
 
 // ============================================================
