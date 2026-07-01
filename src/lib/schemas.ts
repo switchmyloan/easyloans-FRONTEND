@@ -101,7 +101,21 @@ export const stage2Schema = yup.object({
   dob: yup
     .date()
     .nullable()
-    .transform((curr, orig) => (orig === "" ? null : curr))
+    .transform((_curr, orig) => {
+      if (orig === "" || orig === null || orig === undefined) return null;
+      // If already a valid Date object, return it
+      if (orig instanceof Date && !isNaN(orig.getTime())) return orig;
+      // Parse DD-MM-YYYY format
+      if (typeof orig === "string") {
+        const parts = orig.split("-");
+        if (parts.length === 3) {
+          const [day, month, year] = parts;
+          const parsed = new Date(`${year}-${month}-${day}`);
+          if (!isNaN(parsed.getTime())) return parsed;
+        }
+      }
+      return new Date(NaN); // Invalid date
+    })
     .max(
       new Date(new Date().setFullYear(new Date().getFullYear() - 18)),
       "You must be at least 18 years old"
