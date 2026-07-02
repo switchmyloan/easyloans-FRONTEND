@@ -110,8 +110,9 @@ export default function DashboardOffers() {
       // Map existing shown offers
       const mappedOffers = shownOffers.map((o) => mapShownOfferToDashboardOffer(o, data));
 
-      // Add static lenders that should always be shown (like RapidMoney, SpeedoLoan, LoanWalle, Cashvia)
-      const ALWAYS_SHOW_STATIC_LENDERS = ["RapidMoney", "SpeedoLoan", "LoanWalle", "Cashvia"];
+      // Add static lenders that should always be shown (SpeedoLoan, LoanWalle, Cashvia)
+      // Note: RapidMoney is now shown based on API response (message === "SUCCESS")
+      const ALWAYS_SHOW_STATIC_LENDERS = [/* "RapidMoney", */ "SpeedoLoan", "LoanWalle", "Cashvia"];
       const existingLenderNames = new Set(mappedOffers.map((o) => o.name));
 
       for (const lenderName of ALWAYS_SHOW_STATIC_LENDERS) {
@@ -122,6 +123,16 @@ export default function DashboardOffers() {
             isOffer: false,
           });
         }
+      }
+
+      // Add RapidMoney based on API response (only if verdict === "SUCCESS")
+      const rapidMoneyData = data.RapidMoney as { verdict?: string; utm_link?: string } | undefined;
+      if (rapidMoneyData?.verdict === "SUCCESS" && !existingLenderNames.has("RapidMoney")) {
+        mappedOffers.push({
+          name: "RapidMoney",
+          utmLink: rapidMoneyData.utm_link || FALLBACK_UTM_LINKS["RapidMoney"],
+          isOffer: false,
+        });
       }
 
       setOffers(mappedOffers);

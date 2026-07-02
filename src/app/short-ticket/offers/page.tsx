@@ -122,8 +122,12 @@ function getUtmLink(
     typeof lender.utm_link === "string" ? lender.utm_link : null;
 
   switch (name) {
-    case "RapidMoney":
+    case "RapidMoney": {
+      // RapidMoney is shown based on API response (verdict === "SUCCESS")
+      const verdict = (lender as { verdict?: string })?.verdict;
+      if (verdict !== "SUCCESS") return null;
       return directLink || FALLBACK_UTM.RapidMoney;
+    }
 
     case "KreditBee": {
       if (lender.is_offer !== true) return null;
@@ -274,10 +278,13 @@ export default function ShortTicketOffersPage() {
       const utmLink = getUtmLink(name, lender);
 
       switch (name) {
-        case "RapidMoney":
-          // RapidMoney is always shown (static lender)
-          ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.RapidMoney });
+        case "RapidMoney": {
+          // RapidMoney is shown based on API response (verdict === "SUCCESS")
+          const rapidMoneyVerdict = (lender as { verdict?: string })?.verdict;
+          if (rapidMoneyVerdict !== "SUCCESS") break;
+          if (utmLink) ordered.push({ name, utm_link: utmLink });
           break;
+        }
 
         case "KreditBee":
           if (lender?.is_offer === false) break;
