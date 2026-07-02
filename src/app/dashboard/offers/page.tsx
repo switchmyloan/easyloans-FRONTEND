@@ -106,14 +106,19 @@ export default function DashboardOffersPage() {
       const data = existingUserData.data as Record<string, unknown>;
       const shownOffers = (data.shownOffers || []) as ShownOffer[];
 
-      // Map existing shown offers
-      const mappedOffers = shownOffers.map((o) => mapShownOfferToDashboardOffer(o, data));
+      // Map existing shown offers, but filter out RapidMoney if verdict is not SUCCESS
+      const rapidMoneyData = data.RapidMoney as { verdict?: string; utm_link?: string } | undefined;
+      const filteredShownOffers = shownOffers.filter((o) => {
+        if (o.lenderName === "RapidMoney") {
+          return rapidMoneyData?.verdict === "SUCCESS";
+        }
+        return true;
+      });
+      const mappedOffers = filteredShownOffers.map((o) => mapShownOfferToDashboardOffer(o, data));
 
       // Add static lenders that should always be shown (SpeedoLoan, LoanWalle, Cashvia)
-      // Note: RapidMoney is now shown based on API response (message === "SUCCESS")
-      const ALWAYS_SHOW_STATIC_LENDERS = [
-        // "RapidMoney",
-         "SpeedoLoan", "LoanWalle", "Cashvia"];
+      // Note: RapidMoney is now shown based on API response (verdict === "SUCCESS")
+      const ALWAYS_SHOW_STATIC_LENDERS = ["SpeedoLoan", "LoanWalle", "Cashvia"];
       const existingLenderNames = new Set(mappedOffers.map((o) => o.name));
 
       for (const lenderName of ALWAYS_SHOW_STATIC_LENDERS) {
@@ -127,7 +132,6 @@ export default function DashboardOffersPage() {
       }
 
       // Add RapidMoney based on API response (only if verdict === "SUCCESS")
-      const rapidMoneyData = data.RapidMoney as { verdict?: string; utm_link?: string } | undefined;
       if (rapidMoneyData?.verdict === "SUCCESS" && !existingLenderNames.has("RapidMoney")) {
         mappedOffers.push({
           name: "RapidMoney",

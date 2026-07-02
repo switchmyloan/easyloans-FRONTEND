@@ -105,8 +105,16 @@ export default function LoanOffersBanner() {
 
       const shownOffers = (data.shownOffers || []) as ShownOffer[];
       if (shownOffers.length > 0) {
+        // Filter out RapidMoney if verdict is not SUCCESS
+        const rapidMoneyData = (data as Record<string, unknown>).RapidMoney as { verdict?: string } | undefined;
+        const filteredShownOffers = shownOffers.filter((o) => {
+          if (o.lenderName === "RapidMoney") {
+            return rapidMoneyData?.verdict === "SUCCESS";
+          }
+          return true;
+        });
         // eslint-disable-next-line react-hooks/set-state-in-effect
-        setShownOffersLenders(shownOffers.map(mapShownOfferToLender));
+        setShownOffersLenders(filteredShownOffers.map(mapShownOfferToLender));
       }
 
       const selectedLenders = (data.selectedLenders || []) as SelectedLender[];
