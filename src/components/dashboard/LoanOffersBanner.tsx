@@ -40,12 +40,6 @@ interface SelectedLender {
   mrn?: string;
 }
 
-interface ShownOffer {
-  lenderName: string;
-  section?: string;
-  utmLink?: string | null;
-}
-
 // ============================================================
 // Utility Functions
 // ============================================================
@@ -54,14 +48,6 @@ function mapSelectedLenderToPreviousLender(selected: SelectedLender): PreviousLe
     id: selected.lenderName,
     name: selected.lenderName,
     prefix: selected.lenderName.charAt(0).toUpperCase(),
-  };
-}
-
-function mapShownOfferToLender(offer: ShownOffer): PreviousLender {
-  return {
-    id: offer.lenderName,
-    name: offer.lenderName,
-    prefix: offer.lenderName.charAt(0).toUpperCase(),
   };
 }
 
@@ -94,33 +80,27 @@ export default function LoanOffersBanner() {
   const { guardActivity } = useOtpGuard();
   const [mainLender, setMainLender] = useState<PreviousLender | null>(null);
   const [otherLenders, setOtherLenders] = useState<PreviousLender[]>([]);
-  const [shownOffersLenders, setShownOffersLenders] = useState<PreviousLender[]>([]);
 
   useEffect(() => {
     const existingUserData = getStoredShortExistingUserOffers();
     const userExists = existingUserData?.data?.found || existingUserData?.data?.exists;
 
     if (userExists && existingUserData?.data) {
-      const data = existingUserData.data;
-
-      const shownOffers = (data.shownOffers || []) as ShownOffer[];
-      if (shownOffers.length > 0) {
-        // Filter out RapidMoney if verdict is not SUCCESS
-        const rapidMoneyData = (data as Record<string, unknown>).RapidMoney as { verdict?: string } | undefined;
-        const filteredShownOffers = shownOffers.filter((o) => {
-          if (o.lenderName === "RapidMoney") {
-            return rapidMoneyData?.verdict === "SUCCESS";
-          }
-          return true;
-        });
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setShownOffersLenders(filteredShownOffers.map(mapShownOfferToLender));
-      }
+      const data = existingUserData.data as Record<string, unknown>;
+      // Get RapidMoney verdict data (used for filtering selectedLenders)
+      const rapidMoneyData = data.RapidMoney as { verdict?: string } | undefined;
 
       const selectedLenders = (data.selectedLenders || []) as SelectedLender[];
 
       if (selectedLenders.length > 0) {
-        const sortedLenders = sortAndDeduplicateSelectedLenders(selectedLenders);
+        // Filter out RapidMoney from selectedLenders if verdict is not SUCCESS
+        const filteredSelectedLenders = selectedLenders.filter((lender) => {
+          if (lender.lenderName === "RapidMoney") {
+            return rapidMoneyData?.verdict === "SUCCESS";
+          }
+          return true;
+        });
+        const sortedLenders = sortAndDeduplicateSelectedLenders(filteredSelectedLenders);
         const mapped = sortedLenders.map(mapSelectedLenderToPreviousLender);
         setMainLender(mapped[0] || null);
         // Set other lenders (up to 3) for "More offers" section
@@ -129,34 +109,18 @@ export default function LoanOffersBanner() {
     }
   }, []);
 
-  const hasClickedLenders = mainLender !== null;
-  const displayLender = hasClickedLenders ? mainLender : shownOffersLenders[0];
+  const displayLender = mainLender;
 
   // Get lender logo
   const lenderLogo = displayLender
     ? STATIC_LENDER_LOGOS[displayLender.id] || STATIC_LENDER_LOGOS[displayLender.name]
     : null;
 
-  // Combine otherLenders with shownOffersLenders to get at least 3 offers
-  const moreOffers = (() => {
-    const combined: PreviousLender[] = [...otherLenders];
-    const existingIds = new Set([displayLender?.id, ...otherLenders.map(l => l.id)]);
-
-    // Add from shownOffers if we need more
-    for (const lender of shownOffersLenders) {
-      if (combined.length >= 3) break;
-      if (!existingIds.has(lender.id)) {
-        combined.push(lender);
-        existingIds.add(lender.id);
-      }
-    }
-
-    return combined.slice(0, 3);
-  })();
+  // Get up to 3 other lenders for "More offers" section
+  const moreOffers = otherLenders.slice(0, 3);
 
   // Apply to the hero lender — redirect to its UTM link (KreditBee → its signin),
-  // same as the offer cards. OTP-gated; saves the lender first. The link comes
-  // from the shown offer, falling back to FALLBACK_UTM_LINKS.
+  // same as the offer cards. OTP-gated; saves the lender first.
   const handleHeroApply = async () => {
     if (!displayLender) return;
     const allowed = await guardActivity();
@@ -166,11 +130,9 @@ export default function LoanOffersBanner() {
     await saveShortLender(phone, displayLender.id);
 
     const data = getStoredShortExistingUserOffers()?.data as Record<string, unknown> | undefined;
-    const shownOffers = (data?.shownOffers || []) as ShownOffer[];
-    const match = shownOffers.find((o) => o.lenderName === displayLender.id);
-    // Prefer the backend's per-lender utm_link, then the shown-offer link, then fallback.
+    // Prefer the backend's per-lender utm_link, then fallback.
     const lenderData = data?.[displayLender.id] as { utm_link?: string } | undefined;
-    const url = lenderData?.utm_link || match?.utmLink || FALLBACK_UTM_LINKS[displayLender.id];
+    const url = lenderData?.utm_link || FALLBACK_UTM_LINKS[displayLender.id];
     if (url) window.open(url, "_blank");
   };
 
