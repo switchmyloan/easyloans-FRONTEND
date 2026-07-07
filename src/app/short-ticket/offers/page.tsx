@@ -90,6 +90,18 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "LendingPlate",
 ];
 
+const RamFinCorp_PRIORITY_ORDER = [
+  "RamFinCorp",
+  "KreditBee",
+  "RapidMoney",
+  "CreditPlus",
+  "TrueBalance",
+  "MPokket",
+  // "Loan112",
+  "SmartCoin",
+  "LendingPlate",
+];
+
 const FALLBACK_UTM: Record<string, string> = {
   KreditBee: "https://kredt.be/3ZFfVbz",
   RamFinCorp: "https://ramfincorp.com/",
@@ -193,6 +205,7 @@ export default function ShortTicketOffersPage() {
   const [isCreditPlusMedium, setIsCreditPlusMedium] = useState(false);
   const [isKbMedium, setIsKbMedium] = useState(false);
   const [isRapidMoneyMedium, setIsRapidMoneyMedium] = useState(false);
+  const [isRamFinCorpMedium, setIsRamFinCorpMedium] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
   const [priorityVisible, setPriorityVisible] = useState(0);
   const [showAll, setShowAll] = useState(false);
@@ -256,6 +269,8 @@ export default function ShortTicketOffersPage() {
     setIsKbMedium(isKbMediumLocal);
     const isRapidMoneyMediumLocal = utmMedium === "rapidmoney";
     setIsRapidMoneyMedium(isRapidMoneyMediumLocal);
+    const isRamFinCorpMediumLocal = utmMedium === "ramfincorp";
+    setIsRamFinCorpMedium(isRamFinCorpMediumLocal);
 
     let renderOrder = LENDER_ORDER;
     let initialVisible = 3;
@@ -269,7 +284,13 @@ export default function ShortTicketOffersPage() {
     } else if (isRapidMoneyMediumLocal) {
       renderOrder = RAPIDMONEY_PRIORITY_ORDER;
       initialVisible = 4;
+    } else if (isRamFinCorpMediumLocal) {
+      renderOrder = RamFinCorp_PRIORITY_ORDER;
+      initialVisible = 4;
     }
+
+
+
 
     // Build ordered list based on eligibility
     const ordered: OrderedLender[] = [];
@@ -455,8 +476,8 @@ export default function ShortTicketOffersPage() {
   };
 
   // Hero card logic
-  const showHeroFlow = isCreditPlusMedium || isKbMedium || isRapidMoneyMedium;
-  const heroName = isCreditPlusMedium ? "CreditPlus" : isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : null;
+  const showHeroFlow = isCreditPlusMedium || isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium;
+  const heroName = isCreditPlusMedium ? "CreditPlus" : isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : null;
   const heroIdx = heroName ? visibleLenders.findIndex((l) => l.name === heroName) : -1;
   const showHeroCard = showHeroFlow && heroIdx === 0 && visibleLenders.length > 0;
   const heroLender = showHeroCard ? visibleLenders[0] : null;
