@@ -23,6 +23,7 @@ import { Clock, Contact, Lock } from "lucide-react";
 const DISPLAY_NAMES: Record<string, string> = {
   RapidMoney: "RapidMoney",
   RamFinCorp: "RamFinCorp",
+  Vivifi: "Vivifi",
   KreditBee: "Kreditbee",
   TrueBalance: "TrueBalance",
   MPokket: "mPokket",
@@ -39,6 +40,7 @@ const DISPLAY_NAMES: Record<string, string> = {
 const LENDER_ORDER = [
   "RapidMoney",
   "RamFinCorp",
+  "Vivifi",
   "KreditBee",
   "TrueBalance",
   "CreditPlus",
@@ -57,6 +59,7 @@ const CREDITPLUS_PRIORITY_ORDER = [
   "RapidMoney",
   "KreditBee",
   "RamFinCorp",
+  "Vivifi",
   "TrueBalance",
   "MPokket",
   // "Loan112",
@@ -72,6 +75,7 @@ const KB_PRIORITY_ORDER = [
   "KreditBee",
   "RapidMoney",
   "RamFinCorp",
+  "Vivifi",
   "CreditPlus",
   "TrueBalance",
   "MPokket",
@@ -88,6 +92,7 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "RapidMoney",
   "KreditBee",
   "RamFinCorp",
+  "Vivifi",
   "CreditPlus",
   "TrueBalance",
   "MPokket",
@@ -101,6 +106,7 @@ const RAPIDMONEY_PRIORITY_ORDER = [
 
 const RamFinCorp_PRIORITY_ORDER = [
   "RamFinCorp",
+  "Vivifi",
   "KreditBee",
   "RapidMoney",
   "CreditPlus",
@@ -117,6 +123,7 @@ const RamFinCorp_PRIORITY_ORDER = [
 const FALLBACK_UTM: Record<string, string> = {
   KreditBee: "https://kredt.be/3ZFfVbz",
   RamFinCorp: "https://ramfincorp.com/",
+  Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
   TrueBalance: "https://truebalance.io/",
   MPokket: "https://mpokket.com/",
   CreditPlus: "https://www.creditplus.in/",
@@ -332,6 +339,12 @@ export default function ShortTicketOffersPage() {
         case "RamFinCorp":
           if (lender?.success !== true) break;
           ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.RamFinCorp });
+          break;
+
+        // Vivifi - static lender, only for salaried users
+        case "Vivifi":
+          if (!isSalariedFlag) break;
+          ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.Vivifi });
           break;
 
         case "CreditPlus":

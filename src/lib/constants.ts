@@ -33,6 +33,8 @@ export const STATIC_LENDER_LOGOS: Record<
   HeroFinCorp: { src: "/herofincorp.svg", darkBg: true },
   AdityaBirlaCapital: { src: "/adityabirlacapitalloan.svg" },
   RamFinCorp: { src: "/ramfinCorp.png" },
+  Vivifi: { src: "/vivifi.webp" },
+
   SmartCoinHighIntent: { src: "/olyv.png" },
   SmartCoin: { src: "/olyv.png" },
   TrueBalance: { src: "/truebalance.png" },
