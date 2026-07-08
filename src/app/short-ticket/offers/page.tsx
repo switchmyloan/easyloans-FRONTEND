@@ -62,6 +62,9 @@ const CREDITPLUS_PRIORITY_ORDER = [
   // "Loan112",
   "SmartCoin",
   "LendingPlate",
+   "SpeedoLoan",
+  "LoanWalle",
+  "Cashvia"
 ];
 
 // When utm_medium=kreditbee: KreditBee first
@@ -75,6 +78,9 @@ const KB_PRIORITY_ORDER = [
   // "Loan112",
   "SmartCoin",
   "LendingPlate",
+   "SpeedoLoan",
+  "LoanWalle",
+  "Cashvia"
 ];
 
 // When utm_medium=rapidmoney: RapidMoney first
@@ -88,6 +94,9 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   // "Loan112",
   "SmartCoin",
   "LendingPlate",
+   "SpeedoLoan",
+  "LoanWalle",
+  "Cashvia"
 ];
 
 const RamFinCorp_PRIORITY_ORDER = [
@@ -100,6 +109,9 @@ const RamFinCorp_PRIORITY_ORDER = [
   // "Loan112",
   "SmartCoin",
   "LendingPlate",
+   "SpeedoLoan",
+  "LoanWalle",
+  "Cashvia"
 ];
 
 const FALLBACK_UTM: Record<string, string> = {
