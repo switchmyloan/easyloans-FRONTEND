@@ -138,6 +138,7 @@ const FALLBACK_UTM: Record<string, string> = {
 
 // Map API names to internal lender names
 const STATIC_LENDER_NAME_MAP: Record<string, string> = {
+  "RamFinCorp": "RamFinCorp",
   "Speedoloan": "SpeedoLoan",
   "Fintech Cloud": "LoanWalle",
   "Cashvia": "Cashvia",
@@ -154,9 +155,9 @@ function getUtmLink(
 
   switch (name) {
     case "RapidMoney": {
-      // RapidMoney is shown based on API response (verdict === "SUCCESS")
-      const verdict = (lender as { verdict?: string })?.verdict;
-      if (verdict !== "SUCCESS") return null;
+      // RapidMoney is shown based on API response (isDuplicate === false)
+      const isDuplicate = (lender as { isDuplicate?: boolean })?.isDuplicate;
+      if (isDuplicate !== false) return null;
       return directLink || FALLBACK_UTM.RapidMoney;
     }
 
@@ -319,9 +320,9 @@ export default function ShortTicketOffersPage() {
 
       switch (name) {
         case "RapidMoney": {
-          // RapidMoney is shown based on API response (verdict === "SUCCESS")
-          const rapidMoneyVerdict = (lender as { verdict?: string })?.verdict;
-          if (rapidMoneyVerdict !== "SUCCESS") break;
+          // RapidMoney is shown based on API response (isDuplicate === false)
+          const isDuplicate = (lender as { isDuplicate?: boolean })?.isDuplicate;
+          if (isDuplicate !== false) break;
           if (utmLink) ordered.push({ name, utm_link: utmLink });
           break;
         }
@@ -336,16 +337,18 @@ export default function ShortTicketOffersPage() {
           ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.TrueBalance });
           break;
 
+           // RamFinCorp - static lender
         case "RamFinCorp":
-          if (lender?.success !== true) break;
-          ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.RamFinCorp });
+          ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.RamFinCorp });
           break;
+        
 
         // Vivifi - static lender, only for salaried users
         case "Vivifi":
           if (!isSalariedFlag) break;
           ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.Vivifi });
           break;
+         
 
         case "CreditPlus":
           // CreditPlus only for salaried users

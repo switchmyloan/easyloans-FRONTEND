@@ -87,16 +87,16 @@ export default function LoanOffersBanner() {
 
     if (userExists && existingUserData?.data) {
       const data = existingUserData.data as Record<string, unknown>;
-      // Get RapidMoney verdict data (used for filtering selectedLenders)
-      const rapidMoneyData = data.RapidMoney as { verdict?: string } | undefined;
+      // Get RapidMoney isDuplicate data (used for filtering selectedLenders)
+      const rapidMoneyData = data.RapidMoney as { isDuplicate?: boolean } | undefined;
 
       const selectedLenders = (data.selectedLenders || []) as SelectedLender[];
 
       if (selectedLenders.length > 0) {
-        // Filter out RapidMoney from selectedLenders if verdict is not SUCCESS
+        // Filter out RapidMoney from selectedLenders if isDuplicate is not false
         const filteredSelectedLenders = selectedLenders.filter((lender) => {
           if (lender.lenderName === "RapidMoney") {
-            return rapidMoneyData?.verdict === "SUCCESS";
+            return rapidMoneyData?.isDuplicate === false;
           }
           return true;
         });

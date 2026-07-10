@@ -51,6 +51,8 @@ const DISPLAY_NAMES: Record<string, string> = {
 
 const FALLBACK_UTM_LINKS: Record<string, string> = {
   SmartCoin: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
+    RamFinCorp: "https://ramfincorp.com/",
+  Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
   SmartCoinHighIntent: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
   TrueBalance: "https://truebalance.io/",
   RapidMoney: "https://web.rapidmoney.in/borrower/login?utm_source=creadylandingpage&utm_extsource=abc&utm_medium=rapidmoney&utm_campaign=xyz&utm_campaignID=def",
@@ -106,19 +108,19 @@ export default function DashboardOffersPage() {
       const data = existingUserData.data as Record<string, unknown>;
       const shownOffers = (data.shownOffers || []) as ShownOffer[];
 
-      // Map existing shown offers, but filter out RapidMoney if verdict is not SUCCESS
-      const rapidMoneyData = data.RapidMoney as { verdict?: string; utm_link?: string } | undefined;
+      // Map existing shown offers, but filter out RapidMoney if isDuplicate is false
+      const rapidMoneyData = data.RapidMoney as { isDuplicate?: boolean; utm_link?: string } | undefined;
       const filteredShownOffers = shownOffers.filter((o) => {
         if (o.lenderName === "RapidMoney") {
-          return rapidMoneyData?.verdict === "SUCCESS";
+          return rapidMoneyData?.isDuplicate === false;
         }
         return true;
       });
       const mappedOffers = filteredShownOffers.map((o) => mapShownOfferToDashboardOffer(o, data));
 
       // Add static lenders that should always be shown (SpeedoLoan, LoanWalle, Cashvia)
-      // Note: RapidMoney is now shown based on API response (verdict === "SUCCESS")
-      const ALWAYS_SHOW_STATIC_LENDERS = ["SpeedoLoan", "LoanWalle", "Cashvia"];
+      // Note: RapidMoney is now shown based on API response (isDuplicate === false)
+      const ALWAYS_SHOW_STATIC_LENDERS = ["SpeedoLoan", "LoanWalle", "Cashvia", "Vivifi", "RamFinCorp"];
       const existingLenderNames = new Set(mappedOffers.map((o) => o.name));
 
       for (const lenderName of ALWAYS_SHOW_STATIC_LENDERS) {
@@ -131,8 +133,8 @@ export default function DashboardOffersPage() {
         }
       }
 
-      // Add RapidMoney based on API response (only if verdict === "SUCCESS")
-      if (rapidMoneyData?.verdict === "SUCCESS" && !existingLenderNames.has("RapidMoney")) {
+      // Add RapidMoney based on API response (only if isDuplicate === false)
+      if (rapidMoneyData?.isDuplicate === false && !existingLenderNames.has("RapidMoney")) {
         mappedOffers.push({
           name: "RapidMoney",
           utmLink: rapidMoneyData.utm_link || FALLBACK_UTM_LINKS["RapidMoney"],
