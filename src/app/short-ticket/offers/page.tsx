@@ -34,6 +34,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   SpeedoLoan: "SpeedoLoan",
   LoanWalle: "LoanWalle",
   Cashvia: "Cashvia",
+  TrueFund: "TrueFund",
 };
 
 // Default render order
@@ -50,7 +51,9 @@ const LENDER_ORDER = [
   "LendingPlate",
   "SpeedoLoan",
   "LoanWalle",
-  "Cashvia"
+  "Cashvia",
+  "TrueFund"
+  ,
 ];
 
 // When utm_medium=creditplus: CreditPlus first
@@ -67,7 +70,8 @@ const CREDITPLUS_PRIORITY_ORDER = [
   "LendingPlate",
    "SpeedoLoan",
   "LoanWalle",
-  "Cashvia"
+  "Cashvia",
+  "TrueFund",
 ];
 
 // When utm_medium=kreditbee: KreditBee first
@@ -84,7 +88,8 @@ const KB_PRIORITY_ORDER = [
   "LendingPlate",
    "SpeedoLoan",
   "LoanWalle",
-  "Cashvia"
+  "Cashvia",
+  "TrueFund",
 ];
 
 // When utm_medium=rapidmoney: RapidMoney first
@@ -101,7 +106,9 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "LendingPlate",
    "SpeedoLoan",
   "LoanWalle",
-  "Cashvia"
+  "Cashvia",
+  "TrueFund"
+  ,
 ];
 
 const RamFinCorp_PRIORITY_ORDER = [
@@ -117,7 +124,9 @@ const RamFinCorp_PRIORITY_ORDER = [
   "LendingPlate",
    "SpeedoLoan",
   "LoanWalle",
-  "Cashvia"
+  "Cashvia",
+  "TrueFund"
+  ,
 ];
 
 const FALLBACK_UTM: Record<string, string> = {
@@ -134,6 +143,7 @@ const FALLBACK_UTM: Record<string, string> = {
   SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
   LoanWalle: "https://www.loanwalle.com/personal-loan?utm_source=CREADY&utm_medium=affiliate&utm_campaign=mcl-aff&click_id=landing-page",
   Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
+  TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
 };
 
 // Map API names to internal lender names
@@ -203,6 +213,19 @@ function getUtmLink(
       if (lender.success !== true) return null;
       return directLink || FALLBACK_UTM.LendingPlate;
 
+    case "TrueFund": {
+      // TrueFund is shown only if API response message contains "user details received sucessfully"
+      const trueFundMessage = (lender.message || "").toLowerCase();
+      const trueFundResponseMessage = (
+        (lender.data as { response?: { message?: string } })?.response?.message || ""
+      ).toLowerCase();
+      const isTrueFundEligible =
+        trueFundMessage.includes("user details received sucessfully") ||
+        trueFundResponseMessage.includes("user details received sucessfully");
+      if (!isTrueFundEligible) return null;
+      return directLink || FALLBACK_UTM.TrueFund;
+    }
+
     default:
       return directLink || FALLBACK_UTM[name] || null;
   }
@@ -225,6 +248,7 @@ export default function ShortTicketOffersPage() {
   const [isCreditPlusMedium, setIsCreditPlusMedium] = useState(false);
   const [isKbMedium, setIsKbMedium] = useState(false);
   const [isRapidMoneyMedium, setIsRapidMoneyMedium] = useState(false);
+
   const [isRamFinCorpMedium, setIsRamFinCorpMedium] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
   const [priorityVisible, setPriorityVisible] = useState(0);
@@ -273,6 +297,7 @@ export default function ShortTicketOffersPage() {
     // if (data.Loan112?.utm_link) utmMap["Loan112"] = data.Loan112.utm_link;
     if (data.SmartCoin?.utm_link) utmMap["SmartCoin"] = data.SmartCoin.utm_link;
     if (data.LendingPlate?.utm_link) utmMap["LendingPlate"] = data.LendingPlate.utm_link;
+  
 
     // Process static lenders from API
     const staticLenders = (data as { staticLenders?: Array<{ name: string; utm_link: string }> }).staticLenders || [];
@@ -394,6 +419,20 @@ export default function ShortTicketOffersPage() {
         case "Cashvia":
           ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.Cashvia });
           break;
+
+        case "TrueFund": {
+          // TrueFund is shown only if API response message contains "user details received sucessfully"
+          const trueFundMessage = (lender?.message || "").toLowerCase();
+          const trueFundResponseMessage = (
+            (lender?.data as { response?: { message?: string } })?.response?.message || ""
+          ).toLowerCase();
+          const isTrueFundEligible =
+            trueFundMessage.includes("user details received sucessfully") ||
+            trueFundResponseMessage.includes("user details received sucessfully");
+          if (!isTrueFundEligible) break;
+          ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.TrueFund });
+          break;
+        }
 
         default:
           if (utmLink) ordered.push({ name, utm_link: utmLink });

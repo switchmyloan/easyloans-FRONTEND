@@ -22,6 +22,7 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
   LoanWalle: "https://www.loanwalle.com/personal-loan?utm_source=CREADY&utm_medium=affiliate&utm_campaign=mcl-aff&click_id=landing-page",
   Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
+  TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
 };
 
 // ============================================================
@@ -89,14 +90,25 @@ export default function LoanOffersBanner() {
       const data = existingUserData.data as Record<string, unknown>;
       // Get RapidMoney isDuplicate data (used for filtering selectedLenders)
       const rapidMoneyData = data.RapidMoney as { isDuplicate?: boolean } | undefined;
+      // Get TrueFund data (used for filtering selectedLenders)
+      const trueFundData = data.TrueFund as { message?: string; data?: { response?: { message?: string } } } | undefined;
+      const trueFundMessage = (trueFundData?.message || "").toLowerCase();
+      const trueFundResponseMessage = (trueFundData?.data?.response?.message || "").toLowerCase();
+      const isTrueFundEligible =
+        trueFundMessage.includes("user details received sucessfully") ||
+        trueFundResponseMessage.includes("user details received sucessfully");
 
       const selectedLenders = (data.selectedLenders || []) as SelectedLender[];
 
       if (selectedLenders.length > 0) {
         // Filter out RapidMoney from selectedLenders if isDuplicate is not false
+        // Filter out TrueFund if message doesn't contain "user details received sucessfully"
         const filteredSelectedLenders = selectedLenders.filter((lender) => {
           if (lender.lenderName === "RapidMoney") {
             return rapidMoneyData?.isDuplicate === false;
+          }
+          if (lender.lenderName === "TrueFund") {
+            return isTrueFundEligible;
           }
           return true;
         });

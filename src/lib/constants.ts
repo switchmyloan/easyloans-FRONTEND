@@ -48,6 +48,7 @@ export const STATIC_LENDER_LOGOS: Record<
   SpeedoLoan: { src: "/speedoloan.png" },
   LoanWalle: { src: "/loanwalleblack.webp" },
   Cashvia: { src: "/cashvia1.png" },
+  TrueFund: { src: "/truefund.svg" },
 };
 
 export const STATIC_LENDER_DETAILS: Record<
@@ -203,6 +204,12 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Quick Approval and Minimal Documentation",
     interestRate: "Interest Rates start at 1.0%* per month",
   },
+  TrueFund: {
+    headline: "Get up to ₹10,00,000 with quick approval!",
+    description: "Personal loans with Instant Loan Approval and Smart & Efficient Processing",
+    keyFeature: "Quick Approval and Minimal Documentation",
+    interestRate: "Interest Rates start at 0.4% to 1.1% per day",
+  }
 };
 
 // Short feature tags for each lender (displayed in offer cards)
@@ -232,7 +239,7 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   SpeedoLoan: "Quick approval",
   LoanWalle: "Quick approval",
   Cashvia: "Minimal documentation",
-
+  TrueFund: "Quick approval",
 };
 
 // Default feature tag if lender not found

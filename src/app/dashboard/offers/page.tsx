@@ -47,11 +47,12 @@ const DISPLAY_NAMES: Record<string, string> = {
   SpeedoLoan: "SpeedoLoan",
   LoanWalle: "LoanWalle",
   Cashvia: "Cashvia",
+  TrueFund: "TrueFund",
 };
 
 const FALLBACK_UTM_LINKS: Record<string, string> = {
   SmartCoin: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
-    RamFinCorp: "https://ramfincorp.com/",
+  RamFinCorp: "https://ramfincorp.com/",
   Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
   SmartCoinHighIntent: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
   TrueBalance: "https://truebalance.io/",
@@ -61,6 +62,7 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
   LoanWalle: "https://www.loanwalle.com/personal-loan?utm_source=CREADY&utm_medium=affiliate&utm_campaign=mcl-aff&click_id=landing-page",
   Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
+  TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
 };
 
 const LENDER_CUSTOM_BADGE: Record<string, string> = {
@@ -109,10 +111,21 @@ export default function DashboardOffersPage() {
       const shownOffers = (data.shownOffers || []) as ShownOffer[];
 
       // Map existing shown offers, but filter out RapidMoney if isDuplicate is false
+      // and filter out TrueFund if message doesn't contain "user details received sucessfully"
       const rapidMoneyData = data.RapidMoney as { isDuplicate?: boolean; utm_link?: string } | undefined;
+      const trueFundData = data.TrueFund as { message?: string; utm_link?: string; data?: { response?: { message?: string } } } | undefined;
+      const trueFundMessage = (trueFundData?.message || "").toLowerCase();
+      const trueFundResponseMessage = (trueFundData?.data?.response?.message || "").toLowerCase();
+      const isTrueFundEligible =
+        trueFundMessage.includes("user details received sucessfully") ||
+        trueFundResponseMessage.includes("user details received sucessfully");
+
       const filteredShownOffers = shownOffers.filter((o) => {
         if (o.lenderName === "RapidMoney") {
           return rapidMoneyData?.isDuplicate === false;
+        }
+        if (o.lenderName === "TrueFund") {
+          return isTrueFundEligible;
         }
         return true;
       });
@@ -138,6 +151,15 @@ export default function DashboardOffersPage() {
         mappedOffers.push({
           name: "RapidMoney",
           utmLink: rapidMoneyData.utm_link || FALLBACK_UTM_LINKS["RapidMoney"],
+          isOffer: false,
+        });
+      }
+
+      // Add TrueFund based on API response (only if message contains "user details received sucessfully")
+      if (isTrueFundEligible && !existingLenderNames.has("TrueFund")) {
+        mappedOffers.push({
+          name: "TrueFund",
+          utmLink: trueFundData?.utm_link || FALLBACK_UTM_LINKS["TrueFund"],
           isOffer: false,
         });
       }
