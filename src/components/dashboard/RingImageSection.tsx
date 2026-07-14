@@ -11,14 +11,16 @@ const LENDER_RING_IMAGES: Record<string, string> = {
   ramfincorp: "/RC-ring.png",
   kreditbee: "/KB-ring.png",
   truebalance: "/TB-ring.png",
-  mpokket: "/MP-ring.png",
+  // mpokket: "/MP-ring.png",
   creditplus: "/CP-ring.png",
   loan112: "/L1-ring.png",
   lendingplate: "/LP-ring.png",
   smartcoin: "/SC-ring.png",
   speedoloan: "/SL-ring.png",
-  loanwalle: "/loanwalleblack.webp",
+  loanwalle: "/LW-ring.png",
   cashvia: "/C-ring.png",
+  truefund: "/TF-ring.png",
+  moneydot: "/MP-ring.png",
 };
 
 // Default fallback image (used if lender not found in mapping)

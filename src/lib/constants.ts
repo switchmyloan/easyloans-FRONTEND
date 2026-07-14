@@ -42,13 +42,14 @@ export const STATIC_LENDER_LOGOS: Record<
   UnitySmallFinanceBank: { src: "/unity_bank.png" },
   CreditPlus: { src: "/credit.svg" },
   KreditBee: { src: "/kreditbee-logo.svg" },
-  MPokket: { src: "/mpoket.svg" },
+  // MPokket: { src: "/mpoket.svg" },
   // Loan112: { src: "/logo_Loan112.svg" },
   LendingPlate: { src: "/lending.png" },
   SpeedoLoan: { src: "/speedoloan.png" },
   LoanWalle: { src: "/loanwalleblack.webp" },
   Cashvia: { src: "/cashvia1.png" },
   TrueFund: { src: "/truefund.svg" },
+  MoneyDot: { src: "/moneydot1.png" },
 };
 
 export const STATIC_LENDER_DETAILS: Record<
@@ -84,12 +85,12 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Flexible Repayment Options and Approval in 60 seconds",
     interestRate: "Interest Rates start at 0.05%* per day",
   },
-  MPokket: {
-    headline: "Get up to ₹30,000 instantly!",
-    description: "Quick loans for students and young professionals",
-    keyFeature: "No Collateral Required and Quick Disbursement",
-    interestRate: "Interest Rates start at 1%* per month",
-  },
+  // MPokket: {
+  //   headline: "Get up to ₹30,000 instantly!",
+  //   description: "Quick loans for students and young professionals",
+  //   keyFeature: "No Collateral Required and Quick Disbursement",
+  //   interestRate: "Interest Rates start at 1%* per month",
+  // },
   Fibe: {
     headline: "Get up to ₹5,00,000 with quick approval!",
     description: "Flexible EMI options and instant digital process",
@@ -121,9 +122,9 @@ export const STATIC_LENDER_DETAILS: Record<
   //   interestRate: "Interest Rates start at 1%* per month",
   // },
   Vivifi: {
-    headline: "Get up to ₹5,00,000 in minutes!",
+   headline: "Get up to ₹3,00,000 in minutes!",
     description: "Digital personal loans with flexible tenure options",
-    keyFeature: "Flexible Tenure and Quick Disbursement",
+    keyFeature: "Flexible Tenure and 0% foreclose charge",
     interestRate: "Interest Rates start at 1.5%* per month",
   },
   PocketCredit: {
@@ -209,6 +210,12 @@ export const STATIC_LENDER_DETAILS: Record<
     description: "Personal loans with Instant Loan Approval and Smart & Efficient Processing",
     keyFeature: "Quick Approval and Minimal Documentation",
     interestRate: "Interest Rates start at 0.4% to 1.1% per day",
+  },
+  MoneyDot: {
+    headline: "Get up to ₹10,00,000 with quick approval!",
+    description: "Personal loans with Instant Loan Approval and Zero paperwork",
+    keyFeature: "Quick Approval and with no collateral",
+    interestRate: "Interest Rates start at 0.07% to 0.16% per day",
   }
 };
 
@@ -229,7 +236,7 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   RamFinCorp: "Flexible loan options",
   Fibe: "Flexible loan options",
   LendingPlate: "Quick approval",
-  MPokket: "High approval chances",
+  // MPokket: "High approval chances",
   FiMoney: "Flexible loan options",
   MyFloat: "Quick approval",
   // Loan112: "No hidden charges",
@@ -240,6 +247,7 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   LoanWalle: "Quick approval",
   Cashvia: "Minimal documentation",
   TrueFund: "Quick approval",
+  MoneyDot: "no collateral",
 };
 
 // Default feature tag if lender not found
@@ -262,7 +270,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   Zype: 500000,             // ₹5 Lakhs
   Fibe: 500000,             // ₹5 Lakhs
   LendingPlate: 50000,      // ₹50,000
-  MPokket: 30000,           // ₹30,000
+  // MPokket: 30000,           // ₹30,000
   FiMoney: 500000,          // ₹5 Lakhs
   MyFloat: 25000,           // ₹25,000
   // Loan112: 200000,          // ₹2 Lakhs
@@ -272,6 +280,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   SpeedoLoan: 100000,      // ₹1 Lakh
   LoanWalle: 300000,      // ₹3 Lakhs
   Cashvia: 500000,      // ₹5 Lakhs
+  TrueFund: 100000,      // ₹1 Lakhs
 };
 
 const DEFAULT_LENDER_DETAIL = {

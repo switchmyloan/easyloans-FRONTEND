@@ -40,7 +40,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   TrueBalance: "TrueBalance",
   RamFinCorp: "Ram FinCorp",
   CreditPlus: "CreditPlus",
-  MPokket: "mPokket",
+  // MPokket: "mPokket",
   // Loan112: "Loan112",
   SmartCoin: "Olyv",
   SmartCoinHighIntent: "Olyv",

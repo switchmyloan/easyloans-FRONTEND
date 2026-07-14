@@ -39,7 +39,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   TrueBalance: "TrueBalance",
   RamFinCorp: "Ram FinCorp",
   CreditPlus: "CreditPlus",
-  MPokket: "mPokket",
+  // MPokket: "mPokket",
   // Loan112: "Loan112",
   SmartCoin: "Olyv",
   SmartCoinHighIntent: "Olyv",
@@ -48,6 +48,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   LoanWalle: "LoanWalle",
   Cashvia: "Cashvia",
   TrueFund: "TrueFund",
+  MoneyDot: "MoneyDot",
 };
 
 const FALLBACK_UTM_LINKS: Record<string, string> = {
@@ -63,6 +64,7 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   LoanWalle: "https://www.loanwalle.com/personal-loan?utm_source=CREADY&utm_medium=affiliate&utm_campaign=mcl-aff&click_id=landing-page",
   Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
   TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
+  MoneyDot: "https://www.moneydot.in/",
 };
 
 const LENDER_CUSTOM_BADGE: Record<string, string> = {
@@ -120,12 +122,29 @@ export default function DashboardOffersPage() {
         trueFundMessage.includes("user details received sucessfully") ||
         trueFundResponseMessage.includes("user details received sucessfully");
 
+const moneyDotData = data.MoneyDot as {
+  data?: {
+    response?: {
+      can_attribute?: boolean;
+    };
+  };
+  utm_link?: string;
+} | undefined;
+
+const isMoneyDotEligible =
+  moneyDotData?.data?.response?.can_attribute === true;
+
+
+       
       const filteredShownOffers = shownOffers.filter((o) => {
         if (o.lenderName === "RapidMoney") {
           return rapidMoneyData?.isDuplicate === false;
         }
         if (o.lenderName === "TrueFund") {
           return isTrueFundEligible;
+        }
+        if (o.lenderName === "MoneyDot") {
+          return isMoneyDotEligible;
         }
         return true;
       });
@@ -163,6 +182,17 @@ export default function DashboardOffersPage() {
           isOffer: false,
         });
       }
+
+      // Add MoneyDot based on API response (only if canAttribute === true)
+      if (isMoneyDotEligible && !existingLenderNames.has("MoneyDot")) {
+        mappedOffers.push({
+          name: "MoneyDot",
+          utmLink: moneyDotData?.utm_link || FALLBACK_UTM_LINKS["MoneyDot"],
+          isOffer: false,
+        });
+      }
+
+      
 
       setOffers(mappedOffers);
     } else {

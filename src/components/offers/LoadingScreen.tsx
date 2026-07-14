@@ -32,6 +32,10 @@ const partnerLogos = [
   { name: "Olyv", src: "/olyv.png" },
   { name: "Zype", src: "/zype.png" },
   { name: "LendingPlate", src: "/lending.png" },
+  { name: "MoneyDot", src: "/moneydot1.png" },
+  { name: "TrueFund", src: "/truefund.svg" },
+  { name: "Vivifi", src: "/vivifi.webp" },
+
 ];
 
 export default function LoadingScreen() {

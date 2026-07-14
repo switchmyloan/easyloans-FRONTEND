@@ -26,7 +26,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   Vivifi: "Vivifi",
   KreditBee: "Kreditbee",
   TrueBalance: "TrueBalance",
-  MPokket: "mPokket",
+  // MPokket: "mPokket",
   CreditPlus: "Creditt+",
   // Loan112: "Loan112",
   SmartCoin: "Olyv",
@@ -35,25 +35,26 @@ const DISPLAY_NAMES: Record<string, string> = {
   LoanWalle: "LoanWalle",
   Cashvia: "Cashvia",
   TrueFund: "TrueFund",
+  MoneyDot: "MoneyDot",
 };
 
 // Default render order
 const LENDER_ORDER = [
   "RapidMoney",
   "RamFinCorp",
+   "KreditBee",
+     "TrueBalance",
   "Vivifi",
-  "KreditBee",
-  "TrueBalance",
   "CreditPlus",
-  "MPokket",
+    "SmartCoin",
+      "SpeedoLoan",
+  // "MPokket",
   // "Loan112",
-  "SmartCoin",
   "LendingPlate",
-  "SpeedoLoan",
   "LoanWalle",
   "Cashvia",
-  "TrueFund"
-  ,
+  "TrueFund",
+  "MoneyDot"
 ];
 
 // When utm_medium=creditplus: CreditPlus first
@@ -64,7 +65,7 @@ const CREDITPLUS_PRIORITY_ORDER = [
   "RamFinCorp",
   "Vivifi",
   "TrueBalance",
-  "MPokket",
+  // "MPokket",
   // "Loan112",
   "SmartCoin",
   "LendingPlate",
@@ -72,6 +73,7 @@ const CREDITPLUS_PRIORITY_ORDER = [
   "LoanWalle",
   "Cashvia",
   "TrueFund",
+  "MoneyDot",
 ];
 
 // When utm_medium=kreditbee: KreditBee first
@@ -82,7 +84,7 @@ const KB_PRIORITY_ORDER = [
   "Vivifi",
   "CreditPlus",
   "TrueBalance",
-  "MPokket",
+  // "MPokket",
   // "Loan112",
   "SmartCoin",
   "LendingPlate",
@@ -90,6 +92,7 @@ const KB_PRIORITY_ORDER = [
   "LoanWalle",
   "Cashvia",
   "TrueFund",
+  "MoneyDot",
 ];
 
 // When utm_medium=rapidmoney: RapidMoney first
@@ -100,15 +103,15 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "Vivifi",
   "CreditPlus",
   "TrueBalance",
-  "MPokket",
+  // "MPokket",
   // "Loan112",
   "SmartCoin",
   "LendingPlate",
    "SpeedoLoan",
   "LoanWalle",
   "Cashvia",
-  "TrueFund"
-  ,
+  "TrueFund",
+  "MoneyDot",
 ];
 
 const RamFinCorp_PRIORITY_ORDER = [
@@ -118,7 +121,7 @@ const RamFinCorp_PRIORITY_ORDER = [
   "RapidMoney",
   "CreditPlus",
   "TrueBalance",
-  "MPokket",
+  // "MPokket",
   // "Loan112",
   "SmartCoin",
   "LendingPlate",
@@ -127,6 +130,7 @@ const RamFinCorp_PRIORITY_ORDER = [
   "Cashvia",
   "TrueFund"
   ,
+  "MoneyDot",
 ];
 
 const FALLBACK_UTM: Record<string, string> = {
@@ -134,7 +138,7 @@ const FALLBACK_UTM: Record<string, string> = {
   RamFinCorp: "https://ramfincorp.com/",
   Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
   TrueBalance: "https://truebalance.io/",
-  MPokket: "https://mpokket.com/",
+  // MPokket: "https://mpokket.com/",
   CreditPlus: "https://www.creditplus.in/",
   // Loan112: "https://loan112.com/",
   RapidMoney: "https://web.rapidmoney.in/",
@@ -144,6 +148,7 @@ const FALLBACK_UTM: Record<string, string> = {
   LoanWalle: "https://www.loanwalle.com/personal-loan?utm_source=CREADY&utm_medium=affiliate&utm_campaign=mcl-aff&click_id=landing-page",
   Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
   TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
+  MoneyDot: "https://www.moneydot.in/",
 };
 
 // Map API names to internal lender names
@@ -185,12 +190,12 @@ function getUtmLink(
       if (lender.success !== true) return null;
       return directLink || FALLBACK_UTM.RamFinCorp;
 
-    case "MPokket": {
-      const isEligible = (lender as { isEligible?: boolean }).isEligible;
-      if (isEligible === false) return null;
-      if (lender.success !== true) return null;
-      return directLink || FALLBACK_UTM.MPokket;
-    }
+    // case "MPokket": {
+    //   const isEligible = (lender as { isEligible?: boolean }).isEligible;
+    //   if (isEligible === false) return null;
+    //   if (lender.success !== true) return null;
+    //   return directLink || FALLBACK_UTM.MPokket;
+    // }
 
     case "CreditPlus":
       if (lender.success !== true) return null;
@@ -225,6 +230,20 @@ function getUtmLink(
       if (!isTrueFundEligible) return null;
       return directLink || FALLBACK_UTM.TrueFund;
     }
+
+    case "MoneyDot": {
+  const canAttribute = (
+    lender?.data as {
+      response?: {
+        can_attribute?: boolean;
+      };
+    }
+  )?.response?.can_attribute;
+
+  if (canAttribute !== true) return null;
+
+  return directLink || FALLBACK_UTM.MoneyDot;
+}
 
     default:
       return directLink || FALLBACK_UTM[name] || null;
@@ -293,7 +312,7 @@ export default function ShortTicketOffersPage() {
     if (data.KreditBee?.utm_link) utmMap["KreditBee"] = data.KreditBee.utm_link;
     if (data.TrueBalance?.utm_link) utmMap["TrueBalance"] = data.TrueBalance.utm_link;
     if (data.CreditPlus?.utm_link) utmMap["CreditPlus"] = data.CreditPlus.utm_link;
-    if (data.MPokket?.utm_link) utmMap["MPokket"] = data.MPokket.utm_link;
+    // if (data.MPokket?.utm_link) utmMap["MPokket"] = data.MPokket.utm_link;
     // if (data.Loan112?.utm_link) utmMap["Loan112"] = data.Loan112.utm_link;
     if (data.SmartCoin?.utm_link) utmMap["SmartCoin"] = data.SmartCoin.utm_link;
     if (data.LendingPlate?.utm_link) utmMap["LendingPlate"] = data.LendingPlate.utm_link;
@@ -382,10 +401,10 @@ export default function ShortTicketOffersPage() {
           ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.CreditPlus });
           break;
 
-        case "MPokket":
-          if (lender?.success !== true) break;
-          ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.MPokket });
-          break;
+        // case "MPokket":
+        //   if (lender?.success !== true) break;
+        //   ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.MPokket });
+        //   break;
 
         // case "Loan112":
         //   if (lender?.success !== true) break;
@@ -433,6 +452,25 @@ export default function ShortTicketOffersPage() {
           ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.TrueFund });
           break;
         }
+
+        case "MoneyDot": {
+  const canAttribute = (
+    lender?.data as {
+      response?: {
+        can_attribute?: boolean;
+      };
+    }
+  )?.response?.can_attribute;
+
+  if (canAttribute !== true) break;
+
+  ordered.push({
+    name,
+    utm_link: utmLink || FALLBACK_UTM.MoneyDot,
+  });
+
+  break;
+}
 
         default:
           if (utmLink) ordered.push({ name, utm_link: utmLink });
