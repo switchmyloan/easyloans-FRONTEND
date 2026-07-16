@@ -41,8 +41,8 @@ const DISPLAY_NAMES: Record<string, string> = {
   CreditPlus: "CreditPlus",
   // MPokket: "mPokket",
   // Loan112: "Loan112",
-  SmartCoin: "Olyv",
-  SmartCoinHighIntent: "Olyv",
+  // SmartCoin: "Olyv",
+  // SmartCoinHighIntent: "Olyv",
   LendingPlate: "LendingPlate",
   SpeedoLoan: "SpeedoLoan",
   LoanWalle: "LoanWalle",
@@ -52,10 +52,10 @@ const DISPLAY_NAMES: Record<string, string> = {
 };
 
 const FALLBACK_UTM_LINKS: Record<string, string> = {
-  SmartCoin: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
+  // SmartCoin: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
   RamFinCorp: "https://ramfincorp.com/",
   Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
-  SmartCoinHighIntent: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
+  // SmartCoinHighIntent: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
   TrueBalance: "https://truebalance.io/",
   RapidMoney: "https://web.rapidmoney.in/borrower/login?utm_source=creadylandingpage&utm_extsource=abc&utm_medium=rapidmoney&utm_campaign=xyz&utm_campaignID=def",
   KreditBee: "https://www.kreditbee.in/signin",

@@ -29,7 +29,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   // MPokket: "mPokket",
   CreditPlus: "Creditt+",
   // Loan112: "Loan112",
-  SmartCoin: "Olyv",
+  // SmartCoin: "Olyv",
   LendingPlate: "LendingPlate",
   SpeedoLoan: "SpeedoLoan",
   LoanWalle: "LoanWalle",
@@ -46,7 +46,7 @@ const LENDER_ORDER = [
      "TrueBalance",
   "Vivifi",
   "CreditPlus",
-    "SmartCoin",
+    // "SmartCoin",
       "SpeedoLoan",
   // "MPokket",
   // "Loan112",
@@ -67,7 +67,7 @@ const CREDITPLUS_PRIORITY_ORDER = [
   "TrueBalance",
   // "MPokket",
   // "Loan112",
-  "SmartCoin",
+  // "SmartCoin",
   "LendingPlate",
    "SpeedoLoan",
   "LoanWalle",
@@ -86,7 +86,7 @@ const KB_PRIORITY_ORDER = [
   "TrueBalance",
   // "MPokket",
   // "Loan112",
-  "SmartCoin",
+  // "SmartCoin",
   "LendingPlate",
    "SpeedoLoan",
   "LoanWalle",
@@ -105,7 +105,7 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "TrueBalance",
   // "MPokket",
   // "Loan112",
-  "SmartCoin",
+  // "SmartCoin",
   "LendingPlate",
    "SpeedoLoan",
   "LoanWalle",
@@ -123,7 +123,7 @@ const RamFinCorp_PRIORITY_ORDER = [
   "TrueBalance",
   // "MPokket",
   // "Loan112",
-  "SmartCoin",
+  // "SmartCoin",
   "LendingPlate",
    "SpeedoLoan",
   "LoanWalle",
@@ -142,7 +142,7 @@ const FALLBACK_UTM: Record<string, string> = {
   CreditPlus: "https://www.creditplus.in/",
   // Loan112: "https://loan112.com/",
   RapidMoney: "https://web.rapidmoney.in/",
-  SmartCoin: "https://olyv.app/",
+  // SmartCoin: "https://olyv.app/",
   LendingPlate: "https://lendingplate.com/",
   SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
   LoanWalle: "https://www.loanwalle.com/personal-loan?utm_source=CREADY&utm_medium=affiliate&utm_campaign=mcl-aff&click_id=landing-page",
@@ -205,14 +205,14 @@ function getUtmLink(
     //   if (lender.success !== true) return null;
     //   return directLink || FALLBACK_UTM.Loan112;
 
-    case "SmartCoin": {
-      // SmartCoin (Olyv) - show if not a duplicate (isDuplicate: false means eligible)
-      const isDuplicate = (lender as { isDuplicate?: boolean }).isDuplicate;
-      if (isDuplicate === true) return null;
-      // If isDuplicate is false, user is eligible regardless of success field
-      if (isDuplicate !== false) return null;
-      return directLink || FALLBACK_UTM.SmartCoin;
-    }
+    // case "SmartCoin": {
+    //   // SmartCoin (Olyv) - show if not a duplicate (isDuplicate: false means eligible)
+    //   const isDuplicate = (lender as { isDuplicate?: boolean }).isDuplicate;
+    //   if (isDuplicate === true) return null;
+    //   // If isDuplicate is false, user is eligible regardless of success field
+    //   if (isDuplicate !== false) return null;
+    //   return directLink || FALLBACK_UTM.SmartCoin;
+    // }
 
     case "LendingPlate":
       if (lender.success !== true) return null;
@@ -314,7 +314,7 @@ export default function ShortTicketOffersPage() {
     if (data.CreditPlus?.utm_link) utmMap["CreditPlus"] = data.CreditPlus.utm_link;
     // if (data.MPokket?.utm_link) utmMap["MPokket"] = data.MPokket.utm_link;
     // if (data.Loan112?.utm_link) utmMap["Loan112"] = data.Loan112.utm_link;
-    if (data.SmartCoin?.utm_link) utmMap["SmartCoin"] = data.SmartCoin.utm_link;
+    // if (data.SmartCoin?.utm_link) utmMap["SmartCoin"] = data.SmartCoin.utm_link;
     if (data.LendingPlate?.utm_link) utmMap["LendingPlate"] = data.LendingPlate.utm_link;
   
 
@@ -411,15 +411,15 @@ export default function ShortTicketOffersPage() {
         //   ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.Loan112 });
         //   break;
 
-        case "SmartCoin": {
-          // SmartCoin (Olyv) - show if not a duplicate (isDuplicate: false means eligible)
-          const isDuplicate = (lender as { isDuplicate?: boolean })?.isDuplicate;
-          if (isDuplicate === true) break;
-          // If isDuplicate is false, user is eligible regardless of success field
-          if (isDuplicate !== false) break;
-          ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.SmartCoin });
-          break;
-        }
+        // case "SmartCoin": {
+        //   // SmartCoin (Olyv) - show if not a duplicate (isDuplicate: false means eligible)
+        //   const isDuplicate = (lender as { isDuplicate?: boolean })?.isDuplicate;
+        //   if (isDuplicate === true) break;
+        //   // If isDuplicate is false, user is eligible regardless of success field
+        //   if (isDuplicate !== false) break;
+        //   ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.SmartCoin });
+        //   break;
+        // }
 
         case "LendingPlate":
           if (lender?.success !== true) break;

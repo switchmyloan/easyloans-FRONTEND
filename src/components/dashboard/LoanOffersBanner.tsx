@@ -13,8 +13,8 @@ import RingImageSection from "./RingImageSection";
 // Lender UTM links — used when an offer doesn't carry its own utmLink. Same set
 // the offer cards use, so the banner hero redirects to the right place.
 const FALLBACK_UTM_LINKS: Record<string, string> = {
-  SmartCoin: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
-  SmartCoinHighIntent: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
+  // SmartCoin: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
+  // SmartCoinHighIntent: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
   TrueBalance: "https://truebalance.io/",
   RapidMoney: "https://web.rapidmoney.in/borrower/login?utm_source=creadylandingpage&utm_extsource=abc&utm_medium=rapidmoney&utm_campaign=xyz&utm_campaignID=def",
   KreditBee: "https://www.kreditbee.in/signin",

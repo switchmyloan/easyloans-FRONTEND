@@ -15,7 +15,7 @@ const LENDER_RING_IMAGES: Record<string, string> = {
   creditplus: "/CP-ring.png",
   loan112: "/L1-ring.png",
   lendingplate: "/LP-ring.png",
-  smartcoin: "/SC-ring.png",
+  // smartcoin: "/SC-ring.png",
   speedoloan: "/SL-ring.png",
   loanwalle: "/LW-ring.png",
   cashvia: "/C-ring.png",

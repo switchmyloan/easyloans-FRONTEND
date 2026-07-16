@@ -29,7 +29,7 @@ const partnerLogos = [
   { name: "Hero Fincorp", src: "/hero.webp" },
   { name: "Poonawalla Fincorp", src: "/poonawalla.svg" },
   { name: "True Balance", src: "/true.webp" },
-  { name: "Olyv", src: "/olyv.png" },
+  // { name: "Olyv", src: "/olyv.png" },
   { name: "Zype", src: "/zype.png" },
   { name: "LendingPlate", src: "/lending.png" },
   { name: "MoneyDot", src: "/moneydot1.png" },

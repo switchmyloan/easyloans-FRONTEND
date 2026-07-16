@@ -609,7 +609,7 @@ export interface OffersApiResponse {
   data: {
     MoneyView: LenderResponse;
     KreditBee: LenderResponse;
-    SmartCoinHighIntent?: LenderResponse;
+    // SmartCoinHighIntent?: LenderResponse;
     TrueBalance?: LenderResponse;
     Zype_Dedupe?: LenderResponse;
     isSalaried: boolean;
@@ -823,7 +823,7 @@ export interface ShortTicketData {
   TrueBalance?: ShortTicketLender;
   // MPokket?: ShortTicketLender;
   // Loan112?: ShortTicketLender;
-  SmartCoin?: ShortTicketLender;
+  // SmartCoin?: ShortTicketLender;
   LendingPlate?: ShortTicketLender;
   [key: string]: unknown;
 }
@@ -1101,7 +1101,7 @@ export interface ShortExistingUserOffersResponse {
     KreditBee?: ShortTicketLender;
     RapidMoney?: ShortTicketLender;
     TrueBalance?: ShortTicketLender;
-    SmartCoin?: ShortTicketLender;
+    // SmartCoin?: ShortTicketLender;
     RamFinCorp?: ShortTicketLender;
     // MPokket?: ShortTicketLender;
     CreditPlus?: ShortTicketLender;
@@ -1244,7 +1244,7 @@ export interface ShortDashboardLinkResponse {
     KreditBee?: ShortTicketLender;
     RapidMoney?: ShortTicketLender;
     TrueBalance?: ShortTicketLender;
-    SmartCoin?: ShortTicketLender;
+    // SmartCoin?: ShortTicketLender;
     RamFinCorp?: ShortTicketLender;
     // MPokket?: ShortTicketLender;
     CreditPlus?: ShortTicketLender;

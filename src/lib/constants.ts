@@ -35,8 +35,8 @@ export const STATIC_LENDER_LOGOS: Record<
   RamFinCorp: { src: "/ramfinCorp.png" },
   Vivifi: { src: "/vivifi.webp" },
 
-  SmartCoinHighIntent: { src: "/olyv.png" },
-  SmartCoin: { src: "/olyv.png" },
+  // SmartCoinHighIntent: { src: "/olyv.png" },
+  // SmartCoin: { src: "/olyv.png" },
   TrueBalance: { src: "/truebalance.png" },
   Zype_Dedupe: { src: "/zype.png" },
   UnitySmallFinanceBank: { src: "/unity_bank.png" },
@@ -67,12 +67,12 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Instant Disbursement and Flexible EMI Options",
     interestRate: "Interest rate starting from 1% per month",
   },
-  SmartCoin: {
-    headline: "Get Personal Loans from ₹1,000 to ₹5 Lakhs",
-    description: "Flexible repayment options and loan tenure from 1 month to 6 months",
-    keyFeature: "Flexible Repayment Options and Quick Access to Lump Sum Amount",
-    interestRate: "Interest Rates start at 0.1%* per day",
-  },
+  // SmartCoin: {
+  //   headline: "Get Personal Loans from ₹1,000 to ₹5 Lakhs",
+  //   description: "Flexible repayment options and loan tenure from 1 month to 6 months",
+  //   keyFeature: "Flexible Repayment Options and Quick Access to Lump Sum Amount",
+  //   interestRate: "Interest Rates start at 0.1%* per day",
+  // },
   LendingPlate: {
     headline: "Get up to ₹50,000 with instant approval!",
     description: "Quick digital process and minimal documentation required",
@@ -163,12 +163,12 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Quick Approval and Minimal Documentation",
     interestRate: "Interest Rates start at 10.5%* per annum",
   },
-  SmartCoinHighIntent: {
-    headline: "Get Personal Loans from ₹1,000 to ₹5 Lakhs",
-    description: "Flexible repayment options and loan tenure from 1 month to 6 months",
-    keyFeature: "Flexible Repayment Options and Quick Access to Lump Sum Amount",
-    interestRate: "Interest rate starting from 1.5% per month.",
-  },
+  // SmartCoinHighIntent: {
+  //   headline: "Get Personal Loans from ₹1,000 to ₹5 Lakhs",
+  //   description: "Flexible repayment options and loan tenure from 1 month to 6 months",
+  //   keyFeature: "Flexible Repayment Options and Quick Access to Lump Sum Amount",
+  //   interestRate: "Interest rate starting from 1.5% per month.",
+  // },
   TrueBalance: {
     headline: "Get Personal Loans from ₹1,000 to ₹5 Lakhs",
     description: "Quick personal loans with minimal documentation and fast disbursement",
@@ -225,8 +225,8 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   MoneyView: "Flexible loan options",
   poonawalla: "No hidden charges",
   HeroFinCorp: "Flexible loan options",
-  SmartCoinHighIntent: "Quick approval",
-  SmartCoin: "Quick approval",
+  // SmartCoinHighIntent: "Quick approval",
+  // SmartCoin: "Quick approval",
   Zype_Dedupe: "High approval chances",
   Zype: "High approval chances",
   TrueBalance: "Quick approval",
@@ -259,14 +259,14 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   MoneyView: 1000000,       // ₹10 Lakhs
   poonawalla: 1500000,      // ₹15 Lakhs
   HeroFinCorp: 500000,      // ₹5 Lakhs
-  SmartCoinHighIntent: 500000, // ₹5 Lakhs
+  // SmartCoinHighIntent: 500000, // ₹5 Lakhs
   Zype_Dedupe: 500000,      // ₹5 Lakhs
   TrueBalance: 500000,      // ₹5 Lakhs
   UnitySmallFinanceBank: 500000, // ₹5 Lakhs
   RapidMoney: 25000,        // ₹25,000
   AdityaBirlaCapital: 4000000, // ₹40 Lakhs
   RamFinCorp: 100000,       // ₹1 Lakh
-  SmartCoin: 500000,        // ₹5 Lakhs
+  // SmartCoin: 500000,        // ₹5 Lakhs
   Zype: 500000,             // ₹5 Lakhs
   Fibe: 500000,             // ₹5 Lakhs
   LendingPlate: 50000,      // ₹50,000

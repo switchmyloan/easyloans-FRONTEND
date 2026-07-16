@@ -13,7 +13,7 @@ import GradientBanner from "@/components/ui/GradientBanner";
 
 const DISPLAY_NAMES: Record<string, string> = {
   poonawalla: "Poonawalla",
-  SmartCoinHighIntent: "SmartCoin",
+  // SmartCoinHighIntent: "SmartCoin",
   Zype_Dedupe: "Zype",
   UnitySmallFinanceBank: "Unity Small Finance Bank",
 };
@@ -99,7 +99,7 @@ export default function OffersPage() {
         utm_link: buildUnityUtmLink(getStoredMrn()),
       });
       const extraKeys: { key: string; fallback: string }[] = [
-        { key: "SmartCoinHighIntent", fallback: "https://olyv.com/" },
+        // { key: "SmartCoinHighIntent", fallback: "https://olyv.com/" },
       ];
       for (const { key, fallback } of extraKeys) {
         const lenderData = response.data[key as keyof typeof response.data] as LenderResponse | undefined;
@@ -127,7 +127,7 @@ export default function OffersPage() {
         "poonawalla",
         "HeroFinCorp",
         "TrueBalance",
-        "SmartCoinHighIntent",
+        // "SmartCoinHighIntent",
         "RapidMoney",
       ];
       const allStatic = [...(response.data.staticLenders || []), ...extras];
