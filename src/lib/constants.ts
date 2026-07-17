@@ -49,7 +49,7 @@ export const STATIC_LENDER_LOGOS: Record<
   LoanWalle: { src: "/loanwalleblack.webp" },
   Cashvia: { src: "/cashvia1.png" },
   TrueFund: { src: "/truefund.svg" },
-  MoneyDot: { src: "/moneydot1.png" },
+  MoneyDot: { src: "/moneydot.png" },
 };
 
 export const STATIC_LENDER_DETAILS: Record<

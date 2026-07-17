@@ -75,6 +75,9 @@ const LENDER_CUSTOM_BADGE: Record<string, string> = {
 
 const BADGE_VISIBLE_COUNT = 3;
 
+// Lenders that have been removed and should not be displayed
+const REMOVED_LENDERS = ["MPokket", "Loan112", "SmartCoin", "SmartCoinHighIntent"];
+
 // ============================================================
 // Utility Functions
 // ============================================================
@@ -135,8 +138,12 @@ const isMoneyDotEligible =
   moneyDotData?.data?.response?.can_attribute === true;
 
 
-       
+
       const filteredShownOffers = shownOffers.filter((o) => {
+        // Filter out removed lenders
+        if (REMOVED_LENDERS.includes(o.lenderName)) {
+          return false;
+        }
         if (o.lenderName === "RapidMoney") {
           return rapidMoneyData?.isDuplicate === false;
         }
