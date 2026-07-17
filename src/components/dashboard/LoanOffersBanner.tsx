@@ -5,8 +5,10 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Lock, Zap, CheckCircle, Clock, ChevronRight } from "lucide-react";
-import { STATIC_LENDER_LOGOS, LENDER_FEATURE_TAGS, DEFAULT_FEATURE_TAG } from "@/lib/constants";
-import { getStoredShortExistingUserOffers, saveShortLender } from "@/lib/api";
+import { STATIC_LENDER_LOGOS, LENDER_FEATURE_TAGS, DEFAULT_FEATURE_TAG, DASHBOARD_PRIORITY_ORDER } from "@/lib/constants";
+import { getStoredShortExistingUserOffers, saveShortLender, applyToShortKreditBee } from "@/lib/api";
+import toast, { Toaster } from "react-hot-toast";
+import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
 import { useOtpGuard } from "@/app/dashboard/layout";
 import RingImageSection from "./RingImageSection";
 
@@ -25,6 +27,22 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
 };
 
+// Map utm_medium values to lender names (case-insensitive matching)
+const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
+  rapidmoney: "RapidMoney",
+  kreditbee: "KreditBee",
+  creditplus: "CreditPlus",
+  ramfincorp: "RamFinCorp",
+  truebalance: "TrueBalance",
+  speedoloan: "SpeedoLoan",
+  loanwalle: "LoanWalle",
+  cashvia: "Cashvia",
+  truefund: "TrueFund",
+  vivifi: "Vivifi",
+  lendingplate: "LendingPlate",
+  moneydot: "MoneyDot",
+};
+
 // ============================================================
 // Types
 // ============================================================
@@ -34,6 +52,12 @@ export interface PreviousLender {
   prefix: string;
 }
 
+interface ShownOffer {
+  lenderName: string;
+  section?: string;
+  utmLink?: string | null;
+}
+
 interface SelectedLender {
   lenderName: string;
   createdAt?: string;
@@ -41,31 +65,23 @@ interface SelectedLender {
   mrn?: string;
 }
 
+// Lenders that have been removed and should not be displayed
+const REMOVED_LENDERS = ["MPokket", "Loan112", "SmartCoin", "SmartCoinHighIntent"];
+
+// Static lenders that should always be shown
+const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", "SpeedoLoan", "LoanWalle", "Cashvia", "Vivifi", "RamFinCorp"];
+
 // ============================================================
 // Utility Functions
 // ============================================================
-function mapSelectedLenderToPreviousLender(selected: SelectedLender): PreviousLender {
-  return {
-    id: selected.lenderName,
-    name: selected.lenderName,
-    prefix: selected.lenderName.charAt(0).toUpperCase(),
-  };
-}
-
-function sortAndDeduplicateSelectedLenders(lenders: SelectedLender[]): SelectedLender[] {
-  const sorted = [...lenders].sort((a, b) => {
-    const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-    const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-    return dateB - dateA;
-  });
-
-  const seen = new Set<string>();
-  return sorted.filter((lender) => {
-    if (seen.has(lender.lenderName)) {
-      return false;
-    }
-    seen.add(lender.lenderName);
-    return true;
+// Sort PreviousLender array by dashboard priority order
+function sortLendersByPriority(lenders: PreviousLender[]): PreviousLender[] {
+  return [...lenders].sort((a, b) => {
+    const priorityA = DASHBOARD_PRIORITY_ORDER.indexOf(a.id);
+    const priorityB = DASHBOARD_PRIORITY_ORDER.indexOf(b.id);
+    const effectivePriorityA = priorityA === -1 ? DASHBOARD_PRIORITY_ORDER.length : priorityA;
+    const effectivePriorityB = priorityB === -1 ? DASHBOARD_PRIORITY_ORDER.length : priorityB;
+    return effectivePriorityA - effectivePriorityB;
   });
 }
 
@@ -81,6 +97,8 @@ export default function LoanOffersBanner() {
   const { guardActivity } = useOtpGuard();
   const [mainLender, setMainLender] = useState<PreviousLender | null>(null);
   const [otherLenders, setOtherLenders] = useState<PreviousLender[]>([]);
+  const [kbApplying, setKbApplying] = useState(false);
+  const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
 
   useEffect(() => {
     const existingUserData = getStoredShortExistingUserOffers();
@@ -88,35 +106,154 @@ export default function LoanOffersBanner() {
 
     if (userExists && existingUserData?.data) {
       const data = existingUserData.data as Record<string, unknown>;
-      // Get RapidMoney isDuplicate data (used for filtering selectedLenders)
-      const rapidMoneyData = data.RapidMoney as { isDuplicate?: boolean } | undefined;
-      // Get TrueFund data (used for filtering selectedLenders)
-      const trueFundData = data.TrueFund as { message?: string; data?: { response?: { message?: string } } } | undefined;
+
+      // Get eligibility data for each lender
+      const rapidMoneyData = data.RapidMoney as { isDuplicate?: boolean; utm_link?: string } | undefined;
+      const trueFundData = data.TrueFund as { message?: string; utm_link?: string; data?: { response?: { message?: string } } } | undefined;
+      const moneyDotData = data.MoneyDot as { data?: { response?: { can_attribute?: boolean } }; utm_link?: string } | undefined;
+
       const trueFundMessage = (trueFundData?.message || "").toLowerCase();
       const trueFundResponseMessage = (trueFundData?.data?.response?.message || "").toLowerCase();
       const isTrueFundEligible =
         trueFundMessage.includes("user details received sucessfully") ||
         trueFundResponseMessage.includes("user details received sucessfully");
+      const isMoneyDotEligible = moneyDotData?.data?.response?.can_attribute === true;
 
-      const selectedLenders = (data.selectedLenders || []) as SelectedLender[];
+      // Get shownOffers from API response
+      const shownOffers = (data.shownOffers || []) as ShownOffer[];
 
-      if (selectedLenders.length > 0) {
-        // Filter out RapidMoney from selectedLenders if isDuplicate is not false
-        // Filter out TrueFund if message doesn't contain "user details received sucessfully"
-        const filteredSelectedLenders = selectedLenders.filter((lender) => {
-          if (lender.lenderName === "RapidMoney") {
-            return rapidMoneyData?.isDuplicate === false;
-          }
-          if (lender.lenderName === "TrueFund") {
-            return isTrueFundEligible;
-          }
-          return true;
+      // Build list of eligible lenders from shownOffers
+      const eligibleLenders: PreviousLender[] = [];
+      const addedLenders = new Set<string>();
+
+      // Filter shownOffers based on eligibility
+      for (const offer of shownOffers) {
+        const lenderName = offer.lenderName;
+
+        // Skip removed lenders
+        if (REMOVED_LENDERS.includes(lenderName)) continue;
+        // Skip duplicates
+        if (addedLenders.has(lenderName)) continue;
+
+        // Check eligibility for specific lenders
+        if (lenderName === "RapidMoney" && rapidMoneyData?.isDuplicate !== false) continue;
+        if (lenderName === "TrueFund" && !isTrueFundEligible) continue;
+        if (lenderName === "MoneyDot" && !isMoneyDotEligible) continue;
+
+        addedLenders.add(lenderName);
+        eligibleLenders.push({
+          id: lenderName,
+          name: lenderName,
+          prefix: lenderName.charAt(0).toUpperCase(),
         });
-        const sortedLenders = sortAndDeduplicateSelectedLenders(filteredSelectedLenders);
-        const mapped = sortedLenders.map(mapSelectedLenderToPreviousLender);
-        setMainLender(mapped[0] || null);
-        // Set other lenders (up to 3) for "More offers" section
-        setOtherLenders(mapped.slice(1, 4));
+      }
+
+      // Add static lenders that should always be shown (if not already added)
+      for (const lenderName of ALWAYS_SHOW_STATIC_LENDERS) {
+        if (!addedLenders.has(lenderName)) {
+          addedLenders.add(lenderName);
+          eligibleLenders.push({
+            id: lenderName,
+            name: lenderName,
+            prefix: lenderName.charAt(0).toUpperCase(),
+          });
+        }
+      }
+
+      // Add RapidMoney if eligible and not already added
+      if (rapidMoneyData?.isDuplicate === false && !addedLenders.has("RapidMoney")) {
+        addedLenders.add("RapidMoney");
+        eligibleLenders.push({
+          id: "RapidMoney",
+          name: "RapidMoney",
+          prefix: "R",
+        });
+      }
+
+      // Add TrueFund if eligible and not already added
+      if (isTrueFundEligible && !addedLenders.has("TrueFund")) {
+        addedLenders.add("TrueFund");
+        eligibleLenders.push({
+          id: "TrueFund",
+          name: "TrueFund",
+          prefix: "T",
+        });
+      }
+
+      // Add MoneyDot if eligible and not already added
+      if (isMoneyDotEligible && !addedLenders.has("MoneyDot")) {
+        addedLenders.add("MoneyDot");
+        eligibleLenders.push({
+          id: "MoneyDot",
+          name: "MoneyDot",
+          prefix: "M",
+        });
+      }
+
+      // Sort all eligible lenders by dashboard priority order
+      const prioritySorted = sortLendersByPriority(eligibleLenders);
+
+      // Check if user came via UTM medium link - prioritize that lender
+      const utmMedium = (sessionStorage.getItem("utm_medium") || "").toLowerCase();
+      const utmLenderName = UTM_MEDIUM_TO_LENDER[utmMedium];
+
+      if (utmLenderName && addedLenders.has(utmLenderName)) {
+        // User came via UTM medium link - show that lender as main
+        const utmLender: PreviousLender = {
+          id: utmLenderName,
+          name: utmLenderName,
+          prefix: utmLenderName.charAt(0).toUpperCase(),
+        };
+        setMainLender(utmLender);
+        // Set other lenders (excluding UTM lender) sorted by priority
+        const othersSorted = prioritySorted.filter(l => l.id !== utmLenderName);
+        setOtherLenders(othersSorted.slice(0, 3));
+      } else {
+        // No UTM medium - check selectedLenders for most recently clicked lender
+        // that is in the dashboard priority order
+        const selectedLenders = (data.selectedLenders || []) as SelectedLender[];
+
+        // Sort by createdAt (most recent first)
+        const sortedByRecent = [...selectedLenders].sort((a, b) => {
+          const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+          const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+          return dateB - dateA;
+        });
+
+        // Find the most recently clicked lender that is in DASHBOARD_PRIORITY_ORDER and is eligible
+        let mainLenderFromSelected: PreviousLender | null = null;
+        for (const selected of sortedByRecent) {
+          const lenderName = selected.lenderName;
+
+          // Skip if not in dashboard priority order
+          if (!DASHBOARD_PRIORITY_ORDER.includes(lenderName)) continue;
+          // Skip removed lenders
+          if (REMOVED_LENDERS.includes(lenderName)) continue;
+          // Check eligibility for specific lenders
+          if (lenderName === "RapidMoney" && rapidMoneyData?.isDuplicate !== false) continue;
+          if (lenderName === "TrueFund" && !isTrueFundEligible) continue;
+          if (lenderName === "MoneyDot" && !isMoneyDotEligible) continue;
+
+          // Found an eligible lender in priority order
+          mainLenderFromSelected = {
+            id: lenderName,
+            name: lenderName,
+            prefix: lenderName.charAt(0).toUpperCase(),
+          };
+          break;
+        }
+
+        if (mainLenderFromSelected) {
+          // Use the recently clicked lender as main
+          setMainLender(mainLenderFromSelected);
+          // Set other lenders (excluding main) sorted by priority
+          const othersSorted = prioritySorted.filter(l => l.id !== mainLenderFromSelected!.id);
+          setOtherLenders(othersSorted.slice(0, 3));
+        } else if (prioritySorted.length > 0) {
+          // No valid recently clicked lender found - fall back to priority sorted list
+          setMainLender(prioritySorted[0] || null);
+          setOtherLenders(prioritySorted.slice(1, 4));
+        }
       }
     }
   }, []);
@@ -131,12 +268,47 @@ export default function LoanOffersBanner() {
   // Get up to 3 other lenders for "More offers" section
   const moreOffers = otherLenders.slice(0, 3);
 
-  // Apply to the hero lender — redirect to its UTM link (KreditBee → its signin),
-  // same as the offer cards. OTP-gated; saves the lender first.
+  // KreditBee special apply handler - calls the API first
+  const handleKreditBeeApply = async () => {
+    if (kbApplying) return;
+    setKbApplying(true);
+    try {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveShortLender(phone, "KreditBee");
+      const res = await applyToShortKreditBee();
+
+      const kb = res.data?.KreditBee;
+      const kbMessage = (kb?.message || "").toLowerCase();
+
+      const isKbSuccess = kb?.success === true;
+      const isRejected =
+        kbMessage.includes("not approved") || kbMessage.includes("rejected");
+
+      if (!isKbSuccess || isRejected) {
+        setShowNotEligible("KreditBee");
+      } else {
+        window.open("https://www.kreditbee.in/signin", "_blank");
+      }
+    } catch (err) {
+      console.error("KreditBee apply failed:", err);
+      toast.error("Something went wrong. Please try again.", { duration: 4000 });
+    } finally {
+      setKbApplying(false);
+    }
+  };
+
+  // Apply to the hero lender — redirect to its UTM link
+  // KreditBee has special handling with API call
   const handleHeroApply = async () => {
     if (!displayLender) return;
     const allowed = await guardActivity();
     if (!allowed) return;
+
+    // Special handling for KreditBee
+    if (displayLender.id === "KreditBee") {
+      handleKreditBeeApply();
+      return;
+    }
 
     const phone = sessionStorage.getItem("userPhone") || "";
     await saveShortLender(phone, displayLender.id);
@@ -154,6 +326,8 @@ export default function LoanOffersBanner() {
   }
 
   return (
+    <>
+    <Toaster position="top-center" />
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -359,5 +533,18 @@ export default function LoanOffersBanner() {
         </div>
       )}
     </motion.div>
+
+    {/* Not Eligible Modal */}
+    {showNotEligible && (
+      <NotEligibleScreen
+        lenderName={showNotEligible}
+        onClose={() => setShowNotEligible(null)}
+        onExplore={() => {
+          setShowNotEligible(null);
+          window.location.href = "/dashboard/offers";
+        }}
+      />
+    )}
+    </>
   );
 }

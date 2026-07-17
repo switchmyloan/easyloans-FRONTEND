@@ -219,6 +219,24 @@ export const STATIC_LENDER_DETAILS: Record<
   }
 };
 
+// Dashboard priority order - lenders are displayed in this order when available
+// Lower index = higher priority (shown first)
+export const DASHBOARD_PRIORITY_ORDER: string[] = [
+  "RapidMoney",
+  "RamFinCorp",
+  "KreditBee",
+  "TrueBalance",
+  "Vivifi",
+  "CreditPlus",
+  "SmartCoin",
+  "LendingPlate",
+  "SpeedoLoan",
+  "LoanWalle",
+  "Cashvia",
+  "TrueFund",
+  "MoneyDot",
+];
+
 // Short feature tags for each lender (displayed in offer cards)
 export const LENDER_FEATURE_TAGS: Record<string, string> = {
   KreditBee: "High approval chances",

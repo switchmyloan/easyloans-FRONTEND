@@ -7,7 +7,7 @@ import { ArrowLeft } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import OfferCard from "@/components/offers/OfferCard";
 import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
-import { getStaticLenderDetail, STATIC_LENDER_LOGOS } from "@/lib/constants";
+import { getStaticLenderDetail, STATIC_LENDER_LOGOS, DASHBOARD_PRIORITY_ORDER } from "@/lib/constants";
 import { useOtpGuard } from "@/app/dashboard/layout";
 import {
   getStoredShortExistingUserOffers,
@@ -97,6 +97,18 @@ function mapShownOfferToDashboardOffer(
   };
 }
 
+// Sort offers by dashboard priority order
+function sortOffersByPriority(offers: DashboardOffer[]): DashboardOffer[] {
+  return [...offers].sort((a, b) => {
+    const priorityA = DASHBOARD_PRIORITY_ORDER.indexOf(a.name);
+    const priorityB = DASHBOARD_PRIORITY_ORDER.indexOf(b.name);
+    // If not in priority list, put at the end
+    const effectivePriorityA = priorityA === -1 ? DASHBOARD_PRIORITY_ORDER.length : priorityA;
+    const effectivePriorityB = priorityB === -1 ? DASHBOARD_PRIORITY_ORDER.length : priorityB;
+    return effectivePriorityA - effectivePriorityB;
+  });
+}
+
 // ============================================================
 // All Offers Page Component
 // ============================================================
@@ -157,9 +169,9 @@ const isMoneyDotEligible =
       });
       const mappedOffers = filteredShownOffers.map((o) => mapShownOfferToDashboardOffer(o, data));
 
-      // Add static lenders that should always be shown (SpeedoLoan, LoanWalle, Cashvia)
+      // Add static lenders that should always be shown (KreditBee, SpeedoLoan, LoanWalle, Cashvia, Vivifi, RamFinCorp)
       // Note: RapidMoney is now shown based on API response (isDuplicate === false)
-      const ALWAYS_SHOW_STATIC_LENDERS = ["SpeedoLoan", "LoanWalle", "Cashvia", "Vivifi", "RamFinCorp"];
+      const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", "SpeedoLoan", "LoanWalle", "Cashvia", "Vivifi", "RamFinCorp"];
       const existingLenderNames = new Set(mappedOffers.map((o) => o.name));
 
       for (const lenderName of ALWAYS_SHOW_STATIC_LENDERS) {
@@ -199,9 +211,9 @@ const isMoneyDotEligible =
         });
       }
 
-      
-
-      setOffers(mappedOffers);
+      // Sort offers by dashboard priority order
+      const sortedOffers = sortOffersByPriority(mappedOffers);
+      setOffers(sortedOffers);
     } else {
       setOffers([]);
     }

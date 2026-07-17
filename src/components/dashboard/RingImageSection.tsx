@@ -11,6 +11,7 @@ const LENDER_RING_IMAGES: Record<string, string> = {
   ramfincorp: "/RC-ring.png",
   kreditbee: "/KB-ring.png",
   truebalance: "/TB-ring.png",
+  vivifi: "/V-ring.png", // Add VV-ring.png to /public/
   // mpokket: "/MP-ring.png",
   creditplus: "/CP-ring.png",
   loan112: "/L1-ring.png",
@@ -20,7 +21,7 @@ const LENDER_RING_IMAGES: Record<string, string> = {
   loanwalle: "/LW-ring.png",
   cashvia: "/C-ring.png",
   truefund: "/TF-ring.png",
-  moneydot: "/MP-ring.png",
+  moneydot: "/MD-ring.png", // Add MD-ring.png to /public/
 };
 
 // Default fallback image (used if lender not found in mapping)

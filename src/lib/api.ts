@@ -159,6 +159,8 @@ export interface DraftLeadPayload {
   monthly_income?: number;
   loan_purpose?: string;
   loan_amount?: number;
+  utm_source?: string | null;
+  utm_medium?: string | null;
 }
 
 function buildDraftLeadBody(data: DraftLeadPayload) {
@@ -167,6 +169,10 @@ function buildDraftLeadBody(data: DraftLeadPayload) {
     typeof data.loan_purpose === "string" && data.loan_purpose.trim()
       ? data.loan_purpose
       : undefined;
+
+  // Get UTM params from payload or fallback to sessionStorage
+  const utmSource = data.utm_source || (isBrowser() ? sessionStorage.getItem("utm_source") : null);
+  const utmMedium = data.utm_medium || (isBrowser() ? sessionStorage.getItem("utm_medium") : null);
 
   return {
     sessionId,
@@ -194,6 +200,8 @@ function buildDraftLeadBody(data: DraftLeadPayload) {
     consent_tnc: data.consent_tnc ?? false,
     consent_credit: data.consent_credit ?? false,
     consent_communication: data.consent_communication ?? false,
+    ...(utmSource ? { utm_source: utmSource } : {}),
+    ...(utmMedium ? { utm_medium: utmMedium } : {}),
   };
 }
 
@@ -316,6 +324,10 @@ function buildShortDraftLeadBody(data: DraftLeadPayload) {
       ? data.loan_purpose
       : undefined;
 
+  // Get UTM params from payload or fallback to sessionStorage
+  const utmSource = data.utm_source || (isBrowser() ? sessionStorage.getItem("utm_source") : null);
+  const utmMedium = data.utm_medium || (isBrowser() ? sessionStorage.getItem("utm_medium") : null);
+
   return {
     sessionId,
     fullName: data.fullName || null,
@@ -342,6 +354,8 @@ function buildShortDraftLeadBody(data: DraftLeadPayload) {
     consent_tnc: data.consent_tnc ?? false,
     consent_credit: data.consent_credit ?? false,
     consent_communication: data.consent_communication ?? false,
+    ...(utmSource ? { utm_source: utmSource } : {}),
+    ...(utmMedium ? { utm_medium: utmMedium } : {}),
   };
 }
 
