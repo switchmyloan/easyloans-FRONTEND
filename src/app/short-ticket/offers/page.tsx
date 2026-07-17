@@ -186,9 +186,12 @@ function getUtmLink(
       return directLink || FALLBACK_UTM.TrueBalance;
     }
 
-    case "RamFinCorp":
-      if (lender.success !== true) return null;
+    case "RamFinCorp": {
+      // RamFinCorp is shown only if message is "Dedup Success"
+      const ramFinCorpMessage = (lender.message || "").toLowerCase();
+      if (ramFinCorpMessage !== "dedup success") return null;
       return directLink || FALLBACK_UTM.RamFinCorp;
+    }
 
     // case "MPokket": {
     //   const isEligible = (lender as { isEligible?: boolean }).isEligible;
@@ -381,10 +384,13 @@ export default function ShortTicketOffersPage() {
           ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.TrueBalance });
           break;
 
-           // RamFinCorp - static lender
-        case "RamFinCorp":
+        // RamFinCorp - shown only if message is "Dedup Success"
+        case "RamFinCorp": {
+          const ramFinCorpMessage = (lender?.message || "").toLowerCase();
+          if (ramFinCorpMessage !== "dedup success") break;
           ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.RamFinCorp });
           break;
+        }
         
 
         // Vivifi - static lender, only for salaried users

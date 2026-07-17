@@ -149,6 +149,14 @@ const moneyDotData = data.MoneyDot as {
 const isMoneyDotEligible =
   moneyDotData?.data?.response?.can_attribute === true;
 
+const ramFinCorpData = data.RamFinCorp as {
+  message?: string;
+  utm_link?: string;
+} | undefined;
+
+const isRamFinCorpEligible =
+  (ramFinCorpData?.message || "").toLowerCase() === "dedup success";
+
 
 
       const filteredShownOffers = shownOffers.filter((o) => {
@@ -165,13 +173,17 @@ const isMoneyDotEligible =
         if (o.lenderName === "MoneyDot") {
           return isMoneyDotEligible;
         }
+        if (o.lenderName === "RamFinCorp") {
+          return isRamFinCorpEligible;
+        }
         return true;
       });
       const mappedOffers = filteredShownOffers.map((o) => mapShownOfferToDashboardOffer(o, data));
 
-      // Add static lenders that should always be shown (KreditBee, SpeedoLoan, LoanWalle, Cashvia, Vivifi, RamFinCorp)
+      // Add static lenders that should always be shown (KreditBee, SpeedoLoan, LoanWalle, Cashvia, Vivifi)
       // Note: RapidMoney is now shown based on API response (isDuplicate === false)
-      const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", "SpeedoLoan", "LoanWalle", "Cashvia", "Vivifi", "RamFinCorp"];
+      // Note: RamFinCorp is now shown based on API response (message === "Dedup Success")
+      const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", "SpeedoLoan", "LoanWalle", "Cashvia", "Vivifi"];
       const existingLenderNames = new Set(mappedOffers.map((o) => o.name));
 
       for (const lenderName of ALWAYS_SHOW_STATIC_LENDERS) {
@@ -207,6 +219,15 @@ const isMoneyDotEligible =
         mappedOffers.push({
           name: "MoneyDot",
           utmLink: moneyDotData?.utm_link || FALLBACK_UTM_LINKS["MoneyDot"],
+          isOffer: false,
+        });
+      }
+
+      // Add RamFinCorp based on API response (only if message === "Dedup Success")
+      if (isRamFinCorpEligible && !existingLenderNames.has("RamFinCorp")) {
+        mappedOffers.push({
+          name: "RamFinCorp",
+          utmLink: ramFinCorpData?.utm_link || FALLBACK_UTM_LINKS["RamFinCorp"],
           isOffer: false,
         });
       }
