@@ -69,7 +69,8 @@ interface SelectedLender {
 const REMOVED_LENDERS = ["MPokket", "Loan112", "SmartCoin", "SmartCoinHighIntent"];
 
 // Static lenders that should always be shown
-const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", "SpeedoLoan", "LoanWalle", "Cashvia", "Vivifi", "RamFinCorp"];
+// Note: RamFinCorp is now shown based on API response (message === "Dedup Success")
+const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", "SpeedoLoan", "LoanWalle", "Cashvia", "Vivifi"];
 
 // ============================================================
 // Utility Functions
@@ -111,6 +112,7 @@ export default function LoanOffersBanner() {
       const rapidMoneyData = data.RapidMoney as { isDuplicate?: boolean; utm_link?: string } | undefined;
       const trueFundData = data.TrueFund as { message?: string; utm_link?: string; data?: { response?: { message?: string } } } | undefined;
       const moneyDotData = data.MoneyDot as { data?: { response?: { can_attribute?: boolean } }; utm_link?: string } | undefined;
+      const ramFinCorpData = data.RamFinCorp as { message?: string; utm_link?: string } | undefined;
 
       const trueFundMessage = (trueFundData?.message || "").toLowerCase();
       const trueFundResponseMessage = (trueFundData?.data?.response?.message || "").toLowerCase();
@@ -118,6 +120,7 @@ export default function LoanOffersBanner() {
         trueFundMessage.includes("user details received sucessfully") ||
         trueFundResponseMessage.includes("user details received sucessfully");
       const isMoneyDotEligible = moneyDotData?.data?.response?.can_attribute === true;
+      const isRamFinCorpEligible = (ramFinCorpData?.message || "").toLowerCase() === "dedup success";
 
       // Get shownOffers from API response
       const shownOffers = (data.shownOffers || []) as ShownOffer[];
@@ -139,6 +142,7 @@ export default function LoanOffersBanner() {
         if (lenderName === "RapidMoney" && rapidMoneyData?.isDuplicate !== false) continue;
         if (lenderName === "TrueFund" && !isTrueFundEligible) continue;
         if (lenderName === "MoneyDot" && !isMoneyDotEligible) continue;
+        if (lenderName === "RamFinCorp" && !isRamFinCorpEligible) continue;
 
         addedLenders.add(lenderName);
         eligibleLenders.push({
@@ -190,6 +194,16 @@ export default function LoanOffersBanner() {
         });
       }
 
+      // Add RamFinCorp if eligible (message === "Dedup Success") and not already added
+      if (isRamFinCorpEligible && !addedLenders.has("RamFinCorp")) {
+        addedLenders.add("RamFinCorp");
+        eligibleLenders.push({
+          id: "RamFinCorp",
+          name: "RamFinCorp",
+          prefix: "R",
+        });
+      }
+
       // Sort all eligible lenders by dashboard priority order
       const prioritySorted = sortLendersByPriority(eligibleLenders);
 
@@ -233,6 +247,7 @@ export default function LoanOffersBanner() {
           if (lenderName === "RapidMoney" && rapidMoneyData?.isDuplicate !== false) continue;
           if (lenderName === "TrueFund" && !isTrueFundEligible) continue;
           if (lenderName === "MoneyDot" && !isMoneyDotEligible) continue;
+          if (lenderName === "RamFinCorp" && !isRamFinCorpEligible) continue;
 
           // Found an eligible lender in priority order
           mainLenderFromSelected = {
