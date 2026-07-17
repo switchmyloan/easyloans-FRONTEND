@@ -1118,12 +1118,25 @@ export interface ShortExistingUserOffersResponse {
  * Stores the response in sessionStorage for dashboard components.
  */
 export async function getExistingShortUserOffer(
-  mobileNumber: string
+  mobileNumber: string,
+  utmParams?: { utm_source?: string | null; utm_medium?: string | null }
 ): Promise<ShortExistingUserOffersResponse> {
+  // Get UTM params from arguments first, then fallback to sessionStorage
+  const utmSource = utmParams?.utm_source ?? (isBrowser() ? sessionStorage.getItem("utm_source") : null);
+  const utmMedium = utmParams?.utm_medium ?? (isBrowser() ? sessionStorage.getItem("utm_medium") : null);
+
+  const body = {
+    mobileNumber,
+    ...(utmSource ? { utm_source: utmSource } : {}),
+    ...(utmMedium ? { utm_medium: utmMedium } : {}),
+  };
+
+  console.log("[getExistingShortUserOffer] body:", body);
+
   const res = await fetch(`${BASE_URL}/onSubmit/get-existing-short-user-offer`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ mobileNumber }),
+    body: JSON.stringify(body),
   });
 
   if (!res.ok) throw new Error("Failed to fetch user data. Please try again.");

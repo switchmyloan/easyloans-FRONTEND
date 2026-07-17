@@ -212,7 +212,12 @@ function HomeContent() {
 
       // Check for existing user offers (returning user detection)
       try {
-        const existingUserResponse = await getExistingShortUserOffer(stage1Data.mobile);
+        const utmSource = sessionStorage.getItem("utm_source");
+        const utmMedium = sessionStorage.getItem("utm_medium");
+        const existingUserResponse = await getExistingShortUserOffer(stage1Data.mobile, {
+          utm_source: utmSource,
+          utm_medium: utmMedium,
+        });
         const userExists = existingUserResponse.data.found || existingUserResponse.data.exists;
 
         if (userExists) {
