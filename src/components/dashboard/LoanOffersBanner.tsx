@@ -25,6 +25,7 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   LoanWalle: "https://www.loanwalle.com/personal-loan?utm_source=CREADY&utm_medium=affiliate&utm_campaign=mcl-aff&click_id=landing-page",
   Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
   TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
+  Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
 };
 
 // Map utm_medium values to lender names (case-insensitive matching)
@@ -329,9 +330,22 @@ export default function LoanOffersBanner() {
     await saveShortLender(phone, displayLender.id);
 
     const data = getStoredShortExistingUserOffers()?.data as Record<string, unknown> | undefined;
-    // Prefer the backend's per-lender utm_link, then fallback.
+
+    // First check top-level lender data for utm_link
     const lenderData = data?.[displayLender.id] as { utm_link?: string } | undefined;
-    const url = lenderData?.utm_link || FALLBACK_UTM_LINKS[displayLender.id];
+    let url = lenderData?.utm_link;
+
+    // If not found, check staticLenders array (API returns some lenders like Vivifi here)
+    if (!url && data?.staticLenders) {
+      const staticLendersArray = data.staticLenders as Array<{ name?: string; utm_link?: string }>;
+      const matchingLender = staticLendersArray.find(
+        (l) => l.name?.toLowerCase() === displayLender.id.toLowerCase()
+      );
+      url = matchingLender?.utm_link;
+    }
+
+    // Fall back to hardcoded URL if still not found
+    url = url || FALLBACK_UTM_LINKS[displayLender.id];
     if (url) window.open(url, "_blank");
   };
 

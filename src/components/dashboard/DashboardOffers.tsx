@@ -151,11 +151,26 @@ export default function DashboardOffers() {
       const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", "SpeedoLoan", "LoanWalle", "Cashvia", "Vivifi"];
       const existingLenderNames = new Set(mappedOffers.map((o) => o.name));
 
+      // Extract utm_links from staticLenders array (API returns lenders with dynamic utm_link)
+      const staticLendersArray = (data.staticLenders || []) as Array<{ name?: string; utm_link?: string }>;
+      const staticLenderUtmLinks: Record<string, string> = {};
+      for (const lender of staticLendersArray) {
+        if (lender.name && lender.utm_link) {
+          // Normalize name to match our constants (e.g., "vivifi" -> "Vivifi")
+          const normalizedName = lender.name.charAt(0).toUpperCase() + lender.name.slice(1).toLowerCase();
+          staticLenderUtmLinks[normalizedName] = lender.utm_link;
+          // Also store with original casing
+          staticLenderUtmLinks[lender.name] = lender.utm_link;
+        }
+      }
+
       for (const lenderName of ALWAYS_SHOW_STATIC_LENDERS) {
         if (!existingLenderNames.has(lenderName)) {
+          // Prefer API's staticLenders utm_link, then fallback
+          const utmLink = staticLenderUtmLinks[lenderName] || FALLBACK_UTM_LINKS[lenderName];
           mappedOffers.push({
             name: lenderName,
-            utmLink: FALLBACK_UTM_LINKS[lenderName],
+            utmLink,
             isOffer: false,
           });
         }
