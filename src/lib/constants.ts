@@ -228,7 +228,6 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "TrueBalance",
   "Vivifi",
   "CreditPlus",
-  "SmartCoin",
   "LendingPlate",
   "SpeedoLoan",
   "LoanWalle",
