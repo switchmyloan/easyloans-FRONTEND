@@ -145,19 +145,28 @@ export default function DashboardOffers() {
       });
       const mappedOffers = filteredShownOffers.map((o) => mapShownOfferToDashboardOffer(o, data));
 
-      // Add static lenders that should always be shown (KreditBee, SpeedoLoan, LoanWalle, Cashvia, Vivifi)
+      // Add static lenders that should always be shown (KreditBee, SpeedoLoan, LoanWalle, Cashvia, Vivifi, TrueBalance)
       // Note: RapidMoney is now shown based on API response (isDuplicate === false)
       // Note: RamFinCorp is now shown based on API response (message === "Dedup Success")
-      const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", "SpeedoLoan", "LoanWalle", "Cashvia", "Vivifi"];
+      const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", "SpeedoLoan", "LoanWalle", "Cashvia", "Vivifi", "TrueBalance"];
       const existingLenderNames = new Set(mappedOffers.map((o) => o.name));
 
       // Extract utm_links from staticLenders array (API returns lenders with dynamic utm_link)
       const staticLendersArray = (data.staticLenders || []) as Array<{ name?: string; utm_link?: string }>;
       const staticLenderUtmLinks: Record<string, string> = {};
+      // Map API names to internal lender names
+      const STATIC_LENDER_NAME_MAP: Record<string, string> = {
+        "Speedoloan": "SpeedoLoan",
+        "Fintech Cloud": "LoanWalle",
+        "TrueBalance": "TrueBalance",
+        "trueBalance": "TrueBalance",
+        "truebalance": "TrueBalance",
+      };
       for (const lender of staticLendersArray) {
         if (lender.name && lender.utm_link) {
-          // Normalize name to match our constants (e.g., "vivifi" -> "Vivifi")
-          const normalizedName = lender.name.charAt(0).toUpperCase() + lender.name.slice(1).toLowerCase();
+          // Use name map or normalize (e.g., "vivifi" -> "Vivifi")
+          const mappedName = STATIC_LENDER_NAME_MAP[lender.name];
+          const normalizedName = mappedName || lender.name.charAt(0).toUpperCase() + lender.name.slice(1).toLowerCase();
           staticLenderUtmLinks[normalizedName] = lender.utm_link;
           // Also store with original casing
           staticLenderUtmLinks[lender.name] = lender.utm_link;

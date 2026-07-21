@@ -158,6 +158,10 @@ const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   "Fintech Cloud": "LoanWalle",
   "Cashvia": "Cashvia",
   "RapidMoney": "RapidMoney",
+  "TrueBalance": "TrueBalance",
+  "trueBalance": "TrueBalance",
+  "truebalance": "TrueBalance",
+  "Truebalance": "TrueBalance",
 };
 
 function getUtmLink(
@@ -181,10 +185,9 @@ function getUtmLink(
       return directLink || FALLBACK_UTM.KreditBee;
     }
 
-    case "TrueBalance": {
-      if (lender.is_offer !== true) return null;
+    // TrueBalance is now a static lender - always shown
+    case "TrueBalance":
       return directLink || FALLBACK_UTM.TrueBalance;
-    }
 
     case "RamFinCorp": {
       // RamFinCorp is shown only if message is "Dedup Success"
@@ -313,6 +316,7 @@ export default function ShortTicketOffersPage() {
     if (data.RapidMoney?.utm_link) utmMap["RapidMoney"] = data.RapidMoney.utm_link;
     if (data.RamFinCorp?.utm_link) utmMap["RamFinCorp"] = data.RamFinCorp.utm_link;
     if (data.KreditBee?.utm_link) utmMap["KreditBee"] = data.KreditBee.utm_link;
+    // TrueBalance is now static - check top-level data first, then staticLenders, then fallback
     if (data.TrueBalance?.utm_link) utmMap["TrueBalance"] = data.TrueBalance.utm_link;
     if (data.CreditPlus?.utm_link) utmMap["CreditPlus"] = data.CreditPlus.utm_link;
     // if (data.MPokket?.utm_link) utmMap["MPokket"] = data.MPokket.utm_link;
@@ -379,9 +383,9 @@ export default function ShortTicketOffersPage() {
           if (utmLink) ordered.push({ name, utm_link: utmLink, wasApproved: lender?.success });
           break;
 
+        // TrueBalance - static lender, always show
         case "TrueBalance":
-          if (lender?.is_offer !== true) break;
-          ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.TrueBalance });
+          ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.TrueBalance });
           break;
 
         // RamFinCorp - shown only if message is "Dedup Success"

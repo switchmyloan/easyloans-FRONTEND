@@ -62,13 +62,6 @@ export default function OffersPage() {
       const kbHasOffer = isApprovedOffer(response.data.KreditBee);
       const mvHasOffer = isApprovedOffer(response.data.MoneyView);
 
-      // Check TrueBalance eligibility from nested response data
-      const isTrueBalanceEligible = (lender?: LenderResponse) => {
-        if (!lender) return false;
-        const resData = (lender.data as { response?: { data?: { isEligible?: boolean } } })?.response?.data;
-        return resData?.isEligible === true;
-      };
-
       // Track salaried status from API response
       setIsSalaried(response.data.isSalaried === true);
 
@@ -79,19 +72,18 @@ export default function OffersPage() {
         setZypeUtmLink(zyp.utm_link || "https://zype.co.in/");
       }
 
-      // Promote TrueBalance as a top-level card only for salaried users
+      // TrueBalance is now a static lender - always show as promoted card for salaried users
       const tb = response.data.TrueBalance;
-      const tbEligible = tb && isTrueBalanceEligible(tb);
-      if (tbEligible && response.data.isSalaried === true) {
+      if (response.data.isSalaried === true) {
         setShowTB(true);
-        setTbUtmLink(tb.utm_link || "https://truebalance.io/");
+        setTbUtmLink(tb?.utm_link || "https://truebalance.io/");
       }
 
       // Only include extra lenders (excluding promoted ones) if their offer is approved
       const extras: StaticLender[] = [];
-      // For self-employed, keep TrueBalance in the static grid
-      if (tbEligible && response.data.isSalaried !== true) {
-        extras.push({ name: "TrueBalance", utm_link: tb.utm_link || "https://truebalance.io/" });
+      // For self-employed, keep TrueBalance in the static grid (always shown now as static lender)
+      if (response.data.isSalaried !== true) {
+        extras.push({ name: "TrueBalance", utm_link: tb?.utm_link || "https://truebalance.io/" });
       }
       // Always include Unity Small Finance Bank — UTM campaign carries the user's MRN
       extras.push({
