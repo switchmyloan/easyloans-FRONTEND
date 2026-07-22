@@ -830,15 +830,12 @@ export interface ShortTicketData {
   priorityOrder: string[];
   staticLenders: StaticLender[];
   shortOfferLeadId?: string;
-  CreditPlus?: ShortTicketLender;
+
   RapidMoney?: ShortTicketLender;
   RamFinCorp?: ShortTicketLender;
   KreditBee?: ShortTicketLender;
   TrueBalance?: ShortTicketLender;
-  // MPokket?: ShortTicketLender;
-  // Loan112?: ShortTicketLender;
-  // SmartCoin?: ShortTicketLender;
-  LendingPlate?: ShortTicketLender;
+
   [key: string]: unknown;
 }
 
@@ -1117,10 +1114,8 @@ export interface ShortExistingUserOffersResponse {
     TrueBalance?: ShortTicketLender;
     // SmartCoin?: ShortTicketLender;
     RamFinCorp?: ShortTicketLender;
-    // MPokket?: ShortTicketLender;
-    CreditPlus?: ShortTicketLender;
-    // Loan112?: ShortTicketLender;
-    LendingPlate?: ShortTicketLender;
+   
+
     [key: string]: unknown;
   };
   message: string;
@@ -1271,12 +1266,7 @@ export interface ShortDashboardLinkResponse {
     KreditBee?: ShortTicketLender;
     RapidMoney?: ShortTicketLender;
     TrueBalance?: ShortTicketLender;
-    // SmartCoin?: ShortTicketLender;
     RamFinCorp?: ShortTicketLender;
-    // MPokket?: ShortTicketLender;
-    CreditPlus?: ShortTicketLender;
-    // Loan112?: ShortTicketLender;
-    LendingPlate?: ShortTicketLender;
     [key: string]: unknown;
   };
 }

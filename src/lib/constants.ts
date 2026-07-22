@@ -28,7 +28,7 @@ export const STATIC_LENDER_LOGOS: Record<
   string,
   { src: string; darkBg?: boolean }
 > = {
-  RapidMoney: { src: "/rapidmoney.svg", darkBg: true },
+  RapidMoney: { src: "/rapidmoney.svg" },
   poonawalla: { src: "/poonawalla.svg" },
   HeroFinCorp: { src: "/herofincorp.svg", darkBg: true },
   AdityaBirlaCapital: { src: "/adityabirlacapitalloan.svg" },
@@ -40,16 +40,15 @@ export const STATIC_LENDER_LOGOS: Record<
   TrueBalance: { src: "/truebalance.png" },
   Zype_Dedupe: { src: "/zype.png" },
   UnitySmallFinanceBank: { src: "/unity_bank.png" },
-  CreditPlus: { src: "/credit.svg" },
+
   KreditBee: { src: "/kreditbee-logo.svg" },
-  // MPokket: { src: "/mpoket.svg" },
-  // Loan112: { src: "/logo_Loan112.svg" },
-  LendingPlate: { src: "/lending.png" },
+  
   SpeedoLoan: { src: "/speedoloan.png" },
-  LoanWalle: { src: "/loanwalleblack.webp" },
+  LoanWalle: { src: "/loanwalle.svg", darkBg: true },
   Cashvia: { src: "/cashvia1.png" },
   TrueFund: { src: "/truefund.svg" },
   MoneyDot: { src: "/moneydot.png" },
+  // RupiNow: { src: "/rupinow.png" },
 };
 
 export const STATIC_LENDER_DETAILS: Record<
@@ -73,12 +72,7 @@ export const STATIC_LENDER_DETAILS: Record<
   //   keyFeature: "Flexible Repayment Options and Quick Access to Lump Sum Amount",
   //   interestRate: "Interest Rates start at 0.1%* per day",
   // },
-  LendingPlate: {
-    headline: "Get up to ₹50,000 with instant approval!",
-    description: "Quick digital process and minimal documentation required",
-    keyFeature: "Instant Approval and Same Day Disbursement",
-    interestRate: "Interest Rates start at 1%* per month",
-  },
+
   Zype: {
     headline: "Get Personal Loans from ₹15,000 to ₹5 Lakhs",
     description: "Flexible repayment options and loan tenure from 6 month to 18 months",
@@ -97,12 +91,7 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Flexible EMI Options and Instant Disbursement",
     interestRate: "Interest Rates start at 1.5%* per month",
   },
-  CreditPlus: {
-    headline: "Get Personal Loans upto ₹1,000 to ₹100,000",
-    description: "Hassle-free personal loans with minimal documentation",
-    keyFeature: "Zero Prepayment Charges and Flexible Tenure",
-    interestRate: "Interest Rates start at 1.2%* per month",
-  },
+ 
   FiMoney: {
     headline: "Get up to ₹5,00,000 instantly!",
     description: "Smart personal loans with flexible repayment options",
@@ -136,7 +125,7 @@ export const STATIC_LENDER_DETAILS: Record<
   RapidMoney: {
     headline: "Get Personal Loans from ₹5,000 to ₹25,000",
     description: "Flexible repayment options and loan tenure from 1 month to 6 months",
-    keyFeature: "Flexible Repayment Options and Quick Access to Lump Sum Amount",
+    keyFeature: "Quick Access to Lump Sum Amount",
     interestRate: "Interest rate starting from 3.01% per month.",
   },
   RamFinCorp: {
@@ -194,10 +183,10 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest Rates start at 1%* per day",
   },
   LoanWalle: {
-    headline: "Get up to ₹3,00,000 with quick approval!",
+    headline: "Get up to ₹1,00,000 with quick approval!",
     description: "Personal loans with fast disbursement and No Prepayment Charges",
     keyFeature: "Quick Approval and No Prepayment Charges",
-    interestRate: "Interest Rates start at 1.00%* per day",
+    interestRate: "Interest Rates start at 1%* per day",
   },
   Cashvia: {
     headline: "Get up to ₹5,00,000 with quick approval!",
@@ -212,11 +201,17 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest Rates start at 0.4% to 1.1% per day",
   },
   MoneyDot: {
-    headline: "Get up to ₹10,00,000 with quick approval!",
+    headline: "Get up to ₹5,00,000 with quick approval!",
     description: "Personal loans with Instant Loan Approval and Zero paperwork",
     keyFeature: "Quick Approval and with no collateral",
     interestRate: "Interest Rates start at 0.07% to 0.16% per day",
-  }
+  },
+  // RupiNow: {
+  //   headline: "Get up to ₹5,00,000 with quick approval!",
+  //   description: "Personal loans with Instant Loan Approval and Zero Hidden Charges",
+  //   keyFeature: "Flexible Tenure and Zero Hidden Charges",
+  //   interestRate: "Interest Rates start at 12% to 30% per annum",
+  // }
 };
 
 // Dashboard priority order - lenders are displayed in this order when available
@@ -224,16 +219,15 @@ export const STATIC_LENDER_DETAILS: Record<
 export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "RapidMoney",
   "RamFinCorp",
+  "LoanWalle",
   "KreditBee",
   "TrueBalance",
   "Vivifi",
-  "CreditPlus",
-  "LendingPlate",
   "SpeedoLoan",
-  "LoanWalle",
   "Cashvia",
   "TrueFund",
   "MoneyDot",
+  // "RupiNow",
 ];
 
 // Short feature tags for each lender (displayed in offer cards)
@@ -252,19 +246,16 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   AdityaBirlaCapital: "No hidden charges",
   RamFinCorp: "Flexible loan options",
   Fibe: "Flexible loan options",
-  LendingPlate: "Quick approval",
-  // MPokket: "High approval chances",
   FiMoney: "Flexible loan options",
   MyFloat: "Quick approval",
-  // Loan112: "No hidden charges",
   Vivifi: "Flexible loan options",
   PocketCredit: "Quick approval",
-  CreditPlus: "No hidden charges",
   SpeedoLoan: "Quick approval",
-  LoanWalle: "Quick approval",
+  LoanWalle: "Only for EPFO registered users",
   Cashvia: "Minimal documentation",
   TrueFund: "Quick approval",
   MoneyDot: "no collateral",
+  // RupiNow: "zero hidden charges",
 };
 
 // Default feature tag if lender not found
@@ -286,18 +277,19 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   // SmartCoin: 500000,        // ₹5 Lakhs
   Zype: 500000,             // ₹5 Lakhs
   Fibe: 500000,             // ₹5 Lakhs
-  LendingPlate: 50000,      // ₹50,000
+
   // MPokket: 30000,           // ₹30,000
   FiMoney: 500000,          // ₹5 Lakhs
   MyFloat: 25000,           // ₹25,000
   // Loan112: 200000,          // ₹2 Lakhs
   Vivifi: 500000,           // ₹5 Lakhs
   PocketCredit: 50000,      // ₹50,000
-  CreditPlus: 100000,   
   SpeedoLoan: 100000,      // ₹1 Lakh
-  LoanWalle: 300000,      // ₹3 Lakhs
+  LoanWalle: 100000,      // ₹1 Lakh
   Cashvia: 500000,      // ₹5 Lakhs
   TrueFund: 100000,      // ₹1 Lakhs
+  MoneyDot: 500000,      // ₹5 Lakhs
+  RupiNow: 500000,      // ₹5 Lakhs
 };
 
 const DEFAULT_LENDER_DETAIL = {

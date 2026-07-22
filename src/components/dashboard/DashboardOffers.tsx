@@ -39,12 +39,6 @@ const DISPLAY_NAMES: Record<string, string> = {
   RapidMoney: "RapidMoney",
   TrueBalance: "TrueBalance",
   RamFinCorp: "Ram FinCorp",
-  CreditPlus: "CreditPlus",
-  // MPokket: "mPokket",
-  // Loan112: "Loan112",
-  // SmartCoin: "Olyv",
-  // SmartCoinHighIntent: "Olyv",
-  LendingPlate: "LendingPlate",
   SpeedoLoan: "SpeedoLoan",
   LoanWalle: "LoanWalle",
   Cashvia: "Cashvia",
@@ -60,7 +54,7 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   TrueBalance: "https://truebalance.io/",
   RapidMoney: "https://web.rapidmoney.in/borrower/login?utm_source=creadylandingpage&utm_extsource=abc&utm_medium=rapidmoney&utm_campaign=xyz&utm_campaignID=def",
   KreditBee: "https://www.kreditbee.in/signin",
-  CreditPlus: "https://loan.credittnow.com/?utm_source=cready&utm_medium=website",
+  
   SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
   LoanWalle: "https://www.loanwalle.com/personal-loan?utm_source=CREADY&utm_medium=affiliate&utm_campaign=mcl-aff&click_id=landing-page",
   Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
@@ -145,10 +139,11 @@ export default function DashboardOffers() {
       });
       const mappedOffers = filteredShownOffers.map((o) => mapShownOfferToDashboardOffer(o, data));
 
-      // Add static lenders that should always be shown (KreditBee, SpeedoLoan, LoanWalle, Cashvia, Vivifi, TrueBalance)
+      // Add static lenders that should always be shown (KreditBee, SpeedoLoan, Cashvia, Vivifi, TrueBalance)
       // Note: RapidMoney is now shown based on API response (isDuplicate === false)
       // Note: RamFinCorp is now shown based on API response (message === "Dedup Success")
-      const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", "SpeedoLoan", "LoanWalle", "Cashvia", "Vivifi", "TrueBalance"];
+      // Note: LoanWalle is now shown only if it comes from API staticLenders
+      const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", "SpeedoLoan", "Cashvia", "Vivifi", "TrueBalance"];
       const existingLenderNames = new Set(mappedOffers.map((o) => o.name));
 
       // Extract utm_links from staticLenders array (API returns lenders with dynamic utm_link)
@@ -157,7 +152,8 @@ export default function DashboardOffers() {
       // Map API names to internal lender names
       const STATIC_LENDER_NAME_MAP: Record<string, string> = {
         "Speedoloan": "SpeedoLoan",
-        "Fintech Cloud": "LoanWalle",
+        "LoanWalle": "LoanWalle",
+        "Loanwalle": "LoanWalle",
         "TrueBalance": "TrueBalance",
         "trueBalance": "TrueBalance",
         "truebalance": "TrueBalance",
@@ -183,6 +179,15 @@ export default function DashboardOffers() {
             isOffer: false,
           });
         }
+      }
+
+      // Add LoanWalle only if it comes from API staticLenders
+      if (staticLenderUtmLinks["LoanWalle"] && !existingLenderNames.has("LoanWalle")) {
+        mappedOffers.push({
+          name: "LoanWalle",
+          utmLink: staticLenderUtmLinks["LoanWalle"],
+          isOffer: false,
+        });
       }
 
       // Add RapidMoney based on API response (only if isDuplicate === false)

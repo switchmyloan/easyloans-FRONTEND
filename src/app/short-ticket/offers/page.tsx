@@ -26,54 +26,30 @@ const DISPLAY_NAMES: Record<string, string> = {
   Vivifi: "Vivifi",
   KreditBee: "Kreditbee",
   TrueBalance: "TrueBalance",
-  // MPokket: "mPokket",
-  CreditPlus: "Creditt+",
-  // Loan112: "Loan112",
-  // SmartCoin: "Olyv",
-  LendingPlate: "LendingPlate",
+
   SpeedoLoan: "SpeedoLoan",
   LoanWalle: "LoanWalle",
   Cashvia: "Cashvia",
   TrueFund: "TrueFund",
   MoneyDot: "MoneyDot",
+  // RupiNow: "RupiNow",
 };
 
 // Default render order
 const LENDER_ORDER = [
   "RapidMoney",
   "RamFinCorp",
+   "LoanWalle",
    "KreditBee",
      "TrueBalance",
   "Vivifi",
-  "CreditPlus",
-    // "SmartCoin",
-      "SpeedoLoan",
-  // "MPokket",
-  // "Loan112",
-  "LendingPlate",
-  "LoanWalle",
-  "Cashvia",
-  "TrueFund",
-  "MoneyDot"
-];
 
-// When utm_medium=creditplus: CreditPlus first
-const CREDITPLUS_PRIORITY_ORDER = [
-  "CreditPlus",
-  "RapidMoney",
-  "KreditBee",
-  "RamFinCorp",
-  "Vivifi",
-  "TrueBalance",
-  // "MPokket",
-  // "Loan112",
-  // "SmartCoin",
-  "LendingPlate",
-   "SpeedoLoan",
-  "LoanWalle",
+      "SpeedoLoan",
+
   "Cashvia",
   "TrueFund",
   "MoneyDot",
+  // "RupiNow",
 ];
 
 // When utm_medium=kreditbee: KreditBee first
@@ -81,56 +57,46 @@ const KB_PRIORITY_ORDER = [
   "KreditBee",
   "RapidMoney",
   "RamFinCorp",
+    "LoanWalle",
+      "TrueBalance",
   "Vivifi",
-  "CreditPlus",
-  "TrueBalance",
-  // "MPokket",
-  // "Loan112",
-  // "SmartCoin",
-  "LendingPlate",
+
    "SpeedoLoan",
-  "LoanWalle",
   "Cashvia",
   "TrueFund",
   "MoneyDot",
+  // "RupiNow",
 ];
 
 // When utm_medium=rapidmoney: RapidMoney first
 const RAPIDMONEY_PRIORITY_ORDER = [
   "RapidMoney",
+    "RamFinCorp",
+      "LoanWalle",
   "KreditBee",
-  "RamFinCorp",
+    "TrueBalance",
   "Vivifi",
-  "CreditPlus",
-  "TrueBalance",
-  // "MPokket",
-  // "Loan112",
-  // "SmartCoin",
-  "LendingPlate",
+
    "SpeedoLoan",
-  "LoanWalle",
   "Cashvia",
   "TrueFund",
   "MoneyDot",
+  // "RupiNow",
 ];
 
 const RamFinCorp_PRIORITY_ORDER = [
   "RamFinCorp",
+    "RapidMoney",
+      "LoanWalle",
+        "KreditBee",
+          "TrueBalance",
   "Vivifi",
-  "KreditBee",
-  "RapidMoney",
-  "CreditPlus",
-  "TrueBalance",
-  // "MPokket",
-  // "Loan112",
-  // "SmartCoin",
-  "LendingPlate",
+
    "SpeedoLoan",
-  "LoanWalle",
   "Cashvia",
-  "TrueFund"
-  ,
+  "TrueFund",
   "MoneyDot",
+  "RupiNow",
 ];
 
 const FALLBACK_UTM: Record<string, string> = {
@@ -139,29 +105,29 @@ const FALLBACK_UTM: Record<string, string> = {
   Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
   TrueBalance: "https://truebalance.io/",
   // MPokket: "https://mpokket.com/",
-  CreditPlus: "https://www.creditplus.in/",
-  // Loan112: "https://loan112.com/",
   RapidMoney: "https://web.rapidmoney.in/",
-  // SmartCoin: "https://olyv.app/",
-  LendingPlate: "https://lendingplate.com/",
   SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
   LoanWalle: "https://www.loanwalle.com/personal-loan?utm_source=CREADY&utm_medium=affiliate&utm_campaign=mcl-aff&click_id=landing-page",
   Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
   TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
   MoneyDot: "https://www.moneydot.in/",
+  // RupiNow: "https://www.rupinow.com/home",
 };
 
 // Map API names to internal lender names
 const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   "RamFinCorp": "RamFinCorp",
   "Speedoloan": "SpeedoLoan",
-  "Fintech Cloud": "LoanWalle",
+  "LoanWalle": "LoanWalle",
+  "Loanwalle": "LoanWalle",
   "Cashvia": "Cashvia",
   "RapidMoney": "RapidMoney",
   "TrueBalance": "TrueBalance",
   "trueBalance": "TrueBalance",
   "truebalance": "TrueBalance",
   "Truebalance": "TrueBalance",
+  "MoneyDot": "MoneyDot",
+  // "RupiNow": "RupiNow",
 };
 
 function getUtmLink(
@@ -195,34 +161,6 @@ function getUtmLink(
       if (ramFinCorpMessage !== "dedup success") return null;
       return directLink || FALLBACK_UTM.RamFinCorp;
     }
-
-    // case "MPokket": {
-    //   const isEligible = (lender as { isEligible?: boolean }).isEligible;
-    //   if (isEligible === false) return null;
-    //   if (lender.success !== true) return null;
-    //   return directLink || FALLBACK_UTM.MPokket;
-    // }
-
-    case "CreditPlus":
-      if (lender.success !== true) return null;
-      return directLink || FALLBACK_UTM.CreditPlus;
-
-    // case "Loan112":
-    //   if (lender.success !== true) return null;
-    //   return directLink || FALLBACK_UTM.Loan112;
-
-    // case "SmartCoin": {
-    //   // SmartCoin (Olyv) - show if not a duplicate (isDuplicate: false means eligible)
-    //   const isDuplicate = (lender as { isDuplicate?: boolean }).isDuplicate;
-    //   if (isDuplicate === true) return null;
-    //   // If isDuplicate is false, user is eligible regardless of success field
-    //   if (isDuplicate !== false) return null;
-    //   return directLink || FALLBACK_UTM.SmartCoin;
-    // }
-
-    case "LendingPlate":
-      if (lender.success !== true) return null;
-      return directLink || FALLBACK_UTM.LendingPlate;
 
     case "TrueFund": {
       // TrueFund is shown only if API response message contains "user details received sucessfully"
@@ -270,7 +208,7 @@ export default function ShortTicketOffersPage() {
   const [kbApplying, setKbApplying] = useState(false);
   const [kbApplied, setKbApplied] = useState(false);
   const [firstName, setFirstName] = useState<string>("");
-  const [isCreditPlusMedium, setIsCreditPlusMedium] = useState(false);
+
   const [isKbMedium, setIsKbMedium] = useState(false);
   const [isRapidMoneyMedium, setIsRapidMoneyMedium] = useState(false);
 
@@ -316,14 +254,7 @@ export default function ShortTicketOffersPage() {
     if (data.RapidMoney?.utm_link) utmMap["RapidMoney"] = data.RapidMoney.utm_link;
     if (data.RamFinCorp?.utm_link) utmMap["RamFinCorp"] = data.RamFinCorp.utm_link;
     if (data.KreditBee?.utm_link) utmMap["KreditBee"] = data.KreditBee.utm_link;
-    // TrueBalance is now static - check top-level data first, then staticLenders, then fallback
     if (data.TrueBalance?.utm_link) utmMap["TrueBalance"] = data.TrueBalance.utm_link;
-    if (data.CreditPlus?.utm_link) utmMap["CreditPlus"] = data.CreditPlus.utm_link;
-    // if (data.MPokket?.utm_link) utmMap["MPokket"] = data.MPokket.utm_link;
-    // if (data.Loan112?.utm_link) utmMap["Loan112"] = data.Loan112.utm_link;
-    // if (data.SmartCoin?.utm_link) utmMap["SmartCoin"] = data.SmartCoin.utm_link;
-    if (data.LendingPlate?.utm_link) utmMap["LendingPlate"] = data.LendingPlate.utm_link;
-  
 
     // Process static lenders from API
     const staticLenders = (data as { staticLenders?: Array<{ name: string; utm_link: string }> }).staticLenders || [];
@@ -334,8 +265,7 @@ export default function ShortTicketOffersPage() {
 
     // Check utm_medium for priority ordering
     const utmMedium = (sessionStorage.getItem("utm_medium") || "").toLowerCase();
-    const isCreditPlusMediumLocal = utmMedium === "creditplus";
-    setIsCreditPlusMedium(isCreditPlusMediumLocal);
+   
     const isKbMediumLocal = utmMedium === "kreditbee";
     setIsKbMedium(isKbMediumLocal);
     const isRapidMoneyMediumLocal = utmMedium === "rapidmoney";
@@ -344,12 +274,9 @@ export default function ShortTicketOffersPage() {
     setIsRamFinCorpMedium(isRamFinCorpMediumLocal);
 
     let renderOrder = LENDER_ORDER;
-    let initialVisible = 3;
+    let initialVisible = 4;
 
-    if (isCreditPlusMediumLocal) {
-      renderOrder = CREDITPLUS_PRIORITY_ORDER;
-      initialVisible = 4; // 1 hero + 3 below
-    } else if (isKbMediumLocal) {
+     if (isKbMediumLocal) {
       renderOrder = KB_PRIORITY_ORDER;
       initialVisible = 4;
     } else if (isRapidMoneyMediumLocal) {
@@ -402,47 +329,16 @@ export default function ShortTicketOffersPage() {
           if (!isSalariedFlag) break;
           ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.Vivifi });
           break;
-         
-
-        case "CreditPlus":
-          // CreditPlus only for salaried users
-          if (!isSalariedFlag) break;
-          if (lender?.success !== true) break;
-          ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.CreditPlus });
-          break;
-
-        // case "MPokket":
-        //   if (lender?.success !== true) break;
-        //   ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.MPokket });
-        //   break;
-
-        // case "Loan112":
-        //   if (lender?.success !== true) break;
-        //   ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.Loan112 });
-        //   break;
-
-        // case "SmartCoin": {
-        //   // SmartCoin (Olyv) - show if not a duplicate (isDuplicate: false means eligible)
-        //   const isDuplicate = (lender as { isDuplicate?: boolean })?.isDuplicate;
-        //   if (isDuplicate === true) break;
-        //   // If isDuplicate is false, user is eligible regardless of success field
-        //   if (isDuplicate !== false) break;
-        //   ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.SmartCoin });
-        //   break;
-        // }
-
-        case "LendingPlate":
-          if (lender?.success !== true) break;
-          ordered.push({ name, utm_link: utmLink || FALLBACK_UTM.LendingPlate });
-          break;
-
+        
         // Static lenders - always show (like RapidMoney)
         case "SpeedoLoan":
           ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.SpeedoLoan });
           break;
 
         case "LoanWalle":
-          ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.LoanWalle });
+          // LoanWalle only shows if it comes from API staticLenders
+          if (!utmMap[name]) break;
+          ordered.push({ name, utm_link: utmMap[name] });
           break;
 
         case "Cashvia":
@@ -591,8 +487,8 @@ export default function ShortTicketOffersPage() {
   };
 
   // Hero card logic
-  const showHeroFlow = isCreditPlusMedium || isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium;
-  const heroName = isCreditPlusMedium ? "CreditPlus" : isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : null;
+  const showHeroFlow = isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium;
+  const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : null;
   const heroIdx = heroName ? visibleLenders.findIndex((l) => l.name === heroName) : -1;
   const showHeroCard = showHeroFlow && heroIdx === 0 && visibleLenders.length > 0;
   const heroLender = showHeroCard ? visibleLenders[0] : null;
@@ -612,7 +508,7 @@ export default function ShortTicketOffersPage() {
           <div className="absolute right-[-300px] bottom-[-5%] h-[420px] w-[420px] rounded-full bg-[#f7e9c4]/50 blur-3xl" />
         </div>
 
-        <div className={`relative mx-auto px-3 z-10 sm:px-5 py-4 sm:py-6 w-full ${multipleCards || showHeroFlow ? "max-w-6xl" : "max-w-xl"}`}>
+        <div className={`relative mx-auto px-3 z-10 sm:px-5 py-4 sm:py-6 w-full ${multipleCards || showHeroFlow ? "max-w-7xl" : "max-w-xl"}`}>
 
           {/* Header */}
           {showHeroFlow ? (
@@ -807,7 +703,7 @@ export default function ShortTicketOffersPage() {
                     <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-indigo-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
-                    <span className="font-medium">Trusted by {heroLender.name === "KreditBee" ? "69L+" : heroLender.name === "CreditPlus" ? "50L+" : "40L+"} customers</span>
+                    <span className="font-medium">Trusted by {heroLender.name === "KreditBee" ? "69L+" : "40L+"} customers</span>
                     <div className="flex -space-x-1.5">
                       {[
                         { bg: "bg-rose-200", txt: "text-rose-700", c: "A" },
@@ -896,7 +792,8 @@ export default function ShortTicketOffersPage() {
             <div className={
               otherLenders.length === 1 ? "max-w-md mx-auto" :
               otherLenders.length === 2 ? "grid grid-cols-1 sm:grid-cols-2 gap-3" :
-              "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+              otherLenders.length === 3 ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" :
+              "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"
             }>
               {otherLenders.map((lender, idx) => {
                 const isKB = lender.name === "KreditBee";
@@ -914,7 +811,7 @@ export default function ShortTicketOffersPage() {
                     lenderName={displayName}
                     lenderLogo={
                       logoSrc ? (
-                        <img src={logoSrc} alt={displayName} className="h-6 w-auto" />
+                        <img src={logoSrc} alt={displayName} className="h-8 w-auto object-contain" />
                       ) : (
                         <span className="text-xl font-bold text-gray-600">{displayName.charAt(0)}</span>
                       )
@@ -928,7 +825,10 @@ export default function ShortTicketOffersPage() {
                     logoDarkBg={logoDarkBg}
                     applying={isApplying}
                     applied={isApplied}
-                    badgeText={idx === 0 && !showHeroCard ? "Matched Offer" : undefined}
+                    badgeText={
+                      lender.name === "LoanWalle" ? "Only for EPFO registered users" :
+                      idx === 0 && !showHeroCard ? "Matched Offer" : undefined
+                    }
                     badge={isKB ? (
                       <button
                         onClick={() => setShowScratch(true)}

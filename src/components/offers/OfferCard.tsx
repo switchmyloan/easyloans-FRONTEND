@@ -150,7 +150,7 @@ export default function OfferCard({
           {/* Left */}
           <div className="flex items-center gap-2 min-w-0">
             <div
-              className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${
+              className={`w-12 h-12 rounded-xl border flex items-center justify-center shrink-0 ${
                 logoDarkBg
                   ? "bg-gray-800 border-gray-700"
                   : "bg-white border-[#ebe5ff]"

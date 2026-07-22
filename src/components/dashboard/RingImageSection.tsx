@@ -12,10 +12,9 @@ const LENDER_RING_IMAGES: Record<string, string> = {
   kreditbee: "/KB-ring.png",
   truebalance: "/TB-ring.png",
   vivifi: "/V-ring.png", // Add VV-ring.png to /public/
-  // mpokket: "/MP-ring.png",
-  creditplus: "/CP-ring.png",
+
   loan112: "/L1-ring.png",
-  lendingplate: "/LP-ring.png",
+ 
   // smartcoin: "/SC-ring.png",
   speedoloan: "/SL-ring.png",
   loanwalle: "/LW-ring.png",
