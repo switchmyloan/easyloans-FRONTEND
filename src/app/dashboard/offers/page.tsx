@@ -7,7 +7,7 @@ import { ArrowLeft } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import OfferCard from "@/components/offers/OfferCard";
 import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
-import { getStaticLenderDetail, STATIC_LENDER_LOGOS, DASHBOARD_PRIORITY_ORDER } from "@/lib/constants";
+import { getStaticLenderDetail, STATIC_LENDER_LOGOS, DASHBOARD_PRIORITY_ORDER, LENDER_FEATURE_TAGS } from "@/lib/constants";
 import { useOtpGuard } from "@/app/dashboard/layout";
 import {
   getStoredShortExistingUserOffers,
@@ -400,6 +400,7 @@ const isRamFinCorpEligible =
                   recommended={idx < 2}
                   badgeText={badgeText}
                   applying={isApplying}
+                  featureTag={LENDER_FEATURE_TAGS[lenderName]}
                 />
               );
             })}

@@ -20,6 +20,8 @@ interface OfferCardProps {
   applied?: boolean;
   /** Text to show in the top-right badge. Pass null/undefined to hide. */
   badgeText?: string | null;
+  /** Feature tag to show below the lender name (e.g., "Only for EPFO registered users") */
+  featureTag?: string;
 }
 
 export default function OfferCard({
@@ -38,6 +40,7 @@ export default function OfferCard({
   applying = false,
   applied = false,
   badgeText,
+  featureTag,
 }: OfferCardProps) {
   const buttonLabel = applying
     ? "Applying..."
@@ -84,9 +87,16 @@ export default function OfferCard({
               {lenderLogo}
             </div>
 
-            <p className="text-sm font-semibold text-gray-900">
-              {lenderName}
-            </p>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-gray-900">
+                {lenderName}
+              </p>
+              {featureTag && (
+                <p className="text-[10px] font-medium text-gray-500 truncate">
+                  {featureTag}
+                </p>
+              )}
+            </div>
           </div>
 
           {/* Headline */}
@@ -163,6 +173,11 @@ export default function OfferCard({
               <p className="text-[11px] font-medium text-gray-600 truncate">
                 {lenderName}
               </p>
+              {featureTag && (
+                <p className="text-[10px] font-medium text-gray-500 truncate">
+                  {featureTag}
+                </p>
+              )}
             </div>
           </div>
 
