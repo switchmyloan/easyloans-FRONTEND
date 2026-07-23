@@ -20,9 +20,7 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   TrueBalance: "https://truebalance.io/",
   RapidMoney: "https://web.rapidmoney.in/borrower/login?utm_source=creadylandingpage&utm_extsource=abc&utm_medium=rapidmoney&utm_campaign=xyz&utm_campaignID=def",
   KreditBee: "https://www.kreditbee.in/signin",
- 
   SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
-  LoanWalle: "https://www.loanwalle.com/personal-loan?utm_source=CREADY&utm_medium=affiliate&utm_campaign=mcl-aff&click_id=landing-page",
   Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
   TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
   Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
@@ -71,7 +69,8 @@ const REMOVED_LENDERS = ["MPokket", "Loan112", "SmartCoin", "SmartCoinHighIntent
 
 // Static lenders that should always be shown
 // Note: RamFinCorp is now shown based on API response (message === "Dedup Success")
-const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", "SpeedoLoan", "LoanWalle", "Cashvia", "Vivifi", "TrueBalance"];
+// Note: LoanWalle is shown only when received in staticLenders from API (with utm_link)
+const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", "SpeedoLoan", "Cashvia", "Vivifi", "TrueBalance"];
 
 // ============================================================
 // Utility Functions
@@ -202,6 +201,20 @@ export default function LoanOffersBanner() {
           id: "RamFinCorp",
           name: "RamFinCorp",
           prefix: "R",
+        });
+      }
+
+      // Add LoanWalle only if it comes from API staticLenders (with utm_link)
+      const staticLendersArray = (data.staticLenders || []) as Array<{ name?: string; utm_link?: string }>;
+      const loanWalleFromApi = staticLendersArray.find(
+        (l) => l.name?.toLowerCase() === "loanwalle"
+      );
+      if (loanWalleFromApi?.utm_link && !addedLenders.has("LoanWalle")) {
+        addedLenders.add("LoanWalle");
+        eligibleLenders.push({
+          id: "LoanWalle",
+          name: "LoanWalle",
+          prefix: "L",
         });
       }
 

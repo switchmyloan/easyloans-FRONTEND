@@ -32,7 +32,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   Cashvia: "Cashvia",
   TrueFund: "TrueFund",
   MoneyDot: "MoneyDot",
-  // RupiNow: "RupiNow",
+  RupiNow: "RupiNow",
 };
 
 // Default render order
@@ -49,7 +49,7 @@ const LENDER_ORDER = [
   "Cashvia",
   "TrueFund",
   "MoneyDot",
-  // "RupiNow",
+  "RupiNow",
 ];
 
 // When utm_medium=kreditbee: KreditBee first
@@ -65,7 +65,7 @@ const KB_PRIORITY_ORDER = [
   "Cashvia",
   "TrueFund",
   "MoneyDot",
-  // "RupiNow",
+  "RupiNow",
 ];
 
 // When utm_medium=rapidmoney: RapidMoney first
@@ -81,7 +81,7 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "Cashvia",
   "TrueFund",
   "MoneyDot",
-  // "RupiNow",
+  "RupiNow",
 ];
 
 const RamFinCorp_PRIORITY_ORDER = [
@@ -107,11 +107,10 @@ const FALLBACK_UTM: Record<string, string> = {
   // MPokket: "https://mpokket.com/",
   RapidMoney: "https://web.rapidmoney.in/",
   SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
-  LoanWalle: "https://www.loanwalle.com/personal-loan?utm_source=CREADY&utm_medium=affiliate&utm_campaign=mcl-aff&click_id=landing-page",
   Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
   TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
   MoneyDot: "https://www.moneydot.in/",
-  // RupiNow: "https://www.rupinow.com/home",
+  RupiNow: "https://www.rupinow.com/home",
 };
 
 // Map API names to internal lender names
@@ -127,7 +126,7 @@ const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   "truebalance": "TrueBalance",
   "Truebalance": "TrueBalance",
   "MoneyDot": "MoneyDot",
-  // "RupiNow": "RupiNow",
+  "RupiNow": "RupiNow",
 };
 
 function getUtmLink(
@@ -188,6 +187,20 @@ function getUtmLink(
 
   return directLink || FALLBACK_UTM.MoneyDot;
 }
+
+    case "RupiNow": {
+      // RupiNow is shown only if dedupeStatus === "Passed"
+      const rupiNowDedupeStatus = (lender as { dedupeStatus?: string })?.dedupeStatus;
+      if (rupiNowDedupeStatus !== "Passed") return null;
+      return directLink || FALLBACK_UTM.RupiNow;
+    }
+
+    case "Cashvia": {
+      // Cashvia is shown only if dedupeStatus === "Passed"
+      const cashviaDedupeStatus = (lender as { dedupeStatus?: string })?.dedupeStatus;
+      if (cashviaDedupeStatus !== "Passed") return null;
+      return directLink || FALLBACK_UTM.Cashvia;
+    }
 
     default:
       return directLink || FALLBACK_UTM[name] || null;
@@ -255,6 +268,8 @@ export default function ShortTicketOffersPage() {
     if (data.RamFinCorp?.utm_link) utmMap["RamFinCorp"] = data.RamFinCorp.utm_link;
     if (data.KreditBee?.utm_link) utmMap["KreditBee"] = data.KreditBee.utm_link;
     if (data.TrueBalance?.utm_link) utmMap["TrueBalance"] = data.TrueBalance.utm_link;
+    if ((data.RupiNow as { utm_link?: string })?.utm_link) utmMap["RupiNow"] = (data.RupiNow as { utm_link?: string }).utm_link;
+    if ((data.Cashvia as { utm_link?: string })?.utm_link) utmMap["Cashvia"] = (data.Cashvia as { utm_link?: string }).utm_link;
 
     // Process static lenders from API
     const staticLenders = (data as { staticLenders?: Array<{ name: string; utm_link: string }> }).staticLenders || [];
@@ -341,9 +356,13 @@ export default function ShortTicketOffersPage() {
           ordered.push({ name, utm_link: utmMap[name] });
           break;
 
-        case "Cashvia":
+        case "Cashvia": {
+          // Cashvia is shown only if dedupeStatus === "Passed"
+          const cashviaDedupeStatus = (lender as { dedupeStatus?: string })?.dedupeStatus;
+          if (cashviaDedupeStatus !== "Passed") break;
           ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.Cashvia });
           break;
+        }
 
         case "TrueFund": {
           // TrueFund is shown only if API response message contains "user details received sucessfully"
@@ -374,9 +393,16 @@ export default function ShortTicketOffersPage() {
     name,
     utm_link: utmLink || FALLBACK_UTM.MoneyDot,
   });
-
   break;
 }
+
+        case "RupiNow": {
+          // RupiNow is shown only if dedupeStatus === "Passed"
+          const rupiNowDedupeStatus = (lender as { dedupeStatus?: string })?.dedupeStatus;
+          if (rupiNowDedupeStatus !== "Passed") break;
+          ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.RupiNow });
+          break;
+        }
 
         default:
           if (utmLink) ordered.push({ name, utm_link: utmLink });

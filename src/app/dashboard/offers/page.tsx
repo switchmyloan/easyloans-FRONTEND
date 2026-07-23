@@ -43,7 +43,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   Cashvia: "Cashvia",
   TrueFund: "TrueFund",
   MoneyDot: "MoneyDot",
-  // RupiNow: "RupiNow",
+  RupiNow: "RupiNow",
 };
 
 const FALLBACK_UTM_LINKS: Record<string, string> = {
@@ -56,11 +56,10 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   KreditBee: "https://www.kreditbee.in/signin",
  
   SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
-  LoanWalle: "https://www.loanwalle.com/personal-loan?utm_source=CREADY&utm_medium=affiliate&utm_campaign=mcl-aff&click_id=landing-page",
   Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
   TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
   MoneyDot: "https://www.moneydot.in/",
-  // RupiNow: "https://www.rupinow.com/home",
+  RupiNow: "https://www.rupinow.com/home",
 };
 
 const LENDER_CUSTOM_BADGE: Record<string, string> = {
@@ -153,7 +152,19 @@ const ramFinCorpData = data.RamFinCorp as {
 const isRamFinCorpEligible =
   (ramFinCorpData?.message || "").toLowerCase() === "dedup success";
 
+const rupiNowData = data.RupiNow as {
+  dedupeStatus?: string;
+  utm_link?: string;
+} | undefined;
 
+const isRupiNowEligible = rupiNowData?.dedupeStatus === "Passed";
+
+const cashviaData = data.Cashvia as {
+  dedupeStatus?: string;
+  utm_link?: string;
+} | undefined;
+
+const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
 
       const filteredShownOffers = shownOffers.filter((o) => {
         // Filter out removed lenders
@@ -172,15 +183,22 @@ const isRamFinCorpEligible =
         if (o.lenderName === "RamFinCorp") {
           return isRamFinCorpEligible;
         }
+        if (o.lenderName === "RupiNow") {
+          return isRupiNowEligible;
+        }
+        if (o.lenderName === "Cashvia") {
+          return isCashviaEligible;
+        }
         return true;
       });
       const mappedOffers = filteredShownOffers.map((o) => mapShownOfferToDashboardOffer(o, data));
 
-      // Add static lenders that should always be shown (KreditBee, SpeedoLoan, Cashvia, Vivifi, TrueBalance)
+      // Add static lenders that should always be shown (KreditBee, SpeedoLoan, Vivifi, TrueBalance)
+      // Note: Cashvia is now shown based on API response (dedupeStatus === "Passed")
       // Note: RapidMoney is now shown based on API response (isDuplicate === false)
       // Note: RamFinCorp is now shown based on API response (message === "Dedup Success")
       // Note: LoanWalle is now shown only if it comes from API staticLenders
-      const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", "SpeedoLoan", "Cashvia", "Vivifi", "TrueBalance"];
+      const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", "SpeedoLoan", "Vivifi", "TrueBalance"];
       const existingLenderNames = new Set(mappedOffers.map((o) => o.name));
 
       // Extract utm_links from staticLenders array (API returns lenders with dynamic utm_link)
@@ -259,6 +277,24 @@ const isRamFinCorpEligible =
         mappedOffers.push({
           name: "RamFinCorp",
           utmLink: ramFinCorpData?.utm_link || FALLBACK_UTM_LINKS["RamFinCorp"],
+          isOffer: false,
+        });
+      }
+
+      // Add RupiNow based on API response (only if dedupeStatus === "Passed")
+      if (isRupiNowEligible && !existingLenderNames.has("RupiNow")) {
+        mappedOffers.push({
+          name: "RupiNow",
+          utmLink: rupiNowData?.utm_link || FALLBACK_UTM_LINKS["RupiNow"],
+          isOffer: false,
+        });
+      }
+
+      // Add Cashvia based on API response (only if dedupeStatus === "Passed")
+      if (isCashviaEligible && !existingLenderNames.has("Cashvia")) {
+        mappedOffers.push({
+          name: "Cashvia",
+          utmLink: cashviaData?.utm_link || FALLBACK_UTM_LINKS["Cashvia"],
           isOffer: false,
         });
       }

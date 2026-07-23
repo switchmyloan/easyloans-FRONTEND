@@ -56,7 +56,6 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   KreditBee: "https://www.kreditbee.in/signin",
   
   SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
-  LoanWalle: "https://www.loanwalle.com/personal-loan?utm_source=CREADY&utm_medium=affiliate&utm_campaign=mcl-aff&click_id=landing-page",
   Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
 };
 

@@ -48,7 +48,7 @@ export const STATIC_LENDER_LOGOS: Record<
   Cashvia: { src: "/cashvia1.png" },
   TrueFund: { src: "/truefund.svg" },
   MoneyDot: { src: "/moneydot.png" },
-  // RupiNow: { src: "/rupinow.png" },
+  RupiNow: { src: "/rupinow.png" },
 };
 
 export const STATIC_LENDER_DETAILS: Record<
@@ -206,12 +206,12 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Quick Approval and with no collateral",
     interestRate: "Interest Rates start at 0.07% to 0.16% per day",
   },
-  // RupiNow: {
-  //   headline: "Get up to ₹5,00,000 with quick approval!",
-  //   description: "Personal loans with Instant Loan Approval and Zero Hidden Charges",
-  //   keyFeature: "Flexible Tenure and Zero Hidden Charges",
-  //   interestRate: "Interest Rates start at 12% to 30% per annum",
-  // }
+  RupiNow: {
+    headline: "Get up to ₹5,00,000 with quick approval!",
+    description: "Personal loans with Instant Loan Approval and Zero Hidden Charges",
+    keyFeature: "Flexible Tenure and Zero Hidden Charges",
+    interestRate: "Interest Rates start at 12% to 30% per annum",
+  }
 };
 
 // Dashboard priority order - lenders are displayed in this order when available
@@ -227,7 +227,7 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "Cashvia",
   "TrueFund",
   "MoneyDot",
-  // "RupiNow",
+  "RupiNow",
 ];
 
 // Short feature tags for each lender (displayed in offer cards)
