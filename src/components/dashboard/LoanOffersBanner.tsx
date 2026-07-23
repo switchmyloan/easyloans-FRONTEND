@@ -218,12 +218,22 @@ export default function LoanOffersBanner() {
         });
       }
 
-      // Sort all eligible lenders by dashboard priority order
-      const prioritySorted = sortLendersByPriority(eligibleLenders);
-
       // Check if user came via UTM medium link - prioritize that lender
       const utmMedium = (sessionStorage.getItem("utm_medium") || "").toLowerCase();
       const utmLenderName = UTM_MEDIUM_TO_LENDER[utmMedium];
+
+      // If UTM is loanwalle and LoanWalle exists in staticLenders but wasn't added yet, add it now
+      if (utmLenderName === "LoanWalle" && loanWalleFromApi?.utm_link && !addedLenders.has("LoanWalle")) {
+        addedLenders.add("LoanWalle");
+        eligibleLenders.push({
+          id: "LoanWalle",
+          name: "LoanWalle",
+          prefix: "L",
+        });
+      }
+
+      // Sort all eligible lenders by dashboard priority order
+      const prioritySorted = sortLendersByPriority(eligibleLenders);
 
       if (utmLenderName && addedLenders.has(utmLenderName)) {
         // User came via UTM medium link - show that lender as main
