@@ -218,9 +218,9 @@ export default function OfferCard({
           {/* Key Feature */}
           <div className="flex-1 rounded-[12px] p-2">
             <div className="flex items-start gap-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-violet-100 text-violet-600 shrink-0">
+              {/* <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-violet-100 text-violet-600 shrink-0">
                 <Zap className="w-3 h-3" />
-              </div>
+              </div> */}
 
               <div>
                 <p className="text-[9px] font-bold uppercase tracking-wider text-violet-500">
@@ -243,9 +243,9 @@ export default function OfferCard({
           {/* Interest Rate */}
           <div className="flex-1 rounded-[12px] p-2">
             <div className="flex items-start gap-2">
-              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-violet-100 text-violet-600 shrink-0">
+              {/* <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-violet-100 text-violet-600 shrink-0">
                 <CirclePercent className="w-3 h-3" />
-              </div>
+              </div> */}
 
               <div>
                 <p className="text-[9px] font-bold uppercase tracking-wider text-violet-500">
@@ -261,14 +261,14 @@ export default function OfferCard({
         </div>
 
         {/* Footer */}
-        <div className="mt-auto pt-2.5 grid grid-cols-[1fr_auto] gap-2">
+        <div className="mt-auto pt-2.5 grid grid-cols-[1fr_auto] gap-1">
           {/* Apply Button */}
           <button
             onClick={onApply}
             disabled={isDisabled}
-            className="group relative h-9 overflow-hidden rounded-lg bg-gradient-to-r from-[#dfff45] via-[#9b6bff] to-[#7c3aed] px-4 text-[12px] font-semibold text-white shadow-md transition-all hover:scale-[1.01] active:scale-[0.98] disabled:opacity-60 cursor-pointer"
+            className="group relative h-9 overflow-hidden rounded-lg bg-gradient-to-r from-[#dfff45] via-[#9b6bff] to-[#7c3aed] px-4 text-[11px] font-semibold text-white shadow-md transition-all hover:scale-[1.01] active:scale-[0.98] disabled:opacity-60 cursor-pointer"
           >
-            <span className="relative z-10 flex items-center justify-center gap-1.5">
+            <span className="relative z-10 flex items-center justify-center gap-1">
               {buttonLabel}
 
               <span className="transition-transform duration-200 group-hover:translate-x-1">
@@ -278,7 +278,7 @@ export default function OfferCard({
           </button>
 
           {/* RBI */}
-          <div className="flex items-center gap-1.5 rounded-lg border border-[#ece4ff] bg-white/95 px-3 text-[11px] font-medium text-gray-700">
+          <div className="flex items-center gap-1 rounded-lg border border-[#ece4ff] bg-white/95 px-3 text-[10px] font-medium text-gray-700">
            <ShieldCheck className="w-3.5 h-3.5 text-white fill-[#12a305] shrink-0" />
 
             RBI Registered

@@ -44,7 +44,7 @@ export const STATIC_LENDER_LOGOS: Record<
   KreditBee: { src: "/kreditbee-logo.svg" },
   
   SpeedoLoan: { src: "/speedoloan.png" },
-  LoanWalle: { src: "/loanwalle.svg", darkBg: true },
+  LoanWalle: { src: "/loanwalle.webp" },
   Cashvia: { src: "/cashvia1.png" },
   TrueFund: { src: "/truefund.svg" },
   MoneyDot: { src: "/moneydot.png" },

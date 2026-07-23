@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getStaticLenderDetail, STATIC_LENDER_LOGOS, getEligibleCoupon, type KBCoupon } from "@/lib/constants";
+import { getStaticLenderDetail, STATIC_LENDER_LOGOS, getEligibleCoupon, type KBCoupon, LENDER_FEATURE_TAGS } from "@/lib/constants";
 import {
   getStoredShortTicketOffers,
   saveShortLender,
@@ -93,6 +93,21 @@ const RamFinCorp_PRIORITY_ORDER = [
   "Vivifi",
 
    "SpeedoLoan",
+  "Cashvia",
+  "TrueFund",
+  "MoneyDot",
+  "RupiNow",
+];
+
+// When utm_medium=loanwalle: LoanWalle first
+const LOANWALLE_PRIORITY_ORDER = [
+  "LoanWalle",
+  "RapidMoney",
+  "RamFinCorp",
+  "KreditBee",
+  "TrueBalance",
+  "Vivifi",
+  "SpeedoLoan",
   "Cashvia",
   "TrueFund",
   "MoneyDot",
@@ -226,6 +241,7 @@ export default function ShortTicketOffersPage() {
   const [isRapidMoneyMedium, setIsRapidMoneyMedium] = useState(false);
 
   const [isRamFinCorpMedium, setIsRamFinCorpMedium] = useState(false);
+  const [isLoanWalleMedium, setIsLoanWalleMedium] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
   const [priorityVisible, setPriorityVisible] = useState(0);
   const [showAll, setShowAll] = useState(false);
@@ -287,19 +303,24 @@ export default function ShortTicketOffersPage() {
     setIsRapidMoneyMedium(isRapidMoneyMediumLocal);
     const isRamFinCorpMediumLocal = utmMedium === "ramfincorp";
     setIsRamFinCorpMedium(isRamFinCorpMediumLocal);
+    const isLoanWalleMediumLocal = utmMedium === "loanwalle";
+    setIsLoanWalleMedium(isLoanWalleMediumLocal);
 
     let renderOrder = LENDER_ORDER;
     let initialVisible = 4;
 
      if (isKbMediumLocal) {
       renderOrder = KB_PRIORITY_ORDER;
-      initialVisible = 4;
+      initialVisible = 5;
     } else if (isRapidMoneyMediumLocal) {
       renderOrder = RAPIDMONEY_PRIORITY_ORDER;
-      initialVisible = 4;
+      initialVisible = 5;
     } else if (isRamFinCorpMediumLocal) {
       renderOrder = RamFinCorp_PRIORITY_ORDER;
-      initialVisible = 4;
+      initialVisible = 5;
+    } else if (isLoanWalleMediumLocal) {
+      renderOrder = LOANWALLE_PRIORITY_ORDER;
+      initialVisible = 5;
     }
 
 
@@ -513,8 +534,8 @@ export default function ShortTicketOffersPage() {
   };
 
   // Hero card logic
-  const showHeroFlow = isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium;
-  const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : null;
+  const showHeroFlow = isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium || isLoanWalleMedium;
+  const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : isLoanWalleMedium ? "LoanWalle" : null;
   const heroIdx = heroName ? visibleLenders.findIndex((l) => l.name === heroName) : -1;
   const showHeroCard = showHeroFlow && heroIdx === 0 && visibleLenders.length > 0;
   const heroLender = showHeroCard ? visibleLenders[0] : null;
@@ -534,7 +555,7 @@ export default function ShortTicketOffersPage() {
           <div className="absolute right-[-300px] bottom-[-5%] h-[420px] w-[420px] rounded-full bg-[#f7e9c4]/50 blur-3xl" />
         </div>
 
-        <div className={`relative mx-auto px-3 z-10 sm:px-5 py-4 sm:py-6 w-full ${multipleCards || showHeroFlow ? "max-w-7xl" : "max-w-xl"}`}>
+        <div className={`relative mx-auto px-3 z-10 sm:px-5 py-4 sm:py-6 w-full ${multipleCards || showHeroFlow ? "max-w-6xl" : "max-w-xl"}`}>
 
           {/* Header */}
           {showHeroFlow ? (
@@ -637,6 +658,11 @@ export default function ShortTicketOffersPage() {
                       </div>
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <p className="text-[12px] font-semibold text-[#111827]">{heroDisplayName}</p>
+                        {LENDER_FEATURE_TAGS[heroLender.name] && (
+                          <span className="inline-flex items-center gap-0.5 rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[9px] font-semibold text-amber-700">
+                            {LENDER_FEATURE_TAGS[heroLender.name]}
+                          </span>
+                        )}
                         <span className="inline-flex items-center gap-0.5 rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[9px] font-semibold text-violet-700">
                           Highly Recommended
                         </span>
@@ -851,10 +877,7 @@ export default function ShortTicketOffersPage() {
                     logoDarkBg={logoDarkBg}
                     applying={isApplying}
                     applied={isApplied}
-                    badgeText={
-                      lender.name === "LoanWalle" ? "Only for EPFO registered users" :
-                      idx === 0 && !showHeroCard ? "Matched Offer" : undefined
-                    }
+                    badgeText={LENDER_FEATURE_TAGS[lender.name] || (idx === 0 && !showHeroCard ? "Matched Offer" : undefined)}
                     badge={isKB ? (
                       <button
                         onClick={() => setShowScratch(true)}

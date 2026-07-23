@@ -392,7 +392,7 @@ const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2"
           >
             {offers.map((offer, idx) => {
               const lenderName = offer.name;
@@ -401,9 +401,10 @@ const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
               const logoMeta = STATIC_LENDER_LOGOS[lenderName];
 
               const hasCustomBadge = !!LENDER_CUSTOM_BADGE[lenderName];
-              const showBadge = idx < BADGE_VISIBLE_COUNT || hasCustomBadge || offer.isOffer;
+              const hasFeatureTag = !!LENDER_FEATURE_TAGS[lenderName];
+              const showBadge = idx < BADGE_VISIBLE_COUNT || hasCustomBadge || hasFeatureTag || offer.isOffer;
               const badgeText = showBadge
-                ? LENDER_CUSTOM_BADGE[lenderName] || (offer.isOffer ? "Pre-Qualified" : "Matched")
+                ? LENDER_FEATURE_TAGS[lenderName] || LENDER_CUSTOM_BADGE[lenderName] || (offer.isOffer ? "Pre-Qualified" : "Matched")
                 : null;
 
               const isApplying = lenderName === "KreditBee" ? kbApplying : false;
@@ -436,7 +437,6 @@ const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
                   recommended={idx < 2}
                   badgeText={badgeText}
                   applying={isApplying}
-                  featureTag={LENDER_FEATURE_TAGS[lenderName]}
                 />
               );
             })}

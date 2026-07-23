@@ -6,7 +6,7 @@ import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
 import OfferCard from "@/components/offers/OfferCard";
 import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
-import { getStaticLenderDetail, STATIC_LENDER_LOGOS, DASHBOARD_PRIORITY_ORDER } from "@/lib/constants";
+import { getStaticLenderDetail, STATIC_LENDER_LOGOS, DASHBOARD_PRIORITY_ORDER, LENDER_FEATURE_TAGS } from "@/lib/constants";
 import { useOtpGuard } from "@/app/dashboard/layout";
 
 // Import API functions
@@ -44,7 +44,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   Cashvia: "Cashvia",
 };
 
-const DASHBOARD_VISIBLE_COUNT = 3;
+const DASHBOARD_VISIBLE_COUNT = 4;
 
 const FALLBACK_UTM_LINKS: Record<string, string> = {
   // SmartCoin: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
@@ -302,7 +302,9 @@ export default function DashboardOffers() {
             ? 'sm:grid-cols-1 max-w-xl'
             : lendersToShow.length === 2
               ? 'sm:grid-cols-2'
-              : 'sm:grid-cols-2 lg:grid-cols-3'
+              : lendersToShow.length === 3
+                ? 'sm:grid-cols-2 lg:grid-cols-3'
+                : 'sm:grid-cols-2 lg:grid-cols-4'
         }`}>
           {lendersToShow.map((offer, idx) => {
             const lenderName = offer.name;
@@ -311,9 +313,10 @@ export default function DashboardOffers() {
             const logoMeta = STATIC_LENDER_LOGOS[lenderName];
 
             const hasCustomBadge = !!LENDER_CUSTOM_BADGE[lenderName];
-            const showBadge = idx < BADGE_VISIBLE_COUNT || hasCustomBadge || offer.isOffer;
+            const hasFeatureTag = !!LENDER_FEATURE_TAGS[lenderName];
+            const showBadge = idx < BADGE_VISIBLE_COUNT || hasCustomBadge || hasFeatureTag || offer.isOffer;
             const badgeText = showBadge
-              ? LENDER_CUSTOM_BADGE[lenderName] || (offer.isOffer ? "Pre-Qualified" : "Matched")
+              ? LENDER_FEATURE_TAGS[lenderName] || LENDER_CUSTOM_BADGE[lenderName] || (offer.isOffer ? "Pre-Qualified" : "Matched")
               : null;
 
             const isApplying = lenderName === "KreditBee" ? kbApplying : false;
