@@ -49,6 +49,7 @@ export const STATIC_LENDER_LOGOS: Record<
   TrueFund: { src: "/truefund.svg" },
   MoneyDot: { src: "/moneydot.png" },
   RupiNow: { src: "/rupinow.png" },
+  ASAPFinance: { src: "/asapfinance.webp" },
 };
 
 export const STATIC_LENDER_DETAILS: Record<
@@ -211,6 +212,12 @@ export const STATIC_LENDER_DETAILS: Record<
     description: "Personal loans with Instant Loan Approval and Zero Hidden Charges",
     keyFeature: "Flexible Tenure and Zero Hidden Charges",
     interestRate: "Interest Rates start at 12% to 30% per annum",
+  },
+  ASAPFinance: {
+    headline: "Get up to ₹12,00,000 with quick approval!",
+    description: "Personal loans with Fast Approval and No Collateral Needed",
+    keyFeature: "Hassle-Free Documentation and No Collateral Needed",
+    interestRate: "Interest Rates start at 0.5% to 1% per day",
   }
 };
 
@@ -228,6 +235,7 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "TrueFund",
   "MoneyDot",
   "RupiNow",
+  "ASAPFinance"
 ];
 
 // Short feature tags for each lender (displayed in offer cards)
@@ -255,7 +263,8 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   Cashvia: "Minimal documentation",
   TrueFund: "Quick approval",
   MoneyDot: "no collateral",
-  // RupiNow: "zero hidden charges",
+  RupiNow: "zero hidden charges",
+  ASAPFinance: "Fast approval",
 };
 
 // Default feature tag if lender not found
@@ -290,6 +299,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   TrueFund: 100000,      // ₹1 Lakhs
   MoneyDot: 500000,      // ₹5 Lakhs
   RupiNow: 500000,      // ₹5 Lakhs
+  ASAPFinance: 1200000,      // ₹12 Lakhs
 };
 
 const DEFAULT_LENDER_DETAIL = {

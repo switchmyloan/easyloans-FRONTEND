@@ -44,6 +44,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   TrueFund: "TrueFund",
   MoneyDot: "MoneyDot",
   RupiNow: "RupiNow",
+  ASAPFinance: "ASAPFinance",
 };
 
 const FALLBACK_UTM_LINKS: Record<string, string> = {
@@ -60,6 +61,7 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
   MoneyDot: "https://www.moneydot.in/",
   RupiNow: "https://www.rupinow.com/home",
+  ASAPFinance: "https://asapfinance.in/customer/login?utm_source=easyloans+Cready",
 };
 
 const LENDER_CUSTOM_BADGE: Record<string, string> = {
@@ -212,6 +214,9 @@ const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
         "TrueBalance": "TrueBalance",
         "trueBalance": "TrueBalance",
         "truebalance": "TrueBalance",
+        "ASAPFinance": "ASAPFinance",
+        "asapfinance": "ASAPFinance",
+
       };
       for (const lender of staticLendersArray) {
         if (lender.name && lender.utm_link) {
@@ -241,6 +246,16 @@ const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
         mappedOffers.push({
           name: "LoanWalle",
           utmLink: staticLenderUtmLinks["LoanWalle"],
+          isOffer: false,
+        });
+      }
+
+
+      // Add ASAPFinance only if it comes from API staticLenders
+      if (staticLenderUtmLinks["ASAPFinance"] && !existingLenderNames.has("ASAPFinance")) {
+        mappedOffers.push({
+          name: "ASAPFinance",
+          utmLink: staticLenderUtmLinks["ASAPFinance"],
           isOffer: false,
         });
       }

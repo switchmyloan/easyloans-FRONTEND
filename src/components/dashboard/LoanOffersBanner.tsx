@@ -30,7 +30,6 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
 const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   rapidmoney: "RapidMoney",
   kreditbee: "KreditBee",
- 
   ramfincorp: "RamFinCorp",
   truebalance: "TrueBalance",
   speedoloan: "SpeedoLoan",

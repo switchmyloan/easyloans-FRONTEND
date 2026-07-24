@@ -42,6 +42,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   SpeedoLoan: "SpeedoLoan",
   LoanWalle: "LoanWalle",
   Cashvia: "Cashvia",
+  ASAPFinance: "ASAPFinance",
 };
 
 const DASHBOARD_VISIBLE_COUNT = 4;
@@ -51,10 +52,8 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   // SmartCoinHighIntent: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
     RamFinCorp: "https://ramfincorp.com/",
   Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
-  TrueBalance: "https://truebalance.io/",
   RapidMoney: "https://web.rapidmoney.in/borrower/login?utm_source=creadylandingpage&utm_extsource=abc&utm_medium=rapidmoney&utm_campaign=xyz&utm_campaignID=def",
   KreditBee: "https://www.kreditbee.in/signin",
-  
   SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
   Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
 };
@@ -142,7 +141,7 @@ export default function DashboardOffers() {
       // Note: RapidMoney is now shown based on API response (isDuplicate === false)
       // Note: RamFinCorp is now shown based on API response (message === "Dedup Success")
       // Note: LoanWalle is now shown only if it comes from API staticLenders
-      const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", "SpeedoLoan", "Cashvia", "Vivifi", "TrueBalance"];
+      const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", "SpeedoLoan", "Vivifi", "TrueBalance"];
       const existingLenderNames = new Set(mappedOffers.map((o) => o.name));
 
       // Extract utm_links from staticLenders array (API returns lenders with dynamic utm_link)
@@ -156,6 +155,8 @@ export default function DashboardOffers() {
         "TrueBalance": "TrueBalance",
         "trueBalance": "TrueBalance",
         "truebalance": "TrueBalance",
+        "ASAPFinance": "ASAPFinance",
+        "asapfinance": "ASAPFinance",
       };
       for (const lender of staticLendersArray) {
         if (lender.name && lender.utm_link) {
@@ -185,6 +186,15 @@ export default function DashboardOffers() {
         mappedOffers.push({
           name: "LoanWalle",
           utmLink: staticLenderUtmLinks["LoanWalle"],
+          isOffer: false,
+        });
+      }
+
+      // Add ASAPFinance only if it comes from API staticLenders
+      if (staticLenderUtmLinks["ASAPFinance"] && !existingLenderNames.has("ASAPFinance")) {
+        mappedOffers.push({
+          name: "ASAPFinance",
+          utmLink: staticLenderUtmLinks["ASAPFinance"],
           isOffer: false,
         });
       }

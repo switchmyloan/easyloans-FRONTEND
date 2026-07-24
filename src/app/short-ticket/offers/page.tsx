@@ -43,13 +43,12 @@ const LENDER_ORDER = [
    "KreditBee",
      "TrueBalance",
   "Vivifi",
-
       "SpeedoLoan",
-
   "Cashvia",
   "TrueFund",
   "MoneyDot",
   "RupiNow",
+  "ASAPFinance"
 ];
 
 // When utm_medium=kreditbee: KreditBee first
@@ -57,15 +56,15 @@ const KB_PRIORITY_ORDER = [
   "KreditBee",
   "RapidMoney",
   "RamFinCorp",
-    "LoanWalle",
-      "TrueBalance",
+  "LoanWalle",
+  "TrueBalance",
   "Vivifi",
-
-   "SpeedoLoan",
+  "SpeedoLoan",
   "Cashvia",
   "TrueFund",
   "MoneyDot",
   "RupiNow",
+  "ASAPFinance"
 ];
 
 // When utm_medium=rapidmoney: RapidMoney first
@@ -76,12 +75,12 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "KreditBee",
     "TrueBalance",
   "Vivifi",
-
    "SpeedoLoan",
   "Cashvia",
   "TrueFund",
   "MoneyDot",
   "RupiNow",
+  "ASAPFinance"
 ];
 
 const RamFinCorp_PRIORITY_ORDER = [
@@ -91,12 +90,12 @@ const RamFinCorp_PRIORITY_ORDER = [
         "KreditBee",
           "TrueBalance",
   "Vivifi",
-
    "SpeedoLoan",
   "Cashvia",
   "TrueFund",
   "MoneyDot",
   "RupiNow",
+  "ASAPFinance"
 ];
 
 // When utm_medium=loanwalle: LoanWalle first
@@ -112,6 +111,7 @@ const LOANWALLE_PRIORITY_ORDER = [
   "TrueFund",
   "MoneyDot",
   "RupiNow",
+  "ASAPFinance"
 ];
 
 const FALLBACK_UTM: Record<string, string> = {
@@ -126,6 +126,7 @@ const FALLBACK_UTM: Record<string, string> = {
   TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
   MoneyDot: "https://www.moneydot.in/",
   RupiNow: "https://www.rupinow.com/home",
+  ASAPFinance: "https://asapfinance.in/customer/login?utm_source=easyloans+Cready",
 };
 
 // Map API names to internal lender names
@@ -142,6 +143,7 @@ const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   "Truebalance": "TrueBalance",
   "MoneyDot": "MoneyDot",
   "RupiNow": "RupiNow",
+  "ASAPFinance": "ASAPFinance",
 };
 
 function getUtmLink(
@@ -168,6 +170,10 @@ function getUtmLink(
     // TrueBalance is now a static lender - always shown
     case "TrueBalance":
       return directLink || FALLBACK_UTM.TrueBalance;
+
+    case "ASAPFinance":
+      // ASAPFinance only shows if it comes from API staticLenders (no fallback)
+      return directLink || null;
 
     case "RamFinCorp": {
       // RamFinCorp is shown only if message is "Dedup Success"
@@ -236,10 +242,8 @@ export default function ShortTicketOffersPage() {
   const [kbApplying, setKbApplying] = useState(false);
   const [kbApplied, setKbApplied] = useState(false);
   const [firstName, setFirstName] = useState<string>("");
-
   const [isKbMedium, setIsKbMedium] = useState(false);
   const [isRapidMoneyMedium, setIsRapidMoneyMedium] = useState(false);
-
   const [isRamFinCorpMedium, setIsRamFinCorpMedium] = useState(false);
   const [isLoanWalleMedium, setIsLoanWalleMedium] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
@@ -296,7 +300,6 @@ export default function ShortTicketOffersPage() {
 
     // Check utm_medium for priority ordering
     const utmMedium = (sessionStorage.getItem("utm_medium") || "").toLowerCase();
-   
     const isKbMediumLocal = utmMedium === "kreditbee";
     setIsKbMedium(isKbMediumLocal);
     const isRapidMoneyMediumLocal = utmMedium === "rapidmoney";
@@ -323,9 +326,6 @@ export default function ShortTicketOffersPage() {
       initialVisible = 5;
     }
 
-
-
-
     // Build ordered list based on eligibility
     const ordered: OrderedLender[] = [];
     for (const name of renderOrder) {
@@ -351,6 +351,7 @@ export default function ShortTicketOffersPage() {
           ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.TrueBalance });
           break;
 
+
         // RamFinCorp - shown only if message is "Dedup Success"
         case "RamFinCorp": {
           const ramFinCorpMessage = (lender?.message || "").toLowerCase();
@@ -373,6 +374,12 @@ export default function ShortTicketOffersPage() {
 
         case "LoanWalle":
           // LoanWalle only shows if it comes from API staticLenders
+          if (!utmMap[name]) break;
+          ordered.push({ name, utm_link: utmMap[name] });
+          break;
+
+        case "ASAPFinance":
+          // ASAPFinance only shows if it comes from API staticLenders
           if (!utmMap[name]) break;
           ordered.push({ name, utm_link: utmMap[name] });
           break;
