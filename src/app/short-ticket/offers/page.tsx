@@ -133,6 +133,8 @@ const FALLBACK_UTM: Record<string, string> = {
 const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   "RamFinCorp": "RamFinCorp",
   "Speedoloan": "SpeedoLoan",
+  "speedoloan": "SpeedoLoan",
+  "SpeedoLoan": "SpeedoLoan",
   "LoanWalle": "LoanWalle",
   "Loanwalle": "LoanWalle",
   "Cashvia": "Cashvia",
@@ -141,9 +143,12 @@ const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   "trueBalance": "TrueBalance",
   "truebalance": "TrueBalance",
   "Truebalance": "TrueBalance",
+  "Vivifi": "Vivifi",
+  "vivifi": "Vivifi",
   "MoneyDot": "MoneyDot",
   "RupiNow": "RupiNow",
   "ASAPFinance": "ASAPFinance",
+  "asapfinance": "ASAPFinance",
 };
 
 function getUtmLink(
@@ -167,9 +172,17 @@ function getUtmLink(
       return directLink || FALLBACK_UTM.KreditBee;
     }
 
-    // TrueBalance is now a static lender - always shown
     case "TrueBalance":
-      return directLink || FALLBACK_UTM.TrueBalance;
+      // TrueBalance only shows if it comes from API staticLenders (no fallback)
+      return directLink || null;
+
+    case "SpeedoLoan":
+      // SpeedoLoan only shows if it comes from API staticLenders (no fallback)
+      return directLink || null;
+
+    case "Vivifi":
+      // Vivifi only shows if it comes from API staticLenders (no fallback)
+      return directLink || null;
 
     case "ASAPFinance":
       // ASAPFinance only shows if it comes from API staticLenders (no fallback)
@@ -346,11 +359,11 @@ export default function ShortTicketOffersPage() {
           if (utmLink) ordered.push({ name, utm_link: utmLink, wasApproved: lender?.success });
           break;
 
-        // TrueBalance - static lender, always show
         case "TrueBalance":
-          ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.TrueBalance });
+          // TrueBalance only shows if it comes from API staticLenders
+          if (!utmMap[name]) break;
+          ordered.push({ name, utm_link: utmMap[name] });
           break;
-
 
         // RamFinCorp - shown only if message is "Dedup Success"
         case "RamFinCorp": {
@@ -361,15 +374,16 @@ export default function ShortTicketOffersPage() {
         }
         
 
-        // Vivifi - static lender, only for salaried users
         case "Vivifi":
-          if (!isSalariedFlag) break;
-          ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.Vivifi });
+          // Vivifi only shows if it comes from API staticLenders
+          if (!utmMap[name]) break;
+          ordered.push({ name, utm_link: utmMap[name] });
           break;
-        
-        // Static lenders - always show (like RapidMoney)
+
         case "SpeedoLoan":
-          ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.SpeedoLoan });
+          // SpeedoLoan only shows if it comes from API staticLenders
+          if (!utmMap[name]) break;
+          ordered.push({ name, utm_link: utmMap[name] });
           break;
 
         case "LoanWalle":

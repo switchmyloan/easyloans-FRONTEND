@@ -195,12 +195,12 @@ const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
       });
       const mappedOffers = filteredShownOffers.map((o) => mapShownOfferToDashboardOffer(o, data));
 
-      // Add static lenders that should always be shown (KreditBee, SpeedoLoan, Vivifi, TrueBalance)
+      // Add static lenders that should always be shown
       // Note: Cashvia is now shown based on API response (dedupeStatus === "Passed")
       // Note: RapidMoney is now shown based on API response (isDuplicate === false)
       // Note: RamFinCorp is now shown based on API response (message === "Dedup Success")
-      // Note: LoanWalle is now shown only if it comes from API staticLenders
-      const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", "SpeedoLoan", "Vivifi", "TrueBalance"];
+      // Note: LoanWalle, ASAPFinance, SpeedoLoan, Vivifi, TrueBalance are shown only if they come from API staticLenders
+      const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee"];
       const existingLenderNames = new Set(mappedOffers.map((o) => o.name));
 
       // Extract utm_links from staticLenders array (API returns lenders with dynamic utm_link)
@@ -209,14 +209,17 @@ const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
       // Map API names to internal lender names
       const STATIC_LENDER_NAME_MAP: Record<string, string> = {
         "Speedoloan": "SpeedoLoan",
+        "speedoloan": "SpeedoLoan",
+        "SpeedoLoan": "SpeedoLoan",
         "LoanWalle": "LoanWalle",
         "Loanwalle": "LoanWalle",
         "TrueBalance": "TrueBalance",
         "trueBalance": "TrueBalance",
         "truebalance": "TrueBalance",
+        "Vivifi": "Vivifi",
+        "vivifi": "Vivifi",
         "ASAPFinance": "ASAPFinance",
         "asapfinance": "ASAPFinance",
-
       };
       for (const lender of staticLendersArray) {
         if (lender.name && lender.utm_link) {
@@ -256,6 +259,33 @@ const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
         mappedOffers.push({
           name: "ASAPFinance",
           utmLink: staticLenderUtmLinks["ASAPFinance"],
+          isOffer: false,
+        });
+      }
+
+      // Add SpeedoLoan only if it comes from API staticLenders
+      if (staticLenderUtmLinks["SpeedoLoan"] && !existingLenderNames.has("SpeedoLoan")) {
+        mappedOffers.push({
+          name: "SpeedoLoan",
+          utmLink: staticLenderUtmLinks["SpeedoLoan"],
+          isOffer: false,
+        });
+      }
+
+      // Add Vivifi only if it comes from API staticLenders
+      if (staticLenderUtmLinks["Vivifi"] && !existingLenderNames.has("Vivifi")) {
+        mappedOffers.push({
+          name: "Vivifi",
+          utmLink: staticLenderUtmLinks["Vivifi"],
+          isOffer: false,
+        });
+      }
+
+      // Add TrueBalance only if it comes from API staticLenders
+      if (staticLenderUtmLinks["TrueBalance"] && !existingLenderNames.has("TrueBalance")) {
+        mappedOffers.push({
+          name: "TrueBalance",
+          utmLink: staticLenderUtmLinks["TrueBalance"],
           isOffer: false,
         });
       }
