@@ -20,7 +20,8 @@ const LENDER_RING_IMAGES: Record<string, string> = {
   loanwalle: "/LW-ring.png",
   cashvia: "/C-ring.png",
   truefund: "/TF-ring.png",
-  moneydot: "/MD-ring.png", // Add MD-ring.png to /public/
+  moneydot: "/MD-ring.png",
+  asapfinance: "/ASAP-ring.png",
 };
 
 // Default fallback image (used if lender not found in mapping)
