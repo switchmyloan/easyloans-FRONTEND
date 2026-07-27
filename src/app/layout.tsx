@@ -19,6 +19,10 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+    const cleverTapAccountId = process.env.NEXT_PUBLIC_CLEVERTAP_ACCOUNT_ID;
+  const cleverTapRegion = process.env.NEXT_PUBLIC_CLEVERTAP_REGION;
+
   return (
     <html lang="en" className={`${geistSans.variable} h-full antialiased`}>
       <head>
@@ -34,6 +38,30 @@ export default function RootLayout({
             gtag('config', 'G-0KNMJ616E9');
           `}
         </Script>
+
+
+         {cleverTapAccountId && (
+          <>
+     
+            <Script id="clevertap-init" strategy="beforeInteractive">
+              {`
+                window.clevertap = {
+                  event: [], profile: [], account: [],
+                  onUserLogin: [], notifications: [], privacy: []
+                };
+                clevertap.account.push({ id: "${cleverTapAccountId}" });
+                clevertap.privacy.push({ optOut: false });
+                clevertap.privacy.push({ useIP: false });
+                ${cleverTapRegion ? `clevertap.region = "${cleverTapRegion}";` : ""}
+              `}
+            </Script>
+            <Script
+              id="clevertap-sdk"
+              src="https://d2r1yp2w7bby2u.cloudfront.net/js/a.js"
+              strategy="afterInteractive"
+            />
+          </>
+        )}
       </head>
       <body className="min-h-full bg-gray-50">
         {children}

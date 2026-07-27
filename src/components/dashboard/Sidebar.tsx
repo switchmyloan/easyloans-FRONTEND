@@ -15,7 +15,11 @@ import {
   Menu,
   X,
   User,
+  LogOut,
 } from "lucide-react";
+import { cleverTapLogout } from "@/lib/clevertap";
+
+const LOGOUT_REDIRECT_URL = "https://easyloans.cready.in/";
 
 const mainNavItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -41,6 +45,29 @@ export default function Sidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const handleLogout = () => {
+    // End CleverTap session
+    cleverTapLogout();
+
+    // Clear dashboard session data
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem("dashboardOtpVerified");
+      sessionStorage.removeItem("shortDashboardRequiresLogin");
+      sessionStorage.removeItem("shortDashboardLinkToken");
+      sessionStorage.removeItem("shortExistingUserOffers");
+      sessionStorage.removeItem("userPhone");
+      sessionStorage.removeItem("userFirstName");
+      sessionStorage.removeItem("userFormData");
+      sessionStorage.removeItem("userMrn");
+      sessionStorage.removeItem("shortOfferLeadId");
+    }
+
+    setMobileOpen(false);
+
+    // Full page navigation to external URL
+    window.location.href = LOGOUT_REDIRECT_URL;
+  };
+
   const isActive = (href: string) => {
     if (href === "/dashboard") {
       return pathname === "/dashboard";
@@ -59,7 +86,7 @@ export default function Sidebar() {
         href={item.href}
         onClick={onClick}
         className={`
-          flex items-center gap-3 px-4 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200
+          flex items-center gap-3 px-4 py-2 rounded-xl text-[13px] font-medium transition-all duration-200
           ${active
             ? "bg-violet-600 text-white"
             : "text-gray-600 hover:bg-gray-50"
@@ -80,7 +107,7 @@ export default function Sidebar() {
     </div>
   );
 
-  const SidebarContent = ({ onClose }: { onClose?: () => void }) => (
+  const SidebarContent = ({ onClose, onLogout }: { onClose?: () => void; onLogout: () => void }) => (
     <div className="flex flex-col h-full bg-white">
       {/* Logo */}
       <div className="flex items-center justify-between px-4 py-4">
@@ -133,6 +160,20 @@ export default function Sidebar() {
             <NavLink key={item.href} item={item} onClick={onClose} />
           ))}
         </div>
+
+        {/* Logout Button */}
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <button
+            onClick={() => {
+              onLogout();
+              onClose?.();
+            }}
+            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-[13px] font-medium text-red-500 hover:bg-red-50 transition-all duration-200 w-full"
+          >
+            <LogOut className="w-4.5 h-4.5" />
+            <span>Logout</span>
+          </button>
+        </div>
       </nav>
     </div>
   );
@@ -165,7 +206,7 @@ export default function Sidebar() {
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="lg:hidden fixed left-0 top-0 bottom-0 w-55 z-50 shadow-xl bg-white"
             >
-              <SidebarContent onClose={() => setMobileOpen(false)} />
+              <SidebarContent onClose={() => setMobileOpen(false)} onLogout={handleLogout} />
             </motion.aside>
           </>
         )}
@@ -173,7 +214,7 @@ export default function Sidebar() {
 
       {/* Desktop sidebar */}
       <aside className="hidden lg:flex fixed left-0 top-0 bottom-0 w-48 border-r border-gray-100 bg-white z-40">
-        <SidebarContent />
+        <SidebarContent onLogout={handleLogout} />
       </aside>
     </>
   );
