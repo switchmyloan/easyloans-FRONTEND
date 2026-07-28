@@ -167,7 +167,7 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest Rates start at 1.0%* per month",
   },
   TrueFund: {
-    headline: "Get up to ₹10,00,000 with quick approval!",
+    headline: "Get up to ₹50,000 with quick approval!",
     description: "Personal loans with Instant Loan Approval and Smart & Efficient Processing",
     keyFeature: "Quick Approval and Minimal Documentation",
     interestRate: "Interest Rates start at 0.4% to 1.1% per day",
@@ -314,7 +314,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   SpeedoLoan: 100000,      // ₹1 Lakh
   LoanWalle: 100000,      // ₹1 Lakh
   Cashvia: 30000,      // ₹30,000
-  TrueFund: 100000,      // ₹1 Lakhs
+  TrueFund: 50000,      // ₹50,000
   MoneyDot: 100000,      // ₹1 Lakhs
   RupiNow: 500000,      // ₹5 Lakhs
   ASAPFinance: 1200000,      // ₹12 Lakhs
