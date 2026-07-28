@@ -236,6 +236,16 @@ export default function LoanOffersBanner() {
         });
       }
 
+      // If UTM is asapfinance, add ASAPFinance if not already added
+      if (utmLenderName === "ASAPFinance" && !addedLenders.has("ASAPFinance")) {
+        addedLenders.add("ASAPFinance");
+        eligibleLenders.push({
+          id: "ASAPFinance",
+          name: "ASAPFinance",
+          prefix: "A",
+        });
+      }
+
       // Sort all eligible lenders by dashboard priority order
       const prioritySorted = sortLendersByPriority(eligibleLenders);
 
