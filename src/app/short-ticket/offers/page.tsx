@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getStaticLenderDetail, STATIC_LENDER_LOGOS, getEligibleCoupon, type KBCoupon, LENDER_FEATURE_TAGS } from "@/lib/constants";
+import { getStaticLenderDetail, STATIC_LENDER_LOGOS, getEligibleCoupon, type KBCoupon, LENDER_FEATURE_TAGS, getLenderFeatures } from "@/lib/constants";
 import {
   getStoredShortTicketOffers,
   saveShortLender,
@@ -49,7 +49,8 @@ const LENDER_ORDER = [
   "TrueFund",
   "MoneyDot",
   "RupiNow",
-  "ASAPFinance"
+  "ASAPFinance",
+  "Nira",
 ];
 
 // When utm_medium=kreditbee: KreditBee first
@@ -65,7 +66,8 @@ const KB_PRIORITY_ORDER = [
   "TrueFund",
   "MoneyDot",
   "RupiNow",
-  "ASAPFinance"
+  "ASAPFinance",
+  "Nira",
 ];
 
 // When utm_medium=rapidmoney: RapidMoney first
@@ -81,22 +83,24 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "TrueFund",
   "MoneyDot",
   "RupiNow",
-  "ASAPFinance"
+  "ASAPFinance",
+  "Nira",
 ];
 
 const RamFinCorp_PRIORITY_ORDER = [
   "RamFinCorp",
-    "RapidMoney",
-      "LoanWalle",
-        "KreditBee",
-          "TrueBalance",
+  "RapidMoney",
+  "LoanWalle",
+  "KreditBee",
+  "TrueBalance",
   "Vivifi",
-   "SpeedoLoan",
+  "SpeedoLoan",
   "Cashvia",
   "TrueFund",
   "MoneyDot",
   "RupiNow",
-  "ASAPFinance"
+  "ASAPFinance",
+  "Nira",
 ];
 
 // When utm_medium=loanwalle: LoanWalle first
@@ -112,7 +116,8 @@ const LOANWALLE_PRIORITY_ORDER = [
   "TrueFund",
   "MoneyDot",
   "RupiNow",
-  "ASAPFinance"
+  "ASAPFinance",
+  "Nira",
 ];
 
 // When utm_medium=moneydot: MoneyDot first
@@ -128,7 +133,40 @@ const MONEYDOT_PRIORITY_ORDER = [
   "Cashvia",
   "TrueFund",
   "RupiNow",
-  "ASAPFinance"
+  "ASAPFinance",
+  "Nira",
+];
+
+const TRUEFUND_PRIORITY_ORDER = [
+  "TrueFund",
+  "RapidMoney",
+  "RamFinCorp",
+  "LoanWalle",
+  "KreditBee",
+  "TrueBalance",
+  "Vivifi",
+  "SpeedoLoan",
+  "Cashvia",
+  "MoneyDot",
+  "RupiNow",
+  "ASAPFinance",
+  "Nira",
+];
+
+const ASAPFINANCE_PRIORITY_ORDER = [
+  "ASAPFinance",
+  "RapidMoney",
+  "RamFinCorp",
+  "LoanWalle",
+  "KreditBee",
+  "TrueBalance",
+  "Vivifi",
+  "SpeedoLoan",
+  "Cashvia",
+  "TrueFund",
+  "MoneyDot",
+  "RupiNow",
+  "Nira",
 ];
 
 const FALLBACK_UTM: Record<string, string> = {
@@ -144,6 +182,7 @@ const FALLBACK_UTM: Record<string, string> = {
   MoneyDot: "https://www.moneydot.in/",
   RupiNow: "https://www.rupinow.com/home",
   ASAPFinance: "https://asapfinance.in/customer/login?utm_source=easyloans+Cready",
+  Nira: "https://play.google.com/store/apps/details?id=com.nirafinance.customer&referrer=pid%3DCready%26c%3DPartnerships_Cready_CPA%26af_adset%3D%7B%7D%26af_tranid%3DMTgzMjkwOTA0MzAyMDE3NjUyOTE%3D",
 };
 
 // Map API names to internal lender names
@@ -166,6 +205,8 @@ const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   "RupiNow": "RupiNow",
   "ASAPFinance": "ASAPFinance",
   "asapfinance": "ASAPFinance",
+  "Nira": "Nira",
+  "nira": "Nira",
 };
 
 function getUtmLink(
@@ -203,6 +244,10 @@ function getUtmLink(
 
     case "ASAPFinance":
       // ASAPFinance only shows if it comes from API staticLenders (no fallback)
+      return directLink || null;
+
+    case "Nira":
+      // Nira only shows if it comes from API staticLenders (no fallback)
       return directLink || null;
 
     case "RamFinCorp": {
@@ -277,6 +322,8 @@ export default function ShortTicketOffersPage() {
   const [isRamFinCorpMedium, setIsRamFinCorpMedium] = useState(false);
   const [isLoanWalleMedium, setIsLoanWalleMedium] = useState(false);
   const [isMoneyDotMedium, setIsMoneyDotMedium] = useState(false);
+  const [isTrueFundMedium, setIsTrueFundMedium] = useState(false);
+  const [isASAPFinanceMedium, setIsASAPFinanceMedium] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
   const [priorityVisible, setPriorityVisible] = useState(0);
   const [showAll, setShowAll] = useState(false);
@@ -341,6 +388,10 @@ export default function ShortTicketOffersPage() {
     setIsLoanWalleMedium(isLoanWalleMediumLocal);
     const isMoneyDotMediumLocal = utmMedium === "moneydot";
     setIsMoneyDotMedium(isMoneyDotMediumLocal);
+    const isTrueFundMediumLocal = utmMedium === "truefund";
+    setIsTrueFundMedium(isTrueFundMediumLocal);
+    const isASAPFinanceMediumLocal = utmMedium === "asapfinance";
+    setIsASAPFinanceMedium(isASAPFinanceMediumLocal);
 
     let renderOrder = LENDER_ORDER;
     let initialVisible = 4;
@@ -359,6 +410,12 @@ export default function ShortTicketOffersPage() {
       initialVisible = 5;
     } else if (isMoneyDotMediumLocal) {
       renderOrder = MONEYDOT_PRIORITY_ORDER;
+      initialVisible = 5;
+    } else if (isTrueFundMediumLocal) {
+      renderOrder = TRUEFUND_PRIORITY_ORDER;
+      initialVisible = 5;
+    } else if (isASAPFinanceMediumLocal) {
+      renderOrder = ASAPFINANCE_PRIORITY_ORDER;
       initialVisible = 5;
     }
 
@@ -417,6 +474,12 @@ export default function ShortTicketOffersPage() {
 
         case "ASAPFinance":
           // ASAPFinance only shows if it comes from API staticLenders
+          if (!utmMap[name]) break;
+          ordered.push({ name, utm_link: utmMap[name] });
+          break;
+
+        case "Nira":
+          // Nira only shows if it comes from API staticLenders
           if (!utmMap[name]) break;
           ordered.push({ name, utm_link: utmMap[name] });
           break;
@@ -592,8 +655,8 @@ export default function ShortTicketOffersPage() {
   };
 
   // Hero card logic
-  const showHeroFlow = isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium || isLoanWalleMedium || isMoneyDotMedium;
-  const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : isLoanWalleMedium ? "LoanWalle" : isMoneyDotMedium ? "MoneyDot" : null;
+  const showHeroFlow = isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium || isLoanWalleMedium || isMoneyDotMedium || isTrueFundMedium || isASAPFinanceMedium;
+  const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : isLoanWalleMedium ? "LoanWalle" : isMoneyDotMedium ? "MoneyDot" : isTrueFundMedium ? "TrueFund" : isASAPFinanceMedium ? "ASAPFinance" : null;
   const heroIdx = heroName ? visibleLenders.findIndex((l) => l.name === heroName) : -1;
   const showHeroCard = showHeroFlow && heroIdx === 0 && visibleLenders.length > 0;
   const heroLender = showHeroCard ? visibleLenders[0] : null;
@@ -751,11 +814,19 @@ export default function ShortTicketOffersPage() {
 
                     {/* Feature chips */}
                     <div className="flex items-start gap-2">
-                      {[
-                        { title: "Quick Approval", sub: "Get funds in minutes", icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /> },
-                        { title: "Minimal Paperwork", sub: "100% digital process", icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /> },
-                        { title: "Flexible Tenure", sub: "Up to 60 months", icon: <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /> },
-                      ].map((f) => (
+                      {(() => {
+                        const features = getLenderFeatures(heroLender.name);
+                        const icons = [
+                          <path key="icon1" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />,
+                          <path key="icon2" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />,
+                          <path key="icon3" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />,
+                        ];
+                        return features.map((f, idx) => ({
+                          title: f.title,
+                          sub: f.description,
+                          icon: icons[idx],
+                        }));
+                      })().map((f) => (
                         <div key={f.title} className="flex flex-col items-center text-center sm:flex-row sm:items-start sm:text-left gap-0.5 sm:gap-1.5 px-1 py-1 sm:px-2 sm:py-1.5 bg-white/40 rounded-md border border-white/80">
                           <div className="w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center shrink-0">
                             <svg className="w-3 h-3 sm:w-3 sm:h-3 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">{f.icon}</svg>

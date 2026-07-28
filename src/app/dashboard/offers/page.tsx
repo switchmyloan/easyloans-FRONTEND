@@ -45,6 +45,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   MoneyDot: "MoneyDot",
   RupiNow: "RupiNow",
   ASAPFinance: "ASAPFinance",
+  Nira: "Nira",
 };
 
 const FALLBACK_UTM_LINKS: Record<string, string> = {
@@ -62,6 +63,7 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   MoneyDot: "https://www.moneydot.in/",
   RupiNow: "https://www.rupinow.com/home",
   ASAPFinance: "https://asapfinance.in/customer/login?utm_source=easyloans+Cready",
+  Nira: "https://play.google.com/store/apps/details?id=com.nirafinance.customer&referrer=pid%3DCready%26c%3DPartnerships_Cready_CPA%26af_adset%3D%7B%7D%26af_tranid%3DMTgzMjkwOTA0MzAyMDE3NjUyOTE%3D",
 };
 
 const LENDER_CUSTOM_BADGE: Record<string, string> = {
@@ -220,6 +222,8 @@ const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
         "vivifi": "Vivifi",
         "ASAPFinance": "ASAPFinance",
         "asapfinance": "ASAPFinance",
+        "Nira": "Nira",
+        "nira": "Nira",
       };
       for (const lender of staticLendersArray) {
         if (lender.name && lender.utm_link) {
@@ -259,6 +263,15 @@ const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
         mappedOffers.push({
           name: "ASAPFinance",
           utmLink: staticLenderUtmLinks["ASAPFinance"],
+          isOffer: false,
+        });
+      }
+
+      // Add Nira only if it comes from API staticLenders
+      if (staticLenderUtmLinks["Nira"] && !existingLenderNames.has("Nira")) {
+        mappedOffers.push({
+          name: "Nira",
+          utmLink: staticLenderUtmLinks["Nira"],
           isOffer: false,
         });
       }

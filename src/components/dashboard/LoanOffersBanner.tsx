@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Lock, Zap, CheckCircle, Clock, ChevronRight } from "lucide-react";
-import { STATIC_LENDER_LOGOS, LENDER_FEATURE_TAGS, DEFAULT_FEATURE_TAG, DASHBOARD_PRIORITY_ORDER } from "@/lib/constants";
+import { STATIC_LENDER_LOGOS, LENDER_FEATURE_TAGS, DEFAULT_FEATURE_TAG, DASHBOARD_PRIORITY_ORDER, LENDER_FEATURE_BADGES, DEFAULT_FEATURE_BADGES } from "@/lib/constants";
 import { getStoredShortExistingUserOffers, saveShortLender, applyToShortKreditBee } from "@/lib/api";
 import toast, { Toaster } from "react-hot-toast";
 import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
@@ -24,6 +24,10 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
   TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
   Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
+  MoneyDot: "https://www.moneydot.in/",
+  RupiNow: "https://www.rupinow.com/home",
+  ASAPFinance: "https://asapfinance.in/customer/login?utm_source=easyloans+Cready",
+  Nira: "https://play.google.com/store/apps/details?id=com.nirafinance.customer&referrer=pid%3DCready%26c%3DPartnerships_Cready_CPA%26af_adset%3D%7B%7D%26af_tranid%3DMTgzMjkwOTA0MzAyMDE3NjUyOTE%3D",
 };
 
 // Map utm_medium values to lender names (case-insensitive matching)
@@ -37,8 +41,9 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   cashvia: "Cashvia",
   truefund: "TrueFund",
   vivifi: "Vivifi",
-
   moneydot: "MoneyDot",
+  asapfinance: "ASAPFinance",
+  
 };
 
 // ============================================================
@@ -451,26 +456,18 @@ export default function LoanOffersBanner() {
 
           {/* Feature Badges - Scrollable on mobile */}
           <div className="flex items-center gap-1 sm:gap-3 mb-2 sm:mb-1 overflow-x-auto pb-1 -mx-1 px-1 scrollbar-hide">
-            <div className="flex items-center gap-1 sm:gap-1.5 bg-white rounded-md px-2 py-1 sm:px-2 sm:py-1.5 shrink-0">
-              <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-violet-50 flex items-center justify-center">
-                <Zap className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-violet-600" />
-              </div>
-              <span className="text-[8px] sm:text-[10px] text-gray-700 font-medium whitespace-nowrap">Instant Approval</span>
-            </div>
-            <div className="flex items-center gap-1 sm:gap-1.5 bg-white rounded-md px-2 py-1 sm:px-2 sm:py-1.5 shrink-0">
-              <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-violet-50 flex items-center justify-center">
-                <CheckCircle className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-violet-600" />
-              </div>
-              <span className="text-[8px] sm:text-[10px] text-gray-700 font-medium whitespace-nowrap">{(displayLender?.id == "MoneyDot" || displayLender?.name == "MoneyDot" || displayLender?.id == "moneydot")
-                ? "Loans upto 1 lakh"
-                : "0% foreclose charge"}</span>
-            </div>
-            <div className="flex items-center gap-1 sm:gap-1.5 bg-white rounded-md px-2 py-1 sm:px-2 sm:py-1.5 shrink-0">
-              <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-violet-50 flex items-center justify-center">
-                <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-violet-600" />
-              </div>
-              <span className="text-[8px] sm:text-[10px] text-gray-700 font-medium whitespace-nowrap">Quick Disbursal</span>
-            </div>
+            {(LENDER_FEATURE_BADGES[displayLender?.id] || DEFAULT_FEATURE_BADGES).map((badge, index) => {
+              const icons = [Zap, CheckCircle, Clock];
+              const IconComponent = icons[index];
+              return (
+                <div key={badge} className="flex items-center gap-1 sm:gap-1.5 bg-white rounded-md px-2 py-1 sm:px-2 sm:py-1.5 shrink-0">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-violet-50 flex items-center justify-center">
+                    <IconComponent className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-violet-600" />
+                  </div>
+                  <span className="text-[8px] sm:text-[10px] text-gray-700 font-medium whitespace-nowrap">{badge}</span>
+                </div>
+              );
+            })}
           </div>
 
           {/* CTA Button — redirects to the hero lender's UTM link */}

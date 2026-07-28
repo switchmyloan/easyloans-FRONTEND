@@ -19,7 +19,9 @@ import {
 } from "lucide-react";
 import { cleverTapLogout } from "@/lib/clevertap";
 
-const LOGOUT_REDIRECT_URL = "https://easyloans.cready.in/";
+//const LOGOUT_REDIRECT_URL = "https://easyloans.cready.in/";
+//const LOGOUT_REDIRECT_URL = process.env.LOGOUT_REDIRECT_URL ;
+const LOGOUT_REDIRECT_URL = process.env.NEXT_PUBLIC_LOGOUT_REDIRECT_URL!;
 
 const mainNavItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },

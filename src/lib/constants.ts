@@ -1,3 +1,8 @@
+export interface LenderFeature {
+  title: string;
+  description: string;
+}
+
 export const PROFILE_OPTIONS = [
   "Salaried",
   "Self Employed",
@@ -29,20 +34,10 @@ export const STATIC_LENDER_LOGOS: Record<
   { src: string; darkBg?: boolean }
 > = {
   RapidMoney: { src: "/rapidmoney.svg" },
-  poonawalla: { src: "/poonawalla.svg" },
-  HeroFinCorp: { src: "/herofincorp.svg", darkBg: true },
-  AdityaBirlaCapital: { src: "/adityabirlacapitalloan.svg" },
   RamFinCorp: { src: "/ramfinCorp.png" },
   Vivifi: { src: "/vivifi.webp" },
-
-  // SmartCoinHighIntent: { src: "/olyv.png" },
-  // SmartCoin: { src: "/olyv.png" },
   TrueBalance: { src: "/truebalance.png" },
-  Zype_Dedupe: { src: "/zype.png" },
-  UnitySmallFinanceBank: { src: "/unity_bank.png" },
-
   KreditBee: { src: "/kreditbee-logo.svg" },
-  
   SpeedoLoan: { src: "/speedoloan.png" },
   LoanWalle: { src: "/loanwalle.webp" },
   Cashvia: { src: "/cashvia1.png" },
@@ -50,6 +45,7 @@ export const STATIC_LENDER_LOGOS: Record<
   MoneyDot: { src: "/moneydot.png" },
   RupiNow: { src: "/rupinow.png" },
   ASAPFinance: { src: "/asapfinance.webp" },
+  Nira: { src: "/nira.avif" },
 };
 
 export const STATIC_LENDER_DETAILS: Record<
@@ -67,25 +63,12 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Instant Disbursement and Flexible EMI Options",
     interestRate: "Interest rate starting from 1% per month",
   },
-  // SmartCoin: {
-  //   headline: "Get Personal Loans from ₹1,000 to ₹5 Lakhs",
-  //   description: "Flexible repayment options and loan tenure from 1 month to 6 months",
-  //   keyFeature: "Flexible Repayment Options and Quick Access to Lump Sum Amount",
-  //   interestRate: "Interest Rates start at 0.1%* per day",
-  // },
-
   Zype: {
     headline: "Get Personal Loans from ₹15,000 to ₹5 Lakhs",
     description: "Flexible repayment options and loan tenure from 6 month to 18 months",
     keyFeature: "Flexible Repayment Options and Approval in 60 seconds",
     interestRate: "Interest Rates start at 0.05%* per day",
   },
-  // MPokket: {
-  //   headline: "Get up to ₹30,000 instantly!",
-  //   description: "Quick loans for students and young professionals",
-  //   keyFeature: "No Collateral Required and Quick Disbursement",
-  //   interestRate: "Interest Rates start at 1%* per month",
-  // },
   Fibe: {
     headline: "Get up to ₹5,00,000 with quick approval!",
     description: "Flexible EMI options and instant digital process",
@@ -105,12 +88,6 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Salary Advance and Flexible Repayment",
     interestRate: "Interest Rates start at 0.1%* per day",
   },
-  // Loan112: {
-  //   headline: "Get up to ₹2,00,000 with quick approval!",
-  //   description: "Instant personal loans with easy EMI options",
-  //   keyFeature: "Easy EMI Options and No Hidden Charges",
-  //   interestRate: "Interest Rates start at 1%* per month",
-  // },
   Vivifi: {
    headline: "Get up to ₹3,00,000 in minutes!",
     description: "Digital personal loans with flexible tenure options",
@@ -153,12 +130,6 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Quick Approval and Minimal Documentation",
     interestRate: "Interest Rates start at 10.5%* per annum",
   },
-  // SmartCoinHighIntent: {
-  //   headline: "Get Personal Loans from ₹1,000 to ₹5 Lakhs",
-  //   description: "Flexible repayment options and loan tenure from 1 month to 6 months",
-  //   keyFeature: "Flexible Repayment Options and Quick Access to Lump Sum Amount",
-  //   interestRate: "Interest rate starting from 1.5% per month.",
-  // },
   TrueBalance: {
     headline: "Get Personal Loans from ₹1,000 to ₹5 Lakhs",
     description: "Quick personal loans with minimal documentation and fast disbursement",
@@ -190,7 +161,7 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest Rates start at 1%* per day",
   },
   Cashvia: {
-    headline: "Get up to ₹5,00,000 with quick approval!",
+    headline: "Get up to ₹1,00,000 with quick approval!",
     description: "Personal loans with fast disbursement and minimal documentation",
     keyFeature: "Quick Approval and Minimal Documentation",
     interestRate: "Interest Rates start at 1.0%* per month",
@@ -202,7 +173,7 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest Rates start at 0.4% to 1.1% per day",
   },
   MoneyDot: {
-    headline: "Get up to ₹5,00,000 with quick approval!",
+    headline: "Get up to ₹1,00,000 with quick approval!",
     description: "Personal loans with Instant Loan Approval and Zero paperwork",
     keyFeature: "Quick Approval and with no collateral",
     interestRate: "Interest Rates start at 0.07% to 0.16% per day",
@@ -218,7 +189,13 @@ export const STATIC_LENDER_DETAILS: Record<
     description: "Personal loans with Fast Approval and No Collateral Needed",
     keyFeature: "Hassle-Free Documentation and No Collateral Needed",
     interestRate: "Interest Rates start at 0.5% to 1% per day",
-  }
+  },
+  Nira: {
+    headline: "Get up to ₹1,00,000 with quick approval!",
+    description: "Personal loans with low interest rates and flexible tenure",
+    keyFeature: "Easy to repay and low interest loans",
+    interestRate: "Interest Rates start from 2% per month.",
+  },
 };
 
 // Dashboard priority order - lenders are displayed in this order when available
@@ -235,29 +212,17 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "TrueFund",
   "MoneyDot",
   "RupiNow",
-  "ASAPFinance"
+  "ASAPFinance",
+  "Nira",
 ];
 
 // Short feature tags for each lender (displayed in offer cards)
 export const LENDER_FEATURE_TAGS: Record<string, string> = {
   KreditBee: "High approval chances",
-  MoneyView: "Flexible loan options",
-  poonawalla: "No hidden charges",
-  HeroFinCorp: "Flexible loan options",
-  // SmartCoinHighIntent: "Quick approval",
-  // SmartCoin: "Quick approval",
-  Zype_Dedupe: "High approval chances",
-  Zype: "High approval chances",
   TrueBalance: "Quick approval",
-  UnitySmallFinanceBank: "No hidden charges",
   RapidMoney: "Quick approval",
-  AdityaBirlaCapital: "No hidden charges",
   RamFinCorp: "Flexible loan options",
-  Fibe: "Flexible loan options",
-  FiMoney: "Flexible loan options",
-  MyFloat: "Quick approval",
   Vivifi: "Flexible loan options",
-  PocketCredit: "Quick approval",
   SpeedoLoan: "Quick approval",
   LoanWalle: "Only for EPFO registered users",
   Cashvia: "Minimal documentation",
@@ -265,41 +230,95 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   MoneyDot: "no collateral",
   RupiNow: "zero hidden charges",
   ASAPFinance: "Fast approval",
+  Nira: "Low interest rates",
 };
+
+
+export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderFeature, LenderFeature]> = {
+  MoneyDot: [
+    { title: "Quick Approval", description: "loan up to ₹1 Lakh" },
+    { title: "Minimal Paperwork", description: "100% digital process" },
+    { title: "Flexible Tenure", description: "Up to 6 months" },
+  ],
+  KreditBee: [
+    { title: "Highest Approval", description: "Easy eligibility" },
+    { title: "Up to ₹10 Lakhs", description: "High loan amount" },
+    { title: "Instant Disbursal", description: "Same day transfer" },
+  ],
+  TrueFund: [
+    { title: "Quick Approval", description: "Fast processing" },
+    { title: "Minimal Paperwork", description: "100% digital process" },
+    { title: "Flexible Repayment", description: "Easy repayment options" },
+  ],
+  RapidMoney: [
+    { title: "Quick Approval", description: "Fast processing" },
+    { title: "Flexible Repayment", description: "Easy repayment options" },
+    { title: "Flexible Tenure", description: "Up to 6 months" },
+  ],
+  RamFinCorp: [
+    { title: "Quick Approval", description: "Fast processing" },
+    { title: "Flexible Repayment", description: "Easy repayment options" },
+    { title: "Transparent Terms", description: "No hidden charges" },
+  ],
+  LoanWalle: [
+    { title: "Quick Approval", description: "Fast processing" },
+    { title: "Flexible Repayment", description: "Easy repayment options" },
+    { title: "Flexible Tenure", description: "No Prepayment Charges" },
+  ],
+  ASAPFinance: [
+    { title: "Quick Approval", description: "Fast processing" },
+    { title: "No Collateral", description: "No collateral required" },
+    { title: "Hassle-Free Documentation", description: "No documentation required" },
+  ]
+};
+
+// Default features if lender not found in UTM_MEDIUM_LENDERS_FEATURES
+export const DEFAULT_LENDER_FEATURES: [LenderFeature, LenderFeature, LenderFeature] = [
+  { title: "Quick Approval", description: "Fast processing" },
+  { title: "Minimal Paperwork", description: "100% digital process" },
+  { title: "Flexible Tenure", description: "Easy repayment options" },
+];
+
+
 
 // Default feature tag if lender not found
 export const DEFAULT_FEATURE_TAG = "Quick approval";
 
+// Feature badges for each lender (3 badges per lender) - used in LoanOffersBanner
+export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
+  RapidMoney: ["Quick Approval", "Flexible Repayment", "Up to ₹25,000"],
+  Vivifi: ["0% Foreclose Charge", "Highest Approval", "Quick Disbursal"],
+  LoanWalle: ["EPFO Users Only", "No Prepayment Fee", "Quick Approval"],
+  KreditBee: ["Highest Approval", "Loans up to ₹10 Lakh", "Instant Disbursal"],
+  TrueBalance: ["Loans up to ₹1 Lakh", "Minimal Docs", "Quick Approval"],
+  RamFinCorp: ["Transparent Terms", "Quick Processing", "Easy Approval"],
+  MoneyDot: ["Loans up to ₹1 Lakh", "Zero Paperwork", "No Collateral"],
+  SpeedoLoan: ["Quick Approval", "No Hidden Charges", "Up to ₹1 Lakh"],
+  Cashvia: ["Minimal Docs", "Quick Approval", "Fast Disbursal"],
+  TrueFund: ["Quick Approval", "Up to ₹10 Lakh", "Flexible Repayment"],
+  RupiNow: ["Zero Hidden Charges", "Flexible Tenure", "Up to ₹5 Lakh"],
+  ASAPFinance: ["Fast Approval", "No Collateral", "Hassle-Free Docs"],
+  Nira: ["Easy to repay", "Low interest loans", "Flexible tenure"],
+};
+
+// Default feature badges if lender not found
+export const DEFAULT_FEATURE_BADGES: [string, string, string] = ["Instant Approval", "0% Foreclose Charge", "Quick Disbursal"];
+
 // Max loan amount each lender supports (used for filtering/priority sorting)
 export const LENDER_MAX_AMOUNT: Record<string, number> = {
   KreditBee: 1000000,       // ₹10 Lakhs
-  MoneyView: 1000000,       // ₹10 Lakhs
-  poonawalla: 1500000,      // ₹15 Lakhs
-  HeroFinCorp: 500000,      // ₹5 Lakhs
-  // SmartCoinHighIntent: 500000, // ₹5 Lakhs
-  Zype_Dedupe: 500000,      // ₹5 Lakhs
   TrueBalance: 500000,      // ₹5 Lakhs
-  UnitySmallFinanceBank: 500000, // ₹5 Lakhs
   RapidMoney: 25000,        // ₹25,000
-  AdityaBirlaCapital: 4000000, // ₹40 Lakhs
   RamFinCorp: 100000,       // ₹1 Lakh
-  // SmartCoin: 500000,        // ₹5 Lakhs
-  Zype: 500000,             // ₹5 Lakhs
-  Fibe: 500000,             // ₹5 Lakhs
-
-  // MPokket: 30000,           // ₹30,000
-  FiMoney: 500000,          // ₹5 Lakhs
-  MyFloat: 25000,           // ₹25,000
-  // Loan112: 200000,          // ₹2 Lakhs
   Vivifi: 500000,           // ₹5 Lakhs
-  PocketCredit: 50000,      // ₹50,000
   SpeedoLoan: 100000,      // ₹1 Lakh
   LoanWalle: 100000,      // ₹1 Lakh
-  Cashvia: 500000,      // ₹5 Lakhs
+  Cashvia: 30000,      // ₹30,000
   TrueFund: 100000,      // ₹1 Lakhs
-  MoneyDot: 500000,      // ₹5 Lakhs
+  MoneyDot: 100000,      // ₹1 Lakhs
   RupiNow: 500000,      // ₹5 Lakhs
   ASAPFinance: 1200000,      // ₹12 Lakhs
+  Nira: 100000,      // 1 Lakhs
 };
 
 const DEFAULT_LENDER_DETAIL = {
@@ -311,6 +330,10 @@ const DEFAULT_LENDER_DETAIL = {
 
 export function getStaticLenderDetail(name: string) {
   return STATIC_LENDER_DETAILS[name] || DEFAULT_LENDER_DETAIL;
+}
+
+export function getLenderFeatures(name: string): [LenderFeature, LenderFeature, LenderFeature] {
+  return UTM_MEDIUM_LENDERS_FEATURES[name] || DEFAULT_LENDER_FEATURES;
 }
 
 export const LOADING_DELAY_MS = 3000;

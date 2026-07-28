@@ -42,7 +42,11 @@ const DISPLAY_NAMES: Record<string, string> = {
   SpeedoLoan: "SpeedoLoan",
   LoanWalle: "LoanWalle",
   Cashvia: "Cashvia",
+  TrueFund: "TrueFund",
+  MoneyDot: "MoneyDot",
+  RupiNow: "RupiNow",
   ASAPFinance: "ASAPFinance",
+  Nira: "Nira",
 };
 
 const DASHBOARD_VISIBLE_COUNT = 4;
@@ -50,12 +54,17 @@ const DASHBOARD_VISIBLE_COUNT = 4;
 const FALLBACK_UTM_LINKS: Record<string, string> = {
   // SmartCoin: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
   // SmartCoinHighIntent: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
-    RamFinCorp: "https://ramfincorp.com/",
+  RamFinCorp: "https://ramfincorp.com/",
   Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
   RapidMoney: "https://web.rapidmoney.in/borrower/login?utm_source=creadylandingpage&utm_extsource=abc&utm_medium=rapidmoney&utm_campaign=xyz&utm_campaignID=def",
   KreditBee: "https://www.kreditbee.in/signin",
   SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
   Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
+  TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
+  MoneyDot: "https://www.moneydot.in/",
+  RupiNow: "https://www.rupinow.com/home",
+  ASAPFinance: "https://asapfinance.in/customer/login?utm_source=easyloans+Cready",
+  Nira: "https://play.google.com/store/apps/details?id=com.nirafinance.customer&referrer=pid%3DCready%26c%3DPartnerships_Cready_CPA%26af_adset%3D%7B%7D%26af_tranid%3DMTgzMjkwOTA0MzAyMDE3NjUyOTE%3D",
 };
 
 const LENDER_CUSTOM_BADGE: Record<string, string> = {
@@ -161,6 +170,8 @@ export default function DashboardOffers() {
         "vivifi": "Vivifi",
         "ASAPFinance": "ASAPFinance",
         "asapfinance": "ASAPFinance",
+        "Nira": "Nira", 
+        "nira": "Nira",
       };
       for (const lender of staticLendersArray) {
         if (lender.name && lender.utm_link) {
@@ -199,6 +210,15 @@ export default function DashboardOffers() {
         mappedOffers.push({
           name: "ASAPFinance",
           utmLink: staticLenderUtmLinks["ASAPFinance"],
+          isOffer: false,
+        });
+      }
+
+      // Add Nira only if it comes from API staticLenders
+      if (staticLenderUtmLinks["Nira"] && !existingLenderNames.has("Nira")) {
+        mappedOffers.push({
+          name: "Nira",
+          utmLink: staticLenderUtmLinks["Nira"],
           isOffer: false,
         });
       }
