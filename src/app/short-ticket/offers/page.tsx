@@ -16,7 +16,8 @@ import ScratchCoupon from "@/components/offers/ScratchCoupon";
 import OfferCard from "@/components/offers/OfferCard";
 import TrustBadges from "@/components/ui/TrustBadges";
 import GradientBanner from "@/components/ui/GradientBanner";
-import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "@/lib/clevertap";
+// CLEVERTAP DISABLED
+// import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "@/lib/clevertap";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { Clock, Contact, Lock } from "lucide-react";
@@ -577,11 +578,11 @@ export default function ShortTicketOffersPage() {
     const phone = sessionStorage.getItem("userPhone") || "";
     await saveShortLender(phone, lenderName);
 
-    // Track lender click
-    cleverTapTrackEvent(CLEVERTAP_EVENTS.LENDER_CLICKED, {
-      Lender: DISPLAY_NAMES[lenderName] || lenderName,
-      LenderKey: lenderName,
-    });
+    // CLEVERTAP DISABLED
+    // cleverTapTrackEvent(CLEVERTAP_EVENTS.LENDER_CLICKED, {
+    //   Lender: DISPLAY_NAMES[lenderName] || lenderName,
+    //   LenderKey: lenderName,
+    // });
 
     if (url) window.open(url, "_blank");
   };
@@ -590,11 +591,11 @@ export default function ShortTicketOffersPage() {
     if (kbApplying || kbApplied) return;
     setKbApplying(true);
 
-    // Track lender click
-    cleverTapTrackEvent(CLEVERTAP_EVENTS.LENDER_CLICKED, {
-      Lender: "Kreditbee",
-      LenderKey: "KreditBee",
-    });
+    // CLEVERTAP DISABLED
+    // cleverTapTrackEvent(CLEVERTAP_EVENTS.LENDER_CLICKED, {
+    //   Lender: "Kreditbee",
+    //   LenderKey: "KreditBee",
+    // });
 
     try {
       const phone = sessionStorage.getItem("userPhone") || "";

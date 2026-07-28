@@ -20,8 +20,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
 
-    const cleverTapAccountId = process.env.NEXT_PUBLIC_CLEVERTAP_ACCOUNT_ID;
-  const cleverTapRegion = process.env.NEXT_PUBLIC_CLEVERTAP_REGION;
+    // CLEVERTAP DISABLED
+    // const cleverTapAccountId = process.env.NEXT_PUBLIC_CLEVERTAP_ACCOUNT_ID;
+    // const cleverTapRegion = process.env.NEXT_PUBLIC_CLEVERTAP_REGION;
 
   return (
     <html lang="en" className={`${geistSans.variable} h-full antialiased`}>
@@ -40,9 +41,10 @@ export default function RootLayout({
         </Script>
 
 
-         {cleverTapAccountId && (
+        {/* CLEVERTAP DISABLED */}
+        {/* {cleverTapAccountId && (
           <>
-     
+
             <Script id="clevertap-init" strategy="beforeInteractive">
               {`
                 window.clevertap = {
@@ -61,7 +63,7 @@ export default function RootLayout({
               strategy="afterInteractive"
             />
           </>
-        )}
+        )} */}
       </head>
       <body className="min-h-full bg-gray-50">
         {children}

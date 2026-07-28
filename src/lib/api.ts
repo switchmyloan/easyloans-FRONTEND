@@ -1,4 +1,5 @@
-import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "./clevertap";
+// CLEVERTAP DISABLED
+// import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "./clevertap";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 console.log(BASE_URL, "vvvv")
@@ -932,9 +933,8 @@ export async function saveLender(phoneNumber: string, lenderName: string): Promi
   try {
     const mrn = getStoredMrn();
     console.log("[MRN] POST /save-lender — mrn:", mrn);
-    // "Lender Clicked" rides the save-lender trigger, so every caller that
-    // records a lender selection reports it to CleverTap exactly once.
-    cleverTapTrackEvent(CLEVERTAP_EVENTS.LENDER_CLICKED, { Lender: lenderName });
+    // CLEVERTAP DISABLED
+    // cleverTapTrackEvent(CLEVERTAP_EVENTS.LENDER_CLICKED, { Lender: lenderName });
     await fetch(`${BASE_URL}/onSubmit/save-lender`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -993,8 +993,8 @@ export async function saveShortLender(
   try {
     const mrn = getStoredMrn();
     const shortOfferLeadId = sessionStorage.getItem("shortOfferLeadId");
-    // Track lender click event in CleverTap
-    cleverTapTrackEvent(CLEVERTAP_EVENTS.LENDER_CLICKED, { Lender: lenderName });
+    // CLEVERTAP DISABLED
+    // cleverTapTrackEvent(CLEVERTAP_EVENTS.LENDER_CLICKED, { Lender: lenderName });
     await fetch(`${BASE_URL}/onSubmit/short-save-lender`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

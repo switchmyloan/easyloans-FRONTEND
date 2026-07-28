@@ -2,7 +2,8 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "@/lib/clevertap";
+// CLEVERTAP DISABLED
+// import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "@/lib/clevertap";
 
 // Import dashboard components
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
@@ -20,8 +21,8 @@ import {
   type ShortExistingUserOffersResponse,
 } from "@/lib/api";
 
-// Dedupe the "Page Viewed" event across React's dev double-invoke
-let hasTrackedDashboardLanding = false;
+// CLEVERTAP DISABLED - Dedupe the "Page Viewed" event
+// let hasTrackedDashboardLanding = false;
 
 // ============================================================
 // Dashboard Content Component
@@ -36,13 +37,13 @@ function DashboardContent() {
     expired: false,
   });
 
-  // Track page view on mount
-  useEffect(() => {
-    if (!hasTrackedDashboardLanding) {
-      hasTrackedDashboardLanding = true;
-      cleverTapTrackEvent(CLEVERTAP_EVENTS.LANDED, { URL: window.location.href });
-    }
-  }, []);
+  // CLEVERTAP DISABLED - Track page view on mount
+  // useEffect(() => {
+  //   if (!hasTrackedDashboardLanding) {
+  //     hasTrackedDashboardLanding = true;
+  //     cleverTapTrackEvent(CLEVERTAP_EVENTS.LANDED, { URL: window.location.href });
+  //   }
+  // }, []);
 
   // Process the stored data and update state
   const processStoredData = (passedData: ShortExistingUserOffersResponse | null = null) => {
