@@ -185,7 +185,7 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest Rates start at 12% to 30% per annum",
   },
   ASAPFinance: {
-    headline: "Get up to ₹12,00,000 with quick approval!",
+    headline: "Get up to ₹12,000 with quick approval!",
     description: "Personal loans with Fast Approval and No Collateral Needed",
     keyFeature: "Hassle-Free Documentation and No Collateral Needed",
     interestRate: "Interest Rates start at 0.5% to 1% per day",
@@ -317,7 +317,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   TrueFund: 50000,      // ₹50,000
   MoneyDot: 100000,      // ₹1 Lakhs
   RupiNow: 500000,      // ₹5 Lakhs
-  ASAPFinance: 1200000,      // ₹12 Lakhs
+  ASAPFinance: 12000,      // ₹12,000
   Nira: 100000,      // 1 Lakhs
 };
 
