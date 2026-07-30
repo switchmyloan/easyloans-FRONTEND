@@ -20,6 +20,7 @@ const LENDER_RING_IMAGES: Record<string, string> = {
   moneydot: "/MD-ring.png",
   asapfinance: "/ASAP-ring.png",
   nira: "/N-ring.png",
+  apollo: "/A-ring.png",
 };
 
 // Default fallback image (used if lender not found in mapping)

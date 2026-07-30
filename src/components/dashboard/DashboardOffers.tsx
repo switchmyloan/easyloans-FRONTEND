@@ -47,6 +47,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   RupiNow: "RupiNow",
   ASAPFinance: "ASAPFinance",
   Nira: "Nira",
+  Apollo: "Apollo",
 };
 
 const DASHBOARD_VISIBLE_COUNT = 4;
@@ -172,6 +173,8 @@ export default function DashboardOffers() {
         "asapfinance": "ASAPFinance",
         "Nira": "Nira", 
         "nira": "Nira",
+        "Apollo": "Apollo",
+        "apollo": "Apollo",
       };
       for (const lender of staticLendersArray) {
         if (lender.name && lender.utm_link) {
@@ -219,6 +222,15 @@ export default function DashboardOffers() {
         mappedOffers.push({
           name: "Nira",
           utmLink: staticLenderUtmLinks["Nira"],
+          isOffer: false,
+        });
+      }
+
+      // Add Apollo only if it comes from API staticLenders
+      if (staticLenderUtmLinks["Apollo"] && !existingLenderNames.has("Apollo")) {
+        mappedOffers.push({
+          name: "Apollo",
+          utmLink: staticLenderUtmLinks["Apollo"],
           isOffer: false,
         });
       }

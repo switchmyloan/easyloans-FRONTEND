@@ -36,6 +36,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   RupiNow: "RupiNow",
   ASAPFinance: "ASAPFinance",
   Nira: "Nira",
+  Apollo: "Apollo",
 };
 
 // Default render order
@@ -53,6 +54,7 @@ const LENDER_ORDER = [
   "RupiNow",
   "ASAPFinance",
   "Nira",
+  "Apollo",
 ];
 
 // When utm_medium=kreditbee: KreditBee first
@@ -70,6 +72,7 @@ const KB_PRIORITY_ORDER = [
   "RupiNow",
   "ASAPFinance",
   "Nira",
+  "Apollo",
 ];
 
 // When utm_medium=rapidmoney: RapidMoney first
@@ -87,6 +90,7 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "RupiNow",
   "ASAPFinance",
   "Nira",
+  "Apollo",
 ];
 
 const RamFinCorp_PRIORITY_ORDER = [
@@ -103,6 +107,7 @@ const RamFinCorp_PRIORITY_ORDER = [
   "RupiNow",
   "ASAPFinance",
   "Nira",
+  "Apollo",
 ];
 
 // When utm_medium=loanwalle: LoanWalle first
@@ -120,6 +125,7 @@ const LOANWALLE_PRIORITY_ORDER = [
   "RupiNow",
   "ASAPFinance",
   "Nira",
+  "Apollo",
 ];
 
 // When utm_medium=moneydot: MoneyDot first
@@ -137,6 +143,7 @@ const MONEYDOT_PRIORITY_ORDER = [
   "RupiNow",
   "ASAPFinance",
   "Nira",
+  "Apollo",
 ];
 
 const TRUEFUND_PRIORITY_ORDER = [
@@ -153,6 +160,7 @@ const TRUEFUND_PRIORITY_ORDER = [
   "RupiNow",
   "ASAPFinance",
   "Nira",
+  "Apollo",
 ];
 
 const ASAPFINANCE_PRIORITY_ORDER = [
@@ -169,6 +177,7 @@ const ASAPFINANCE_PRIORITY_ORDER = [
   "MoneyDot",
   "RupiNow",
   "Nira",
+  "Apollo",
 ];
 
 const FALLBACK_UTM: Record<string, string> = {
@@ -209,6 +218,8 @@ const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   "asapfinance": "ASAPFinance",
   "Nira": "Nira",
   "nira": "Nira",
+  "Apollo": "Apollo",
+  "apollo": "Apollo",
 };
 
 function getUtmLink(
@@ -251,6 +262,9 @@ function getUtmLink(
     case "Nira":
       // Nira only shows if it comes from API staticLenders (no fallback)
       return directLink || null;
+
+    case "Apollo":
+      return directLink || null;  
 
     case "RamFinCorp": {
       // RamFinCorp is shown only if message is "Dedup Success"
@@ -485,6 +499,11 @@ export default function ShortTicketOffersPage() {
           if (!utmMap[name]) break;
           ordered.push({ name, utm_link: utmMap[name] });
           break;
+
+        case "Apollo": 
+        
+        if (!utmMap[name]) break;
+        ordered.push({ name, utm_link: utmMap[name] });
 
         case "Cashvia": {
           // Cashvia is shown only if dedupeStatus === "Passed"
