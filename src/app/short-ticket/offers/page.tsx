@@ -28,13 +28,14 @@ const DISPLAY_NAMES: Record<string, string> = {
   Vivifi: "Vivifi",
   KreditBee: "Kreditbee",
   TrueBalance: "TrueBalance",
-
   SpeedoLoan: "SpeedoLoan",
   LoanWalle: "LoanWalle",
   Cashvia: "Cashvia",
   TrueFund: "TrueFund",
   MoneyDot: "MoneyDot",
   RupiNow: "RupiNow",
+  ASAPFinance: "ASAPFinance",
+  Nira: "Nira",
 };
 
 // Default render order
