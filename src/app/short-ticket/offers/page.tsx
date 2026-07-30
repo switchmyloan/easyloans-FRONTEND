@@ -384,6 +384,7 @@ export default function ShortTicketOffersPage() {
     if (data.TrueBalance?.utm_link) utmMap["TrueBalance"] = data.TrueBalance.utm_link;
     if ((data.RupiNow as { utm_link?: string })?.utm_link) utmMap["RupiNow"] = (data.RupiNow as { utm_link?: string }).utm_link;
     if ((data.Cashvia as { utm_link?: string })?.utm_link) utmMap["Cashvia"] = (data.Cashvia as { utm_link?: string }).utm_link;
+    if ((data.TrueFund as { utm_link?: string })?.utm_link) utmMap["TrueFund"] = (data.TrueFund as { utm_link?: string }).utm_link;
 
     // Process static lenders from API
     const staticLenders = (data as { staticLenders?: Array<{ name: string; utm_link: string }> }).staticLenders || [];
