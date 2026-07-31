@@ -180,7 +180,8 @@ const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
           return rapidMoneyData?.isDuplicate === false;
         }
         if (o.lenderName === "TrueFund") {
-          return isTrueFundEligible;
+          // TrueFund is now a static lender — added below from staticLenders, not here.
+          return false;
         }
         if (o.lenderName === "MoneyDot") {
           return isMoneyDotEligible;
@@ -324,11 +325,12 @@ const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
         });
       }
 
-      // Add TrueFund based on API response (only if message contains "user details received sucessfully")
-      if (isTrueFundEligible && !existingLenderNames.has("TrueFund")) {
+      // Add TrueFund only if it comes from API staticLenders (now a static lender —
+      // backend gates it on salaried + salary >= 22k + pincode).
+      if (staticLenderUtmLinks["TrueFund"] && !existingLenderNames.has("TrueFund")) {
         mappedOffers.push({
           name: "TrueFund",
-          utmLink: trueFundData?.utm_link || FALLBACK_UTM_LINKS["TrueFund"],
+          utmLink: staticLenderUtmLinks["TrueFund"],
           isOffer: false,
         });
       }
