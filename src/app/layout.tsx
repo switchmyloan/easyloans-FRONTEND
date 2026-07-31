@@ -10,8 +10,8 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Cready - Financial Partner Application",
-  description: "Apply with Cready's financial partners - KreditBee & MoneyView",
+  title: "Instant Personal Loan Online – Compare Lenders | Easy Loans Cready",
+  description: "Apply for an instant personal loan online with Cready. Compare offers from trusted RBI-approved lenders, check eligibility in minutes and get funds fast.",
 };
 
 export default function RootLayout({
