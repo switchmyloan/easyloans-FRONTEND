@@ -262,6 +262,16 @@ export default function DashboardOffers() {
         });
       }
 
+      // Add TrueFund only if it comes from API staticLenders (now a static lender —
+      // backend gates it on salaried + salary >= 22k + pincode).
+      if (staticLenderUtmLinks["TrueFund"] && !existingLenderNames.has("TrueFund")) {
+        mappedOffers.push({
+          name: "TrueFund",
+          utmLink: staticLenderUtmLinks["TrueFund"],
+          isOffer: false,
+        });
+      }
+
       // Add RapidMoney based on API response (only if isDuplicate === false)
       if (rapidMoneyData?.isDuplicate === false && !existingLenderNames.has("RapidMoney")) {
         mappedOffers.push({

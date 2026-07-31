@@ -515,16 +515,11 @@ export default function ShortTicketOffersPage() {
         }
 
         case "TrueFund": {
-          // TrueFund is shown only if API response message contains "user details received sucessfully"
-          const trueFundMessage = (lender?.message || "").toLowerCase();
-          const trueFundResponseMessage = (
-            (lender?.data as { response?: { message?: string } })?.response?.message || ""
-          ).toLowerCase();
-          const isTrueFundEligible =
-            trueFundMessage.includes("user details received sucessfully") ||
-            trueFundResponseMessage.includes("user details received sucessfully");
-          if (!isTrueFundEligible) break;
-          ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.TrueFund });
+          // TrueFund is now a STATIC UTM lender — show only if the API sent it in
+          // staticLenders (backend already gates it on salaried + salary >= 22k +
+          // pincode). No more API-message eligibility check.
+          if (!utmMap[name]) break;
+          ordered.push({ name, utm_link: utmMap[name] });
           break;
         }
 

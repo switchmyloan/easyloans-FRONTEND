@@ -178,8 +178,12 @@ export default function LoanOffersBanner() {
         });
       }
 
-      // Add TrueFund if eligible and not already added
-      if (isTrueFundEligible && !addedLenders.has("TrueFund")) {
+      // Add TrueFund if it comes from API staticLenders (now a static lender —
+      // backend gates it on salaried + salary >= 22k + pincode).
+      const trueFundFromApi = ((data.staticLenders || []) as Array<{ name?: string; utm_link?: string }>).find(
+        (l) => l.name?.toLowerCase() === "truefund"
+      );
+      if (trueFundFromApi?.utm_link && !addedLenders.has("TrueFund")) {
         addedLenders.add("TrueFund");
         eligibleLenders.push({
           id: "TrueFund",
