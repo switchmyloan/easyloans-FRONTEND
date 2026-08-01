@@ -266,12 +266,9 @@ function getUtmLink(
     case "Apollo":
       return directLink || null;  
 
-    case "RamFinCorp": {
-      // RamFinCorp is shown only if message is "Dedup Success"
-      const ramFinCorpMessage = (lender.message || "").toLowerCase();
-      if (ramFinCorpMessage !== "dedup success") return null;
-      return directLink || FALLBACK_UTM.RamFinCorp;
-    }
+    case "RamFinCorp":
+      // RamFinCorp is now a static lender - only shows if it comes from API staticLenders
+      return directLink || null;
 
     case "TrueFund": {
       // TrueFund is shown only if API response message contains "user details received sucessfully"
@@ -379,7 +376,7 @@ export default function ShortTicketOffersPage() {
     // Build UTM map
     const utmMap: Record<string, string | undefined> = {};
     if (data.RapidMoney?.utm_link) utmMap["RapidMoney"] = data.RapidMoney.utm_link;
-    if (data.RamFinCorp?.utm_link) utmMap["RamFinCorp"] = data.RamFinCorp.utm_link;
+    // RamFinCorp is now a static lender - processed from staticLenders array below
     if (data.KreditBee?.utm_link) utmMap["KreditBee"] = data.KreditBee.utm_link;
     if (data.TrueBalance?.utm_link) utmMap["TrueBalance"] = data.TrueBalance.utm_link;
     if ((data.RupiNow as { utm_link?: string })?.utm_link) utmMap["RupiNow"] = (data.RupiNow as { utm_link?: string }).utm_link;
@@ -462,13 +459,11 @@ export default function ShortTicketOffersPage() {
           ordered.push({ name, utm_link: utmMap[name] });
           break;
 
-        // RamFinCorp - shown only if message is "Dedup Success"
-        case "RamFinCorp": {
-          const ramFinCorpMessage = (lender?.message || "").toLowerCase();
-          if (ramFinCorpMessage !== "dedup success") break;
-          ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.RamFinCorp });
+        case "RamFinCorp":
+          // RamFinCorp is now a static lender - only shows if it comes from API staticLenders
+          if (!utmMap[name]) break;
+          ordered.push({ name, utm_link: utmMap[name] });
           break;
-        }
         
 
         case "Vivifi":

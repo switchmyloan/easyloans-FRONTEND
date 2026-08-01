@@ -116,7 +116,7 @@ export default function LoanOffersBanner() {
       const rapidMoneyData = data.RapidMoney as { isDuplicate?: boolean; utm_link?: string } | undefined;
       const trueFundData = data.TrueFund as { message?: string; utm_link?: string; data?: { response?: { message?: string } } } | undefined;
       const moneyDotData = data.MoneyDot as { data?: { response?: { can_attribute?: boolean } }; utm_link?: string } | undefined;
-      const ramFinCorpData = data.RamFinCorp as { message?: string; utm_link?: string } | undefined;
+      // RamFinCorp is now a static lender — processed from staticLenders array below
 
       const trueFundMessage = (trueFundData?.message || "").toLowerCase();
       const trueFundResponseMessage = (trueFundData?.data?.response?.message || "").toLowerCase();
@@ -124,7 +124,6 @@ export default function LoanOffersBanner() {
         trueFundMessage.includes("user details received sucessfully") ||
         trueFundResponseMessage.includes("user details received sucessfully");
       const isMoneyDotEligible = moneyDotData?.data?.response?.can_attribute === true;
-      const isRamFinCorpEligible = (ramFinCorpData?.message || "").toLowerCase() === "dedup success";
 
       // Get shownOffers from API response
       const shownOffers = (data.shownOffers || []) as ShownOffer[];
@@ -146,7 +145,8 @@ export default function LoanOffersBanner() {
         if (lenderName === "RapidMoney" && rapidMoneyData?.isDuplicate !== false) continue;
         if (lenderName === "TrueFund" && !isTrueFundEligible) continue;
         if (lenderName === "MoneyDot" && !isMoneyDotEligible) continue;
-        if (lenderName === "RamFinCorp" && !isRamFinCorpEligible) continue;
+        // RamFinCorp is now a static lender — skip here and add from staticLenders below
+        if (lenderName === "RamFinCorp") continue;
 
         addedLenders.add(lenderName);
         eligibleLenders.push({
@@ -202,16 +202,6 @@ export default function LoanOffersBanner() {
         });
       }
 
-      // Add RamFinCorp if eligible (message === "Dedup Success") and not already added
-      if (isRamFinCorpEligible && !addedLenders.has("RamFinCorp")) {
-        addedLenders.add("RamFinCorp");
-        eligibleLenders.push({
-          id: "RamFinCorp",
-          name: "RamFinCorp",
-          prefix: "R",
-        });
-      }
-
       // Add LoanWalle only if it comes from API staticLenders (with utm_link)
       const staticLendersArray = (data.staticLenders || []) as Array<{ name?: string; utm_link?: string }>;
       const loanWalleFromApi = staticLendersArray.find(
@@ -223,6 +213,19 @@ export default function LoanOffersBanner() {
           id: "LoanWalle",
           name: "LoanWalle",
           prefix: "L",
+        });
+      }
+
+      // Add RamFinCorp only if it comes from API staticLenders (now a static lender)
+      const ramFinCorpFromApi = staticLendersArray.find(
+        (l) => l.name?.toLowerCase() === "ramfincorp"
+      );
+      if (ramFinCorpFromApi?.utm_link && !addedLenders.has("RamFinCorp")) {
+        addedLenders.add("RamFinCorp");
+        eligibleLenders.push({
+          id: "RamFinCorp",
+          name: "RamFinCorp",
+          prefix: "R",
         });
       }
 
@@ -289,7 +292,8 @@ export default function LoanOffersBanner() {
           if (lenderName === "RapidMoney" && rapidMoneyData?.isDuplicate !== false) continue;
           if (lenderName === "TrueFund" && !isTrueFundEligible) continue;
           if (lenderName === "MoneyDot" && !isMoneyDotEligible) continue;
-          if (lenderName === "RamFinCorp" && !isRamFinCorpEligible) continue;
+          // RamFinCorp is now a static lender — skip here and add from staticLenders below
+        if (lenderName === "RamFinCorp") continue;
 
           // Found an eligible lender in priority order
           mainLenderFromSelected = {

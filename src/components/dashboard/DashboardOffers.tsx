@@ -127,10 +127,8 @@ export default function DashboardOffers() {
       const shownOffers = (data.shownOffers || []) as ShownOffer[];
 
       // Map existing shown offers, but filter out RapidMoney if isDuplicate is false,
-      // RamFinCorp if message !== "Dedup Success", and filter out removed lenders
+      // and filter out removed lenders. RamFinCorp is now a static lender.
       const rapidMoneyData = data.RapidMoney as { isDuplicate?: boolean; utm_link?: string } | undefined;
-      const ramFinCorpData = data.RamFinCorp as { message?: string; utm_link?: string } | undefined;
-      const isRamFinCorpEligible = (ramFinCorpData?.message || "").toLowerCase() === "dedup success";
 
       const filteredShownOffers = shownOffers.filter((o) => {
         // Filter out removed lenders
@@ -141,7 +139,8 @@ export default function DashboardOffers() {
           return rapidMoneyData?.isDuplicate === false;
         }
         if (o.lenderName === "RamFinCorp") {
-          return isRamFinCorpEligible;
+          // RamFinCorp is now a static lender — added below from staticLenders, not here.
+          return false;
         }
         return true;
       });
@@ -149,8 +148,7 @@ export default function DashboardOffers() {
 
       // Add static lenders that should always be shown
       // Note: RapidMoney is now shown based on API response (isDuplicate === false)
-      // Note: RamFinCorp is now shown based on API response (message === "Dedup Success")
-      // Note: LoanWalle, ASAPFinance, SpeedoLoan, Vivifi, TrueBalance are shown only if they come from API staticLenders
+      // Note: LoanWalle, ASAPFinance, SpeedoLoan, Vivifi, TrueBalance, RamFinCorp are shown only if they come from API staticLenders
       const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee"];
       const existingLenderNames = new Set(mappedOffers.map((o) => o.name));
 
@@ -175,6 +173,8 @@ export default function DashboardOffers() {
         "nira": "Nira",
         "Apollo": "Apollo",
         "apollo": "Apollo",
+        "RamFinCorp": "RamFinCorp",
+        "ramfincorp": "RamFinCorp",
       };
       for (const lender of staticLendersArray) {
         if (lender.name && lender.utm_link) {
@@ -281,11 +281,11 @@ export default function DashboardOffers() {
         });
       }
 
-      // Add RamFinCorp based on API response (only if message === "Dedup Success")
-      if (isRamFinCorpEligible && !existingLenderNames.has("RamFinCorp")) {
+      // Add RamFinCorp only if it comes from API staticLenders (now a static lender)
+      if (staticLenderUtmLinks["RamFinCorp"] && !existingLenderNames.has("RamFinCorp")) {
         mappedOffers.push({
           name: "RamFinCorp",
-          utmLink: ramFinCorpData?.utm_link || FALLBACK_UTM_LINKS["RamFinCorp"],
+          utmLink: staticLenderUtmLinks["RamFinCorp"],
           isOffer: false,
         });
       }

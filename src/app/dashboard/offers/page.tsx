@@ -149,13 +149,7 @@ const moneyDotData = data.MoneyDot as {
 const isMoneyDotEligible =
   moneyDotData?.data?.response?.can_attribute === true;
 
-const ramFinCorpData = data.RamFinCorp as {
-  message?: string;
-  utm_link?: string;
-} | undefined;
-
-const isRamFinCorpEligible =
-  (ramFinCorpData?.message || "").toLowerCase() === "dedup success";
+// RamFinCorp is now a static lender — processed from staticLenders array below
 
 const rupiNowData = data.RupiNow as {
   dedupeStatus?: string;
@@ -187,7 +181,8 @@ const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
           return isMoneyDotEligible;
         }
         if (o.lenderName === "RamFinCorp") {
-          return isRamFinCorpEligible;
+          // RamFinCorp is now a static lender — added below from staticLenders, not here.
+          return false;
         }
         if (o.lenderName === "RupiNow") {
           return isRupiNowEligible;
@@ -202,8 +197,7 @@ const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
       // Add static lenders that should always be shown
       // Note: Cashvia is now shown based on API response (dedupeStatus === "Passed")
       // Note: RapidMoney is now shown based on API response (isDuplicate === false)
-      // Note: RamFinCorp is now shown based on API response (message === "Dedup Success")
-      // Note: LoanWalle, ASAPFinance, SpeedoLoan, Vivifi, TrueBalance are shown only if they come from API staticLenders
+      // Note: LoanWalle, ASAPFinance, SpeedoLoan, Vivifi, TrueBalance, RamFinCorp are shown only if they come from API staticLenders
       const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee"];
       const existingLenderNames = new Set(mappedOffers.map((o) => o.name));
 
@@ -228,6 +222,8 @@ const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
         "nira": "Nira",
         "Apollo": "Apollo",
         "apollo": "Apollo",
+        "RamFinCorp": "RamFinCorp",
+        "ramfincorp": "RamFinCorp",
       };
       for (const lender of staticLendersArray) {
         if (lender.name && lender.utm_link) {
@@ -344,11 +340,11 @@ const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
         });
       }
 
-      // Add RamFinCorp based on API response (only if message === "Dedup Success")
-      if (isRamFinCorpEligible && !existingLenderNames.has("RamFinCorp")) {
+      // Add RamFinCorp only if it comes from API staticLenders (now a static lender)
+      if (staticLenderUtmLinks["RamFinCorp"] && !existingLenderNames.has("RamFinCorp")) {
         mappedOffers.push({
           name: "RamFinCorp",
-          utmLink: ramFinCorpData?.utm_link || FALLBACK_UTM_LINKS["RamFinCorp"],
+          utmLink: staticLenderUtmLinks["RamFinCorp"],
           isOffer: false,
         });
       }
