@@ -22,7 +22,7 @@ export const OFFERS = [
   {
     lenderName: "MoneyView",
     logo: "/moneyview-logo.svg",
-    headline: "Get Personal Loans up to ₹10 Lakhs",
+    headline: "Get Personal Loans up to 5,000 to ₹10 Lakhs",
     description: "Minimal documentation and fast digital process",
     keyFeature: "Flexible Repayment Options and Quick Access to Lump Sum",
     interestRate: "Interest rate starting from 1.16%% per month.",
@@ -102,7 +102,7 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest Rates start at 1%* per month",
   },
   RapidMoney: {
-    headline: "Get Personal Loans from ₹5,000 to ₹25,000",
+    headline: "Get Personal Loans from ₹5,000 to ₹15,000",
     description: "Flexible repayment options and loan tenure from 1 month to 6 months",
     keyFeature: "Quick Access to Lump Sum Amount",
     interestRate: "Interest rate starting from 3.01% per month.",
@@ -132,7 +132,7 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest Rates start at 10.5%* per annum",
   },
   TrueBalance: {
-    headline: "Get Personal Loans from ₹1,000 to ₹5 Lakhs",
+    headline: "Get Personal Loans from ₹1,000 to ₹2 Lakhs",
     description: "Quick personal loans with minimal documentation and fast disbursement",
     keyFeature: "Instant Approval and Same Day Disbursement",
     interestRate: "Interest rate starting from 2.4% per month.",
@@ -150,7 +150,7 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest rate starting from 1.3% per month.",
   },
   SpeedoLoan: {
-    headline: "Get up to ₹1,00,000 with quick approval!",
+    headline: "Get up to ₹50,000 with quick approval!",
     description: "Personal loans with fast disbursement and no hidden charges",
     keyFeature: "Quick Approval and No Hidden Charges",
     interestRate: "Interest Rates start at 1%* per day",
@@ -174,7 +174,7 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest Rates start at 0.4% to 1.1% per day",
   },
   MoneyDot: {
-    headline: "Get up to ₹1,00,000 with quick approval!",
+    headline: "Get up to 10,000 to ₹1,00,000 with quick approval!",
     description: "Personal loans with Instant Loan Approval and Zero paperwork",
     keyFeature: "Quick Approval and with no collateral",
     interestRate: "Interest Rates start at 0.07% to 0.16% per day",
@@ -250,7 +250,7 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "Flexible Tenure", description: "Up to 6 months" },
   ],
   KreditBee: [
-    { title: "Highest Approval", description: "Easy eligibility" },
+    { title: "Highest Approval", description: "Upto 100% off on PF" },
     { title: "Up to ₹10 Lakhs", description: "High loan amount" },
     { title: "Instant Disbursal", description: "Same day transfer" },
   ],
@@ -278,7 +278,12 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "Quick Approval", description: "Fast processing" },
     { title: "No Collateral", description: "No collateral required" },
     { title: "Hassle-Free Documentation", description: "No documentation required" },
-  ]
+  ],
+  SpeedoLoan: [
+    { title: "Quick Approval", description: "Fast processing" },
+    { title: "No Hidden Charges", description: "Secure and Trusted" },
+    { title: "Up to ₹50,000", description: "High loan amount" },
+  ],
 };
 
 // Default features if lender not found in UTM_MEDIUM_LENDERS_FEATURES
@@ -295,14 +300,14 @@ export const DEFAULT_FEATURE_TAG = "Quick approval";
 
 // Feature badges for each lender (3 badges per lender) - used in LoanOffersBanner
 export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
-  RapidMoney: ["Quick Approval", "Flexible Repayment", "Up to ₹25,000"],
+  RapidMoney: ["Quick Approval", "Flexible Repayment", "Up to ₹15,000"],
   Vivifi: ["0% Foreclose Charge", "Highest Approval", "Quick Disbursal"],
   LoanWalle: ["EPFO Users Only", "No Prepayment Fee", "Quick Approval"],
-  KreditBee: ["Highest Approval", "Loans up to ₹10 Lakh", "Instant Disbursal"],
-  TrueBalance: ["Loans up to ₹1 Lakh", "Minimal Docs", "Quick Approval"],
+  KreditBee: ["Upto 100% off on PF", "Loans up to ₹10 Lakh", "Instant Disbursal"],
+  TrueBalance: ["Loans up to ₹2 Lakh", "Minimal Docs", "Quick Approval"],
   RamFinCorp: ["Transparent Terms", "Quick Processing", "Easy Approval"],
   MoneyDot: ["Loans up to ₹1 Lakh", "Zero Paperwork", "No Collateral"],
-  SpeedoLoan: ["Quick Approval", "No Hidden Charges", "Up to ₹1 Lakh"],
+  SpeedoLoan: ["Quick Approval", "No Hidden Charges", "Up to ₹50,000"],
   Cashvia: ["Minimal Docs", "Quick Approval", "Fast Disbursal"],
   TrueFund: ["Quick Approval", "Up to ₹10 Lakh", "Flexible Repayment"],
   RupiNow: ["Zero Hidden Charges", "Flexible Tenure", "Up to ₹5 Lakh"],
@@ -317,11 +322,11 @@ export const DEFAULT_FEATURE_BADGES: [string, string, string] = ["Instant Approv
 // Max loan amount each lender supports (used for filtering/priority sorting)
 export const LENDER_MAX_AMOUNT: Record<string, number> = {
   KreditBee: 1000000,       // ₹10 Lakhs
-  TrueBalance: 500000,      // ₹5 Lakhs
-  RapidMoney: 25000,        // ₹25,000
+  TrueBalance: 200000,      // ₹2 Lakhs
+  RapidMoney: 15000,        // ₹15,000
   RamFinCorp: 100000,       // ₹1 Lakh
   Vivifi: 500000,           // ₹5 Lakhs
-  SpeedoLoan: 100000,      // ₹1 Lakh
+  SpeedoLoan: 50000,      // ₹50,000
   LoanWalle: 100000,      // ₹1 Lakh
   Cashvia: 30000,      // ₹30,000
   TrueFund: 50000,      // ₹50,000
