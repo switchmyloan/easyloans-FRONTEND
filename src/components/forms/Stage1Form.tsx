@@ -239,16 +239,46 @@ function Stage1FormContent({
             <p className="text-white/40 text-[10px] italic 2xl:text-xs 3xl:text-sm">
               {numberToIndianWords(loanAmount)}
             </p>
-            <input
-              type="range"
-              min={5000}
-              max={200000}
-              step={5000}
-              {...register("loan_amount", { valueAsNumber: true })}
-              className="w-full h-1.5 rounded-full appearance-none cursor-pointer accent-[#1a1a2e] bg-white/20 2xl:h-2 3xl:h-2.5
-                [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#1a1a2e] [&::-webkit-slider-thumb]:shadow-md 2xl:[&::-webkit-slider-thumb]:w-4 2xl:[&::-webkit-slider-thumb]:h-4 3xl:[&::-webkit-slider-thumb]:w-5 3xl:[&::-webkit-slider-thumb]:h-5
-                [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-[#1a1a2e] [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:shadow-md"
-            />
+              <div className="relative w-full h-6 flex items-center">
+              {/* Track background */}
+              <div className="absolute w-full h-1.5 bg-white/20 rounded-full 2xl:h-2 3xl:h-2.5" />
+              {/* Track fill */}
+              <div
+                className="absolute h-1.5 bg-white/40 rounded-full 2xl:h-2 3xl:h-2.5"
+                style={{ width: `${((loanAmount - 5000) / (1500000 - 5000)) * 100}%` }}
+              />
+              {/* Hidden native input */}
+              <input
+                type="range"
+                min={5000}
+                max={1500000}
+                step={5000}
+                {...register("loan_amount", { valueAsNumber: true })}
+                className="absolute w-full h-full opacity-0 cursor-pointer z-10"
+              />
+              {/* Animated thumb */}
+              <motion.div
+                className="absolute w-4 h-4 bg-[#A6FF00] rounded-full shadow-lg pointer-events-none 2xl:w-5 2xl:h-5 3xl:w-6 3xl:h-6"
+                style={{
+                  left: `calc(${((loanAmount - 5000) / (1500000 - 5000)) * 100}% - 8px)`,
+                }}
+                animate={{
+                  scale: [1, 1.3, 1, 1.2, 1],
+                  boxShadow: [
+                    "0 0 0 0 rgba(166, 255, 0, 0.5)",
+                    "0 0 0 8px rgba(166, 255, 0, 0.3)",
+                    "0 0 0 0 rgba(166, 255, 0, 0.1)",
+                    "0 0 0 6px rgba(166, 255, 0, 0.2)",
+                    "0 0 0 0 rgba(166, 255, 0, 0)",
+                  ]
+                }}
+                transition={{
+                  duration: 1.5,
+                  ease: "easeInOut",
+                  repeat: Infinity,
+                }}
+              />
+            </div>
             <div className="flex justify-between text-white/40 text-[11px] 2xl:text-xs 3xl:text-sm">
               <span>₹5,000</span>
               <span>₹2,00,000</span>
