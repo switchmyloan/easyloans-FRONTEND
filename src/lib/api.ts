@@ -1218,6 +1218,20 @@ export function getStoredShortExistingUserOffers(): ShortExistingUserOffersRespo
   }
 }
 
+export function getStoredShortOfferLeadId(): number | null {
+  if (!isBrowser()) return null;
+  const stored = sessionStorage.getItem("shortOfferLeadId");
+  if (!stored) {
+    // Fallback: try to get from stored offers
+    const offers = getStoredShortExistingUserOffers();
+    if (offers?.data?.shortOfferLeadId) {
+      return Number(offers.data.shortOfferLeadId);
+    }
+    return null;
+  }
+  return Number(stored);
+}
+
 // ---------- Short Dashboard Link APIs ----------
 
 export interface ShortDashboardLinkGenerateResponse {
@@ -1585,6 +1599,104 @@ export async function trackCreditCardClick(payload: CreditCardClickPayload): Pro
   } catch (err) {
     console.error("Failed to track credit card click:", err);
   }
+}
+
+export interface UpdateUserInfoPayload {
+  offerLeadId: number;
+  name: string;
+  email: string;
+  gender: string;
+  dateOfBirth: string;
+  monthlySalary: number;
+  loanAmount: number;
+  loanPurpose: string;
+  jobType: string;
+  pincode?: string;
+}
+
+export interface UpdateUserInfoResponse {
+  statusCode: number;
+  data: {
+    offerLeadId: number;
+    table: string;
+    updatedFields: string[];
+    user: {
+      name: string;
+      first_name: string;
+      last_name: string;
+      email: string;
+      gender: string;
+      dob: string;
+      profile: string;
+      monthly_income: number;
+      loan_amount: number;
+      loan_purpose: string;
+      phone: string;
+      mrn: string;
+    };
+  };
+  message: string;
+  success: boolean;
+}
+
+export async function updateUserInfo(
+  payload: UpdateUserInfoPayload,
+): Promise<UpdateUserInfoResponse> {
+  const res = await fetch(`${BASE_URL}/onSubmit/short-update-user-info`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) throw new Error("Failed to update user info. Please try again.");
+
+  const json: UpdateUserInfoResponse = await res.json();
+
+  if (json.statusCode !== 200 || !json.success) {
+    throw new Error(json.message || "Failed to update user info.");
+  }
+
+  // Update session storage with new user data
+  if (isBrowser() && json.data.user) {
+    const user = json.data.user;
+    const existingData = getStoredShortExistingUserOffers();
+    if (existingData?.data?.user) {
+      existingData.data.user = {
+        ...existingData.data.user,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        email: user.email,
+        gender: user.gender,
+        dateOfBirth: user.dob,
+        jobType: user.profile,
+        monthlySalary: user.monthly_income,
+        loanAmount: user.loan_amount,
+        loanPurpose: user.loan_purpose,
+      };
+      sessionStorage.setItem(SHORT_EXISTING_USER_SESSION_KEY, JSON.stringify(existingData));
+    }
+
+    // Update userFormData as well
+    sessionStorage.setItem(
+      "userFormData",
+      JSON.stringify({
+        firstName: user.first_name,
+        lastName: user.last_name,
+        mobileNumber: user.phone,
+        email: user.email,
+        panNumber: existingData?.data?.user?.panNumber || "",
+        dateOfBirth: user.dob,
+        gender: user.gender,
+        pincode: existingData?.data?.user?.pincode || "",
+        jobType: user.profile,
+        monthlySalary: String(user.monthly_income),
+        loanAmount: String(user.loan_amount),
+        loanPurpose: user.loan_purpose,
+      }),
+    );
+  }
+
+  return json;
 }
 
 export async function verifyShortDashboardLinkOtp(
