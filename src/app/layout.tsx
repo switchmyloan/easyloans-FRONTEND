@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import Script from "next/script";
 import PushNotificationProvider from "@/components/PushNotificationProvider";
+import LanguageToggle from "@/components/ui/LanguageToggle";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -20,9 +21,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
 
-    // CLEVERTAP DISABLED
-    // const cleverTapAccountId = process.env.NEXT_PUBLIC_CLEVERTAP_ACCOUNT_ID;
-    // const cleverTapRegion = process.env.NEXT_PUBLIC_CLEVERTAP_REGION;
+    const cleverTapAccountId = process.env.NEXT_PUBLIC_CLEVERTAP_ACCOUNT_ID;
+    const cleverTapRegion = process.env.NEXT_PUBLIC_CLEVERTAP_REGION;
 
   return (
     <html lang="en" className={`${geistSans.variable} h-full antialiased`}>
@@ -41,8 +41,7 @@ export default function RootLayout({
         </Script>
 
 
-        {/* CLEVERTAP DISABLED */}
-        {/* {cleverTapAccountId && (
+        {cleverTapAccountId && (
           <>
 
             <Script id="clevertap-init" strategy="beforeInteractive">
@@ -63,10 +62,11 @@ export default function RootLayout({
               strategy="afterInteractive"
             />
           </>
-        )} */}
+        )}
       </head>
       <body className="min-h-full bg-gray-50">
         {children}
+        <LanguageToggle />
         <PushNotificationProvider />
       </body>
     </html>

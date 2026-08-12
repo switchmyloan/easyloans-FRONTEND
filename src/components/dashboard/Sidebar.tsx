@@ -17,8 +17,7 @@ import {
   User,
   LogOut,
 } from "lucide-react";
-// CLEVERTAP DISABLED
-// import { cleverTapLogout } from "@/lib/clevertap";
+import { cleverTapLogout } from "@/lib/clevertap";
 
 //const LOGOUT_REDIRECT_URL = "https://easyloans.cready.in/";
 //const LOGOUT_REDIRECT_URL = process.env.LOGOUT_REDIRECT_URL ;
@@ -49,8 +48,7 @@ export default function Sidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleLogout = () => {
-    // CLEVERTAP DISABLED
-    // cleverTapLogout();
+    cleverTapLogout();
 
     // Clear dashboard session data
     if (typeof window !== "undefined") {

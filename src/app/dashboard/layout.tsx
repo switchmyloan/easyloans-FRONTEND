@@ -9,8 +9,7 @@ import {
   sendShortDashboardLinkOtp,
   verifyShortDashboardLinkOtp,
 } from "@/lib/api";
-// CLEVERTAP DISABLED
-// import { syncCleverTapFromSession } from "@/lib/clevertap";
+import { syncCleverTapFromSession } from "@/lib/clevertap";
 
 // Context to provide guardActivity function to child components
 interface OtpGuardContextType {
@@ -97,8 +96,7 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
         sessionStorage.setItem("dashboardOtpVerified", "true");
         sessionStorage.setItem("shortDashboardRequiresLogin", "false");
 
-        // CLEVERTAP DISABLED
-        // syncCleverTapFromSession();
+        syncCleverTapFromSession();
 
         // Resolve the pending activity promise
         if (otpPromiseResolver) {
