@@ -157,7 +157,10 @@ export function syncCleverTapFromSession(): void {
   if (typeof window === "undefined") return;
 
   const phone = sessionStorage.getItem("userPhone");
-  if (!phone) return;
+  if (!phone) {
+    console.log("[CleverTap] syncCleverTapFromSession - no userPhone in sessionStorage, skipping");
+    return;
+  }
 
   const firstName = sessionStorage.getItem("userFirstName") ?? undefined;
   const raw = sessionStorage.getItem("userFormData");
@@ -254,7 +257,7 @@ export const CLEVERTAP_EVENTS = {
   /** Fired on page-exit when the visitor left without verifying their OTP. */
   LANDED_NO_OTP: "Landed - OTP Not Verified",
   /** Fired once the OTP is successfully verified. */
-  OTP_VERIFIED: "OTP Verified",
+  EASY_OTP_VERIFIED: "OTP Verified",
   /** Fired when the existing-user check finds a prior application and redirects to the dashboard. */
   EXISTING_USER_IDENTIFIED: "Existing User Identified",
   /** Fired when the applicant completes the journey (Stage 2 submit). */

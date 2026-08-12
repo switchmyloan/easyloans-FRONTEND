@@ -17,6 +17,25 @@ import {
   type SendOtpResponse,
   type PrefilledStage2,
 } from "@/lib/api";
+import {
+  cleverTapOnUserLogin,
+  cleverTapUpdateProfile,
+  cleverTapTrackEvent,
+  cleverTapInitWebPush,
+  saveCleverTapLoginProfile,
+  syncCleverTapFromSession,
+  CLEVERTAP_EVENTS,
+  type CleverTapLoginProfile,
+} from "@/lib/clevertap";
+import { getPreferredLanguageLabel } from "@/components/ui/LanguageToggle";
+
+const GENDER_TO_CLEVERTAP: Record<string, "M" | "F" | undefined> = {
+  Male: "M",
+  Female: "F",
+};
+
+// Dedupe the "Page Viewed" event across React's dev double-invoke of effects.
+let hasTrackedLanding = false;
 
 import LeftPanel from "@/components/layout/LeftPanel";
 import Stage1Form from "@/components/forms/Stage1Form";
@@ -77,6 +96,14 @@ function HomeContent() {
     if (utmContent) sessionStorage.setItem("utm_content", utmContent);
     if (utmTerm) sessionStorage.setItem("utm_term", utmTerm);
   }, [searchParams]);
+
+  // Track page landing
+  useEffect(() => {
+    if (!hasTrackedLanding) {
+      hasTrackedLanding = true;
+      cleverTapTrackEvent(CLEVERTAP_EVENTS.LANDED, { URL: window.location.href });
+    }
+  }, []);
 
   const buildDraftPayload = useCallback(() => {
     const s1 = stage1DraftRef.current;
@@ -204,6 +231,25 @@ function HomeContent() {
               ? sessionStorage.getItem("shortLeadDraftSessionId") || undefined
               : undefined,
         });
+
+        // CleverTap: Track OTP verification
+        const loginProfile: CleverTapLoginProfile = {
+          Name: stage1Data.fullName,
+          Identity: stage1Data.mobile,
+          Phone: `+91${stage1Data.mobile}`,
+          "MSG-push": stage1Data.consent_communication,
+          "MSG-sms": stage1Data.consent_communication,
+          "MSG-whatsapp": stage1Data.consent_communication,
+          "Loan Amount Requested": stage1Data.loan_amount,
+        };
+        saveCleverTapLoginProfile(loginProfile);
+        cleverTapOnUserLogin(loginProfile);
+        void cleverTapInitWebPush();
+
+        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_OTP_VERIFIED, {
+          Phone: `+91${stage1Data.mobile}`,
+        });
+        console.log("EASY_OTP_VERIFIED event tracked");
       } catch (err) {
         console.error("verifyOtp failed:", err);
         setOtpError(err instanceof Error ? err.message : "Invalid OTP. Please try again.");
@@ -221,6 +267,12 @@ function HomeContent() {
         const userExists = existingUserResponse.data.found || existingUserResponse.data.exists;
 
         if (userExists) {
+          // CleverTap: Track existing user
+          cleverTapTrackEvent(CLEVERTAP_EVENTS.EXISTING_USER_IDENTIFIED, {
+            Phone: `+91${stage1Data.mobile}`,
+          });
+          syncCleverTapFromSession();
+
           // Returning user - mark as OTP verified
           sessionStorage.setItem("dashboardOtpVerified", "true");
           sessionStorage.setItem("dashboardRequiresLogin", "false");
@@ -298,6 +350,32 @@ function HomeContent() {
           utm_content: utmContent,
           utm_term: utmTerm,
         });
+
+        // CleverTap: Update profile with Stage 2 data
+        cleverTapUpdateProfile({
+          First_Name: data.first_name,
+          Last_Name: data.last_name,
+          Email: data.email,
+          Phone: `+91${stage1Data.mobile}`,
+          Gender: GENDER_TO_CLEVERTAP[data.gender],
+          DOB: new Date(dobStr),
+          Pincode: data.pincode,
+          Income: data.monthly_income,
+          Job_Type: data.profile,
+          "Customer Type": data.profile,
+          "Monthly Income": data.monthly_income,
+          "Loan Purpose": data.loan_purpose,
+          PAN: data.pan_no,
+          Preferred_Language: getPreferredLanguageLabel(),
+        });
+
+        // CleverTap: Track form submission
+        cleverTapTrackEvent(CLEVERTAP_EVENTS.FORM_SUBMITTED, {
+          "Customer Type": data.profile,
+          "Loan Amount Requested": stage1Data.loan_amount,
+          "Loan Purpose": data.loan_purpose,
+        });
+
         router.push("/short-ticket/offers");
       } catch (err) {
         console.error("getOfferShortTicket failed:", err);

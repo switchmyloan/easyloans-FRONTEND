@@ -299,9 +299,10 @@ function ShortTicketFormContent() {
         // Mark OTP as verified (prevents drop-off event)
         hasVerifiedOtpRef.current = true;
 
-        cleverTapTrackEvent(CLEVERTAP_EVENTS.OTP_VERIFIED, {
+        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_OTP_VERIFIED, {
           Phone: `+91${stage1Data.mobile}`,
         });
+        console.log("EASY_OTP_VERIFIED event tracked");
 
       } catch (err) {
         console.error("verifyOtp failed:", err);
