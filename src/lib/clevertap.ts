@@ -253,17 +253,17 @@ export function cleverTapTrackEvent(
 
 export const CLEVERTAP_EVENTS = {
   /** Every visitor, fired when the landing page mounts. */
-  LANDED: "Page Viewed",
+  EASY_LANDED: "Easy - Page Viewed",
   /** Fired on page-exit when the visitor left without verifying their OTP. */
-  LANDED_NO_OTP: "Landed - OTP Not Verified",
+  EASY_LANDED_NO_OTP: "Easy - Landed - OTP Not Verified",
   /** Fired once the OTP is successfully verified. */
-  EASY_OTP_VERIFIED: "OTP Verified",
+  EASY_OTP_VERIFIED: "Easy - OTP Verified",
   /** Fired when the existing-user check finds a prior application and redirects to the dashboard. */
-  EXISTING_USER_IDENTIFIED: "Existing User Identified",
+  EASY_EXISTING_USER_IDENTIFIED: "Easy - Existing User Identified",
   /** Fired when the applicant completes the journey (Stage 2 submit). */
-  FORM_SUBMITTED: "Form Submitted",
+  EASY_FORM_SUBMITTED: "Easy - Form Submitted",
   /** Fired when a lender offer card is clicked, tagged with the lender. */
-  LENDER_CLICKED: "Lender Clicked",
+  EASY_LENDER_CLICKED: "Easy - Lender Clicked",
   /** Fired when the visitor changes the site language, tagged with the chosen language. */
-  LANGUAGE_SELECTED: "Language Selected",
+  EASY_LANGUAGE_SELECTED: "Easy - Language Selected",
 } as const;

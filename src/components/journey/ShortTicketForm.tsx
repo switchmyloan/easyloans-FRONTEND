@@ -126,7 +126,7 @@ function ShortTicketFormContent() {
     // Fire "Page Viewed" once on mount
     if (!hasTrackedLanding) {
       hasTrackedLanding = true;
-      cleverTapTrackEvent(CLEVERTAP_EVENTS.LANDED, { URL: window.location.href });
+      cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LANDED, { URL: window.location.href });
     }
 
     // Track drop-off if user leaves without verifying OTP
@@ -134,7 +134,7 @@ function ShortTicketFormContent() {
     const handleExit = () => {
       if (firedDropoff || hasVerifiedOtpRef.current) return;
       firedDropoff = true;
-      cleverTapTrackEvent(CLEVERTAP_EVENTS.LANDED_NO_OTP);
+      cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LANDED_NO_OTP);
     };
 
     window.addEventListener("pagehide", handleExit);
@@ -321,7 +321,7 @@ function ShortTicketFormContent() {
         const userExists = existingUserResponse.data.found || existingUserResponse.data.exists;
 
         if (userExists) {
-          cleverTapTrackEvent(CLEVERTAP_EVENTS.EXISTING_USER_IDENTIFIED, {
+          cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_EXISTING_USER_IDENTIFIED, {
             Phone: `+91${stage1Data.mobile}`,
           });
 
@@ -439,7 +439,7 @@ function ShortTicketFormContent() {
         });
 
         // Track form submission
-        cleverTapTrackEvent(CLEVERTAP_EVENTS.FORM_SUBMITTED, {
+        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_FORM_SUBMITTED, {
           
           "Customer Type": data.profile,
           "Loan Amount Requested": stage1Data.loan_amount,

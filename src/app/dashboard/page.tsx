@@ -40,7 +40,7 @@ function DashboardContent() {
   useEffect(() => {
     if (!hasTrackedDashboardLanding) {
       hasTrackedDashboardLanding = true;
-      cleverTapTrackEvent(CLEVERTAP_EVENTS.LANDED, { URL: window.location.href });
+      cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LANDED, { URL: window.location.href });
     }
   }, []);
 

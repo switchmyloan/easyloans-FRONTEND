@@ -101,7 +101,7 @@ function HomeContent() {
   useEffect(() => {
     if (!hasTrackedLanding) {
       hasTrackedLanding = true;
-      cleverTapTrackEvent(CLEVERTAP_EVENTS.LANDED, { URL: window.location.href });
+      cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LANDED, { URL: window.location.href });
     }
   }, []);
 
@@ -268,7 +268,7 @@ function HomeContent() {
 
         if (userExists) {
           // CleverTap: Track existing user
-          cleverTapTrackEvent(CLEVERTAP_EVENTS.EXISTING_USER_IDENTIFIED, {
+          cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_EXISTING_USER_IDENTIFIED, {
             Phone: `+91${stage1Data.mobile}`,
           });
           syncCleverTapFromSession();
@@ -370,7 +370,7 @@ function HomeContent() {
         });
 
         // CleverTap: Track form submission
-        cleverTapTrackEvent(CLEVERTAP_EVENTS.FORM_SUBMITTED, {
+        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_FORM_SUBMITTED, {
           "Customer Type": data.profile,
           "Loan Amount Requested": stage1Data.loan_amount,
           "Loan Purpose": data.loan_purpose,

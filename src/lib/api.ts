@@ -932,7 +932,7 @@ export async function saveLender(phoneNumber: string, lenderName: string): Promi
   try {
     const mrn = getStoredMrn();
     console.log("[MRN] POST /save-lender — mrn:", mrn);
-    cleverTapTrackEvent(CLEVERTAP_EVENTS.LENDER_CLICKED, { Lender: lenderName });
+    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, { Lender: lenderName });
     await fetch(`${BASE_URL}/onSubmit/save-lender`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -991,7 +991,7 @@ export async function saveShortLender(
   try {
     const mrn = getStoredMrn();
     const shortOfferLeadId = sessionStorage.getItem("shortOfferLeadId");
-    cleverTapTrackEvent(CLEVERTAP_EVENTS.LENDER_CLICKED, { Lender: lenderName });
+    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, { Lender: lenderName });
     await fetch(`${BASE_URL}/onSubmit/short-save-lender`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

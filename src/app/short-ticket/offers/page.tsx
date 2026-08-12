@@ -611,7 +611,7 @@ export default function ShortTicketOffersPage() {
     const phone = sessionStorage.getItem("userPhone") || "";
     await saveShortLender(phone, lenderName);
 
-    cleverTapTrackEvent(CLEVERTAP_EVENTS.LENDER_CLICKED, {
+    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
       Lender: DISPLAY_NAMES[lenderName] || lenderName,
       LenderKey: lenderName,
     });
@@ -623,7 +623,7 @@ export default function ShortTicketOffersPage() {
     if (kbApplying || kbApplied) return;
     setKbApplying(true);
 
-    cleverTapTrackEvent(CLEVERTAP_EVENTS.LENDER_CLICKED, {
+    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
       Lender: "Kreditbee",
       LenderKey: "KreditBee",
     });

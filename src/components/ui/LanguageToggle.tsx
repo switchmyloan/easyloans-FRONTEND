@@ -116,7 +116,7 @@ export default function LanguageToggle() {
     setOpen(false);
     localStorage.setItem(STORAGE_KEY, code);
     setGoogtransCookie(code);
-    cleverTapTrackEvent(CLEVERTAP_EVENTS.LANGUAGE_SELECTED, {
+    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LANGUAGE_SELECTED, {
       Language: lang?.label ?? code,
     });
     if (!applyViaCombo(code)) {
