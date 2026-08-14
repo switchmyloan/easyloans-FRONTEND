@@ -11,6 +11,14 @@ import {
   TrendingUp,
 } from "lucide-react";
 import TrustedPartners from "./TrustedPartners";
+import {
+  IndependenceBadge,
+  IndependenceDecor,
+  IndependenceHeadline,
+  IndependenceMobileBackdrop,
+  IndependenceMobileIntro,
+} from "@/components/campaign/Independence";
+import { isIndependenceCampaign } from "@/lib/campaign";
 
 
 
@@ -52,10 +60,17 @@ export default function LeftPanel() {
 
   return (
     <aside className="relative w-full font-sans text-[#1b1e6b] lg:w-[50%] 2xl:w-[55%]">
+      {/* Seasonal skin — renders nothing when the campaign is off. */}
+      <IndependenceMobileIntro />
+      <IndependenceDecor />
+
       {/* Mobile Header Section */}
-      <div className="lg:hidden px-4 pt-4 pb-2">
+      <div className="relative lg:hidden px-4 pt-4 pb-2">
+        {/* India Gate washed behind the header — nothing when the campaign is off */}
+        <IndependenceMobileBackdrop />
+
         {/* Logo + Language Toggle Row */}
-        <div className="flex items-center justify-center relative mb-4">
+        <div className="relative flex items-center justify-center mb-4">
           <Link href="https://www.cready.in/" rel="noreferrer" target="_blank">
             <Image
               alt="Cready"
@@ -76,8 +91,17 @@ export default function LeftPanel() {
           </button>
         </div>
 
+        {/* Campaign badge — mobile has no headline, so the pill carries the theme */}
+        {isIndependenceCampaign && (
+          <div className="relative mb-3 flex justify-center">
+            <IndependenceBadge />
+          </div>
+        )}
+
         {/* Trusted Partners for mobile */}
-        <TrustedPartners />
+        <div className="relative">
+          <TrustedPartners />
+        </div>
       </div>
 
       {/* Desktop Layout */}
@@ -100,20 +124,25 @@ export default function LeftPanel() {
           </Link>
 
         <div className="space-y-3 2xl:space-y-4 3xl:space-y-5 [@media(max-height:900px)]:space-y-2">
-            {/* Headline - desktop only */}
-            <div className="space-y-2 text-left 2xl:space-y-3">
-           <h2 className="text-2xl font-extrabold leading-[0.95] tracking-[-0.05em] text-[#161a6d] sm:text-[1.75rem] lg:max-w-104 lg:text-[3rem] xl:text-[3.5rem] 2xl:text-[4rem] 3xl:text-[5rem] [@media(max-height:900px)]:text-[1.85rem]">
-                <span className="block text-4xl">Small Loans</span>
-                <span className="block text-4xl bg-gradient-to-r from-[#8560ff] via-[#664cff] to-[#4d3cff] bg-clip-text text-transparent">
-                  when you need them.
-                </span>
-              </h2>
-              <p className="max-w-72 text-gray-500 text-xs mb-4 2xl:text-sm 2xl:max-w-80 3xl:text-base 3xl:max-w-96">
-                Built around your moments.
-                <br />
-                Backed by trust. Driven by technology.
-              </p>
-            </div>
+            {/* Headline - desktop only. The campaign headline replaces it while
+                the skin is on; with the campaign off this is the original. */}
+            {isIndependenceCampaign ? (
+              <IndependenceHeadline />
+            ) : (
+              <div className="space-y-2 text-left 2xl:space-y-3">
+             <h2 className="text-2xl font-extrabold leading-[0.95] tracking-[-0.05em] text-[#161a6d] sm:text-[1.75rem] lg:max-w-104 lg:text-[3rem] xl:text-[3.5rem] 2xl:text-[4rem] 3xl:text-[5rem] [@media(max-height:900px)]:text-[1.85rem]">
+                  <span className="block text-4xl">Small Loans</span>
+                  <span className="block text-4xl bg-gradient-to-r from-[#8560ff] via-[#664cff] to-[#4d3cff] bg-clip-text text-transparent">
+                    when you need them.
+                  </span>
+                </h2>
+                <p className="max-w-72 text-gray-500 text-xs mb-4 2xl:text-sm 2xl:max-w-80 3xl:text-base 3xl:max-w-96">
+                  Built around your moments.
+                  <br />
+                  Backed by trust. Driven by technology.
+                </p>
+              </div>
+            )}
 
 
 

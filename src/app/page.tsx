@@ -38,6 +38,7 @@ const GENDER_TO_CLEVERTAP: Record<string, "M" | "F" | undefined> = {
 let hasTrackedLanding = false;
 
 import LeftPanel from "@/components/layout/LeftPanel";
+import { IndependenceBackdrop } from "@/components/campaign/Independence";
 import Stage1Form from "@/components/forms/Stage1Form";
 import OtpForm from "@/components/forms/OtpForm";
 import GradientBanner from "@/components/ui/GradientBanner";
@@ -425,7 +426,10 @@ function HomeContent() {
           <div className="absolute right-[-300px] bottom-[-10%] h-[420px] w-[420px] rounded-full bg-[#f7e9c4] blur-3xl" />
         </div>
 
+        <IndependenceBackdrop />
+
         <LeftPanel />
+        
 
         <main className="relative z-10 flex-1 flex items-center justify-center px-4 py-8 sm:px-8 lg:px-12">
           <AnimatePresence mode="wait">
