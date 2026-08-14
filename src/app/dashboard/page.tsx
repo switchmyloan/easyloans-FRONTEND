@@ -37,12 +37,12 @@ function DashboardContent() {
   });
 
   // Track page view on mount
-  useEffect(() => {
-    if (!hasTrackedDashboardLanding) {
-      hasTrackedDashboardLanding = true;
-      cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LANDED, { URL: window.location.href });
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!hasTrackedDashboardLanding) {
+  //     hasTrackedDashboardLanding = true;
+  //     cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LANDED, { URL: window.location.href });
+  //   }
+  // }, []);
 
   // Process the stored data and update state
   const processStoredData = (passedData: ShortExistingUserOffersResponse | null = null) => {
