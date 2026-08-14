@@ -253,9 +253,9 @@ export function cleverTapTrackEvent(
 
 export const CLEVERTAP_EVENTS = {
   /** Every visitor, fired when the landing page mounts. */
-  EASY_LANDED: "Easy - Page Viewed",
+  // EASY_LANDED: "Easy - Page Viewed",
   /** Fired on page-exit when the visitor left without verifying their OTP. */
-  EASY_LANDED_NO_OTP: "Easy - Landed - OTP Not Verified",
+  // EASY_LANDED_NO_OTP: "Easy - Landed - OTP Not Verified",
   /** Fired once the OTP is successfully verified. */
   EASY_OTP_VERIFIED: "Easy - OTP Verified",
   /** Fired when the existing-user check finds a prior application and redirects to the dashboard. */

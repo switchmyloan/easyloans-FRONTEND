@@ -122,24 +122,24 @@ function ShortTicketFormContent() {
   }, [searchParams]);
 
   // Track page landing and drop-off
-  useEffect(() => {
-    // Fire "Page Viewed" once on mount
-    if (!hasTrackedLanding) {
-      hasTrackedLanding = true;
-      cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LANDED, { URL: window.location.href });
-    }
+  // useEffect(() => {
+  //   // Fire "Page Viewed" once on mount
+  //   if (!hasTrackedLanding) {
+  //     hasTrackedLanding = true;
+  //     cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LANDED, { URL: window.location.href });
+  //   }
 
-    // Track drop-off if user leaves without verifying OTP
-    let firedDropoff = false;
-    const handleExit = () => {
-      if (firedDropoff || hasVerifiedOtpRef.current) return;
-      firedDropoff = true;
-      cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LANDED_NO_OTP);
-    };
+  //   // Track drop-off if user leaves without verifying OTP
+  //   let firedDropoff = false;
+  //   const handleExit = () => {
+  //     if (firedDropoff || hasVerifiedOtpRef.current) return;
+  //     firedDropoff = true;
+  //     cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LANDED_NO_OTP);
+  //   };
 
-    window.addEventListener("pagehide", handleExit);
-    return () => window.removeEventListener("pagehide", handleExit);
-  }, []);
+  //   window.addEventListener("pagehide", handleExit);
+  //   return () => window.removeEventListener("pagehide", handleExit);
+  // }, []);
 
   const buildDraftPayload = useCallback(() => {
     const s1 = stage1DraftRef.current;

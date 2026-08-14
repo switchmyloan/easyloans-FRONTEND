@@ -99,12 +99,12 @@ function HomeContent() {
   }, [searchParams]);
 
   // Track page landing
-  useEffect(() => {
-    if (!hasTrackedLanding) {
-      hasTrackedLanding = true;
-      cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LANDED, { URL: window.location.href });
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (!hasTrackedLanding) {
+  //     hasTrackedLanding = true;
+  //     cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LANDED, { URL: window.location.href });
+  //   }
+  // }, []);
 
   const buildDraftPayload = useCallback(() => {
     const s1 = stage1DraftRef.current;

@@ -48,7 +48,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   RupiNow: "RupiNow",
   ASAPFinance: "ASAPFinance",
   Nira: "Nira",
-  Apollo: "Apollo",
+  // Apollo: "Apollo",
 };
 
 const DASHBOARD_VISIBLE_COUNT = 4;
@@ -176,8 +176,8 @@ export default function DashboardOffers() {
         "asapfinance": "ASAPFinance",
         "Nira": "Nira",
         "nira": "Nira",
-        "Apollo": "Apollo",
-        "apollo": "Apollo",
+        // "Apollo": "Apollo",
+        // "apollo": "Apollo",
         "RamFinCorp": "RamFinCorp",
         "ramfincorp": "RamFinCorp",
       };
@@ -231,14 +231,14 @@ export default function DashboardOffers() {
         });
       }
 
-      // Add Apollo only if it comes from API staticLenders
-      if (staticLenderUtmLinks["Apollo"] && !existingLenderNames.has("Apollo")) {
-        mappedOffers.push({
-          name: "Apollo",
-          utmLink: staticLenderUtmLinks["Apollo"],
-          isOffer: false,
-        });
-      }
+      // // Add Apollo only if it comes from API staticLenders
+      // if (staticLenderUtmLinks["Apollo"] && !existingLenderNames.has("Apollo")) {
+      //   mappedOffers.push({
+      //     name: "Apollo",
+      //     utmLink: staticLenderUtmLinks["Apollo"],
+      //     isOffer: false,
+      //   });
+      // }
 
       // // Add SpeedoLoan only if it comes from API staticLenders
       // if (staticLenderUtmLinks["SpeedoLoan"] && !existingLenderNames.has("SpeedoLoan")) {
