@@ -48,6 +48,7 @@ export const STATIC_LENDER_LOGOS: Record<
   ASAPFinance: { src: "/asapfinance.webp" },
   Nira: { src: "/nira.avif" },
   Apollo: { src: "/apollo.png" },
+  LendingPlate: { src: "/lending.png" },
 };
 
 export const STATIC_LENDER_DETAILS: Record<
@@ -230,6 +231,7 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "ASAPFinance",
   "Nira",
   "Apollo",
+  "LendingPlate",
 ];
 
 // Short feature tags for each lender (displayed in offer cards)

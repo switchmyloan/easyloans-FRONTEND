@@ -48,6 +48,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   ASAPFinance: "ASAPFinance",
   Nira: "Nira",
   Apollo: "Apollo",
+  LendingPlate: "LendingPlate",
 };
 
 const FALLBACK_UTM_LINKS: Record<string, string> = {
@@ -67,6 +68,7 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   RupiNow: "https://www.rupinow.com/home",
   ASAPFinance: "https://asapfinance.in/customer/login?utm_source=easyloans+Cready",
   Nira: "https://play.google.com/store/apps/details?id=com.nirafinance.customer&referrer=pid%3DCready%26c%3DPartnerships_Cready_CPA%26af_adset%3D%7B%7D%26af_tranid%3DMTgzMjkwOTA0MzAyMDE3NjUyOTE%3D",
+  LendingPlate: "https://lendingplate.com/",
 };
 
 const LENDER_CUSTOM_BADGE: Record<string, string> = {
@@ -166,6 +168,15 @@ const cashviaData = data.Cashvia as {
 } | undefined;
 
 const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
+
+// LendingPlate is a lead-push lender: the backend folds resData.status === "S"
+// into `success`, and stamps utm_link (their API returns no redirect URL).
+const lendingPlateData = data.LendingPlate as {
+  success?: boolean;
+  utm_link?: string;
+} | undefined;
+
+const isLendingPlateEligible = lendingPlateData?.success === true;
 
       const filteredShownOffers = shownOffers.filter((o) => {
         // Filter out removed lenders
@@ -377,6 +388,15 @@ const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
         mappedOffers.push({
           name: "Cashvia",
           utmLink: cashviaData?.utm_link || FALLBACK_UTM_LINKS["Cashvia"],
+          isOffer: false,
+        });
+      }
+
+      // Add LendingPlate based on API response (only if the lead push succeeded)
+      if (isLendingPlateEligible && !existingLenderNames.has("LendingPlate")) {
+        mappedOffers.push({
+          name: "LendingPlate",
+          utmLink: lendingPlateData?.utm_link || FALLBACK_UTM_LINKS["LendingPlate"],
           isOffer: false,
         });
       }

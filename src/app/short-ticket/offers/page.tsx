@@ -37,6 +37,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   ASAPFinance: "ASAPFinance",
   Nira: "Nira",
   Apollo: "Apollo",
+  LendingPlate: "LendingPlate",
 };
 
 // Default render order
@@ -56,6 +57,7 @@ const LENDER_ORDER = [
   "ASAPFinance",
   "Nira",
   "Apollo",
+  "LendingPlate",
 ];
 
 // When utm_medium=kreditbee: KreditBee first
@@ -75,6 +77,7 @@ const KB_PRIORITY_ORDER = [
   "ASAPFinance",
   "Nira",
   "Apollo",
+  "LendingPlate",
 ];
 
 // When utm_medium=rapidmoney: RapidMoney first
@@ -94,6 +97,7 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "ASAPFinance",
   "Nira",
   "Apollo",
+  "LendingPlate",
 ];
 
 const RamFinCorp_PRIORITY_ORDER = [
@@ -112,6 +116,7 @@ const RamFinCorp_PRIORITY_ORDER = [
   "ASAPFinance",
   "Nira",
   "Apollo",
+  "LendingPlate",
 ];
 
 // When utm_medium=loanwalle: LoanWalle first
@@ -131,6 +136,7 @@ const LOANWALLE_PRIORITY_ORDER = [
   "ASAPFinance",
   "Nira",
   "Apollo",
+  "LendingPlate",
 ];
 
 // When utm_medium=moneydot: MoneyDot first
@@ -150,6 +156,7 @@ const MONEYDOT_PRIORITY_ORDER = [
   "ASAPFinance",
   "Nira",
   "Apollo",
+  "LendingPlate",
 ];
 
 const TRUEFUND_PRIORITY_ORDER = [
@@ -168,6 +175,7 @@ const TRUEFUND_PRIORITY_ORDER = [
   "ASAPFinance",
   "Nira",
   "Apollo",
+  "LendingPlate",
 ];
 
 const ASAPFINANCE_PRIORITY_ORDER = [
@@ -186,6 +194,7 @@ const ASAPFINANCE_PRIORITY_ORDER = [
   "RupiNow",
   "Nira",
   "Apollo",
+  "LendingPlate",
 ];
 
 // const SPEEDOLOAN_PRIORITY_ORDER = [
@@ -222,6 +231,7 @@ const CASHMYSalary_PRIORITY_ORDER = [
   "ASAPFinance",
   "Nira",
   "Apollo",
+  "LendingPlate",
 ];
 
 
@@ -241,6 +251,10 @@ const FALLBACK_UTM: Record<string, string> = {
   RupiNow: "https://www.rupinow.com/home",
   ASAPFinance: "https://asapfinance.in/customer/login?utm_source=easyloans+Cready",
   Nira: "https://play.google.com/store/apps/details?id=com.nirafinance.customer&referrer=pid%3DCready%26c%3DPartnerships_Cready_CPA%26af_adset%3D%7B%7D%26af_tranid%3DMTgzMjkwOTA0MzAyMDE3NjUyOTE%3D",
+  // LendingPlate's generate_lead API returns no redirect URL — the backend now
+  // stamps this same link onto data.LendingPlate.utm_link (SHORT_FALLBACK_UTM),
+  // so this is only the belt-and-braces fallback.
+  LendingPlate: "https://lendingplate.com/",
 };
 
 // Map API names to internal lender names
@@ -358,6 +372,15 @@ function getUtmLink(
       return directLink || FALLBACK_UTM.RupiNow;
     }
 
+    case "LendingPlate": {
+      // Lead-push lender: the API only confirms the lead was accepted
+      // (resData.status === "S", already folded into `success` by the backend).
+      // It returns NO redirect URL, so the card can only render once
+      // FALLBACK_UTM.LendingPlate is filled in.
+      if (lender.success !== true) return null;
+      return directLink || FALLBACK_UTM.LendingPlate || null;
+    }
+
     case "Cashvia": {
       // Cashvia is shown only if dedupeStatus === "Passed"
       const cashviaDedupeStatus = (lender as { dedupeStatus?: string })?.dedupeStatus;
@@ -438,6 +461,7 @@ export default function ShortTicketOffersPage() {
     if ((data.RupiNow as { utm_link?: string })?.utm_link) utmMap["RupiNow"] = (data.RupiNow as { utm_link?: string }).utm_link;
     if ((data.Cashvia as { utm_link?: string })?.utm_link) utmMap["Cashvia"] = (data.Cashvia as { utm_link?: string }).utm_link;
     if ((data.TrueFund as { utm_link?: string })?.utm_link) utmMap["TrueFund"] = (data.TrueFund as { utm_link?: string }).utm_link;
+    if ((data.LendingPlate as { utm_link?: string })?.utm_link) utmMap["LendingPlate"] = (data.LendingPlate as { utm_link?: string }).utm_link;
 
     // Process static lenders from API
     const staticLenders = (data as { staticLenders?: Array<{ name: string; utm_link: string }> }).staticLenders || [];
@@ -613,6 +637,18 @@ export default function ShortTicketOffersPage() {
           const rupiNowDedupeStatus = (lender as { dedupeStatus?: string })?.dedupeStatus;
           if (rupiNowDedupeStatus !== "Passed") break;
           ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.RupiNow });
+          break;
+        }
+
+        case "LendingPlate": {
+          // Show only when the backend actually returned LendingPlate AND the
+          // lead push succeeded (resData.status === "S" → success: true).
+          if (lender?.success !== true) break;
+          // Lead-push API returns no redirect URL — without a link there is
+          // nowhere for "Apply" to go, so skip the card entirely.
+          const lpLink = utmMap[name] || FALLBACK_UTM.LendingPlate;
+          if (!lpLink) break;
+          ordered.push({ name, utm_link: lpLink });
           break;
         }
 
