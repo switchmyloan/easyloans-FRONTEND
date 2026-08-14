@@ -27,7 +27,8 @@ const DISPLAY_NAMES: Record<string, string> = {
   Vivifi: "Vivifi",
   KreditBee: "Kreditbee",
   TrueBalance: "TrueBalance",
-  SpeedoLoan: "SpeedoLoan",
+  // SpeedoLoan: "SpeedoLoan",
+  CashMySalary: "CashMySalary",
   LoanWalle: "LoanWalle",
   Cashvia: "Cashvia",
   TrueFund: "TrueFund",
@@ -41,7 +42,8 @@ const DISPLAY_NAMES: Record<string, string> = {
 // Default render order
 const LENDER_ORDER = [
   "RamFinCorp",
-  "SpeedoLoan",
+  // "SpeedoLoan",
+  "CashMySalary",
   "LoanWalle",
   "Vivifi",
   "Cashvia",
@@ -60,7 +62,8 @@ const LENDER_ORDER = [
 const KB_PRIORITY_ORDER = [
   "KreditBee",
   "RamFinCorp",
-  "SpeedoLoan",
+  // "SpeedoLoan",
+  "CashMySalary",
   "LoanWalle",
   "Vivifi",
   "Cashvia",
@@ -78,7 +81,8 @@ const KB_PRIORITY_ORDER = [
 const RAPIDMONEY_PRIORITY_ORDER = [
   "RapidMoney",
   "RamFinCorp",
-  "SpeedoLoan",
+  // "SpeedoLoan",
+  "CashMySalary",
   "LoanWalle",
   "Vivifi",
   "Cashvia",
@@ -94,7 +98,8 @@ const RAPIDMONEY_PRIORITY_ORDER = [
 
 const RamFinCorp_PRIORITY_ORDER = [
   "RamFinCorp",
-  "SpeedoLoan",
+  // "SpeedoLoan",
+  "CashMySalary",
   "LoanWalle",
   "Vivifi",
   "Cashvia",
@@ -113,7 +118,8 @@ const RamFinCorp_PRIORITY_ORDER = [
 const LOANWALLE_PRIORITY_ORDER = [
   "LoanWalle",
   "RamFinCorp",
-  "SpeedoLoan",
+  // "SpeedoLoan",
+  "CashMySalary",
   "Vivifi",
   "Cashvia",
   "TrueBalance",
@@ -131,7 +137,8 @@ const LOANWALLE_PRIORITY_ORDER = [
 const MONEYDOT_PRIORITY_ORDER = [
   "MoneyDot",
   "RamFinCorp",
-  "SpeedoLoan",
+  // "SpeedoLoan",
+  "CashMySalary",
   "LoanWalle",
   "Vivifi",
   "Cashvia",
@@ -148,7 +155,8 @@ const MONEYDOT_PRIORITY_ORDER = [
 const TRUEFUND_PRIORITY_ORDER = [
   "TrueFund",
   "RamFinCorp",
-  "SpeedoLoan",
+  // "SpeedoLoan",
+  "CashMySalary",
   "LoanWalle",
   "Vivifi",
   "Cashvia",
@@ -165,7 +173,8 @@ const TRUEFUND_PRIORITY_ORDER = [
 const ASAPFINANCE_PRIORITY_ORDER = [
   "ASAPFinance",
   "RamFinCorp",
-  "SpeedoLoan",
+  // "SpeedoLoan",
+  "CashMySalary",
   "LoanWalle",
   "Vivifi",
   "Cashvia",
@@ -179,9 +188,28 @@ const ASAPFINANCE_PRIORITY_ORDER = [
   "Apollo",
 ];
 
-const SPEEDOLOAN_PRIORITY_ORDER = [
-  "SpeedoLoan",
+// const SPEEDOLOAN_PRIORITY_ORDER = [
+//   "SpeedoLoan",
+//   "CashMySalary",
+//   "RamFinCorp",
+//   "LoanWalle",
+//   "Vivifi",
+//   "Cashvia",
+//   "TrueBalance",
+//   "RapidMoney",
+//   "KreditBee",
+//   "TrueFund",
+//   "MoneyDot",
+//   "RupiNow",
+//   "ASAPFinance",
+//   "Nira",
+//   "Apollo",
+// ];
+
+const CASHMYSalary_PRIORITY_ORDER = [
+  "CashMySalary",
   "RamFinCorp",
+  // "SpeedoLoan",
   "LoanWalle",
   "Vivifi",
   "Cashvia",
@@ -196,6 +224,8 @@ const SPEEDOLOAN_PRIORITY_ORDER = [
   "Apollo",
 ];
 
+
+
 const FALLBACK_UTM: Record<string, string> = {
   KreditBee: "https://kredt.be/3ZFfVbz",
   RamFinCorp: "https://ramfincorp.com/",
@@ -203,7 +233,8 @@ const FALLBACK_UTM: Record<string, string> = {
   TrueBalance: "https://truebalance.io/",
   // MPokket: "https://mpokket.com/",
   RapidMoney: "https://web.rapidmoney.in/",
-  SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
+  // SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
+  CashMySalary: "https://loanapply.cashmysalary.com/auth?partner_id=cready&utm_medium=whatsapp&utm_campaign=social",
   Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
   TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
   MoneyDot: "https://www.moneydot.in/",
@@ -215,9 +246,12 @@ const FALLBACK_UTM: Record<string, string> = {
 // Map API names to internal lender names
 const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   "RamFinCorp": "RamFinCorp",
-  "Speedoloan": "SpeedoLoan",
-  "speedoloan": "SpeedoLoan",
-  "SpeedoLoan": "SpeedoLoan",
+  // "Speedoloan": "SpeedoLoan",
+  // "speedoloan": "SpeedoLoan",
+  // "SpeedoLoan": "SpeedoLoan",
+  "CashMySalary": "CashMySalary",
+  "cashmysalary": "CashMySalary",
+  "Cashmysalary": "CashMySalary",
   "LoanWalle": "LoanWalle",
   "Loanwalle": "LoanWalle",
   "Cashvia": "Cashvia",
@@ -263,8 +297,12 @@ function getUtmLink(
       // TrueBalance only shows if it comes from API staticLenders (no fallback)
       return directLink || null;
 
-    case "SpeedoLoan":
-      // SpeedoLoan only shows if it comes from API staticLenders (no fallback)
+    // case "SpeedoLoan":
+    //   // SpeedoLoan only shows if it comes from API staticLenders (no fallback)
+    //   return directLink || null;
+
+    case "CashMySalary":
+      // CashMySalary only shows if it comes from API staticLenders (no fallback)
       return directLink || null;
 
     case "Vivifi":
@@ -353,7 +391,8 @@ export default function ShortTicketOffersPage() {
   const [isMoneyDotMedium, setIsMoneyDotMedium] = useState(false);
   const [isTrueFundMedium, setIsTrueFundMedium] = useState(false);
   const [isASAPFinanceMedium, setIsASAPFinanceMedium] = useState(false);
-  const [isSpeedoLoanMedium, setIsSpeedoLoanMedium] = useState(false);
+  // const [isSpeedoLoanMedium, setIsSpeedoLoanMedium] = useState(false);
+  const [isCashMySalaryMedium, setIsCashMySalaryMedium] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
   const [priorityVisible, setPriorityVisible] = useState(0);
   const [showAll, setShowAll] = useState(false);
@@ -423,8 +462,10 @@ export default function ShortTicketOffersPage() {
     setIsTrueFundMedium(isTrueFundMediumLocal);
     const isASAPFinanceMediumLocal = utmMedium === "asapfinance";
     setIsASAPFinanceMedium(isASAPFinanceMediumLocal);
-    const isSpeedoLoanMediumLocal = utmMedium === "speedoloan";
-    setIsSpeedoLoanMedium(isSpeedoLoanMediumLocal);
+    // const isSpeedoLoanMediumLocal = utmMedium === "speedoloan";
+    // setIsSpeedoLoanMedium(isSpeedoLoanMediumLocal);
+    const isCashMySalaryMediumLocal = utmMedium === "cashmysalary";
+    setIsCashMySalaryMedium(isCashMySalaryMediumLocal);
 
     let renderOrder = LENDER_ORDER;
     let initialVisible = 4;
@@ -450,10 +491,13 @@ export default function ShortTicketOffersPage() {
     } else if (isASAPFinanceMediumLocal) {
       renderOrder = ASAPFINANCE_PRIORITY_ORDER;
       initialVisible = 5;
-    } else if (isSpeedoLoanMediumLocal) {
-      renderOrder = SPEEDOLOAN_PRIORITY_ORDER;
+    // } else if (isSpeedoLoanMediumLocal) {
+    //   renderOrder = SPEEDOLOAN_PRIORITY_ORDER;
+    //   initialVisible = 5;
+    } else if (isCashMySalaryMediumLocal) {
+      renderOrder = CASHMYSalary_PRIORITY_ORDER;
       initialVisible = 5;
-    }
+    } 
 
     // Build ordered list based on eligibility
     const ordered: OrderedLender[] = [];
@@ -494,8 +538,14 @@ export default function ShortTicketOffersPage() {
           ordered.push({ name, utm_link: utmMap[name] });
           break;
 
-        case "SpeedoLoan":
-          // SpeedoLoan only shows if it comes from API staticLenders
+        // case "SpeedoLoan":
+        //   // SpeedoLoan only shows if it comes from API staticLenders
+        //   if (!utmMap[name]) break;
+        //   ordered.push({ name, utm_link: utmMap[name] });
+        //   break;
+
+        case "CashMySalary":
+          // CashMySalary only shows if it comes from API staticLenders
           if (!utmMap[name]) break;
           ordered.push({ name, utm_link: utmMap[name] });
           break;
@@ -687,8 +737,8 @@ export default function ShortTicketOffersPage() {
   };
 
   // Hero card logic
-  const showHeroFlow = isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium || isLoanWalleMedium || isMoneyDotMedium || isTrueFundMedium || isASAPFinanceMedium || isSpeedoLoanMedium;
-  const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : isLoanWalleMedium ? "LoanWalle" : isMoneyDotMedium ? "MoneyDot" : isTrueFundMedium ? "TrueFund" : isASAPFinanceMedium ? "ASAPFinance" : isSpeedoLoanMedium ? "SpeedoLoan" : null;
+  const showHeroFlow = isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium || isLoanWalleMedium || isMoneyDotMedium || isTrueFundMedium || isASAPFinanceMedium || /* isSpeedoLoanMedium || */ isCashMySalaryMedium;
+  const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : isLoanWalleMedium ? "LoanWalle" : isMoneyDotMedium ? "MoneyDot" : isTrueFundMedium ? "TrueFund" : isASAPFinanceMedium ? "ASAPFinance" : /* isSpeedoLoanMedium ? "SpeedoLoan" : */ isCashMySalaryMedium ? "CashMySalary" : null;
   const heroIdx = heroName ? visibleLenders.findIndex((l) => l.name === heroName) : -1;
   const showHeroCard = showHeroFlow && heroIdx === 0 && visibleLenders.length > 0;
   const heroLender = showHeroCard ? visibleLenders[0] : null;

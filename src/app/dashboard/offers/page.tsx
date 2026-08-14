@@ -38,7 +38,8 @@ const DISPLAY_NAMES: Record<string, string> = {
   RapidMoney: "RapidMoney",
   TrueBalance: "TrueBalance",
   RamFinCorp: "Ram FinCorp",
-  SpeedoLoan: "SpeedoLoan",
+  // SpeedoLoan: "SpeedoLoan",
+  CashMySalary: "CashMySalary",
   LoanWalle: "LoanWalle",
   Cashvia: "Cashvia",
   TrueFund: "TrueFund",
@@ -58,7 +59,8 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   RapidMoney: "https://web.rapidmoney.in/borrower/login?utm_source=creadylandingpage&utm_extsource=abc&utm_medium=rapidmoney&utm_campaign=xyz&utm_campaignID=def",
   KreditBee: "https://www.kreditbee.in/signin",
  
-  SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
+  // SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
+  CashMySalary: "https://loanapply.cashmysalary.com/auth?partner_id=cready&utm_medium=whatsapp&utm_campaign=social",
   Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
   TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
   MoneyDot: "https://www.moneydot.in/",
@@ -206,9 +208,12 @@ const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
       const staticLenderUtmLinks: Record<string, string> = {};
       // Map API names to internal lender names
       const STATIC_LENDER_NAME_MAP: Record<string, string> = {
-        "Speedoloan": "SpeedoLoan",
-        "speedoloan": "SpeedoLoan",
-        "SpeedoLoan": "SpeedoLoan",
+        // "Speedoloan": "SpeedoLoan",
+        // "speedoloan": "SpeedoLoan",
+        // "SpeedoLoan": "SpeedoLoan",
+        "CashMySalary": "CashMySalary",
+        "cashmysalary": "CashMySalary",
+        "Cashmysalary": "CashMySalary",
         "LoanWalle": "LoanWalle",
         "Loanwalle": "LoanWalle",
         "TrueBalance": "TrueBalance",
@@ -285,11 +290,20 @@ const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
         });
       }
 
-      // Add SpeedoLoan only if it comes from API staticLenders
-      if (staticLenderUtmLinks["SpeedoLoan"] && !existingLenderNames.has("SpeedoLoan")) {
+      // // Add SpeedoLoan only if it comes from API staticLenders
+      // if (staticLenderUtmLinks["SpeedoLoan"] && !existingLenderNames.has("SpeedoLoan")) {
+      //   mappedOffers.push({
+      //     name: "SpeedoLoan",
+      //     utmLink: staticLenderUtmLinks["SpeedoLoan"],
+      //     isOffer: false,
+      //   });
+      // }
+
+      // Add CashMySalary only if it comes from API staticLenders
+      if (staticLenderUtmLinks["CashMySalary"] && !existingLenderNames.has("CashMySalary")) {
         mappedOffers.push({
-          name: "SpeedoLoan",
-          utmLink: staticLenderUtmLinks["SpeedoLoan"],
+          name: "CashMySalary",
+          utmLink: staticLenderUtmLinks["CashMySalary"],
           isOffer: false,
         });
       }

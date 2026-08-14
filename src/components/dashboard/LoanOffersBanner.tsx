@@ -20,7 +20,8 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   TrueBalance: "https://truebalance.io/",
   RapidMoney: "https://web.rapidmoney.in/borrower/login?utm_source=creadylandingpage&utm_extsource=abc&utm_medium=rapidmoney&utm_campaign=xyz&utm_campaignID=def",
   KreditBee: "https://www.kreditbee.in/signin",
-  SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
+  // SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
+  CashMySalary: "https://cashmysalary.com/?partner_id=cready",
   Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
   TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
   Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
@@ -36,7 +37,8 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   kreditbee: "KreditBee",
   ramfincorp: "RamFinCorp",
   truebalance: "TrueBalance",
-  speedoloan: "SpeedoLoan",
+  // speedoloan: "SpeedoLoan",
+  cashmysalary: "CashMySalary",
   loanwalle: "LoanWalle",
   cashvia: "Cashvia",
   truefund: "TrueFund",
@@ -74,7 +76,7 @@ const REMOVED_LENDERS = ["MPokket", "Loan112", "SmartCoin", "SmartCoinHighIntent
 // Static lenders that should always be shown
 // Note: RamFinCorp is now shown based on API response (message === "Dedup Success")
 // Note: LoanWalle is shown only when received in staticLenders from API (with utm_link)
-const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", "SpeedoLoan", "Cashvia", "Vivifi", "TrueBalance"];
+const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", /* "SpeedoLoan", */ "Cashvia", "Vivifi", "TrueBalance"];
 
 // ============================================================
 // Utility Functions

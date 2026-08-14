@@ -38,7 +38,8 @@ export const STATIC_LENDER_LOGOS: Record<
   Vivifi: { src: "/vivifi.webp" },
   TrueBalance: { src: "/truebalance.png" },
   KreditBee: { src: "/kreditbee-logo.svg" },
-  SpeedoLoan: { src: "/speedoloan.png" },
+  // SpeedoLoan: { src: "/speedoloan.png" },
+  CashMySalary: { src: "/cashmysalary.webp" },
   LoanWalle: { src: "/loanwalle.webp" },
   Cashvia: { src: "/cashvia1.png" },
   TrueFund: { src: "/truefund.svg" },
@@ -149,7 +150,13 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Instant Approval and Same Day Disbursement",
     interestRate: "Interest rate starting from 1.3% per month.",
   },
-  SpeedoLoan: {
+  // SpeedoLoan: {
+  //   headline: "Get up to ₹50,000 with quick approval!",
+  //   description: "Personal loans with fast disbursement and no hidden charges",
+  //   keyFeature: "Quick Approval and No Hidden Charges",
+  //   interestRate: "Interest Rates start at 1%* per day",
+  // },
+  CashMySalary: {
     headline: "Get up to ₹50,000 with quick approval!",
     description: "Personal loans with fast disbursement and no hidden charges",
     keyFeature: "Quick Approval and No Hidden Charges",
@@ -209,7 +216,8 @@ export const STATIC_LENDER_DETAILS: Record<
 // Lower index = higher priority (shown first)
 export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "RamFinCorp",
-  "SpeedoLoan",
+  // "SpeedoLoan",
+  "CashMySalary",
   "LoanWalle",
   "Vivifi",
   "Cashvia",
@@ -231,7 +239,8 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   RapidMoney: "Quick approval",
   RamFinCorp: "Flexible loan options",
   Vivifi: "Flexible loan options",
-  SpeedoLoan: "Quick approval",
+  // SpeedoLoan: "Quick approval",
+  CashMySalary: "Quick approval",
   LoanWalle: "Only for EPFO registered users",
   Cashvia: "Minimal documentation",
   TrueFund: "Quick approval",
@@ -279,7 +288,12 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "No Collateral", description: "No collateral required" },
     { title: "Hassle-Free Documentation", description: "No documentation required" },
   ],
-  SpeedoLoan: [
+  // SpeedoLoan: [
+  //   { title: "Quick Approval", description: "Fast processing" },
+  //   { title: "No Hidden Charges", description: "Secure and Trusted" },
+  //   { title: "Up to ₹50,000", description: "High loan amount" },
+  // ],
+  CashMySalary: [
     { title: "Quick Approval", description: "Fast processing" },
     { title: "No Hidden Charges", description: "Secure and Trusted" },
     { title: "Up to ₹50,000", description: "High loan amount" },
@@ -307,7 +321,8 @@ export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   TrueBalance: ["Loans up to ₹2 Lakh", "Minimal Docs", "Quick Approval"],
   RamFinCorp: ["Transparent Terms", "Quick Processing", "Easy Approval"],
   MoneyDot: ["Loans up to ₹1 Lakh", "Zero Paperwork", "No Collateral"],
-  SpeedoLoan: ["Quick Approval", "No Hidden Charges", "Up to ₹50,000"],
+  // SpeedoLoan: ["Quick Approval", "No Hidden Charges", "Up to ₹50,000"],
+  CashMySalary: ["Quick Approval", "No Hidden Charges", "Up to ₹50,000"],
   Cashvia: ["Minimal Docs", "Quick Approval", "Fast Disbursal"],
   TrueFund: ["Quick Approval", "Up to ₹10 Lakh", "Flexible Repayment"],
   RupiNow: ["Zero Hidden Charges", "Flexible Tenure", "Up to ₹5 Lakh"],
@@ -326,7 +341,8 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   RapidMoney: 15000,        // ₹15,000
   RamFinCorp: 100000,       // ₹1 Lakh
   Vivifi: 500000,           // ₹5 Lakhs
-  SpeedoLoan: 50000,      // ₹50,000
+  // SpeedoLoan: 50000,      // ₹50,000
+  CashMySalary: 50000,    // ₹50,000
   LoanWalle: 100000,      // ₹1 Lakh
   Cashvia: 30000,      // ₹30,000
   TrueFund: 50000,      // ₹50,000
