@@ -34,7 +34,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   TrueFund: "TrueFund",
   MoneyDot: "MoneyDot",
   RupiNow: "RupiNow",
-  ASAPFinance: "ASAPFinance",
+  // ASAPFinance: "ASAPFinance",
   Nira: "Nira",
   // Apollo: "Apollo",
   LendingPlate: "LendingPlate",
@@ -54,7 +54,7 @@ const LENDER_ORDER = [
   "TrueFund",
   "MoneyDot",
   "RupiNow",
-  "ASAPFinance",
+  // "ASAPFinance",
   "Nira",
   // "Apollo",
   "LendingPlate",
@@ -74,7 +74,7 @@ const KB_PRIORITY_ORDER = [
   "TrueFund",
   "MoneyDot",
   "RupiNow",
-  "ASAPFinance",
+  // "ASAPFinance",
   "Nira",
   // "Apollo",
   "LendingPlate",
@@ -94,7 +94,7 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "TrueFund",
   "MoneyDot",
   "RupiNow",
-  "ASAPFinance",
+  // "ASAPFinance",
   "Nira",
   // "Apollo",
   "LendingPlate",
@@ -113,7 +113,7 @@ const RamFinCorp_PRIORITY_ORDER = [
   "TrueFund",
   "MoneyDot",
   "RupiNow",
-  "ASAPFinance",
+  // "ASAPFinance",
   "Nira",
   // "Apollo",
   "LendingPlate",
@@ -133,7 +133,7 @@ const LOANWALLE_PRIORITY_ORDER = [
   "TrueFund",
   "MoneyDot",
   "RupiNow",
-  "ASAPFinance",
+  // "ASAPFinance",
   "Nira",
   // "Apollo",
   "LendingPlate",
@@ -153,7 +153,7 @@ const MONEYDOT_PRIORITY_ORDER = [
   "KreditBee",
   "TrueFund",
   "RupiNow",
-  "ASAPFinance",
+  // "ASAPFinance",
   "Nira",
   // "Apollo",
   "LendingPlate",
@@ -172,30 +172,30 @@ const TRUEFUND_PRIORITY_ORDER = [
   "KreditBee",
   "MoneyDot",
   "RupiNow",
-  "ASAPFinance",
+  // "ASAPFinance",
   "Nira",
   // "Apollo",
   "LendingPlate",
 ];
 
-const ASAPFINANCE_PRIORITY_ORDER = [
-  "ASAPFinance",
-  "RamFinCorp",
-  // "SpeedoLoan",
-  "CashMySalary",
-  "LoanWalle",
-  "Vivifi",
-  "Cashvia",
-  "TrueBalance",
-  "RapidMoney",
-  "KreditBee",
-  "TrueFund",
-  "MoneyDot",
-  "RupiNow",
-  "Nira",
-  // "Apollo",
-  "LendingPlate",
-];
+// const ASAPFINANCE_PRIORITY_ORDER = [
+//   // "ASAPFinance",
+//   "RamFinCorp",
+//   // "SpeedoLoan",
+//   "CashMySalary",
+//   "LoanWalle",
+//   "Vivifi",
+//   "Cashvia",
+//   "TrueBalance",
+//   "RapidMoney",
+//   "KreditBee",
+//   "TrueFund",
+//   "MoneyDot",
+//   "RupiNow",
+//   "Nira",
+//   // "Apollo",
+//   "LendingPlate",
+// ];
 
 // const SPEEDOLOAN_PRIORITY_ORDER = [
 //   "SpeedoLoan",
@@ -210,7 +210,7 @@ const ASAPFINANCE_PRIORITY_ORDER = [
 //   "TrueFund",
 //   "MoneyDot",
 //   "RupiNow",
-//   "ASAPFinance",
+//   // "ASAPFinance",
 //   "Nira",
 //   "Apollo",
 // ];
@@ -228,7 +228,7 @@ const CASHMYSalary_PRIORITY_ORDER = [
   "TrueFund",
   "MoneyDot",
   "RupiNow",
-  "ASAPFinance",
+  // "ASAPFinance",
   "Nira",
   // "Apollo",
   "LendingPlate",
@@ -249,7 +249,7 @@ const FALLBACK_UTM: Record<string, string> = {
   TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
   MoneyDot: "https://www.moneydot.in/",
   RupiNow: "https://www.rupinow.com/home",
-  ASAPFinance: "https://asapfinance.in/customer/login?utm_source=easyloans+Cready",
+  // ASAPFinance: "https://asapfinance.in/customer/login?utm_source=easyloans+Cready",
   Nira: "https://play.google.com/store/apps/details?id=com.nirafinance.customer&referrer=pid%3DCready%26c%3DPartnerships_Cready_CPA%26af_adset%3D%7B%7D%26af_tranid%3DMTgzMjkwOTA0MzAyMDE3NjUyOTE%3D",
   // LendingPlate's generate_lead API returns no redirect URL — the backend now
   // stamps this same link onto data.LendingPlate.utm_link (SHORT_FALLBACK_UTM),
@@ -278,8 +278,8 @@ const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   "vivifi": "Vivifi",
   "MoneyDot": "MoneyDot",
   "RupiNow": "RupiNow",
-  "ASAPFinance": "ASAPFinance",
-  "asapfinance": "ASAPFinance",
+  // "ASAPFinance": "ASAPFinance",
+  // "asapfinance": "ASAPFinance",
   "Nira": "Nira",
   "nira": "Nira",
   // "Apollo": "Apollo",
@@ -323,9 +323,9 @@ function getUtmLink(
       // Vivifi only shows if it comes from API staticLenders (no fallback)
       return directLink || null;
 
-    case "ASAPFinance":
-      // ASAPFinance only shows if it comes from API staticLenders (no fallback)
-      return directLink || null;
+    // case "ASAPFinance":
+    //   // ASAPFinance only shows if it comes from API staticLenders (no fallback)
+    //   return directLink || null;
 
     case "Nira":
       // Nira only shows if it comes from API staticLenders (no fallback)
@@ -413,7 +413,7 @@ export default function ShortTicketOffersPage() {
   const [isLoanWalleMedium, setIsLoanWalleMedium] = useState(false);
   const [isMoneyDotMedium, setIsMoneyDotMedium] = useState(false);
   const [isTrueFundMedium, setIsTrueFundMedium] = useState(false);
-  const [isASAPFinanceMedium, setIsASAPFinanceMedium] = useState(false);
+  // const [isASAPFinanceMedium, setIsASAPFinanceMedium] = useState(false);
   // const [isSpeedoLoanMedium, setIsSpeedoLoanMedium] = useState(false);
   const [isCashMySalaryMedium, setIsCashMySalaryMedium] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
@@ -484,8 +484,8 @@ export default function ShortTicketOffersPage() {
     setIsMoneyDotMedium(isMoneyDotMediumLocal);
     const isTrueFundMediumLocal = utmMedium === "truefund";
     setIsTrueFundMedium(isTrueFundMediumLocal);
-    const isASAPFinanceMediumLocal = utmMedium === "asapfinance";
-    setIsASAPFinanceMedium(isASAPFinanceMediumLocal);
+    // const isASAPFinanceMediumLocal = utmMedium === "asapfinance";
+    // setIsASAPFinanceMedium(isASAPFinanceMediumLocal);
     // const isSpeedoLoanMediumLocal = utmMedium === "speedoloan";
     // setIsSpeedoLoanMedium(isSpeedoLoanMediumLocal);
     const isCashMySalaryMediumLocal = utmMedium === "cashmysalary";
@@ -512,9 +512,9 @@ export default function ShortTicketOffersPage() {
     } else if (isTrueFundMediumLocal) {
       renderOrder = TRUEFUND_PRIORITY_ORDER;
       initialVisible = 5;
-    } else if (isASAPFinanceMediumLocal) {
-      renderOrder = ASAPFINANCE_PRIORITY_ORDER;
-      initialVisible = 5;
+    // } else if (isASAPFinanceMediumLocal) {
+    //   renderOrder = ASAPFINANCE_PRIORITY_ORDER;
+    //   initialVisible = 5;
     // } else if (isSpeedoLoanMediumLocal) {
     //   renderOrder = SPEEDOLOAN_PRIORITY_ORDER;
     //   initialVisible = 5;
@@ -580,11 +580,11 @@ export default function ShortTicketOffersPage() {
           ordered.push({ name, utm_link: utmMap[name] });
           break;
 
-        case "ASAPFinance":
-          // ASAPFinance only shows if it comes from API staticLenders
-          if (!utmMap[name]) break;
-          ordered.push({ name, utm_link: utmMap[name] });
-          break;
+        // case "ASAPFinance":
+        //   // ASAPFinance only shows if it comes from API staticLenders
+        //   if (!utmMap[name]) break;
+        //   ordered.push({ name, utm_link: utmMap[name] });
+        //   break;
 
         case "Nira":
           // Nira only shows if it comes from API staticLenders
@@ -773,8 +773,8 @@ export default function ShortTicketOffersPage() {
   };
 
   // Hero card logic
-  const showHeroFlow = isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium || isLoanWalleMedium || isMoneyDotMedium || isTrueFundMedium || isASAPFinanceMedium || /* isSpeedoLoanMedium || */ isCashMySalaryMedium;
-  const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : isLoanWalleMedium ? "LoanWalle" : isMoneyDotMedium ? "MoneyDot" : isTrueFundMedium ? "TrueFund" : isASAPFinanceMedium ? "ASAPFinance" : /* isSpeedoLoanMedium ? "SpeedoLoan" : */ isCashMySalaryMedium ? "CashMySalary" : null;
+  const showHeroFlow = isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium || isLoanWalleMedium || isMoneyDotMedium || isTrueFundMedium || /* isASAPFinanceMedium || */ /* isSpeedoLoanMedium || */ isCashMySalaryMedium;
+  const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : isLoanWalleMedium ? "LoanWalle" : isMoneyDotMedium ? "MoneyDot" : isTrueFundMedium ? "TrueFund" : /* isASAPFinanceMedium ? "ASAPFinance" : */ /* isSpeedoLoanMedium ? "SpeedoLoan" : */ isCashMySalaryMedium ? "CashMySalary" : null;
   const heroIdx = heroName ? visibleLenders.findIndex((l) => l.name === heroName) : -1;
   const showHeroCard = showHeroFlow && heroIdx === 0 && visibleLenders.length > 0;
   const heroLender = showHeroCard ? visibleLenders[0] : null;

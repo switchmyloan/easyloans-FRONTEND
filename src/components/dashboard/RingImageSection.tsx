@@ -18,7 +18,7 @@ const LENDER_RING_IMAGES: Record<string, string> = {
   cashvia: "/C-ring.png",
   truefund: "/TF-ring.png",
   moneydot: "/MD-ring.png",
-  asapfinance: "/ASAP-ring.png",
+  // asapfinance: "/ASAP-ring.png",
   nira: "/N-ring.png",
   apollo: "/A-ring.png",
   cashmysalary: "/CS-ring.png",

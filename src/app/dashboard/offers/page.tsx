@@ -45,7 +45,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   TrueFund: "TrueFund",
   MoneyDot: "MoneyDot",
   RupiNow: "RupiNow",
-  ASAPFinance: "ASAPFinance",
+  // ASAPFinance: "ASAPFinance",
   Nira: "Nira",
   // Apollo: "Apollo",
   LendingPlate: "LendingPlate",
@@ -66,7 +66,7 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
   MoneyDot: "https://www.moneydot.in/",
   RupiNow: "https://www.rupinow.com/home",
-  ASAPFinance: "https://asapfinance.in/customer/login?utm_source=easyloans+Cready",
+  // ASAPFinance: "https://asapfinance.in/customer/login?utm_source=easyloans+Cready",
   Nira: "https://play.google.com/store/apps/details?id=com.nirafinance.customer&referrer=pid%3DCready%26c%3DPartnerships_Cready_CPA%26af_adset%3D%7B%7D%26af_tranid%3DMTgzMjkwOTA0MzAyMDE3NjUyOTE%3D",
   LendingPlate: "https://lendingplate.com/",
 };
@@ -232,8 +232,8 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         "truebalance": "TrueBalance",
         "Vivifi": "Vivifi",
         "vivifi": "Vivifi",
-        "ASAPFinance": "ASAPFinance",
-        "asapfinance": "ASAPFinance",
+        // "ASAPFinance": "ASAPFinance",
+        // "asapfinance": "ASAPFinance",
         "Nira": "Nira",
         "nira": "Nira",
         // "Apollo": "Apollo",
@@ -274,14 +274,14 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
       }
 
 
-      // Add ASAPFinance only if it comes from API staticLenders
-      if (staticLenderUtmLinks["ASAPFinance"] && !existingLenderNames.has("ASAPFinance")) {
-        mappedOffers.push({
-          name: "ASAPFinance",
-          utmLink: staticLenderUtmLinks["ASAPFinance"],
-          isOffer: false,
-        });
-      }
+      // // Add ASAPFinance only if it comes from API staticLenders
+      // if (staticLenderUtmLinks["ASAPFinance"] && !existingLenderNames.has("ASAPFinance")) {
+      //   mappedOffers.push({
+      //     name: "ASAPFinance",
+      //     utmLink: staticLenderUtmLinks["ASAPFinance"],
+      //     isOffer: false,
+      //   });
+      // }
 
       // Add Nira only if it comes from API staticLenders
       if (staticLenderUtmLinks["Nira"] && !existingLenderNames.has("Nira")) {

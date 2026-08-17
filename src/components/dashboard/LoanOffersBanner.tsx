@@ -27,7 +27,7 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
   MoneyDot: "https://www.moneydot.in/",
   RupiNow: "https://www.rupinow.com/home",
-  ASAPFinance: "https://asapfinance.in/customer/login?utm_source=easyloans+Cready",
+  // ASAPFinance: "https://asapfinance.in/customer/login?utm_source=easyloans+Cready",
   Nira: "https://play.google.com/store/apps/details?id=com.nirafinance.customer&referrer=pid%3DCready%26c%3DPartnerships_Cready_CPA%26af_adset%3D%7B%7D%26af_tranid%3DMTgzMjkwOTA0MzAyMDE3NjUyOTE%3D",
 };
 
@@ -44,8 +44,8 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   truefund: "TrueFund",
   vivifi: "Vivifi",
   moneydot: "MoneyDot",
-  asapfinance: "ASAPFinance",
-  
+  // asapfinance: "ASAPFinance",
+
 };
 
 // ============================================================
@@ -245,15 +245,15 @@ export default function LoanOffersBanner() {
         });
       }
 
-      // If UTM is asapfinance, add ASAPFinance if not already added
-      if (utmLenderName === "ASAPFinance" && !addedLenders.has("ASAPFinance")) {
-        addedLenders.add("ASAPFinance");
-        eligibleLenders.push({
-          id: "ASAPFinance",
-          name: "ASAPFinance",
-          prefix: "A",
-        });
-      }
+      // // If UTM is asapfinance, add ASAPFinance if not already added
+      // if (utmLenderName === "ASAPFinance" && !addedLenders.has("ASAPFinance")) {
+      //   addedLenders.add("ASAPFinance");
+      //   eligibleLenders.push({
+      //     id: "ASAPFinance",
+      //     name: "ASAPFinance",
+      //     prefix: "A",
+      //   });
+      // }
 
       // Sort all eligible lenders by dashboard priority order
       const prioritySorted = sortLendersByPriority(eligibleLenders);

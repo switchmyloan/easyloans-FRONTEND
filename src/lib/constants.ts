@@ -45,7 +45,7 @@ export const STATIC_LENDER_LOGOS: Record<
   TrueFund: { src: "/truefund.svg" },
   MoneyDot: { src: "/moneydot.png" },
   RupiNow: { src: "/rupinow.png" },
-  ASAPFinance: { src: "/asapfinance.webp" },
+  // ASAPFinance: { src: "/asapfinance.webp" },
   Nira: { src: "/nira.avif" },
   // Apollo: { src: "/apollo.png" },
   LendingPlate: { src: "/lending.png" },
@@ -193,12 +193,12 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Flexible Tenure and Zero Hidden Charges",
     interestRate: "Interest Rates start at 12% to 30% per annum",
   },
-  ASAPFinance: {
-    headline: "Get up to ₹12,000 with quick approval!",
-    description: "Personal loans with Fast Approval and No Collateral Needed",
-    keyFeature: "Hassle-Free Documentation and No Collateral Needed",
-    interestRate: "Interest Rates start at 0.5% to 1% per day",
-  },
+  // ASAPFinance: {
+  //   headline: "Get up to ₹12,000 with quick approval!",
+  //   description: "Personal loans with Fast Approval and No Collateral Needed",
+  //   keyFeature: "Hassle-Free Documentation and No Collateral Needed",
+  //   interestRate: "Interest Rates start at 0.5% to 1% per day",
+  // },
   Nira: {
     headline: "Get up to ₹1,00,000 with quick approval!",
     description: "Personal loans with low interest rates and flexible tenure",
@@ -228,7 +228,7 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "TrueFund",
   "MoneyDot",
   "RupiNow",
-  "ASAPFinance",
+  // "ASAPFinance",
   "Nira",
   // "Apollo",
   "LendingPlate",
@@ -248,7 +248,7 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   TrueFund: "Quick approval",
   MoneyDot: "no collateral",
   RupiNow: "zero hidden charges",
-  ASAPFinance: "Fast approval",
+  // ASAPFinance: "Fast approval",
   Nira: "Low interest rates",
   // Apollo: "Fully digital loan and no paperwork",
 };
@@ -285,11 +285,11 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "Flexible Repayment", description: "Easy repayment options" },
     { title: "Flexible Tenure", description: "No Prepayment Charges" },
   ],
-  ASAPFinance: [
-    { title: "Quick Approval", description: "Fast processing" },
-    { title: "No Collateral", description: "No collateral required" },
-    { title: "Hassle-Free Documentation", description: "No documentation required" },
-  ],
+  // ASAPFinance: [
+  //   { title: "Quick Approval", description: "Fast processing" },
+  //   { title: "No Collateral", description: "No collateral required" },
+  //   { title: "Hassle-Free Documentation", description: "No documentation required" },
+  // ],
   // SpeedoLoan: [
   //   { title: "Quick Approval", description: "Fast processing" },
   //   { title: "No Hidden Charges", description: "Secure and Trusted" },
@@ -328,7 +328,7 @@ export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   Cashvia: ["Minimal Docs", "Quick Approval", "Fast Disbursal"],
   TrueFund: ["Quick Approval", "Up to ₹10 Lakh", "Flexible Repayment"],
   RupiNow: ["Zero Hidden Charges", "Flexible Tenure", "Up to ₹5 Lakh"],
-  ASAPFinance: ["Fast Approval", "No Collateral", "Hassle-Free Docs"],
+  // ASAPFinance: ["Fast Approval", "No Collateral", "Hassle-Free Docs"],
   Nira: ["Easy to repay", "Low interest loans", "Flexible tenure"],
   // Apollo: ["Fully Digital Loan", "Quick Approval", "Up to 6 months tenure"],
 };
@@ -350,7 +350,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   TrueFund: 50000,      // ₹50,000
   MoneyDot: 100000,      // ₹1 Lakhs
   RupiNow: 500000,      // ₹5 Lakhs
-  ASAPFinance: 12000,      // ₹12,000
+  // ASAPFinance: 12000,      // ₹12,000
   Nira: 100000,      // 1 Lakhs
   // Apollo: 50000,      // 50,000
 };
