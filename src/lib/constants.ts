@@ -47,7 +47,7 @@ export const STATIC_LENDER_LOGOS: Record<
   RupiNow: { src: "/rupinow.png" },
   // ASAPFinance: { src: "/asapfinance.webp" },
   Nira: { src: "/nira.avif" },
-  // Apollo: { src: "/apollo.png" },
+  Apollo: { src: "/apollo.png" },
   LendingPlate: { src: "/lending.png" },
 };
 
@@ -205,12 +205,12 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Easy to repay and low interest loans",
     interestRate: "Interest Rates start from 2% per month.",
   },
-  // Apollo: {
-  //   headline: "Get up to ₹50,000 with quick approval!",
-  //   description: "Fully digital personal loan and no paperwork",
-  //   keyFeature: "Quick Approval and up to 6 months tenure",
-  //   interestRate: "Interest Rates start at 5% to 8% per month.",
-  // },
+  Apollo: {
+    headline: "Get up to ₹50,000 with quick approval!",
+    description: "Fully digital personal loan and no paperwork",
+    keyFeature: "Quick Approval and up to 6 months tenure",
+    interestRate: "Interest Rates start at 5% to 8% per month.",
+  },
 };
 
 // Dashboard priority order - lenders are displayed in this order when available
@@ -230,7 +230,7 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "RupiNow",
   // "ASAPFinance",
   "Nira",
-  // "Apollo",
+  "Apollo",
   "LendingPlate",
 ];
 
@@ -250,7 +250,7 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   RupiNow: "zero hidden charges",
   // ASAPFinance: "Fast approval",
   Nira: "Low interest rates",
-  // Apollo: "Fully digital loan and no paperwork",
+  Apollo: "Fully digital loan and no paperwork",
 };
 
 
@@ -330,7 +330,7 @@ export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   RupiNow: ["Zero Hidden Charges", "Flexible Tenure", "Up to ₹5 Lakh"],
   // ASAPFinance: ["Fast Approval", "No Collateral", "Hassle-Free Docs"],
   Nira: ["Easy to repay", "Low interest loans", "Flexible tenure"],
-  // Apollo: ["Fully Digital Loan", "Quick Approval", "Up to 6 months tenure"],
+  Apollo: ["Fully Digital Loan", "Quick Approval", "Up to 6 months tenure"],
 };
 
 // Default feature badges if lender not found
@@ -352,7 +352,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   RupiNow: 500000,      // ₹5 Lakhs
   // ASAPFinance: 12000,      // ₹12,000
   Nira: 100000,      // 1 Lakhs
-  // Apollo: 50000,      // 50,000
+  Apollo: 50000,      // 50,000
 };
 
 const DEFAULT_LENDER_DETAIL = {

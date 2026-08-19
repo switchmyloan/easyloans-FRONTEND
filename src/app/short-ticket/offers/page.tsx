@@ -36,7 +36,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   RupiNow: "RupiNow",
   // ASAPFinance: "ASAPFinance",
   Nira: "Nira",
-  // Apollo: "Apollo",
+  Apollo: "Apollo",
   LendingPlate: "LendingPlate",
 };
 
@@ -56,7 +56,7 @@ const LENDER_ORDER = [
   "RupiNow",
   // "ASAPFinance",
   "Nira",
-  // "Apollo",
+  "Apollo",
   "LendingPlate",
 ];
 
@@ -76,7 +76,7 @@ const KB_PRIORITY_ORDER = [
   "RupiNow",
   // "ASAPFinance",
   "Nira",
-  // "Apollo",
+  "Apollo",
   "LendingPlate",
 ];
 
@@ -96,7 +96,7 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "RupiNow",
   // "ASAPFinance",
   "Nira",
-  // "Apollo",
+  "Apollo",
   "LendingPlate",
 ];
 
@@ -115,7 +115,7 @@ const RamFinCorp_PRIORITY_ORDER = [
   "RupiNow",
   // "ASAPFinance",
   "Nira",
-  // "Apollo",
+  "Apollo",
   "LendingPlate",
 ];
 
@@ -135,7 +135,7 @@ const LOANWALLE_PRIORITY_ORDER = [
   "RupiNow",
   // "ASAPFinance",
   "Nira",
-  // "Apollo",
+  "Apollo",
   "LendingPlate",
 ];
 
@@ -155,7 +155,7 @@ const MONEYDOT_PRIORITY_ORDER = [
   "RupiNow",
   // "ASAPFinance",
   "Nira",
-  // "Apollo",
+  "Apollo",
   "LendingPlate",
 ];
 
@@ -174,7 +174,7 @@ const TRUEFUND_PRIORITY_ORDER = [
   "RupiNow",
   // "ASAPFinance",
   "Nira",
-  // "Apollo",
+  "Apollo",
   "LendingPlate",
 ];
 
@@ -230,7 +230,7 @@ const CASHMYSalary_PRIORITY_ORDER = [
   "RupiNow",
   // "ASAPFinance",
   "Nira",
-  // "Apollo",
+  "Apollo",
   "LendingPlate",
 ];
 
@@ -282,8 +282,8 @@ const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   // "asapfinance": "ASAPFinance",
   "Nira": "Nira",
   "nira": "Nira",
-  // "Apollo": "Apollo",
-  // "apollo": "Apollo",
+  "Apollo": "Apollo",
+  "apollo": "Apollo",
 };
 
 function getUtmLink(
@@ -331,8 +331,8 @@ function getUtmLink(
       // Nira only shows if it comes from API staticLenders (no fallback)
       return directLink || null;
 
-    // case "Apollo":
-    //   return directLink || null;
+    case "Apollo":
+      return directLink || null;
 
     case "RamFinCorp":
       // RamFinCorp is now a static lender - only shows if it comes from API staticLenders
@@ -592,10 +592,10 @@ export default function ShortTicketOffersPage() {
           ordered.push({ name, utm_link: utmMap[name] });
           break;
 
-        // case "Apollo":
-
-        // if (!utmMap[name]) break;
-        // ordered.push({ name, utm_link: utmMap[name] });
+        case "Apollo":
+          if (!utmMap[name]) break;
+          ordered.push({ name, utm_link: utmMap[name] });
+          break;
 
         case "Cashvia": {
           // Cashvia is shown only if dedupeStatus === "Passed"

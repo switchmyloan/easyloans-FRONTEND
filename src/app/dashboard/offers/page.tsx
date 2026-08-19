@@ -47,7 +47,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   RupiNow: "RupiNow",
   // ASAPFinance: "ASAPFinance",
   Nira: "Nira",
-  // Apollo: "Apollo",
+  Apollo: "Apollo",
   LendingPlate: "LendingPlate",
 };
 
@@ -236,8 +236,8 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         // "asapfinance": "ASAPFinance",
         "Nira": "Nira",
         "nira": "Nira",
-        // "Apollo": "Apollo",
-        // "apollo": "Apollo",
+        "Apollo": "Apollo",
+        "apollo": "Apollo",
         "RamFinCorp": "RamFinCorp",
         "ramfincorp": "RamFinCorp",
       };
@@ -292,14 +292,14 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         });
       }
 
-      // // Add Apollo only if it comes from API staticLenders
-      // if (staticLenderUtmLinks["Apollo"] && !existingLenderNames.has("Apollo")) {
-      //   mappedOffers.push({
-      //     name: "Apollo",
-      //     utmLink: staticLenderUtmLinks["Apollo"],
-      //     isOffer: false,
-      //   });
-      // }
+      // Add Apollo only if it comes from API staticLenders
+      if (staticLenderUtmLinks["Apollo"] && !existingLenderNames.has("Apollo")) {
+        mappedOffers.push({
+          name: "Apollo",
+          utmLink: staticLenderUtmLinks["Apollo"],
+          isOffer: false,
+        });
+      }
 
       // // Add SpeedoLoan only if it comes from API staticLenders
       // if (staticLenderUtmLinks["SpeedoLoan"] && !existingLenderNames.has("SpeedoLoan")) {
