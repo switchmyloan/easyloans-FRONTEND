@@ -333,7 +333,12 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "Quick Approval", description: "Fast processing" },
     { title: "No Hidden Charges", description: "Secure and Trusted" },
     { title: "Up to ₹1,00,000", description: "High loan amount" },
-  ]
+  ],
+  RupiNow: [
+    { title: "Quick Approval", description: "Fast processing" },
+    { title: "Zero Hidden Charges", description: "Transparent fees" },
+    { title: "Up to ₹5,00,000", description: "High loan amount" },
+  ],
 };
 
 // Default features if lender not found in UTM_MEDIUM_LENDERS_FEATURES

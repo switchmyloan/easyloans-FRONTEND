@@ -13,6 +13,7 @@ import {
   getStoredShortExistingUserOffers,
   saveShortLender,
   applyToShortKreditBee,
+  applyToShortRamFinCorp,
 } from "@/lib/api";
 
 // ============================================================
@@ -123,6 +124,7 @@ export default function DashboardOffersPage() {
   const [offers, setOffers] = useState<DashboardOffer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [kbApplying, setKbApplying] = useState(false);
+  const [ramFinCorpApplying, setRamFinCorpApplying] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
 
   useEffect(() => {
@@ -155,7 +157,12 @@ const moneyDotData = data.MoneyDot as {
 const isMoneyDotEligible =
   moneyDotData?.data?.response?.can_attribute === true;
 
-// RamFinCorp is now a static lender — processed from staticLenders array below
+const ramFinCorpData = data.RamFinCorp as {
+  data?: { response?: { message?: string } };
+  utm_link?: string;
+} | undefined;
+
+const isRamFinCorpEligible = ramFinCorpData?.data?.response?.message === "Dedup Success";
 
 const rupiNowData = data.RupiNow as {
   dedupeStatus?: string;
@@ -196,8 +203,7 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
           return isMoneyDotEligible;
         }
         if (o.lenderName === "RamFinCorp") {
-          // RamFinCorp is now a static lender — added below from staticLenders, not here.
-          return false;
+          return isRamFinCorpEligible;
         }
         if (o.lenderName === "RupiNow") {
           return isRupiNowEligible;
@@ -281,8 +287,11 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
       //   });
       // }
 
-      // Add TejasLoan only if it comes from API staticLenders
-      if (staticLenderUtmLinks["TejasLoan"] && !existingLenderNames.has("TejasLoan")) {
+      // Check loanWalleUserFound - if true, hide TejasLoan and F1SpeedLoan
+      const loanWalleUserFound = (data as { loanWalleUserFound?: boolean })?.loanWalleUserFound;
+
+      // Add TejasLoan only if loanWalleUserFound is NOT true AND it exists in staticLenders
+      if (loanWalleUserFound !== true && staticLenderUtmLinks["TejasLoan"] && !existingLenderNames.has("TejasLoan")) {
         mappedOffers.push({
           name: "TejasLoan",
           utmLink: staticLenderUtmLinks["TejasLoan"],
@@ -290,8 +299,8 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         });
       }
 
-      // Add F1SpeedLoan only if it comes from API staticLenders
-      if (staticLenderUtmLinks["F1SpeedLoan"] && !existingLenderNames.has("F1SpeedLoan")) {
+      // Add F1SpeedLoan only if loanWalleUserFound is NOT true AND it exists in staticLenders
+      if (loanWalleUserFound !== true && staticLenderUtmLinks["F1SpeedLoan"] && !existingLenderNames.has("F1SpeedLoan")) {
         mappedOffers.push({
           name: "F1SpeedLoan",
           utmLink: staticLenderUtmLinks["F1SpeedLoan"],
@@ -390,11 +399,11 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         });
       }
 
-      // Add RamFinCorp only if it comes from API staticLenders (now a static lender)
-      if (staticLenderUtmLinks["RamFinCorp"] && !existingLenderNames.has("RamFinCorp")) {
+      // Add RamFinCorp if eligible (data.response.message === "Dedup Success")
+      if (isRamFinCorpEligible && !existingLenderNames.has("RamFinCorp")) {
         mappedOffers.push({
           name: "RamFinCorp",
-          utmLink: staticLenderUtmLinks["RamFinCorp"],
+          utmLink: ramFinCorpData?.utm_link || FALLBACK_UTM_LINKS["RamFinCorp"],
           isOffer: false,
         });
       }
@@ -462,12 +471,39 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
     }
   };
 
+  const handleRamFinCorpApply = async () => {
+    if (ramFinCorpApplying) return;
+    setRamFinCorpApplying(true);
+    try {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveShortLender(phone, "RamFinCorp");
+      const res = await applyToShortRamFinCorp();
+
+      if (res.success) {
+        const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || FALLBACK_UTM_LINKS["RamFinCorp"] || "https://ramfincorp.com/";
+        window.open(redirectUrl, "_blank");
+      } else {
+        toast.error(res.message || "Something went wrong. Please try again.", { duration: 4000 });
+      }
+    } catch (err) {
+      console.error("RamFinCorp apply failed:", err);
+      toast.error("Something went wrong. Please try again.", { duration: 4000 });
+    } finally {
+      setRamFinCorpApplying(false);
+    }
+  };
+
   const handleApply = async (lenderName: string, utmLink?: string) => {
     const allowed = await guardActivity();
     if (!allowed) return;
 
     if (lenderName === "KreditBee") {
       handleKreditBeeApply(utmLink);
+      return;
+    }
+
+    if (lenderName === "RamFinCorp") {
+      handleRamFinCorpApply();
       return;
     }
 

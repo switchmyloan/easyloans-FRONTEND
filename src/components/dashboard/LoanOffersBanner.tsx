@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Lock, Zap, CheckCircle, Clock, ChevronRight } from "lucide-react";
 import { STATIC_LENDER_LOGOS, LENDER_FEATURE_TAGS, DEFAULT_FEATURE_TAG, DASHBOARD_PRIORITY_ORDER, LENDER_FEATURE_BADGES, DEFAULT_FEATURE_BADGES } from "@/lib/constants";
-import { getStoredShortExistingUserOffers, saveShortLender, applyToShortKreditBee } from "@/lib/api";
+import { getStoredShortExistingUserOffers, saveShortLender, applyToShortKreditBee, applyToShortRamFinCorp } from "@/lib/api";
 import toast, { Toaster } from "react-hot-toast";
 import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
 import { useOtpGuard } from "@/app/dashboard/layout";
@@ -47,6 +47,7 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   // asapfinance: "ASAPFinance",
   apollo: "Apollo",
   f1speedloan: "F1SpeedLoan",
+  rupinow: "RupiNow",
 };
 
 // ============================================================
@@ -106,6 +107,7 @@ export default function LoanOffersBanner() {
   const [mainLender, setMainLender] = useState<PreviousLender | null>(null);
   const [otherLenders, setOtherLenders] = useState<PreviousLender[]>([]);
   const [kbApplying, setKbApplying] = useState(false);
+  const [ramFinCorpApplying, setRamFinCorpApplying] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
 
   useEffect(() => {
@@ -119,7 +121,7 @@ export default function LoanOffersBanner() {
       const rapidMoneyData = data.RapidMoney as { isDuplicate?: boolean; utm_link?: string } | undefined;
       const trueFundData = data.TrueFund as { message?: string; utm_link?: string; data?: { response?: { message?: string } } } | undefined;
       const moneyDotData = data.MoneyDot as { data?: { response?: { can_attribute?: boolean } }; utm_link?: string } | undefined;
-      // RamFinCorp is now a static lender — processed from staticLenders array below
+      const ramFinCorpData = data.RamFinCorp as { data?: { response?: { message?: string } }; utm_link?: string } | undefined;
 
       const trueFundMessage = (trueFundData?.message || "").toLowerCase();
       const trueFundResponseMessage = (trueFundData?.data?.response?.message || "").toLowerCase();
@@ -127,6 +129,10 @@ export default function LoanOffersBanner() {
         trueFundMessage.includes("user details received sucessfully") ||
         trueFundResponseMessage.includes("user details received sucessfully");
       const isMoneyDotEligible = moneyDotData?.data?.response?.can_attribute === true;
+      const isRamFinCorpEligible = ramFinCorpData?.data?.response?.message === "Dedup Success";
+
+      const rupiNowData = data.RupiNow as { dedupeStatus?: string; utm_link?: string } | undefined;
+      const isRupiNowEligible = rupiNowData?.dedupeStatus === "Passed";
 
       // Get shownOffers from API response
       const shownOffers = (data.shownOffers || []) as ShownOffer[];
@@ -148,8 +154,8 @@ export default function LoanOffersBanner() {
         if (lenderName === "RapidMoney" && rapidMoneyData?.isDuplicate !== false) continue;
         if (lenderName === "TrueFund" && !isTrueFundEligible) continue;
         if (lenderName === "MoneyDot" && !isMoneyDotEligible) continue;
-        // RamFinCorp is now a static lender — skip here and add from staticLenders below
-        if (lenderName === "RamFinCorp") continue;
+        if (lenderName === "RupiNow" && !isRupiNowEligible) continue;
+        if (lenderName === "RamFinCorp" && !isRamFinCorpEligible) continue;
 
         addedLenders.add(lenderName);
         eligibleLenders.push({
@@ -205,6 +211,16 @@ export default function LoanOffersBanner() {
         });
       }
 
+      // Add RupiNow if eligible and not already added
+      if (isRupiNowEligible && !addedLenders.has("RupiNow")) {
+        addedLenders.add("RupiNow");
+        eligibleLenders.push({
+          id: "RupiNow",
+          name: "RupiNow",
+          prefix: "R",
+        });
+      }
+
       // // Add LoanWalle only if it comes from API staticLenders (with utm_link)
       const staticLendersArray = (data.staticLenders || []) as Array<{ name?: string; utm_link?: string }>;
       // const loanWalleFromApi = staticLendersArray.find(
@@ -219,11 +235,14 @@ export default function LoanOffersBanner() {
       //   });
       // }
 
-      // Add TejasLoan only if it comes from API staticLenders (with utm_link)
+      // Check loanWalleUserFound - if true, hide TejasLoan and F1SpeedLoan
+      const loanWalleUserFound = (data as { loanWalleUserFound?: boolean })?.loanWalleUserFound;
+
+      // Add TejasLoan only if loanWalleUserFound is NOT true AND it exists in staticLenders
       const tejasLoanFromApi = staticLendersArray.find(
         (l) => l.name?.toLowerCase() === "tejas" || l.name?.toLowerCase() === "tejasloan"
       );
-      if (tejasLoanFromApi?.utm_link && !addedLenders.has("TejasLoan")) {
+      if (loanWalleUserFound !== true && tejasLoanFromApi?.utm_link && !addedLenders.has("TejasLoan")) {
         addedLenders.add("TejasLoan");
         eligibleLenders.push({
           id: "TejasLoan",
@@ -232,11 +251,11 @@ export default function LoanOffersBanner() {
         });
       }
 
-      // Add F1SpeedLoan only if it comes from API staticLenders (with utm_link)
+      // Add F1SpeedLoan only if loanWalleUserFound is NOT true AND it exists in staticLenders
       const f1SpeedLoanFromApi = staticLendersArray.find(
         (l) => l.name?.toLowerCase() === "f1speedloan"
       );
-      if (f1SpeedLoanFromApi?.utm_link && !addedLenders.has("F1SpeedLoan")) {
+      if (loanWalleUserFound !== true && f1SpeedLoanFromApi?.utm_link && !addedLenders.has("F1SpeedLoan")) {
         addedLenders.add("F1SpeedLoan");
         eligibleLenders.push({
           id: "F1SpeedLoan",
@@ -245,11 +264,8 @@ export default function LoanOffersBanner() {
         });
       }
 
-      // Add RamFinCorp only if it comes from API staticLenders (now a static lender)
-      const ramFinCorpFromApi = staticLendersArray.find(
-        (l) => l.name?.toLowerCase() === "ramfincorp"
-      );
-      if (ramFinCorpFromApi?.utm_link && !addedLenders.has("RamFinCorp")) {
+      // Add RamFinCorp if eligible (data.response.message === "Dedup Success")
+      if (isRamFinCorpEligible && !addedLenders.has("RamFinCorp")) {
         addedLenders.add("RamFinCorp");
         eligibleLenders.push({
           id: "RamFinCorp",
@@ -286,7 +302,8 @@ export default function LoanOffersBanner() {
       // }
 
       // If UTM is tejasloan and TejasLoan exists in staticLenders but wasn't added yet, add it now
-      if (utmLenderName === "TejasLoan" && tejasLoanFromApi?.utm_link && !addedLenders.has("TejasLoan")) {
+      // Only if loanWalleUserFound is NOT true
+      if (utmLenderName === "TejasLoan" && loanWalleUserFound !== true && tejasLoanFromApi?.utm_link && !addedLenders.has("TejasLoan")) {
         addedLenders.add("TejasLoan");
         eligibleLenders.push({
           id: "TejasLoan",
@@ -296,7 +313,8 @@ export default function LoanOffersBanner() {
       }
 
       // If UTM is f1speedloan and F1SpeedLoan exists in staticLenders but wasn't added yet, add it now
-      if (utmLenderName === "F1SpeedLoan" && f1SpeedLoanFromApi?.utm_link && !addedLenders.has("F1SpeedLoan")) {
+      // Only if loanWalleUserFound is NOT true
+      if (utmLenderName === "F1SpeedLoan" && loanWalleUserFound !== true && f1SpeedLoanFromApi?.utm_link && !addedLenders.has("F1SpeedLoan")) {
         addedLenders.add("F1SpeedLoan");
         eligibleLenders.push({
           id: "F1SpeedLoan",
@@ -312,6 +330,16 @@ export default function LoanOffersBanner() {
           id: "Apollo",
           name: "Apollo",
           prefix: "A",
+        });
+      }
+
+      // If UTM is rupinow and RupiNow is eligible but wasn't added yet, add it now
+      if (utmLenderName === "RupiNow" && isRupiNowEligible && !addedLenders.has("RupiNow")) {
+        addedLenders.add("RupiNow");
+        eligibleLenders.push({
+          id: "RupiNow",
+          name: "RupiNow",
+          prefix: "R",
         });
       }
 
@@ -364,8 +392,7 @@ export default function LoanOffersBanner() {
           if (lenderName === "RapidMoney" && rapidMoneyData?.isDuplicate !== false) continue;
           if (lenderName === "TrueFund" && !isTrueFundEligible) continue;
           if (lenderName === "MoneyDot" && !isMoneyDotEligible) continue;
-          // RamFinCorp is now a static lender — skip here and add from staticLenders below
-        if (lenderName === "RamFinCorp") continue;
+          if (lenderName === "RamFinCorp" && !isRamFinCorpEligible) continue;
 
           // Found an eligible lender in priority order
           mainLenderFromSelected = {
@@ -430,8 +457,31 @@ export default function LoanOffersBanner() {
     }
   };
 
+  // RamFinCorp special apply handler - calls the new API endpoint
+  const handleRamFinCorpApply = async () => {
+    if (ramFinCorpApplying) return;
+    setRamFinCorpApplying(true);
+    try {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveShortLender(phone, "RamFinCorp");
+      const res = await applyToShortRamFinCorp();
+
+      if (res.success) {
+        const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || FALLBACK_UTM_LINKS.RamFinCorp || "https://ramfincorp.com/";
+        window.open(redirectUrl, "_blank");
+      } else {
+        toast.error(res.message || "Something went wrong. Please try again.", { duration: 4000 });
+      }
+    } catch (err) {
+      console.error("RamFinCorp apply failed:", err);
+      toast.error("Something went wrong. Please try again.", { duration: 4000 });
+    } finally {
+      setRamFinCorpApplying(false);
+    }
+  };
+
   // Apply to the hero lender — redirect to its UTM link
-  // KreditBee has special handling with API call
+  // KreditBee and RamFinCorp have special handling with API call
   const handleHeroApply = async () => {
     if (!displayLender) return;
     const allowed = await guardActivity();
@@ -440,6 +490,12 @@ export default function LoanOffersBanner() {
     // Special handling for KreditBee
     if (displayLender.id === "KreditBee") {
       handleKreditBeeApply();
+      return;
+    }
+
+    // Special handling for RamFinCorp
+    if (displayLender.id === "RamFinCorp") {
+      handleRamFinCorpApply();
       return;
     }
 
