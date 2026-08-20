@@ -45,7 +45,7 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   vivifi: "Vivifi",
   moneydot: "MoneyDot",
   // asapfinance: "ASAPFinance",
-
+  apollo: "Apollo",
 };
 
 // ============================================================

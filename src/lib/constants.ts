@@ -300,6 +300,11 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "No Hidden Charges", description: "Secure and Trusted" },
     { title: "Up to ₹50,000", description: "High loan amount" },
   ],
+  Apollo: [
+    { title: "Quick Approval", description: "Fast processing" },
+    { title: "No Hidden Charges", description: "Secure and Trusted" },
+    { title: "Up to ₹50,000", description: "High loan amount" },
+  ],
 };
 
 // Default features if lender not found in UTM_MEDIUM_LENDERS_FEATURES

@@ -234,6 +234,26 @@ const CASHMYSalary_PRIORITY_ORDER = [
   "LendingPlate",
 ];
 
+const APOLLO_PRIORITY_ORDER =[
+    "Apollo",
+ "RamFinCorp",
+  // "SpeedoLoan",
+  "CashMySalary",
+  "LoanWalle",
+  "Vivifi",
+  "Cashvia",
+  "TrueBalance",
+  "RapidMoney",
+  "KreditBee",
+  "TrueFund",
+  "MoneyDot",
+  "RupiNow",
+  // "ASAPFinance",
+  "Nira",
+
+  "LendingPlate",
+]
+
 
 
 const FALLBACK_UTM: Record<string, string> = {
@@ -416,6 +436,8 @@ export default function ShortTicketOffersPage() {
   // const [isASAPFinanceMedium, setIsASAPFinanceMedium] = useState(false);
   // const [isSpeedoLoanMedium, setIsSpeedoLoanMedium] = useState(false);
   const [isCashMySalaryMedium, setIsCashMySalaryMedium] = useState(false);
+  const [isApolloMedium, setIsApolloMedium] = useState(false);
+
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
   const [priorityVisible, setPriorityVisible] = useState(0);
   const [showAll, setShowAll] = useState(false);
@@ -490,6 +512,8 @@ export default function ShortTicketOffersPage() {
     // setIsSpeedoLoanMedium(isSpeedoLoanMediumLocal);
     const isCashMySalaryMediumLocal = utmMedium === "cashmysalary";
     setIsCashMySalaryMedium(isCashMySalaryMediumLocal);
+    const isApolloMediumLocal = utmMedium === "apollo";
+    setIsApolloMedium(isApolloMediumLocal);
 
     let renderOrder = LENDER_ORDER;
     let initialVisible = 4;
@@ -521,7 +545,10 @@ export default function ShortTicketOffersPage() {
     } else if (isCashMySalaryMediumLocal) {
       renderOrder = CASHMYSalary_PRIORITY_ORDER;
       initialVisible = 5;
-    } 
+    }  else if (isApolloMediumLocal) {
+      renderOrder = APOLLO_PRIORITY_ORDER;
+      initialVisible = 5;
+    }
 
     // Build ordered list based on eligibility
     const ordered: OrderedLender[] = [];
@@ -773,8 +800,8 @@ export default function ShortTicketOffersPage() {
   };
 
   // Hero card logic
-  const showHeroFlow = isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium || isLoanWalleMedium || isMoneyDotMedium || isTrueFundMedium || /* isASAPFinanceMedium || */ /* isSpeedoLoanMedium || */ isCashMySalaryMedium;
-  const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : isLoanWalleMedium ? "LoanWalle" : isMoneyDotMedium ? "MoneyDot" : isTrueFundMedium ? "TrueFund" : /* isASAPFinanceMedium ? "ASAPFinance" : */ /* isSpeedoLoanMedium ? "SpeedoLoan" : */ isCashMySalaryMedium ? "CashMySalary" : null;
+  const showHeroFlow = isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium || isLoanWalleMedium || isMoneyDotMedium || isTrueFundMedium || /* isASAPFinanceMedium || */ /* isSpeedoLoanMedium || */ isCashMySalaryMedium || isApolloMedium;
+  const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : isLoanWalleMedium ? "LoanWalle" : isMoneyDotMedium ? "MoneyDot" : isTrueFundMedium ? "TrueFund" : /* isASAPFinanceMedium ? "ASAPFinance" : */ /* isSpeedoLoanMedium ? "SpeedoLoan" : */ isCashMySalaryMedium ? "CashMySalary" : isApolloMedium ? "Apollo": null;
   const heroIdx = heroName ? visibleLenders.findIndex((l) => l.name === heroName) : -1;
   const showHeroCard = showHeroFlow && heroIdx === 0 && visibleLenders.length > 0;
   const heroLender = showHeroCard ? visibleLenders[0] : null;
