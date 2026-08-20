@@ -39,13 +39,14 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   truebalance: "TrueBalance",
   // speedoloan: "SpeedoLoan",
   cashmysalary: "CashMySalary",
-  loanwalle: "LoanWalle",
+  tejasloan: "TejasLoan",
   cashvia: "Cashvia",
   truefund: "TrueFund",
   vivifi: "Vivifi",
   moneydot: "MoneyDot",
   // asapfinance: "ASAPFinance",
   apollo: "Apollo",
+  f1speedloan: "F1SpeedLoan",
 };
 
 // ============================================================
@@ -75,7 +76,7 @@ const REMOVED_LENDERS = ["MPokket", "Loan112", "SmartCoin", "SmartCoinHighIntent
 
 // Static lenders that should always be shown
 // Note: RamFinCorp is now shown based on API response (message === "Dedup Success")
-// Note: LoanWalle is shown only when received in staticLenders from API (with utm_link)
+// Note: TejasLoan, F1SpeedLoan are shown only when received in staticLenders from API (with utm_link)
 const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", /* "SpeedoLoan", */ "Cashvia", "Vivifi", "TrueBalance"];
 
 // ============================================================
@@ -204,17 +205,43 @@ export default function LoanOffersBanner() {
         });
       }
 
-      // Add LoanWalle only if it comes from API staticLenders (with utm_link)
+      // // Add LoanWalle only if it comes from API staticLenders (with utm_link)
       const staticLendersArray = (data.staticLenders || []) as Array<{ name?: string; utm_link?: string }>;
-      const loanWalleFromApi = staticLendersArray.find(
-        (l) => l.name?.toLowerCase() === "loanwalle"
+      // const loanWalleFromApi = staticLendersArray.find(
+      //   (l) => l.name?.toLowerCase() === "loanwalle"
+      // );
+      // if (loanWalleFromApi?.utm_link && !addedLenders.has("LoanWalle")) {
+      //   addedLenders.add("LoanWalle");
+      //   eligibleLenders.push({
+      //     id: "LoanWalle",
+      //     name: "LoanWalle",
+      //     prefix: "L",
+      //   });
+      // }
+
+      // Add TejasLoan only if it comes from API staticLenders (with utm_link)
+      const tejasLoanFromApi = staticLendersArray.find(
+        (l) => l.name?.toLowerCase() === "tejas" || l.name?.toLowerCase() === "tejasloan"
       );
-      if (loanWalleFromApi?.utm_link && !addedLenders.has("LoanWalle")) {
-        addedLenders.add("LoanWalle");
+      if (tejasLoanFromApi?.utm_link && !addedLenders.has("TejasLoan")) {
+        addedLenders.add("TejasLoan");
         eligibleLenders.push({
-          id: "LoanWalle",
-          name: "LoanWalle",
-          prefix: "L",
+          id: "TejasLoan",
+          name: "TejasLoan",
+          prefix: "T",
+        });
+      }
+
+      // Add F1SpeedLoan only if it comes from API staticLenders (with utm_link)
+      const f1SpeedLoanFromApi = staticLendersArray.find(
+        (l) => l.name?.toLowerCase() === "f1speedloan"
+      );
+      if (f1SpeedLoanFromApi?.utm_link && !addedLenders.has("F1SpeedLoan")) {
+        addedLenders.add("F1SpeedLoan");
+        eligibleLenders.push({
+          id: "F1SpeedLoan",
+          name: "F1SpeedLoan",
+          prefix: "F",
         });
       }
 
@@ -248,13 +275,33 @@ export default function LoanOffersBanner() {
       const utmMedium = (sessionStorage.getItem("utm_medium") || "").toLowerCase();
       const utmLenderName = UTM_MEDIUM_TO_LENDER[utmMedium];
 
-      // If UTM is loanwalle and LoanWalle exists in staticLenders but wasn't added yet, add it now
-      if (utmLenderName === "LoanWalle" && loanWalleFromApi?.utm_link && !addedLenders.has("LoanWalle")) {
-        addedLenders.add("LoanWalle");
+      // // If UTM is loanwalle and LoanWalle exists in staticLenders but wasn't added yet, add it now
+      // if (utmLenderName === "LoanWalle" && loanWalleFromApi?.utm_link && !addedLenders.has("LoanWalle")) {
+      //   addedLenders.add("LoanWalle");
+      //   eligibleLenders.push({
+      //     id: "LoanWalle",
+      //     name: "LoanWalle",
+      //     prefix: "L",
+      //   });
+      // }
+
+      // If UTM is tejasloan and TejasLoan exists in staticLenders but wasn't added yet, add it now
+      if (utmLenderName === "TejasLoan" && tejasLoanFromApi?.utm_link && !addedLenders.has("TejasLoan")) {
+        addedLenders.add("TejasLoan");
         eligibleLenders.push({
-          id: "LoanWalle",
-          name: "LoanWalle",
-          prefix: "L",
+          id: "TejasLoan",
+          name: "TejasLoan",
+          prefix: "T",
+        });
+      }
+
+      // If UTM is f1speedloan and F1SpeedLoan exists in staticLenders but wasn't added yet, add it now
+      if (utmLenderName === "F1SpeedLoan" && f1SpeedLoanFromApi?.utm_link && !addedLenders.has("F1SpeedLoan")) {
+        addedLenders.add("F1SpeedLoan");
+        eligibleLenders.push({
+          id: "F1SpeedLoan",
+          name: "F1SpeedLoan",
+          prefix: "F",
         });
       }
 
@@ -408,9 +455,15 @@ export default function LoanOffersBanner() {
     // If not found, check staticLenders array (API returns some lenders like Vivifi here)
     if (!url && data?.staticLenders) {
       const staticLendersArray = data.staticLenders as Array<{ name?: string; utm_link?: string }>;
-      const matchingLender = staticLendersArray.find(
-        (l) => l.name?.toLowerCase() === displayLender.id.toLowerCase()
-      );
+      const lenderIdLower = displayLender.id.toLowerCase();
+      const matchingLender = staticLendersArray.find((l) => {
+        const nameLower = l.name?.toLowerCase();
+        // Handle TejasLoan which might come as "Tejas" or "TejasLoan"
+        if (lenderIdLower === "tejasloan") {
+          return nameLower === "tejas" || nameLower === "tejasloan";
+        }
+        return nameLower === lenderIdLower;
+      });
       url = matchingLender?.utm_link;
     }
 
@@ -464,7 +517,7 @@ export default function LoanOffersBanner() {
 
           {/* Lender Logo */}
           {lenderLogo && (
-            <div className="mb-2">
+            <div className={`mb-2 ${lenderLogo.darkBg ? "bg-gray-800 rounded-lg px-3 py-2 w-fit" : ""}`}>
               <Image
                 src={lenderLogo.src}
                 alt={displayLender.name}

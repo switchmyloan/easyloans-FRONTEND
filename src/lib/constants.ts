@@ -40,7 +40,7 @@ export const STATIC_LENDER_LOGOS: Record<
   KreditBee: { src: "/kreditbee-logo.svg" },
   // SpeedoLoan: { src: "/speedoloan.png" },
   CashMySalary: { src: "/cashmysalary.webp" },
-  LoanWalle: { src: "/loanwalle.webp" },
+  // LoanWalle: { src: "/loanwalle.webp" },
   Cashvia: { src: "/cashvia1.png" },
   TrueFund: { src: "/truefund.svg" },
   MoneyDot: { src: "/moneydot.png" },
@@ -49,6 +49,8 @@ export const STATIC_LENDER_LOGOS: Record<
   Nira: { src: "/nira.avif" },
   Apollo: { src: "/apollo.png" },
   LendingPlate: { src: "/lending.png" },
+  F1SpeedLoan: { src: "/F1SpeedLoan.png" },
+  TejasLoan: { src: "/tejasLogo.png", darkBg: true }, 
 };
 
 export const STATIC_LENDER_DETAILS: Record<
@@ -163,12 +165,12 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Quick Approval and No Hidden Charges",
     interestRate: "Interest Rates start at 1%* per day",
   },
-  LoanWalle: {
-    headline: "Get up to ₹1,00,000 with quick approval!",
-    description: "Personal loans with fast disbursement and No Prepayment Charges",
-    keyFeature: "Quick Approval and No Prepayment Charges",
-    interestRate: "Interest Rates start at 1%* per day",
-  },
+  // LoanWalle: {
+  //   headline: "Get up to ₹1,00,000 with quick approval!",
+  //   description: "Personal loans with fast disbursement and No Prepayment Charges",
+  //   keyFeature: "Quick Approval and No Prepayment Charges",
+  //   interestRate: "Interest Rates start at 1%* per day",
+  // },
   Cashvia: {
     headline: "Get up to ₹1,00,000 with quick approval!",
     description: "Personal loans with fast disbursement and minimal documentation",
@@ -211,6 +213,18 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Quick Approval and up to 6 months tenure",
     interestRate: "Interest Rates start at 5% to 8% per month.",
   },
+  TejasLoan: {
+    headline: "Get up to ₹1,00,000 with quick approval!",
+    description: "Personal loans with fast disbursement and No Prepayment Charges",
+    keyFeature: "Quick Approval and No Prepayment Charges",
+    interestRate: "Interest Rates start at 1%* per day",
+  },
+  F1SpeedLoan: {
+    headline: "Get up to ₹1,00,000 with quick approval!",
+    description: "Personal loans with fast disbursement and No Prepayment Charges",
+    keyFeature: "Quick Approval and No Prepayment Charges",
+    interestRate: "Interest Rates start at 1%* per day",
+  },
 };
 
 // Dashboard priority order - lenders are displayed in this order when available
@@ -219,7 +233,8 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "RamFinCorp",
   // "SpeedoLoan",
   "CashMySalary",
-  "LoanWalle",
+  // "LoanWalle",
+    "TejasLoan",
   "Vivifi",
   "Cashvia",
   "TrueBalance",
@@ -232,6 +247,8 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "Nira",
   "Apollo",
   "LendingPlate",
+  "F1SpeedLoan",
+
 ];
 
 // Short feature tags for each lender (displayed in offer cards)
@@ -243,7 +260,8 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   Vivifi: "Flexible loan options",
   // SpeedoLoan: "Quick approval",
   CashMySalary: "Quick approval",
-  LoanWalle: "Only for EPFO registered users",
+  // LoanWalle: "Only for EPFO registered users",
+    TejasLoan: "Only for EPFO registered users",
   Cashvia: "Minimal documentation",
   TrueFund: "Quick approval",
   MoneyDot: "no collateral",
@@ -251,6 +269,7 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   // ASAPFinance: "Fast approval",
   Nira: "Low interest rates",
   Apollo: "Fully digital loan and no paperwork",
+  F1SpeedLoan: "No Prepayment Charges",
 };
 
 
@@ -280,7 +299,12 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "Flexible Repayment", description: "Easy repayment options" },
     { title: "Transparent Terms", description: "No hidden charges" },
   ],
-  LoanWalle: [
+  // LoanWalle: [
+  //   { title: "Quick Approval", description: "Fast processing" },
+  //   { title: "Flexible Repayment", description: "Easy repayment options" },
+  //   { title: "Flexible Tenure", description: "No Prepayment Charges" },
+  // ],
+    TejasLoan: [
     { title: "Quick Approval", description: "Fast processing" },
     { title: "Flexible Repayment", description: "Easy repayment options" },
     { title: "Flexible Tenure", description: "No Prepayment Charges" },
@@ -305,6 +329,11 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "No Hidden Charges", description: "Secure and Trusted" },
     { title: "Up to ₹50,000", description: "High loan amount" },
   ],
+  F1SpeedLoan: [
+    { title: "Quick Approval", description: "Fast processing" },
+    { title: "No Hidden Charges", description: "Secure and Trusted" },
+    { title: "Up to ₹1,00,000", description: "High loan amount" },
+  ]
 };
 
 // Default features if lender not found in UTM_MEDIUM_LENDERS_FEATURES
@@ -323,7 +352,8 @@ export const DEFAULT_FEATURE_TAG = "Quick approval";
 export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   RapidMoney: ["Quick Approval", "Flexible Repayment", "Up to ₹15,000"],
   Vivifi: ["0% Foreclose Charge", "Highest Approval", "Quick Disbursal"],
-  LoanWalle: ["EPFO Users Only", "No Prepayment Fee", "Quick Approval"],
+  // LoanWalle: ["EPFO Users Only", "No Prepayment Fee", "Quick Approval"],
+    TejasLoan: ["EPFO Users Only", "No Prepayment Fee", "Quick Approval"],
   KreditBee: ["Upto 100% off on PF", "Loans up to ₹10 Lakh", "Instant Disbursal"],
   TrueBalance: ["Loans up to ₹2 Lakh", "Minimal Docs", "Quick Approval"],
   RamFinCorp: ["Transparent Terms", "Quick Processing", "Easy Approval"],
@@ -336,6 +366,7 @@ export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   // ASAPFinance: ["Fast Approval", "No Collateral", "Hassle-Free Docs"],
   Nira: ["Easy to repay", "Low interest loans", "Flexible tenure"],
   Apollo: ["Fully Digital Loan", "Quick Approval", "Up to 6 months tenure"],
+  F1SpeedLoan: ["No Prepayment Charges", "Quick Approval", "Up to 365 months"],
 };
 
 // Default feature badges if lender not found
@@ -350,7 +381,8 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   Vivifi: 500000,           // ₹5 Lakhs
   // SpeedoLoan: 50000,      // ₹50,000
   CashMySalary: 50000,    // ₹50,000
-  LoanWalle: 100000,      // ₹1 Lakh
+  // LoanWalle: 100000,      // ₹1 Lakh
+    TejasLoan: 100000,      // ₹1 Lakh
   Cashvia: 30000,      // ₹30,000
   TrueFund: 50000,      // ₹50,000
   MoneyDot: 100000,      // ₹1 Lakhs
@@ -358,6 +390,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   // ASAPFinance: 12000,      // ₹12,000
   Nira: 100000,      // 1 Lakhs
   Apollo: 50000,      // 50,000
+  F1SpeedLoan: 100000,      // 100,000
 };
 
 const DEFAULT_LENDER_DETAIL = {

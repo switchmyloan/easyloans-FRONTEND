@@ -29,7 +29,8 @@ const DISPLAY_NAMES: Record<string, string> = {
   TrueBalance: "TrueBalance",
   // SpeedoLoan: "SpeedoLoan",
   CashMySalary: "CashMySalary",
-  LoanWalle: "LoanWalle",
+  TejasLoan: "Tejas Loan",
+  F1SpeedLoan: "F1 Speed Loan",
   Cashvia: "Cashvia",
   TrueFund: "TrueFund",
   MoneyDot: "MoneyDot",
@@ -45,7 +46,7 @@ const LENDER_ORDER = [
   "RamFinCorp",
   // "SpeedoLoan",
   "CashMySalary",
-  "LoanWalle",
+  "TejasLoan",
   "Vivifi",
   "Cashvia",
   "TrueBalance",
@@ -58,6 +59,7 @@ const LENDER_ORDER = [
   "Nira",
   "Apollo",
   "LendingPlate",
+  "F1SpeedLoan",
 ];
 
 // When utm_medium=kreditbee: KreditBee first
@@ -66,7 +68,7 @@ const KB_PRIORITY_ORDER = [
   "RamFinCorp",
   // "SpeedoLoan",
   "CashMySalary",
-  "LoanWalle",
+  "TejasLoan",
   "Vivifi",
   "Cashvia",
   "TrueBalance",
@@ -78,6 +80,7 @@ const KB_PRIORITY_ORDER = [
   "Nira",
   "Apollo",
   "LendingPlate",
+  "F1SpeedLoan",
 ];
 
 // When utm_medium=rapidmoney: RapidMoney first
@@ -86,7 +89,7 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "RamFinCorp",
   // "SpeedoLoan",
   "CashMySalary",
-  "LoanWalle",
+  "TejasLoan",
   "Vivifi",
   "Cashvia",
   "TrueBalance",
@@ -98,13 +101,14 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "Nira",
   "Apollo",
   "LendingPlate",
+  "F1SpeedLoan",
 ];
 
 const RamFinCorp_PRIORITY_ORDER = [
   "RamFinCorp",
   // "SpeedoLoan",
   "CashMySalary",
-  "LoanWalle",
+  "TejasLoan",
   "Vivifi",
   "Cashvia",
   "TrueBalance",
@@ -117,11 +121,12 @@ const RamFinCorp_PRIORITY_ORDER = [
   "Nira",
   "Apollo",
   "LendingPlate",
+  "F1SpeedLoan",
 ];
 
-// When utm_medium=loanwalle: LoanWalle first
-const LOANWALLE_PRIORITY_ORDER = [
-  "LoanWalle",
+// When utm_medium=tejasloan: TejasLoan first
+const TEJASLOAN_PRIORITY_ORDER = [
+  "TejasLoan",
   "RamFinCorp",
   // "SpeedoLoan",
   "CashMySalary",
@@ -137,6 +142,7 @@ const LOANWALLE_PRIORITY_ORDER = [
   "Nira",
   "Apollo",
   "LendingPlate",
+  "F1SpeedLoan",
 ];
 
 // When utm_medium=moneydot: MoneyDot first
@@ -145,7 +151,7 @@ const MONEYDOT_PRIORITY_ORDER = [
   "RamFinCorp",
   // "SpeedoLoan",
   "CashMySalary",
-  "LoanWalle",
+  "TejasLoan",
   "Vivifi",
   "Cashvia",
   "TrueBalance",
@@ -157,6 +163,7 @@ const MONEYDOT_PRIORITY_ORDER = [
   "Nira",
   "Apollo",
   "LendingPlate",
+  "F1SpeedLoan",
 ];
 
 const TRUEFUND_PRIORITY_ORDER = [
@@ -164,7 +171,7 @@ const TRUEFUND_PRIORITY_ORDER = [
   "RamFinCorp",
   // "SpeedoLoan",
   "CashMySalary",
-  "LoanWalle",
+  "TejasLoan",
   "Vivifi",
   "Cashvia",
   "TrueBalance",
@@ -176,6 +183,7 @@ const TRUEFUND_PRIORITY_ORDER = [
   "Nira",
   "Apollo",
   "LendingPlate",
+  "F1SpeedLoan",
 ];
 
 // const ASAPFINANCE_PRIORITY_ORDER = [
@@ -219,7 +227,49 @@ const CASHMYSalary_PRIORITY_ORDER = [
   "CashMySalary",
   "RamFinCorp",
   // "SpeedoLoan",
-  "LoanWalle",
+  "TejasLoan",
+  "Vivifi",
+  "Cashvia",
+  "TrueBalance",
+  "RapidMoney",
+  "KreditBee",
+  "TrueFund",
+  "MoneyDot",
+  "RupiNow",
+  // "ASAPFinance",
+  "Nira",
+  "Apollo",
+  "LendingPlate",
+  "F1SpeedLoan",
+];
+
+const APOLLO_PRIORITY_ORDER =[
+    "Apollo",
+ "RamFinCorp",
+  // "SpeedoLoan",
+  "CashMySalary",
+  "TejasLoan",
+  "Vivifi",
+  "Cashvia",
+  "TrueBalance",
+  "RapidMoney",
+  "KreditBee",
+  "TrueFund",
+  "MoneyDot",
+  "RupiNow",
+  // "ASAPFinance",
+  "Nira",
+  "LendingPlate",
+  "F1SpeedLoan",
+]
+
+// When utm_medium=f1speedloan: F1SpeedLoan first
+const F1SPEEDLOAN_PRIORITY_ORDER = [
+  "F1SpeedLoan",
+  "RamFinCorp",
+  // "SpeedoLoan",
+  "CashMySalary",
+  "TejasLoan",
   "Vivifi",
   "Cashvia",
   "TrueBalance",
@@ -233,26 +283,6 @@ const CASHMYSalary_PRIORITY_ORDER = [
   "Apollo",
   "LendingPlate",
 ];
-
-const APOLLO_PRIORITY_ORDER =[
-    "Apollo",
- "RamFinCorp",
-  // "SpeedoLoan",
-  "CashMySalary",
-  "LoanWalle",
-  "Vivifi",
-  "Cashvia",
-  "TrueBalance",
-  "RapidMoney",
-  "KreditBee",
-  "TrueFund",
-  "MoneyDot",
-  "RupiNow",
-  // "ASAPFinance",
-  "Nira",
-
-  "LendingPlate",
-]
 
 
 
@@ -286,8 +316,10 @@ const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   "CashMySalary": "CashMySalary",
   "cashmysalary": "CashMySalary",
   "Cashmysalary": "CashMySalary",
-  "LoanWalle": "LoanWalle",
-  "Loanwalle": "LoanWalle",
+  "TejasLoan": "TejasLoan",
+  "tejasloan": "TejasLoan",
+  "Tejas": "TejasLoan",
+  "tejas": "TejasLoan",
   "Cashvia": "Cashvia",
   "RapidMoney": "RapidMoney",
   "TrueBalance": "TrueBalance",
@@ -304,6 +336,8 @@ const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   "nira": "Nira",
   "Apollo": "Apollo",
   "apollo": "Apollo",
+  "F1SpeedLoan": "F1SpeedLoan",
+  "f1speedloan": "F1SpeedLoan",
 };
 
 function getUtmLink(
@@ -430,13 +464,14 @@ export default function ShortTicketOffersPage() {
   const [isKbMedium, setIsKbMedium] = useState(false);
   const [isRapidMoneyMedium, setIsRapidMoneyMedium] = useState(false);
   const [isRamFinCorpMedium, setIsRamFinCorpMedium] = useState(false);
-  const [isLoanWalleMedium, setIsLoanWalleMedium] = useState(false);
+  const [isTejasLoanMedium, setIsTejasLoanMedium] = useState(false);
   const [isMoneyDotMedium, setIsMoneyDotMedium] = useState(false);
   const [isTrueFundMedium, setIsTrueFundMedium] = useState(false);
   // const [isASAPFinanceMedium, setIsASAPFinanceMedium] = useState(false);
   // const [isSpeedoLoanMedium, setIsSpeedoLoanMedium] = useState(false);
   const [isCashMySalaryMedium, setIsCashMySalaryMedium] = useState(false);
   const [isApolloMedium, setIsApolloMedium] = useState(false);
+  const [isF1SpeedLoanMedium, setIsF1SpeedLoanMedium] = useState(false);
 
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
   const [priorityVisible, setPriorityVisible] = useState(0);
@@ -500,8 +535,8 @@ export default function ShortTicketOffersPage() {
     setIsRapidMoneyMedium(isRapidMoneyMediumLocal);
     const isRamFinCorpMediumLocal = utmMedium === "ramfincorp";
     setIsRamFinCorpMedium(isRamFinCorpMediumLocal);
-    const isLoanWalleMediumLocal = utmMedium === "loanwalle";
-    setIsLoanWalleMedium(isLoanWalleMediumLocal);
+    const isTejasLoanMediumLocal = utmMedium === "tejasloan";
+    setIsTejasLoanMedium(isTejasLoanMediumLocal);
     const isMoneyDotMediumLocal = utmMedium === "moneydot";
     setIsMoneyDotMedium(isMoneyDotMediumLocal);
     const isTrueFundMediumLocal = utmMedium === "truefund";
@@ -514,6 +549,8 @@ export default function ShortTicketOffersPage() {
     setIsCashMySalaryMedium(isCashMySalaryMediumLocal);
     const isApolloMediumLocal = utmMedium === "apollo";
     setIsApolloMedium(isApolloMediumLocal);
+    const isF1SpeedLoanMediumLocal = utmMedium === "f1speedloan";
+    setIsF1SpeedLoanMedium(isF1SpeedLoanMediumLocal);
 
     let renderOrder = LENDER_ORDER;
     let initialVisible = 4;
@@ -527,8 +564,8 @@ export default function ShortTicketOffersPage() {
     } else if (isRamFinCorpMediumLocal) {
       renderOrder = RamFinCorp_PRIORITY_ORDER;
       initialVisible = 5;
-    } else if (isLoanWalleMediumLocal) {
-      renderOrder = LOANWALLE_PRIORITY_ORDER;
+    } else if (isTejasLoanMediumLocal) {
+      renderOrder = TEJASLOAN_PRIORITY_ORDER;
       initialVisible = 5;
     } else if (isMoneyDotMediumLocal) {
       renderOrder = MONEYDOT_PRIORITY_ORDER;
@@ -547,6 +584,9 @@ export default function ShortTicketOffersPage() {
       initialVisible = 5;
     }  else if (isApolloMediumLocal) {
       renderOrder = APOLLO_PRIORITY_ORDER;
+      initialVisible = 5;
+    } else if (isF1SpeedLoanMediumLocal) {
+      renderOrder = F1SPEEDLOAN_PRIORITY_ORDER;
       initialVisible = 5;
     }
 
@@ -601,8 +641,14 @@ export default function ShortTicketOffersPage() {
           ordered.push({ name, utm_link: utmMap[name] });
           break;
 
-        case "LoanWalle":
-          // LoanWalle only shows if it comes from API staticLenders
+        case "TejasLoan":
+          // TejasLoan only shows if it comes from API staticLenders
+          if (!utmMap[name]) break;
+          ordered.push({ name, utm_link: utmMap[name] });
+          break;
+
+        case "F1SpeedLoan":
+          // F1SpeedLoan only shows if it comes from API staticLenders
           if (!utmMap[name]) break;
           ordered.push({ name, utm_link: utmMap[name] });
           break;
@@ -800,8 +846,8 @@ export default function ShortTicketOffersPage() {
   };
 
   // Hero card logic
-  const showHeroFlow = isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium || isLoanWalleMedium || isMoneyDotMedium || isTrueFundMedium || /* isASAPFinanceMedium || */ /* isSpeedoLoanMedium || */ isCashMySalaryMedium || isApolloMedium;
-  const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : isLoanWalleMedium ? "LoanWalle" : isMoneyDotMedium ? "MoneyDot" : isTrueFundMedium ? "TrueFund" : /* isASAPFinanceMedium ? "ASAPFinance" : */ /* isSpeedoLoanMedium ? "SpeedoLoan" : */ isCashMySalaryMedium ? "CashMySalary" : isApolloMedium ? "Apollo": null;
+  const showHeroFlow = isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium || isTejasLoanMedium || isMoneyDotMedium || isTrueFundMedium || /* isASAPFinanceMedium || */ /* isSpeedoLoanMedium || */ isCashMySalaryMedium || isApolloMedium || isF1SpeedLoanMedium;
+  const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : isTejasLoanMedium ? "TejasLoan" : isMoneyDotMedium ? "MoneyDot" : isTrueFundMedium ? "TrueFund" : /* isASAPFinanceMedium ? "ASAPFinance" : */ /* isSpeedoLoanMedium ? "SpeedoLoan" : */ isCashMySalaryMedium ? "CashMySalary" : isApolloMedium ? "Apollo" : isF1SpeedLoanMedium ? "F1SpeedLoan" : null;
   const heroIdx = heroName ? visibleLenders.findIndex((l) => l.name === heroName) : -1;
   const showHeroCard = showHeroFlow && heroIdx === 0 && visibleLenders.length > 0;
   const heroLender = showHeroCard ? visibleLenders[0] : null;

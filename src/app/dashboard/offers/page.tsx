@@ -40,7 +40,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   RamFinCorp: "Ram FinCorp",
   // SpeedoLoan: "SpeedoLoan",
   CashMySalary: "CashMySalary",
-  LoanWalle: "LoanWalle",
+  // LoanWalle: "LoanWalle",
   Cashvia: "Cashvia",
   TrueFund: "TrueFund",
   MoneyDot: "MoneyDot",
@@ -49,6 +49,8 @@ const DISPLAY_NAMES: Record<string, string> = {
   Nira: "Nira",
   Apollo: "Apollo",
   LendingPlate: "LendingPlate",
+  TejasLoan: "Tejas Loan",
+  F1SpeedLoan: "F1 Speed Loan",
 };
 
 const FALLBACK_UTM_LINKS: Record<string, string> = {
@@ -210,7 +212,7 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
       // Add static lenders that should always be shown
       // Note: Cashvia is now shown based on API response (dedupeStatus === "Passed")
       // Note: RapidMoney is now shown based on API response (isDuplicate === false)
-      // Note: LoanWalle, ASAPFinance, SpeedoLoan, Vivifi, TrueBalance, RamFinCorp are shown only if they come from API staticLenders
+      // Note: TejasLoan, F1SpeedLoan, ASAPFinance, SpeedoLoan, Vivifi, TrueBalance, RamFinCorp are shown only if they come from API staticLenders
       const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee"];
       const existingLenderNames = new Set(mappedOffers.map((o) => o.name));
 
@@ -225,8 +227,8 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         "CashMySalary": "CashMySalary",
         "cashmysalary": "CashMySalary",
         "Cashmysalary": "CashMySalary",
-        "LoanWalle": "LoanWalle",
-        "Loanwalle": "LoanWalle",
+        // "LoanWalle": "LoanWalle",
+        // "Loanwalle": "LoanWalle",
         "TrueBalance": "TrueBalance",
         "trueBalance": "TrueBalance",
         "truebalance": "TrueBalance",
@@ -240,6 +242,12 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         "apollo": "Apollo",
         "RamFinCorp": "RamFinCorp",
         "ramfincorp": "RamFinCorp",
+        "Tejas": "TejasLoan",
+        "tejas": "TejasLoan",
+        "TejasLoan": "TejasLoan",
+        "tejasloan": "TejasLoan",
+        "F1SpeedLoan": "F1SpeedLoan",
+        "f1speedloan": "F1SpeedLoan",
       };
       for (const lender of staticLendersArray) {
         if (lender.name && lender.utm_link) {
@@ -264,15 +272,32 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         }
       }
 
-      // Add LoanWalle only if it comes from API staticLenders
-      if (staticLenderUtmLinks["LoanWalle"] && !existingLenderNames.has("LoanWalle")) {
+      // // Add LoanWalle only if it comes from API staticLenders
+      // if (staticLenderUtmLinks["LoanWalle"] && !existingLenderNames.has("LoanWalle")) {
+      //   mappedOffers.push({
+      //     name: "LoanWalle",
+      //     utmLink: staticLenderUtmLinks["LoanWalle"],
+      //     isOffer: false,
+      //   });
+      // }
+
+      // Add TejasLoan only if it comes from API staticLenders
+      if (staticLenderUtmLinks["TejasLoan"] && !existingLenderNames.has("TejasLoan")) {
         mappedOffers.push({
-          name: "LoanWalle",
-          utmLink: staticLenderUtmLinks["LoanWalle"],
+          name: "TejasLoan",
+          utmLink: staticLenderUtmLinks["TejasLoan"],
           isOffer: false,
         });
       }
 
+      // Add F1SpeedLoan only if it comes from API staticLenders
+      if (staticLenderUtmLinks["F1SpeedLoan"] && !existingLenderNames.has("F1SpeedLoan")) {
+        mappedOffers.push({
+          name: "F1SpeedLoan",
+          utmLink: staticLenderUtmLinks["F1SpeedLoan"],
+          isOffer: false,
+        });
+      }
 
       // // Add ASAPFinance only if it comes from API staticLenders
       // if (staticLenderUtmLinks["ASAPFinance"] && !existingLenderNames.has("ASAPFinance")) {
