@@ -231,6 +231,19 @@ export default function LoanOffersBanner() {
         });
       }
 
+      // Add Apollo only if it comes from API staticLenders
+      const apolloFromApi = staticLendersArray.find(
+        (l) => l.name?.toLowerCase() === "apollo"
+      );
+      if (apolloFromApi?.utm_link && !addedLenders.has("Apollo")) {
+        addedLenders.add("Apollo");
+        eligibleLenders.push({
+          id: "Apollo",
+          name: "Apollo",
+          prefix: "A",
+        });
+      }
+
       // Check if user came via UTM medium link - prioritize that lender
       const utmMedium = (sessionStorage.getItem("utm_medium") || "").toLowerCase();
       const utmLenderName = UTM_MEDIUM_TO_LENDER[utmMedium];
@@ -242,6 +255,16 @@ export default function LoanOffersBanner() {
           id: "LoanWalle",
           name: "LoanWalle",
           prefix: "L",
+        });
+      }
+
+      // If UTM is apollo and Apollo exists in staticLenders but wasn't added yet, add it now
+      if (utmLenderName === "Apollo" && apolloFromApi?.utm_link && !addedLenders.has("Apollo")) {
+        addedLenders.add("Apollo");
+        eligibleLenders.push({
+          id: "Apollo",
+          name: "Apollo",
+          prefix: "A",
         });
       }
 
