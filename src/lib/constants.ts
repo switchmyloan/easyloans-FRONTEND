@@ -112,9 +112,9 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest rate starting from 3.01% per month.",
   },
   RamFinCorp: {
-    headline: "Get up to ₹1,00,000 with easy approval!",
-    description: "Personal loans with transparent terms and conditions",
-    keyFeature: "Transparent Terms and Quick Processing",
+    headline: "Get Personal Loans from ₹5,000 to ₹2 Lakhs",
+    description: "Quick personal loans with minimal documentation and fast disbursements",
+    keyFeature: "Instant Approval and Same Day Disbursement",
     interestRate: "Interest Rates start at 1.5%* per month",
   },
   poonawalla: {
@@ -256,7 +256,7 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   KreditBee: "High approval chances",
   TrueBalance: "Quick approval",
   RapidMoney: "Quick approval",
-  RamFinCorp: "Flexible loan options",
+  RamFinCorp: "Instant Approval and Same Day Disbursement",
   Vivifi: "Flexible loan options",
   // SpeedoLoan: "Quick approval",
   CashMySalary: "Quick approval",
@@ -295,9 +295,9 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "Flexible Tenure", description: "Up to 6 months" },
   ],
   RamFinCorp: [
-    { title: "Quick Approval", description: "Fast processing" },
-    { title: "Flexible Repayment", description: "Easy repayment options" },
-    { title: "Transparent Terms", description: "No hidden charges" },
+    { title: "Instant Approval", description: "Same day processing" },
+    { title: "Same Day Disbursement", description: "Same day transfer" },
+    { title: "No Prepayment Charges", description: "No hiddenpayment charges" },
   ],
   // LoanWalle: [
   //   { title: "Quick Approval", description: "Fast processing" },
