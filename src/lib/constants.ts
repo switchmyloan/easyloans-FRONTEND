@@ -361,7 +361,7 @@ export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
     TejasLoan: ["EPFO Users Only", "No Prepayment Fee", "Quick Approval"],
   KreditBee: ["Upto 100% off on PF", "Loans up to ₹10 Lakh", "Instant Disbursal"],
   TrueBalance: ["Loans up to ₹2 Lakh", "Minimal Docs", "Quick Approval"],
-  RamFinCorp: ["Transparent Terms", "Quick Processing", "Easy Approval"],
+  RamFinCorp: ["Instant Approval", "Same Day Disbursement", "No Prepayment Charges"],
   MoneyDot: ["Loans up to ₹1 Lakh", "Zero Paperwork", "No Collateral"],
   // SpeedoLoan: ["Quick Approval", "No Hidden Charges", "Up to ₹50,000"],
   CashMySalary: ["Quick Approval", "No Hidden Charges", "Up to ₹50,000"],
@@ -382,7 +382,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   KreditBee: 1000000,       // ₹10 Lakhs
   TrueBalance: 200000,      // ₹2 Lakhs
   RapidMoney: 15000,        // ₹15,000
-  RamFinCorp: 100000,       // ₹1 Lakh
+  RamFinCorp: 200000,       // ₹2 Lakhs
   Vivifi: 500000,           // ₹5 Lakhs
   // SpeedoLoan: 50000,      // ₹50,000
   CashMySalary: 50000,    // ₹50,000
