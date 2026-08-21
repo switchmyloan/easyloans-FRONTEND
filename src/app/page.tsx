@@ -118,9 +118,9 @@ function HomeContent() {
           : undefined;
 
     return {
-      fullName: s1.fullName,
-      firstName: s2.first_name || s1.firstName,
-      lastName: s2.last_name || s1.lastName,
+      fullName: s2.first_name && s2.last_name ? `${s2.first_name} ${s2.last_name}` : undefined,
+      firstName: s2.first_name,
+      lastName: s2.last_name,
       phone: s1.mobile,
       email: s2.email,
       pan_no: s2.pan_no,

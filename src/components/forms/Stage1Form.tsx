@@ -191,7 +191,7 @@ function Stage1FormContent({
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2 2xl:gap-3 3xl:gap-4">
-          <FormInput
+          {/* <FormInput
             id="name"
             label="Full Name"
             type="text"
@@ -212,7 +212,7 @@ function Stage1FormContent({
               },
             })}
             error={errors.fullName}
-          />
+          /> */}
           <FormInput
             id="mobile"
             label="Mobile Number"

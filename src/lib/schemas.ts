@@ -7,35 +7,35 @@ const FULL_NAME_EXAMPLE_MESSAGE =
 
 // Step 1 — Name + Mobile + Consents
 export const stage1Schema = yup.object({
-  fullName: yup
-    .string()
-    .trim()
-    .min(5, FULL_NAME_EXAMPLE_MESSAGE)
-    .matches(LETTERS_AND_SPACES_REGEX, "Name must contain only letters")
-    .test(
-      "full-name-format",
-      FULL_NAME_EXAMPLE_MESSAGE,
-      (value) => {
-        const parts = value?.trim().split(/\s+/).filter(Boolean) ?? [];
+  // fullName: yup
+  //   .string()
+  //   .trim()
+  //   .min(5, FULL_NAME_EXAMPLE_MESSAGE)
+  //   .matches(LETTERS_AND_SPACES_REGEX, "Name must contain only letters")
+  //   .test(
+  //     "full-name-format",
+  //     FULL_NAME_EXAMPLE_MESSAGE,
+  //     (value) => {
+  //       const parts = value?.trim().split(/\s+/).filter(Boolean) ?? [];
 
-        return parts.length >= 2 && parts.every((part) => part.length >= 2);
-      }
-    )
-    .required("Name is required"),
+  //       return parts.length >= 2 && parts.every((part) => part.length >= 2);
+  //     }
+  //   )
+  //   .required("Name is required"),
 
-  firstName: yup
-    .string()
-    .trim()
-    .min(2, "First name must be at least 2 characters")
-    .matches(LETTERS_ONLY_REGEX, "First name must contain only letters")
-    .required("First name is required"),
+  // firstName: yup
+  //   .string()
+  //   .trim()
+  //   .min(2, "First name must be at least 2 characters")
+  //   .matches(LETTERS_ONLY_REGEX, "First name must contain only letters")
+  //   .required("First name is required"),
 
-  lastName: yup
-    .string()
-    .trim()
-    .min(2, "Last name must be at least 2 characters")
-    .matches(LETTERS_ONLY_REGEX, "Last name must contain only letters")
-    .required("Last name is required"),
+  // lastName: yup
+  //   .string()
+  //   .trim()
+  //   .min(2, "Last name must be at least 2 characters")
+  //   .matches(LETTERS_ONLY_REGEX, "Last name must contain only letters")
+  //   .required("Last name is required"),
 
   mobile: yup
     .string()
