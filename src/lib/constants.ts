@@ -190,7 +190,7 @@ export const STATIC_LENDER_DETAILS: Record<
     interestRate: "Interest Rates start at 0.07% to 0.16% per day",
   },
   RupiNow: {
-    headline: "Get up to ₹5,00,000 with quick approval!",
+    headline: "Get up to ₹50,000 with quick approval!",
     description: "Personal loans with Instant Loan Approval and Zero Hidden Charges",
     keyFeature: "Flexible Tenure and Zero Hidden Charges",
     interestRate: "Interest Rates start at 12% to 30% per annum",
@@ -337,7 +337,7 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
   RupiNow: [
     { title: "Quick Approval", description: "Fast processing" },
     { title: "Zero Hidden Charges", description: "Transparent fees" },
-    { title: "Up to ₹5,00,000", description: "High loan amount" },
+    { title: "Up to ₹50,000", description: "High loan amount" },
   ],
 };
 
@@ -367,7 +367,7 @@ export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   CashMySalary: ["Quick Approval", "No Hidden Charges", "Up to ₹50,000"],
   Cashvia: ["Minimal Docs", "Quick Approval", "Fast Disbursal"],
   TrueFund: ["Quick Approval", "Up to ₹10 Lakh", "Flexible Repayment"],
-  RupiNow: ["Zero Hidden Charges", "Flexible Tenure", "Up to ₹5 Lakh"],
+  RupiNow: ["Zero Hidden Charges", "Flexible Tenure", "Up to ₹50,000"],
   // ASAPFinance: ["Fast Approval", "No Collateral", "Hassle-Free Docs"],
   Nira: ["Easy to repay", "Low interest loans", "Flexible tenure"],
   Apollo: ["Fully Digital Loan", "Quick Approval", "Up to 6 months tenure"],
@@ -391,7 +391,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   Cashvia: 30000,      // ₹30,000
   TrueFund: 50000,      // ₹50,000
   MoneyDot: 100000,      // ₹1 Lakhs
-  RupiNow: 500000,      // ₹5 Lakhs
+  RupiNow: 50000,      // ₹50,000
   // ASAPFinance: 12000,      // ₹12,000
   Nira: 100000,      // 1 Lakhs
   Apollo: 50000,      // 50,000
