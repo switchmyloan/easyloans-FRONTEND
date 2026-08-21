@@ -173,7 +173,6 @@ function HomeContent() {
     stage1DraftRef.current = { ...stage1DraftRef.current, ...data };
     try {
       const leadRes = await submitLead({
-        name: data.fullName,
         phone: data.mobile,
         consent_tnc: data.consent_tnc,
         consent_credit: data.consent_credit,
@@ -191,9 +190,6 @@ function HomeContent() {
     }
     try {
       await saveShortDraftLead({
-        fullName: data.fullName,
-        firstName: data.firstName,
-        lastName: data.lastName,
         phone: data.mobile,
         loan_amount: data.loan_amount,
         consent_tnc: data.consent_tnc,
@@ -235,7 +231,6 @@ function HomeContent() {
 
         // CleverTap: Track OTP verification
         const loginProfile: CleverTapLoginProfile = {
-          Name: stage1Data.fullName,
           Identity: stage1Data.mobile,
           Phone: `+91${stage1Data.mobile}`,
           "MSG-push": stage1Data.consent_communication,
@@ -387,8 +382,8 @@ function HomeContent() {
 
   const stage2Defaults = stage1Data
     ? {
-        first_name: prefilledStage2?.first_name || stage1Data.firstName,
-        last_name: prefilledStage2?.last_name || stage1Data.lastName,
+        first_name: prefilledStage2?.first_name,
+        last_name: prefilledStage2?.last_name,
         ...(prefilledStage2?.email ? { email: prefilledStage2.email } : {}),
         ...(prefilledStage2?.gender ? { gender: prefilledStage2.gender } : {}),
         ...(prefilledStage2?.pincode ? { pincode: prefilledStage2.pincode } : {}),

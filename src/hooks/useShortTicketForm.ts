@@ -74,9 +74,6 @@ export function useShortTicketForm(): [ShortTicketFormState, ShortTicketFormActi
     // Save draft in background
     if (data.mobile && data.mobile.length >= 5) {
       saveShortDraftLead({
-        fullName: data.fullName,
-        firstName: data.firstName,
-        lastName: data.lastName,
         phone: data.mobile,
         loan_amount: data.loan_amount,
         consent_tnc: data.consent_tnc,
@@ -120,9 +117,6 @@ export function useShortTicketForm(): [ShortTicketFormState, ShortTicketFormActi
 
       // Save draft lead
       await saveShortDraftLead({
-        fullName: data.fullName,
-        firstName: data.firstName,
-        lastName: data.lastName,
         phone: data.mobile,
         loan_amount: data.loan_amount,
         consent_tnc: data.consent_tnc,

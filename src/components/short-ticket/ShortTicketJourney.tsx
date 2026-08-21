@@ -108,9 +108,12 @@ function ShortTicketJourneyContent() {
           : undefined;
 
     return {
-      fullName: s1.fullName,
-      firstName: s2.first_name || s1.firstName,
-      lastName: s2.last_name || s1.lastName,
+      // Stage 1 no longer collects a name, so stage 2 is the only source left —
+      // fullName is composed from it rather than carried down from stage 1.
+      fullName:
+        [s2.first_name, s2.last_name].filter(Boolean).join(" ") || undefined,
+      firstName: s2.first_name,
+      lastName: s2.last_name,
       phone: s1.mobile,
       email: s2.email,
       pan_no: s2.pan_no,
@@ -167,7 +170,6 @@ function ShortTicketJourneyContent() {
     // Try to get prefilled data from existing lead
     try {
       const leadRes = await submitLead({
-        name: data.fullName,
         phone: data.mobile,
         consent_tnc: data.consent_tnc,
         consent_credit: data.consent_credit,
@@ -187,9 +189,6 @@ function ShortTicketJourneyContent() {
     // Save draft lead for short ticket
     try {
       await saveShortDraftLead({
-        fullName: data.fullName,
-        firstName: data.firstName,
-        lastName: data.lastName,
         phone: data.mobile,
         loan_amount: data.loan_amount,
         consent_tnc: data.consent_tnc,
@@ -324,8 +323,8 @@ function ShortTicketJourneyContent() {
 
   const stage2Defaults = stage1Data
     ? {
-        first_name: prefilledStage2?.first_name || stage1Data.firstName,
-        last_name: prefilledStage2?.last_name || stage1Data.lastName,
+        first_name: prefilledStage2?.first_name,
+        last_name: prefilledStage2?.last_name,
         ...(prefilledStage2?.email ? { email: prefilledStage2.email } : {}),
         ...(prefilledStage2?.gender ? { gender: prefilledStage2.gender } : {}),
         ...(prefilledStage2?.pincode ? { pincode: prefilledStage2.pincode } : {}),

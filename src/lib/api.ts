@@ -208,7 +208,9 @@ function buildDraftLeadBody(data: DraftLeadPayload) {
 }
 
 export async function submitLead(data: {
-  name: string;
+  // Optional: stage 1 stopped collecting a name (the bureau lookup returns it),
+  // and /leadsGeneration reads only `phone` — it never looks at this field.
+  name?: string;
   phone: string;
   consent_tnc: boolean;
   consent_credit: boolean;
