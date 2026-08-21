@@ -458,7 +458,7 @@ export default function LoanOffersBanner() {
   };
 
   // RamFinCorp special apply handler - calls the new API endpoint
-  const handleRamFinCorpApply = async () => {
+  const handleRamFinCorpApply = async (initialUtmLink?: string) => {
     if (ramFinCorpApplying) return;
     setRamFinCorpApplying(true);
     try {
@@ -467,7 +467,9 @@ export default function LoanOffersBanner() {
       const res = await applyToShortRamFinCorp();
 
       if (res.success) {
-        const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || FALLBACK_UTM_LINKS.RamFinCorp || "https://ramfincorp.com/";
+        // Use redirectUrl from apply API response, fallback to utm_link from apply API,
+        // then fallback to utm_link from get-offer-short-ticket API, then hardcoded fallback
+        const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || initialUtmLink || FALLBACK_UTM_LINKS.RamFinCorp || "https://ramfincorp.com/";
         window.open(redirectUrl, "_blank");
       } else {
         toast.error(res.message || "Something went wrong. Please try again.", { duration: 4000 });
@@ -495,7 +497,10 @@ export default function LoanOffersBanner() {
 
     // Special handling for RamFinCorp
     if (displayLender.id === "RamFinCorp") {
-      handleRamFinCorpApply();
+      // Get utm_link from stored data for fallback
+      const data = getStoredShortExistingUserOffers()?.data as Record<string, unknown> | undefined;
+      const ramFinCorpData = data?.RamFinCorp as { utm_link?: string } | undefined;
+      handleRamFinCorpApply(ramFinCorpData?.utm_link);
       return;
     }
 

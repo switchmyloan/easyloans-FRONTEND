@@ -621,11 +621,12 @@ export default function ShortTicketOffersPage() {
         case "RamFinCorp": {
           // RamFinCorp shows only if data.response.message === "Dedup Success"
           // Redirect URL comes from applyToShortRamFinCorp API on Apply click
+          // Fallback to utm_link from get-offer-short-ticket API if redirectUrl not available
           const ramFinCorpMessage = (
             (lender?.data as { response?: { message?: string } })?.response?.message || ""
           );
           if (ramFinCorpMessage !== "Dedup Success") break;
-          ordered.push({ name });
+          ordered.push({ name, utm_link: lender?.utm_link });
           break;
         }
         
@@ -846,7 +847,7 @@ export default function ShortTicketOffersPage() {
     }
   };
 
-  const handleRamFinCorpApply = async () => {
+  const handleRamFinCorpApply = async (initialUtmLink?: string) => {
     if (ramFinCorpApplying) return;
     setRamFinCorpApplying(true);
 
@@ -861,8 +862,9 @@ export default function ShortTicketOffersPage() {
       const res = await applyToShortRamFinCorp();
 
       if (res.success) {
-        // Use redirectUrl from response or fallback
-        const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || FALLBACK_UTM.RamFinCorp;
+        // Use redirectUrl from apply API response, fallback to utm_link from apply API,
+        // then fallback to utm_link from get-offer-short-ticket API, then hardcoded fallback
+        const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || initialUtmLink || FALLBACK_UTM.RamFinCorp;
         window.open(redirectUrl, "_blank");
       } else {
         toast.error(res.message || "Something went wrong. Please try again.", {
@@ -887,7 +889,7 @@ export default function ShortTicketOffersPage() {
 
   const onApplyFor = (lender: OrderedLender) => {
     if (lender.name === "KreditBee") return handleKreditBeeApply;
-    if (lender.name === "RamFinCorp") return handleRamFinCorpApply;
+    if (lender.name === "RamFinCorp") return () => handleRamFinCorpApply(lender.utm_link);
     return () => handleApply(lender.name, lender.utm_link);
   };
 

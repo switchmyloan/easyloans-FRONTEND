@@ -372,7 +372,7 @@ export default function DashboardOffers() {
     }
   };
 
-  const handleRamFinCorpApply = async () => {
+  const handleRamFinCorpApply = async (initialUtmLink?: string) => {
     if (ramFinCorpApplying) return;
     setRamFinCorpApplying(true);
     try {
@@ -381,7 +381,9 @@ export default function DashboardOffers() {
       const res = await applyToShortRamFinCorp();
 
       if (res.success) {
-        const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || FALLBACK_UTM_LINKS["RamFinCorp"] || "https://ramfincorp.com/";
+        // Use redirectUrl from apply API response, fallback to utm_link from apply API,
+        // then fallback to utm_link from get-offer-short-ticket API, then hardcoded fallback
+        const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || initialUtmLink || FALLBACK_UTM_LINKS["RamFinCorp"] || "https://ramfincorp.com/";
         window.open(redirectUrl, "_blank");
       } else {
         toast.error(res.message || "Something went wrong. Please try again.", { duration: 4000 });
@@ -407,7 +409,7 @@ export default function DashboardOffers() {
 
     // Route RamFinCorp to specific handler
     if (lenderName === "RamFinCorp") {
-      handleRamFinCorpApply();
+      handleRamFinCorpApply(utmLink);
       return;
     }
 
