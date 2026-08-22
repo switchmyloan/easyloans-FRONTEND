@@ -245,13 +245,13 @@ function Stage1FormContent({
               {/* Track fill */}
               <div
                 className="absolute h-1.5 bg-white/40 rounded-full 2xl:h-2 3xl:h-2.5"
-                style={{ width: `${((loanAmount - 5000) / (1500000 - 5000)) * 100}%` }}
+                style={{ width: `${((loanAmount - 5000) / (200000 - 5000)) * 100}%` }}
               />
               {/* Hidden native input */}
               <input
                 type="range"
                 min={5000}
-                max={1500000}
+                max={200000}
                 step={5000}
                 {...register("loan_amount", { valueAsNumber: true })}
                 className="absolute w-full h-full opacity-0 cursor-pointer z-10"
@@ -260,7 +260,7 @@ function Stage1FormContent({
               <motion.div
                 className="absolute w-4 h-4 bg-[#A6FF00] rounded-full shadow-lg pointer-events-none 2xl:w-5 2xl:h-5 3xl:w-6 3xl:h-6"
                 style={{
-                  left: `calc(${((loanAmount - 5000) / (1500000 - 5000)) * 100}% - 8px)`,
+                  left: `calc(${((loanAmount - 5000) / (200000 - 5000)) * 100}% - 8px)`,
                 }}
                 animate={{
                   scale: [1, 1.3, 1, 1.2, 1],
