@@ -50,7 +50,9 @@ export const STATIC_LENDER_LOGOS: Record<
   Apollo: { src: "/apollo.png" },
   LendingPlate: { src: "/lending.png" },
   F1SpeedLoan: { src: "/F1SpeedLoan.png" },
-  TejasLoan: { src: "/tejasLogo.png", darkBg: true }, 
+  TejasLoan: { src: "/tejasLogo.png", darkBg: true },
+  Cash2You: { src: "/CashToYouLogo.svg" },
+  RocketCash: { src: "/RocketCashLogo.png" },
 };
 
 export const STATIC_LENDER_DETAILS: Record<
@@ -225,6 +227,18 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Quick Approval and No Prepayment Charges",
     interestRate: "Interest Rates start at 1%* per day",
   },
+  Cash2You: {
+    headline: "Get Personal Loans from ₹1,000 to ₹40,000",
+    description: "Flexible repayment options with tenure up to 60 months",
+    keyFeature: "Long Tenure and Flexible EMI Options",
+    interestRate: "Interest Rates 36-39% per annum",
+  },
+  RocketCash: {
+    headline: "Get Personal Loans from ₹500 to ₹20,000",
+    description: "Quick short-term loans with fast disbursement",
+    keyFeature: "Instant Approval and Quick Disbursement",
+    interestRate: "Interest Rates 36-39% per annum",
+  },
 };
 
 // Dashboard priority order - lenders are displayed in this order when available
@@ -234,7 +248,7 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   // "SpeedoLoan",
   "CashMySalary",
   // "LoanWalle",
-    "TejasLoan",
+  "TejasLoan",
   "Vivifi",
   "Cashvia",
   "TrueBalance",
@@ -248,7 +262,8 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "Apollo",
   "LendingPlate",
   "F1SpeedLoan",
-
+  "Cash2You",
+  "RocketCash",
 ];
 
 // Short feature tags for each lender (displayed in offer cards)
@@ -261,7 +276,7 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   // SpeedoLoan: "Quick approval",
   CashMySalary: "Quick approval",
   // LoanWalle: "Only for EPFO registered users",
-    TejasLoan: "Only for EPFO registered users",
+  TejasLoan: "Only for EPFO registered users",
   Cashvia: "Minimal documentation",
   TrueFund: "Quick approval",
   MoneyDot: "no collateral",
@@ -270,6 +285,8 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   Nira: "Low interest rates",
   Apollo: "Fully digital loan and no paperwork",
   F1SpeedLoan: "No Prepayment Charges",
+  Cash2You: "Long tenure up to 60 months",
+  RocketCash: "Quick short-term loans",
 };
 
 
@@ -339,6 +356,16 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "Zero Hidden Charges", description: "Transparent fees" },
     { title: "Up to ₹50,000", description: "High loan amount" },
   ],
+  Cash2You: [
+    { title: "Long Tenure", description: "Up to 60 months" },
+    { title: "Flexible EMI", description: "Easy repayment options" },
+    { title: "Up to ₹40,000", description: "Personal loan amount" },
+  ],
+  RocketCash: [
+    { title: "Quick Approval", description: "Fast processing" },
+    { title: "Short-term Loans", description: "Up to 21 days" },
+    { title: "Up to ₹20,000", description: "Instant cash" },
+  ],
 };
 
 // Default features if lender not found in UTM_MEDIUM_LENDERS_FEATURES
@@ -358,7 +385,7 @@ export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   RapidMoney: ["Quick Approval", "Flexible Repayment", "Up to ₹15,000"],
   Vivifi: ["0% Foreclose Charge", "Highest Approval", "Quick Disbursal"],
   // LoanWalle: ["EPFO Users Only", "No Prepayment Fee", "Quick Approval"],
-    TejasLoan: ["EPFO Users Only", "No Prepayment Fee", "Quick Approval"],
+  TejasLoan: ["EPFO Users Only", "No Prepayment Fee", "Quick Approval"],
   KreditBee: ["Upto 100% off on PF", "Loans up to ₹10 Lakh", "Instant Disbursal"],
   TrueBalance: ["Loans up to ₹2 Lakh", "Minimal Docs", "Quick Approval"],
   RamFinCorp: ["Instant Approval", "Same Day Disbursement", "No Prepayment Charges"],
@@ -372,6 +399,8 @@ export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   Nira: ["Easy to repay", "Low interest loans", "Flexible tenure"],
   Apollo: ["Fully Digital Loan", "Quick Approval", "Up to 6 months tenure"],
   F1SpeedLoan: ["No Prepayment Charges", "Quick Approval", "Up to 365 months"],
+  Cash2You: ["Up to 60 Months Tenure", "Flexible EMI", "Up to ₹40,000"],
+  RocketCash: ["Quick Approval", "Up to 21 Days", "Up to ₹20,000"],
 };
 
 // Default feature badges if lender not found
@@ -387,7 +416,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   // SpeedoLoan: 50000,      // ₹50,000
   CashMySalary: 50000,    // ₹50,000
   // LoanWalle: 100000,      // ₹1 Lakh
-    TejasLoan: 100000,      // ₹1 Lakh
+  TejasLoan: 100000,      // ₹1 Lakh
   Cashvia: 30000,      // ₹30,000
   TrueFund: 50000,      // ₹50,000
   MoneyDot: 100000,      // ₹1 Lakhs
@@ -396,6 +425,8 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   Nira: 100000,      // 1 Lakhs
   Apollo: 50000,      // 50,000
   F1SpeedLoan: 100000,      // 100,000
+  Cash2You: 40000,      // ₹40,000
+  RocketCash: 20000,      // ₹20,000
 };
 
 const DEFAULT_LENDER_DETAIL = {

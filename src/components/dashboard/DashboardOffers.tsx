@@ -52,6 +52,8 @@ const DISPLAY_NAMES: Record<string, string> = {
   Apollo: "Apollo",
   TejasLoan: "Tejas Loan",
   F1SpeedLoan: "F1 Speed Loan",
+  Cash2You: "CashToYou",
+  RocketCash: "Rocket Cash",
 };
 
 const DASHBOARD_VISIBLE_COUNT = 4;
@@ -191,6 +193,12 @@ export default function DashboardOffers() {
         "tejasloan": "TejasLoan",
         "F1SpeedLoan": "F1SpeedLoan",
         "f1speedloan": "F1SpeedLoan",
+        "Cash2You": "Cash2You",
+        "cash2you": "Cash2You",
+        "cash2You": "Cash2You",
+        "RocketCash": "RocketCash",
+        "rocketcash": "RocketCash",
+        "rocketCash": "RocketCash",
       };
       for (const lender of staticLendersArray) {
         if (lender.name && lender.utm_link) {
@@ -268,6 +276,24 @@ export default function DashboardOffers() {
         mappedOffers.push({
           name: "Apollo",
           utmLink: staticLenderUtmLinks["Apollo"],
+          isOffer: false,
+        });
+      }
+
+      // Add Cash2You only if it comes from API staticLenders
+      if (staticLenderUtmLinks["Cash2You"] && !existingLenderNames.has("Cash2You")) {
+        mappedOffers.push({
+          name: "Cash2You",
+          utmLink: staticLenderUtmLinks["Cash2You"],
+          isOffer: false,
+        });
+      }
+
+      // Add RocketCash only if it comes from API staticLenders
+      if (staticLenderUtmLinks["RocketCash"] && !existingLenderNames.has("RocketCash")) {
+        mappedOffers.push({
+          name: "RocketCash",
+          utmLink: staticLenderUtmLinks["RocketCash"],
           isOffer: false,
         });
       }

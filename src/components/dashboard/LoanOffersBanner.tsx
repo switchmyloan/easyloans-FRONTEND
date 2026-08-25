@@ -29,6 +29,8 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   RupiNow: "https://www.rupinow.com/home",
   // ASAPFinance: "https://asapfinance.in/customer/login?utm_source=easyloans+Cready",
   Nira: "https://play.google.com/store/apps/details?id=com.nirafinance.customer&referrer=pid%3DCready%26c%3DPartnerships_Cready_CPA%26af_adset%3D%7B%7D%26af_tranid%3DMTgzMjkwOTA0MzAyMDE3NjUyOTE%3D",
+  Cash2You: "https://www.cashtoyou.in/",
+  RocketCash: "https://www.rocketcash.in/",
 };
 
 // Map utm_medium values to lender names (case-insensitive matching)
@@ -48,6 +50,8 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   apollo: "Apollo",
   f1speedloan: "F1SpeedLoan",
   rupinow: "RupiNow",
+  cash2you: "Cash2You",
+  rocketcash: "RocketCash",
 };
 
 // ============================================================
@@ -284,6 +288,9 @@ export default function LoanOffersBanner() {
         });
       }
 
+
+      
+
       // Add RamFinCorp if eligible (data.response.message === "Dedup Success")
       if (isRamFinCorpEligible && !addedLenders.has("RamFinCorp")) {
         addedLenders.add("RamFinCorp");
@@ -304,6 +311,32 @@ export default function LoanOffersBanner() {
           id: "Apollo",
           name: "Apollo",
           prefix: "A",
+        });
+      }
+
+      // Add Cash2You only if it comes from API staticLenders
+      const cash2YouFromApi = staticLendersArray.find(
+        (l) => l.name?.toLowerCase() === "cash2you"
+      );
+      if (cash2YouFromApi?.utm_link && !addedLenders.has("Cash2You")) {
+        addedLenders.add("Cash2You");
+        eligibleLenders.push({
+          id: "Cash2You",
+          name: "Cash2You",
+          prefix: "C",
+        });
+      }
+
+      // Add RocketCash only if it comes from API staticLenders
+      const rocketCashFromApi = staticLendersArray.find(
+        (l) => l.name?.toLowerCase() === "rocketcash"
+      );
+      if (rocketCashFromApi?.utm_link && !addedLenders.has("RocketCash")) {
+        addedLenders.add("RocketCash");
+        eligibleLenders.push({
+          id: "RocketCash",
+          name: "RocketCash",
+          prefix: "R",
         });
       }
 
@@ -350,6 +383,26 @@ export default function LoanOffersBanner() {
           id: "Apollo",
           name: "Apollo",
           prefix: "A",
+        });
+      }
+
+      // If UTM is cash2you and Cash2You exists in staticLenders but wasn't added yet, add it now
+      if (utmLenderName === "Cash2You" && cash2YouFromApi?.utm_link && !addedLenders.has("Cash2You")) {
+        addedLenders.add("Cash2You");
+        eligibleLenders.push({
+          id: "Cash2You",
+          name: "Cash2You",
+          prefix: "C",
+        });
+      }
+
+      // If UTM is rocketcash and RocketCash exists in staticLenders but wasn't added yet, add it now
+      if (utmLenderName === "RocketCash" && rocketCashFromApi?.utm_link && !addedLenders.has("RocketCash")) {
+        addedLenders.add("RocketCash");
+        eligibleLenders.push({
+          id: "RocketCash",
+          name: "RocketCash",
+          prefix: "R",
         });
       }
 

@@ -52,6 +52,8 @@ const DISPLAY_NAMES: Record<string, string> = {
   LendingPlate: "LendingPlate",
   TejasLoan: "Tejas Loan",
   F1SpeedLoan: "F1 Speed Loan",
+  Cash2You: "CashToYou",
+  RocketCash: "Rocket Cash",
 };
 
 const FALLBACK_UTM_LINKS: Record<string, string> = {
@@ -254,6 +256,12 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         "tejasloan": "TejasLoan",
         "F1SpeedLoan": "F1SpeedLoan",
         "f1speedloan": "F1SpeedLoan",
+        "Cash2You": "Cash2You",
+        "cash2you": "Cash2You",
+        "cash2You": "Cash2You",
+        "RocketCash": "RocketCash",
+        "rocketcash": "RocketCash",
+        "rocketCash": "RocketCash",
       };
       for (const lender of staticLendersArray) {
         if (lender.name && lender.utm_link) {
@@ -438,6 +446,24 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         mappedOffers.push({
           name: "LendingPlate",
           utmLink: lendingPlateData?.utm_link || FALLBACK_UTM_LINKS["LendingPlate"],
+          isOffer: false,
+        });
+      }
+
+      // Add Cash2You only if it comes from API staticLenders
+      if (staticLenderUtmLinks["Cash2You"] && !existingLenderNames.has("Cash2You")) {
+        mappedOffers.push({
+          name: "Cash2You",
+          utmLink: staticLenderUtmLinks["Cash2You"],
+          isOffer: false,
+        });
+      }
+
+      // Add RocketCash only if it comes from API staticLenders
+      if (staticLenderUtmLinks["RocketCash"] && !existingLenderNames.has("RocketCash")) {
+        mappedOffers.push({
+          name: "RocketCash",
+          utmLink: staticLenderUtmLinks["RocketCash"],
           isOffer: false,
         });
       }
