@@ -363,9 +363,12 @@ function getUtmLink(
       // CashMySalary only shows if it comes from API staticLenders (no fallback)
       return directLink || null;
 
-    case "Vivifi":
-      // Vivifi only shows if it comes from API staticLenders (no fallback)
+    case "Vivifi": {
+      // Vivifi shows only if API response message is "Application Accepted"
+      const vivifiMessage = lender?.message || "";
+      if (vivifiMessage !== "Application Accepted") return null;
       return directLink || null;
+    }
 
     // case "ASAPFinance":
     //   // ASAPFinance only shows if it comes from API staticLenders (no fallback)
@@ -631,11 +634,16 @@ export default function ShortTicketOffersPage() {
         }
         
 
-        case "Vivifi":
-          // Vivifi only shows if it comes from API staticLenders
-          if (!utmMap[name]) break;
-          ordered.push({ name, utm_link: utmMap[name] });
+        case "Vivifi": {
+          // Vivifi shows only if API response message is "Application Accepted"
+          const vivifiMessage = lender?.message || "";
+          if (vivifiMessage !== "Application Accepted") break;
+          // Use utm_link from the API response
+          const vivifiUtmLink = lender?.utm_link;
+          if (!vivifiUtmLink) break;
+          ordered.push({ name, utm_link: vivifiUtmLink });
           break;
+        }
 
         // case "SpeedoLoan":
         //   // SpeedoLoan only shows if it comes from API staticLenders

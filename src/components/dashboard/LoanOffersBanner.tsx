@@ -78,7 +78,8 @@ const REMOVED_LENDERS = ["MPokket", "Loan112", "SmartCoin", "SmartCoinHighIntent
 // Static lenders that should always be shown
 // Note: RamFinCorp is now shown based on API response (message === "Dedup Success")
 // Note: TejasLoan, F1SpeedLoan are shown only when received in staticLenders from API (with utm_link)
-const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", /* "SpeedoLoan", */ "Cashvia", "Vivifi", "TrueBalance"];
+// Note: Vivifi is now shown based on API response (message === "Application Accepted")
+const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", /* "SpeedoLoan", */ "Cashvia", "TrueBalance"];
 
 // ============================================================
 // Utility Functions
@@ -134,6 +135,9 @@ export default function LoanOffersBanner() {
       const rupiNowData = data.RupiNow as { dedupeStatus?: string; utm_link?: string } | undefined;
       const isRupiNowEligible = rupiNowData?.dedupeStatus === "Passed";
 
+      const vivifiData = data.Vivifi as { message?: string; utm_link?: string } | undefined;
+      const isVivifiEligible = vivifiData?.message === "Application Accepted";
+
       // Get shownOffers from API response
       const shownOffers = (data.shownOffers || []) as ShownOffer[];
 
@@ -156,6 +160,7 @@ export default function LoanOffersBanner() {
         if (lenderName === "MoneyDot" && !isMoneyDotEligible) continue;
         if (lenderName === "RupiNow" && !isRupiNowEligible) continue;
         if (lenderName === "RamFinCorp" && !isRamFinCorpEligible) continue;
+        if (lenderName === "Vivifi" && !isVivifiEligible) continue;
 
         addedLenders.add(lenderName);
         eligibleLenders.push({
@@ -218,6 +223,16 @@ export default function LoanOffersBanner() {
           id: "RupiNow",
           name: "RupiNow",
           prefix: "R",
+        });
+      }
+
+      // Add Vivifi if API response message is "Application Accepted" and not already added
+      if (isVivifiEligible && vivifiData?.utm_link && !addedLenders.has("Vivifi")) {
+        addedLenders.add("Vivifi");
+        eligibleLenders.push({
+          id: "Vivifi",
+          name: "Vivifi",
+          prefix: "V",
         });
       }
 
@@ -343,6 +358,16 @@ export default function LoanOffersBanner() {
         });
       }
 
+      // If UTM is vivifi and Vivifi is eligible but wasn't added yet, add it now
+      if (utmLenderName === "Vivifi" && isVivifiEligible && vivifiData?.utm_link && !addedLenders.has("Vivifi")) {
+        addedLenders.add("Vivifi");
+        eligibleLenders.push({
+          id: "Vivifi",
+          name: "Vivifi",
+          prefix: "V",
+        });
+      }
+
       // // If UTM is asapfinance, add ASAPFinance if not already added
       // if (utmLenderName === "ASAPFinance" && !addedLenders.has("ASAPFinance")) {
       //   addedLenders.add("ASAPFinance");
@@ -393,6 +418,7 @@ export default function LoanOffersBanner() {
           if (lenderName === "TrueFund" && !isTrueFundEligible) continue;
           if (lenderName === "MoneyDot" && !isMoneyDotEligible) continue;
           if (lenderName === "RamFinCorp" && !isRamFinCorpEligible) continue;
+          if (lenderName === "Vivifi" && !isVivifiEligible) continue;
 
           // Found an eligible lender in priority order
           mainLenderFromSelected = {

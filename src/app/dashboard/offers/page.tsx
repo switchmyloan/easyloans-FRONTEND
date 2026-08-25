@@ -353,11 +353,13 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         });
       }
 
-      // Add Vivifi only if it comes from API staticLenders
-      if (staticLenderUtmLinks["Vivifi"] && !existingLenderNames.has("Vivifi")) {
+      // Add Vivifi only if API response message is "Application Accepted"
+      const vivifiData = data.Vivifi as { message?: string; utm_link?: string } | undefined;
+      const isVivifiEligible = vivifiData?.message === "Application Accepted";
+      if (isVivifiEligible && vivifiData?.utm_link && !existingLenderNames.has("Vivifi")) {
         mappedOffers.push({
           name: "Vivifi",
-          utmLink: staticLenderUtmLinks["Vivifi"],
+          utmLink: vivifiData.utm_link,
           isOffer: false,
         });
       }
