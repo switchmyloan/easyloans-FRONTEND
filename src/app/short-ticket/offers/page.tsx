@@ -364,9 +364,12 @@ function getUtmLink(
       return directLink || null;
 
     case "Vivifi": {
-      // Vivifi shows only if API response message is "Application Accepted"
+      // Vivifi shows unless message indicates rejection
       const vivifiMessage = lender?.message || "";
-      if (vivifiMessage !== "Application Accepted") return null;
+      const isRejected =
+        vivifiMessage === "Rejected due to Eligibility criteria." ||
+        vivifiMessage === "Lead rejected.";
+      if (isRejected || !vivifiMessage) return null;
       return directLink || null;
     }
 
@@ -598,7 +601,8 @@ export default function ShortTicketOffersPage() {
     // Build ordered list based on eligibility
     const ordered: OrderedLender[] = [];
     for (const name of renderOrder) {
-      const lender = data[name] as ShortTicketLender | undefined;
+      // Try both capitalized and lowercase keys (API returns lowercase for some lenders like vivifi)
+      const lender = (data[name] || data[name.toLowerCase()]) as ShortTicketLender | undefined;
       const utmLink = getUtmLink(name, lender);
 
       switch (name) {
@@ -635,9 +639,12 @@ export default function ShortTicketOffersPage() {
         
 
         case "Vivifi": {
-          // Vivifi shows only if API response message is "Application Accepted"
+          // Vivifi shows unless message indicates rejection
           const vivifiMessage = lender?.message || "";
-          if (vivifiMessage !== "Application Accepted") break;
+          const isVivifiRejected =
+            vivifiMessage === "Rejected due to Eligibility criteria." ||
+            vivifiMessage === "Lead rejected.";
+          if (isVivifiRejected || !vivifiMessage) break;
           // Use utm_link from the API response
           const vivifiUtmLink = lender?.utm_link;
           if (!vivifiUtmLink) break;

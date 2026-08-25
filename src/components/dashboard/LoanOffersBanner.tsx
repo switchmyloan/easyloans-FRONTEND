@@ -135,8 +135,13 @@ export default function LoanOffersBanner() {
       const rupiNowData = data.RupiNow as { dedupeStatus?: string; utm_link?: string } | undefined;
       const isRupiNowEligible = rupiNowData?.dedupeStatus === "Passed";
 
-      const vivifiData = data.Vivifi as { message?: string; utm_link?: string } | undefined;
-      const isVivifiEligible = vivifiData?.message === "Application Accepted";
+      // Try both capitalized and lowercase keys (API returns lowercase for vivifi)
+      const vivifiData = (data.Vivifi || data.vivifi) as { message?: string; utm_link?: string } | undefined;
+      const vivifiMessage = vivifiData?.message || "";
+      const isVivifiRejected =
+        vivifiMessage === "Rejected due to Eligibility criteria." ||
+        vivifiMessage === "Lead rejected.";
+      const isVivifiEligible = vivifiMessage && !isVivifiRejected;
 
       // Get shownOffers from API response
       const shownOffers = (data.shownOffers || []) as ShownOffer[];

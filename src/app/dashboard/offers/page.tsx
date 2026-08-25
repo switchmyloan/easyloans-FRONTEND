@@ -353,9 +353,14 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         });
       }
 
-      // Add Vivifi only if API response message is "Application Accepted"
-      const vivifiData = data.Vivifi as { message?: string; utm_link?: string } | undefined;
-      const isVivifiEligible = vivifiData?.message === "Application Accepted";
+      // Add Vivifi unless message indicates rejection
+      // Try both capitalized and lowercase keys (API returns lowercase for vivifi)
+      const vivifiData = (data.Vivifi || data.vivifi) as { message?: string; utm_link?: string } | undefined;
+      const vivifiMessage = vivifiData?.message || "";
+      const isVivifiRejected =
+        vivifiMessage === "Rejected due to Eligibility criteria." ||
+        vivifiMessage === "Lead rejected.";
+      const isVivifiEligible = vivifiMessage && !isVivifiRejected;
       if (isVivifiEligible && vivifiData?.utm_link && !existingLenderNames.has("Vivifi")) {
         mappedOffers.push({
           name: "Vivifi",
