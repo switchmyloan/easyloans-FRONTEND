@@ -447,8 +447,8 @@ function getUtmLink(
     //   return directLink || null;
 
     case "Nira":
-      // Nira only shows if it comes from API staticLenders (no fallback)
-      return directLink || null;
+      // Nira retired — card must never show, in any situation.
+      return null;
 
     case "Apollo":
       return directLink || null;
@@ -505,12 +505,9 @@ function getUtmLink(
       return directLink || FALLBACK_UTM.LendingPlate || null;
     }
 
-    case "Cashvia": {
-      // Cashvia is shown only if dedupeStatus === "Passed"
-      const cashviaDedupeStatus = (lender as { dedupeStatus?: string })?.dedupeStatus;
-      if (cashviaDedupeStatus !== "Passed") return null;
-      return directLink || FALLBACK_UTM.Cashvia;
-    }
+    case "Cashvia":
+      // Cashvia retired — card must never show, in any situation.
+      return null;
 
     default:
       return directLink || FALLBACK_UTM[name] || null;
@@ -773,9 +770,7 @@ export default function ShortTicketOffersPage() {
         //   break;
 
         case "Nira":
-          // Nira only shows if it comes from API staticLenders
-          if (!utmMap[name]) break;
-          ordered.push({ name, utm_link: utmMap[name] });
+          // Nira retired — card must never show, in any situation.
           break;
 
         case "Apollo":
@@ -795,13 +790,9 @@ export default function ShortTicketOffersPage() {
           ordered.push({ name, utm_link: utmMap[name] });
           break;
 
-        case "Cashvia": {
-          // Cashvia is shown only if dedupeStatus === "Passed"
-          const cashviaDedupeStatus = (lender as { dedupeStatus?: string })?.dedupeStatus;
-          if (cashviaDedupeStatus !== "Passed") break;
-          ordered.push({ name, utm_link: utmMap[name] || FALLBACK_UTM.Cashvia });
+        case "Cashvia":
+          // Cashvia retired — card must never show, in any situation.
           break;
-        }
 
         case "TrueFund": {
           // TrueFund is now a STATIC UTM lender — show only if the API sent it in
