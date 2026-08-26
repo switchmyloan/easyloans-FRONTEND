@@ -77,7 +77,8 @@ interface SelectedLender {
 }
 
 // Lenders that have been removed and should not be displayed
-const REMOVED_LENDERS = ["MPokket", "Loan112", "SmartCoin", "SmartCoinHighIntent"];
+// Nira and Cashvia are fully retired — must never render in any flow.
+const REMOVED_LENDERS = ["MPokket", "Loan112", "SmartCoin", "SmartCoinHighIntent", "Nira", "Cashvia"];
 
 // Static lenders that should always be shown
 // Note: RamFinCorp is now shown based on API response (message === "Dedup Success")

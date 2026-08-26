@@ -85,7 +85,8 @@ const LENDER_CUSTOM_BADGE: Record<string, string> = {
 const BADGE_VISIBLE_COUNT = 3;
 
 // Lenders that have been removed and should not be displayed
-const REMOVED_LENDERS = ["MPokket", "Loan112", "SmartCoin", "SmartCoinHighIntent"];
+// Nira and Cashvia are fully retired — must never render in any flow.
+const REMOVED_LENDERS = ["MPokket", "Loan112", "SmartCoin", "SmartCoinHighIntent", "Nira", "Cashvia"];
 
 // ============================================================
 // Utility Functions
@@ -108,7 +109,10 @@ function mapShownOfferToDashboardOffer(
 
 // Sort offers by dashboard priority order
 function sortOffersByPriority(offers: DashboardOffer[]): DashboardOffer[] {
-  return [...offers].sort((a, b) => {
+  // Final choke point: drop retired lenders no matter which path added them.
+  return [...offers]
+    .filter((o) => !REMOVED_LENDERS.includes(o.name))
+    .sort((a, b) => {
     const priorityA = DASHBOARD_PRIORITY_ORDER.indexOf(a.name);
     const priorityB = DASHBOARD_PRIORITY_ORDER.indexOf(b.name);
     // If not in priority list, put at the end
