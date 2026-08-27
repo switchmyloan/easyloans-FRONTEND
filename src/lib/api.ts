@@ -1085,7 +1085,11 @@ export async function applyToShortRamFinCorp(): Promise<RamFinCorpApplyResponse>
 
   const body = {
     id: shortOfferLeadId ? Number(shortOfferLeadId) : undefined,
-    offertype: "high",
+    // Short ticket: "low" so the backend writes ramfincorpLead to shortOfferLeads
+    // (not offerLeads). offerLeadId is the field it reads for the short flow —
+    // shortSelectedLenders has no offerLead FK, so the id must be sent explicitly.
+    offertype: "low",
+    offerLeadId: shortOfferLeadId ? Number(shortOfferLeadId) : undefined,
     mobileNumber: userData.mobileNumber,
     email: userData.email,
     panNumber: userData.panNumber,
