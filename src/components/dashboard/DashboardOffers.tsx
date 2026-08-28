@@ -43,12 +43,10 @@ const DISPLAY_NAMES: Record<string, string> = {
   // SpeedoLoan: "SpeedoLoan",
   CashMySalary: "CashMySalary",
   // LoanWalle: "LoanWalle",
-  Cashvia: "Cashvia",
   TrueFund: "TrueFund",
   MoneyDot: "MoneyDot",
   RupiNow: "RupiNow",
   // ASAPFinance: "ASAPFinance",
-  Nira: "Nira",
   Apollo: "Apollo",
   TejasLoan: "Tejas Loan",
   F1SpeedLoan: "F1 Speed Loan",
@@ -67,12 +65,10 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   KreditBee: "https://www.kreditbee.in/signin",
   // SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
   CashMySalary: "https://loanapply.cashmysalary.com/auth?partner_id=cready&utm_medium=whatsapp&utm_campaign=social",
-  Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
   TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
   MoneyDot: "https://www.moneydot.in/",
   RupiNow: "https://www.rupinow.com/home",
   // ASAPFinance: "https://asapfinance.in/customer/login?utm_source=easyloans+Cready",
-  Nira: "https://play.google.com/store/apps/details?id=com.nirafinance.customer&referrer=pid%3DCready%26c%3DPartnerships_Cready_CPA%26af_adset%3D%7B%7D%26af_tranid%3DMTgzMjkwOTA0MzAyMDE3NjUyOTE%3D",
 };
 
 const LENDER_CUSTOM_BADGE: Record<string, string> = {
@@ -83,8 +79,8 @@ const LENDER_CUSTOM_BADGE: Record<string, string> = {
 const BADGE_VISIBLE_COUNT = 2;
 
 // Lenders that have been removed and should not be displayed
-// Nira and Cashvia are fully retired — must never render in any flow.
-const REMOVED_LENDERS = ["MPokket", "Loan112", "SmartCoin", "SmartCoinHighIntent", "Nira", "Cashvia"];
+// Lenders that have been removed and should not be displayed
+const REMOVED_LENDERS = ["MPokket", "Loan112", "SmartCoin", "SmartCoinHighIntent"];
 
 // ============================================================
 // Utility Functions
@@ -185,8 +181,6 @@ export default function DashboardOffers() {
         "vivifi": "Vivifi",
         // "ASAPFinance": "ASAPFinance",
         // "asapfinance": "ASAPFinance",
-        "Nira": "Nira",
-        "nira": "Nira",
         "Apollo": "Apollo",
         "apollo": "Apollo",
         "RamFinCorp": "RamFinCorp",
@@ -266,14 +260,6 @@ export default function DashboardOffers() {
       //   });
       // }
 
-      // Add Nira only if it comes from API staticLenders
-      if (staticLenderUtmLinks["Nira"] && !existingLenderNames.has("Nira")) {
-        mappedOffers.push({
-          name: "Nira",
-          utmLink: staticLenderUtmLinks["Nira"],
-          isOffer: false,
-        });
-      }
 
       // Add Apollo only if it comes from API staticLenders
       if (staticLenderUtmLinks["Apollo"] && !existingLenderNames.has("Apollo")) {

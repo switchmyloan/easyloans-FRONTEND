@@ -22,13 +22,11 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   KreditBee: "https://www.kreditbee.in/signin",
   // SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
   CashMySalary: "https://cashmysalary.com/?partner_id=cready",
-  Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
   TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
   Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
   MoneyDot: "https://www.moneydot.in/",
   RupiNow: "https://www.rupinow.com/home",
   // ASAPFinance: "https://asapfinance.in/customer/login?utm_source=easyloans+Cready",
-  Nira: "https://play.google.com/store/apps/details?id=com.nirafinance.customer&referrer=pid%3DCready%26c%3DPartnerships_Cready_CPA%26af_adset%3D%7B%7D%26af_tranid%3DMTgzMjkwOTA0MzAyMDE3NjUyOTE%3D",
   Cash2You: "https://www.cashtoyou.in/",
   RocketCash: "https://www.rocketcash.in/",
 };
@@ -42,7 +40,6 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   // speedoloan: "SpeedoLoan",
   cashmysalary: "CashMySalary",
   tejasloan: "TejasLoan",
-  cashvia: "Cashvia",
   truefund: "TrueFund",
   vivifi: "Vivifi",
   moneydot: "MoneyDot",
@@ -77,14 +74,14 @@ interface SelectedLender {
 }
 
 // Lenders that have been removed and should not be displayed
-// Nira and Cashvia are fully retired — must never render in any flow.
-const REMOVED_LENDERS = ["MPokket", "Loan112", "SmartCoin", "SmartCoinHighIntent", "Nira", "Cashvia"];
+// Lenders that have been removed and should not be displayed
+const REMOVED_LENDERS = ["MPokket", "Loan112", "SmartCoin", "SmartCoinHighIntent"];
 
 // Static lenders that should always be shown
 // Note: RamFinCorp is now shown based on API response (message === "Dedup Success")
 // Note: TejasLoan, F1SpeedLoan are shown only when received in staticLenders from API (with utm_link)
 // Note: Vivifi is now shown based on API response (message === "Application Accepted")
-const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", /* "SpeedoLoan", */ "Cashvia", "TrueBalance"];
+const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", /* "SpeedoLoan", */ "TrueBalance"];
 
 // ============================================================
 // Utility Functions

@@ -173,42 +173,6 @@ const TRUEFUND_PRIORITY_ORDER = [
   "RocketCash",
 ];
 
-// const ASAPFINANCE_PRIORITY_ORDER = [
-//   // "ASAPFinance",
-//   "RamFinCorp",
-//   // "SpeedoLoan",
-//   "CashMySalary",
-//   "LoanWalle",
-//   "Vivifi",
-//   "Cashvia",
-//   "TrueBalance",
-//   "RapidMoney",
-//   "KreditBee",
-//   "TrueFund",
-//   "MoneyDot",
-//   "RupiNow",
-//   "Nira",
-//   // "Apollo",
-//   "LendingPlate",
-// ];
-
-// const SPEEDOLOAN_PRIORITY_ORDER = [
-//   "SpeedoLoan",
-//   "CashMySalary",
-//   "RamFinCorp",
-//   "LoanWalle",
-//   "Vivifi",
-//   "Cashvia",
-//   "TrueBalance",
-//   "RapidMoney",
-//   "KreditBee",
-//   "TrueFund",
-//   "MoneyDot",
-//   "RupiNow",
-//   // "ASAPFinance",
-//   "Nira",
-//   "Apollo",
-// ];
 
 const CASHMYSalary_PRIORITY_ORDER = [
   "CashMySalary",
@@ -424,10 +388,6 @@ function getUtmLink(
     //   // ASAPFinance only shows if it comes from API staticLenders (no fallback)
     //   return directLink || null;
 
-    case "Nira":
-      // Nira retired — card must never show, in any situation.
-      return null;
-
     case "Apollo":
       return directLink || null;
 
@@ -482,10 +442,6 @@ function getUtmLink(
       if (lender.success !== true) return null;
       return directLink || FALLBACK_UTM.LendingPlate || null;
     }
-
-    case "Cashvia":
-      // Cashvia retired — card must never show, in any situation.
-      return null;
 
     default:
       return directLink || FALLBACK_UTM[name] || null;
@@ -746,10 +702,6 @@ export default function ShortTicketOffersPage() {
         //   ordered.push({ name, utm_link: utmMap[name] });
         //   break;
 
-        case "Nira":
-          // Nira retired — card must never show, in any situation.
-          break;
-
         case "Apollo":
           if (!utmMap[name]) break;
           ordered.push({ name, utm_link: utmMap[name] });
@@ -765,10 +717,6 @@ export default function ShortTicketOffersPage() {
           // RocketCash only shows if it comes from API staticLenders
           if (!utmMap[name]) break;
           ordered.push({ name, utm_link: utmMap[name] });
-          break;
-
-        case "Cashvia":
-          // Cashvia retired — card must never show, in any situation.
           break;
 
         case "TrueFund": {

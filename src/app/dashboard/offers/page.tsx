@@ -42,12 +42,10 @@ const DISPLAY_NAMES: Record<string, string> = {
   // SpeedoLoan: "SpeedoLoan",
   CashMySalary: "CashMySalary",
   // LoanWalle: "LoanWalle",
-  Cashvia: "Cashvia",
   TrueFund: "TrueFund",
   MoneyDot: "MoneyDot",
   RupiNow: "RupiNow",
   // ASAPFinance: "ASAPFinance",
-  Nira: "Nira",
   Apollo: "Apollo",
   LendingPlate: "LendingPlate",
   TejasLoan: "Tejas Loan",
@@ -67,12 +65,10 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
  
   // SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
   CashMySalary: "https://loanapply.cashmysalary.com/auth?partner_id=cready&utm_medium=whatsapp&utm_campaign=social",
-  Cashvia: "https://cashvia.in/?utm_source=switchmyloan&utm_medium=switchmyloan&utm_campaign=switchmyloan_",
   TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
   MoneyDot: "https://www.moneydot.in/",
   RupiNow: "https://www.rupinow.com/home",
   // ASAPFinance: "https://asapfinance.in/customer/login?utm_source=easyloans+Cready",
-  Nira: "https://play.google.com/store/apps/details?id=com.nirafinance.customer&referrer=pid%3DCready%26c%3DPartnerships_Cready_CPA%26af_adset%3D%7B%7D%26af_tranid%3DMTgzMjkwOTA0MzAyMDE3NjUyOTE%3D",
   LendingPlate: "https://lendingplate.com/",
 };
 
@@ -85,8 +81,8 @@ const LENDER_CUSTOM_BADGE: Record<string, string> = {
 const BADGE_VISIBLE_COUNT = 3;
 
 // Lenders that have been removed and should not be displayed
-// Nira and Cashvia are fully retired — must never render in any flow.
-const REMOVED_LENDERS = ["MPokket", "Loan112", "SmartCoin", "SmartCoinHighIntent", "Nira", "Cashvia"];
+// Lenders that have been removed and should not be displayed
+const REMOVED_LENDERS = ["MPokket", "Loan112", "SmartCoin", "SmartCoinHighIntent"];
 
 // ============================================================
 // Utility Functions
@@ -177,12 +173,6 @@ const rupiNowData = data.RupiNow as {
 
 const isRupiNowEligible = rupiNowData?.dedupeStatus === "Passed";
 
-const cashviaData = data.Cashvia as {
-  dedupeStatus?: string;
-  utm_link?: string;
-} | undefined;
-
-const isCashviaEligible = cashviaData?.dedupeStatus === "Passed";
 
 // LendingPlate is a lead-push lender: the backend folds resData.status === "S"
 // into `success`, and stamps utm_link (their API returns no redirect URL).
@@ -214,15 +204,11 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         if (o.lenderName === "RupiNow") {
           return isRupiNowEligible;
         }
-        if (o.lenderName === "Cashvia") {
-          return isCashviaEligible;
-        }
         return true;
       });
       const mappedOffers = filteredShownOffers.map((o) => mapShownOfferToDashboardOffer(o, data));
 
       // Add static lenders that should always be shown
-      // Note: Cashvia is now shown based on API response (dedupeStatus === "Passed")
       // Note: RapidMoney is now shown based on API response (isDuplicate === false)
       // Note: TejasLoan, F1SpeedLoan, ASAPFinance, SpeedoLoan, Vivifi, TrueBalance, RamFinCorp are shown only if they come from API staticLenders
       const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee"];
@@ -248,8 +234,6 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         "vivifi": "Vivifi",
         // "ASAPFinance": "ASAPFinance",
         // "asapfinance": "ASAPFinance",
-        "Nira": "Nira",
-        "nira": "Nira",
         "Apollo": "Apollo",
         "apollo": "Apollo",
         "RamFinCorp": "RamFinCorp",
@@ -329,14 +313,6 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
       //   });
       // }
 
-      // Add Nira only if it comes from API staticLenders
-      if (staticLenderUtmLinks["Nira"] && !existingLenderNames.has("Nira")) {
-        mappedOffers.push({
-          name: "Nira",
-          utmLink: staticLenderUtmLinks["Nira"],
-          isOffer: false,
-        });
-      }
 
       // Add Apollo only if it comes from API staticLenders
       if (staticLenderUtmLinks["Apollo"] && !existingLenderNames.has("Apollo")) {
@@ -436,14 +412,6 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         });
       }
 
-      // Add Cashvia based on API response (only if dedupeStatus === "Passed")
-      if (isCashviaEligible && !existingLenderNames.has("Cashvia")) {
-        mappedOffers.push({
-          name: "Cashvia",
-          utmLink: cashviaData?.utm_link || FALLBACK_UTM_LINKS["Cashvia"],
-          isOffer: false,
-        });
-      }
 
       // Add LendingPlate based on API response (only if the lead push succeeded)
       if (isLendingPlateEligible && !existingLenderNames.has("LendingPlate")) {
