@@ -22,6 +22,7 @@ const LENDER_RING_IMAGES: Record<string, string> = {
   cashmysalary: "/CS-ring.png",
   f1speedloan: "/F1-ring.png",
   tejasloan: "/TL-ring.png",
+  mmb: "/M-ring.png",
 };
 
 // Default fallback image (used if lender not found in mapping)
