@@ -1112,6 +1112,60 @@ export async function applyToShortRamFinCorp(): Promise<RamFinCorpApplyResponse>
   return json;
 }
 
+// export interface MMBApplyResponse {
+//   success: boolean;
+//   message: string;
+//   statusCode: number;
+//   data?: {
+//     redirectUrl?: string;
+//     utm_link?: string;
+//     [key: string]: unknown;
+//   };
+// }
+
+
+// export async function applyToShortMMB(): Promise<MMBApplyResponse> {
+//   const raw = sessionStorage.getItem("userFormData");
+//   if (!raw) throw new Error("User data not found. Please fill the form first.");
+   
+//   const userData = JSON.parse(raw);
+//   const shortOfferLeadId = sessionStorage.getItem("shortOfferLeadId");
+
+//   const body = {
+//     id: shortOfferLeadId ? Number(shortOfferLeadId) : undefined,
+//     offertype: "short",
+//     offerLeadId: shortOfferLeadId ? Number(shortOfferLeadId) : undefined,
+//     mobileNumber: userData.mobileNumber,
+//     email: userData.email,
+//     firstName: userData.firstName,
+//     lastName: userData.lastName,
+//     panNumber: userData.panNumber,
+//     dateOfBirth: userData.dateOfBirth,
+//     pincode: userData.pincode,
+//     jobType: userData.jobType,
+//     monthlySalary: Number(userData.monthlySalary),
+//     loanAmount: Number(userData.loanAmount),
+//     loanPurpose: userData.loanPurpose || "Personal Loan",
+//   };
+
+//   const res = await fetch(`${BASE_URL}/onSubmit/mmb-create-lead`, {
+//     method: "POST",
+//     headers: PARTNER_HEADERS,
+//     body: JSON.stringify(body),
+//   });
+
+//   if (!res.ok) throw new Error("Failed to apply to MMB. Please try again.");
+
+//   const json: MMBApplyResponse = await res.json();
+//   return json;
+// }
+
+
+
+
+
+
+
 // ---------- Short Ticket Dashboard APIs ----------
 
 const SHORT_EXISTING_USER_SESSION_KEY = "shortExistingUserOffers";

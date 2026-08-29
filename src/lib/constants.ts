@@ -360,7 +360,7 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
   MMB: [
     { title: "Bank-level security", description: "Secure and Trusted" },
     { title: "Up to 45 days", description: "Personal loan amount" },
-    { title: "No Hidden Fees and Flexible EMI Options", description: "No hidden fees" },
+    { title: "Flexible EMI Options", description: "No hidden fees" },
   ],
 };
 
@@ -395,7 +395,7 @@ export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   F1SpeedLoan: ["No Prepayment Charges", "Quick Approval", "Up to 365 months"],
   Cash2You: ["Up to 60 Months Tenure", "Flexible EMI", "Up to ₹40,000"],
   RocketCash: ["Quick Approval", "Up to 21 Days", "Up to ₹20,000"],
-  MMB: ["Bank-level security", "Up to 45 days", "No Hidden Fees and Flexible EMI Options"],
+  MMB: ["Bank-level security", "Up to 45 days", "No Hidden Fees"],
 };
 
 // Default feature badges if lender not found

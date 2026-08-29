@@ -49,6 +49,7 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   rupinow: "RupiNow",
   cash2you: "Cash2You",
   rocketcash: "RocketCash",
+  mmb: "MMB",
 };
 
 // ============================================================
@@ -111,6 +112,7 @@ export default function LoanOffersBanner() {
   const [otherLenders, setOtherLenders] = useState<PreviousLender[]>([]);
   const [kbApplying, setKbApplying] = useState(false);
   const [ramFinCorpApplying, setRamFinCorpApplying] = useState(false);
+  // const [mmbApplying, setMmbApplying] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
 
   useEffect(() => {
@@ -136,6 +138,9 @@ export default function LoanOffersBanner() {
 
       const rupiNowData = data.RupiNow as { dedupeStatus?: string; utm_link?: string } | undefined;
       const isRupiNowEligible = rupiNowData?.dedupeStatus === "Passed";
+
+      // const mmbData = data.MMBDedup as { data?: { dedupeStatus?: string }; utm_link?: string } | undefined;
+      // const isMmbEligible = mmbData?.data?.dedupeStatus === "Passed";
 
       // Try both capitalized and lowercase keys (API returns lowercase for vivifi)
       const vivifiData = (data.Vivifi || data.vivifi) as { message?: string; utm_link?: string } | undefined;
@@ -168,6 +173,7 @@ export default function LoanOffersBanner() {
         if (lenderName === "RupiNow" && !isRupiNowEligible) continue;
         if (lenderName === "RamFinCorp" && !isRamFinCorpEligible) continue;
         if (lenderName === "Vivifi" && !isVivifiEligible) continue;
+      
 
         addedLenders.add(lenderName);
         eligibleLenders.push({
@@ -299,6 +305,16 @@ export default function LoanOffersBanner() {
         });
       }
 
+      // Add MMB if eligible (dedupeStatus === "Passed")
+      // if (isMmbEligible && !addedLenders.has("MMB")) {
+      //   addedLenders.add("MMB");
+      //   eligibleLenders.push({
+      //     id: "MMB",
+      //     name: "MMB",
+      //     prefix: "M",
+      //   });
+      // }
+
       // Add Apollo only if it comes from API staticLenders
       const apolloFromApi = staticLendersArray.find(
         (l) => l.name?.toLowerCase() === "apollo"
@@ -335,6 +351,19 @@ export default function LoanOffersBanner() {
           id: "RocketCash",
           name: "RocketCash",
           prefix: "R",
+        });
+      }
+
+      // Add MMB only if it comes from API staticLenders
+      const mmbFromApi = staticLendersArray.find(
+        (l) => l.name?.toLowerCase() === "mmb"
+      );
+      if (mmbFromApi?.utm_link && !addedLenders.has("MMB")) {
+        addedLenders.add("MMB");
+        eligibleLenders.push({
+          id: "MMB",
+          name: "MMB",
+          prefix: "M",
         });
       }
 
@@ -404,6 +433,16 @@ export default function LoanOffersBanner() {
         });
       }
 
+      // If UTM is mmb and MMB exists in staticLenders but wasn't added yet, add it now
+      if (utmLenderName === "MMB" && mmbFromApi?.utm_link && !addedLenders.has("MMB")) {
+        addedLenders.add("MMB");
+        eligibleLenders.push({
+          id: "MMB",
+          name: "MMB",
+          prefix: "M",
+        });
+      }
+
       // If UTM is rupinow and RupiNow is eligible but wasn't added yet, add it now
       if (utmLenderName === "RupiNow" && isRupiNowEligible && !addedLenders.has("RupiNow")) {
         addedLenders.add("RupiNow");
@@ -423,6 +462,16 @@ export default function LoanOffersBanner() {
           prefix: "V",
         });
       }
+
+      // If UTM is mmb and MMB is eligible but wasn't added yet, add it now
+      // if (utmLenderName === "MMB" && isMmbEligible && !addedLenders.has("MMB")) {
+      //   addedLenders.add("MMB");
+      //   eligibleLenders.push({
+      //     id: "MMB",
+      //     name: "MMB",
+      //     prefix: "M",
+      //   });
+      // }
 
       // // If UTM is asapfinance, add ASAPFinance if not already added
       // if (utmLenderName === "ASAPFinance" && !addedLenders.has("ASAPFinance")) {
@@ -475,6 +524,7 @@ export default function LoanOffersBanner() {
           if (lenderName === "MoneyDot" && !isMoneyDotEligible) continue;
           if (lenderName === "RamFinCorp" && !isRamFinCorpEligible) continue;
           if (lenderName === "Vivifi" && !isVivifiEligible) continue;
+     
 
           // Found an eligible lender in priority order
           mainLenderFromSelected = {
@@ -564,6 +614,31 @@ export default function LoanOffersBanner() {
     }
   };
 
+  // MMB special apply handler - calls the API first
+  // const handleMMBApply = async (initialUtmLink?: string) => {
+  //   if (mmbApplying) return;
+  //   setMmbApplying(true);
+  //   try {
+  //     const phone = sessionStorage.getItem("userPhone") || "";
+  //     await saveShortLender(phone, "MMB");
+  //     const res = await applyToShortMMB();
+
+  //     if (res.success) {
+  //       const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || initialUtmLink;
+  //       if (redirectUrl) {
+  //         window.open(redirectUrl, "_blank");
+  //       }
+  //     } else {
+  //       toast.error(res.message || "Something went wrong. Please try again.", { duration: 4000 });
+  //     }
+  //   } catch (err) {
+  //     console.error("MMB apply failed:", err);
+  //     toast.error("Something went wrong. Please try again.", { duration: 4000 });
+  //   } finally {
+  //     setMmbApplying(false);
+  //   }
+  // };
+
   // Apply to the hero lender — redirect to its UTM link
   // KreditBee and RamFinCorp have special handling with API call
   const handleHeroApply = async () => {
@@ -585,6 +660,15 @@ export default function LoanOffersBanner() {
       handleRamFinCorpApply(ramFinCorpData?.utm_link);
       return;
     }
+
+    // Special handling for MMB
+    // if (displayLender.id === "MMB") {
+    //   // Get utm_link from stored data for fallback
+    //   const data = getStoredShortExistingUserOffers()?.data as Record<string, unknown> | undefined;
+    //   const mmbData = data?.MMBDedup as { utm_link?: string } | undefined;
+    //   handleMMBApply(mmbData?.utm_link);
+    //   return;
+    // }
 
     const phone = sessionStorage.getItem("userPhone") || "";
     await saveShortLender(phone, displayLender.id);

@@ -15,6 +15,7 @@ import {
   saveShortLender,
   applyToShortKreditBee,
   applyToShortRamFinCorp,
+  // applyToShortMMB,
 } from "@/lib/api";
 
 // ============================================================
@@ -40,6 +41,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   RapidMoney: "RapidMoney",
   TrueBalance: "TrueBalance",
   RamFinCorp: "Ram FinCorp",
+  MMB: "MMB",
   // SpeedoLoan: "SpeedoLoan",
   CashMySalary: "CashMySalary",
   // LoanWalle: "LoanWalle",
@@ -124,6 +126,7 @@ export default function DashboardOffers() {
   const [offers, setOffers] = useState<DashboardOffer[]>([]);
   const [kbApplying, setKbApplying] = useState(false);
   const [ramFinCorpApplying, setRamFinCorpApplying] = useState(false);
+  // const [mmbApplying, setMmbApplying] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
 
   useEffect(() => {
@@ -139,6 +142,8 @@ export default function DashboardOffers() {
       const rapidMoneyData = data.RapidMoney as { isDuplicate?: boolean; utm_link?: string } | undefined;
       const ramFinCorpData = data.RamFinCorp as { data?: { response?: { message?: string } }; utm_link?: string } | undefined;
       const isRamFinCorpEligible = ramFinCorpData?.data?.response?.message === "Dedup Success";
+      // const mmbData = data.MMBDedup as { data?: { dedupeStatus?: string }; utm_link?: string } | undefined;
+      // const isMmbEligible = mmbData?.data?.dedupeStatus === "Passed";
 
       const filteredShownOffers = shownOffers.filter((o) => {
         // Filter out removed lenders
@@ -151,6 +156,9 @@ export default function DashboardOffers() {
         if (o.lenderName === "RamFinCorp") {
           return isRamFinCorpEligible;
         }
+        // if (o.lenderName === "MMB" || o.lenderName === "MMBDedup") {
+        //   return isMmbEligible;
+        // }
         return true;
       });
       const mappedOffers = filteredShownOffers.map((o) => mapShownOfferToDashboardOffer(o, data));
@@ -197,6 +205,8 @@ export default function DashboardOffers() {
         "RocketCash": "RocketCash",
         "rocketcash": "RocketCash",
         "rocketCash": "RocketCash",
+        "MMB": "MMB",
+        "mmb": "MMB",
       };
       for (const lender of staticLendersArray) {
         if (lender.name && lender.utm_link) {
@@ -359,6 +369,23 @@ export default function DashboardOffers() {
         });
       }
 
+      // Add MMB if eligible (dedupeStatus === "Passed")
+      // if (isMmbEligible && !existingLenderNames.has("MMB")) {
+      //   mappedOffers.push({
+      //     name: "MMB",
+      //     utmLink: mmbData?.utm_link,
+      //     isOffer: false,
+      //   });
+      // }
+
+       if (staticLenderUtmLinks["MMB"] && !existingLenderNames.has("MMB")) {
+        mappedOffers.push({
+          name: "MMB",
+          utmLink: staticLenderUtmLinks["MMB"],
+          isOffer: false,
+        });
+      }
+
       // Sort offers by dashboard priority order
       const sortedOffers = sortOffersByPriority(mappedOffers);
       setOffers(sortedOffers);
@@ -419,6 +446,31 @@ export default function DashboardOffers() {
     }
   };
 
+  // const handleMMBApply = async (initialUtmLink?: string) => {
+  //   if (mmbApplying) return;
+  //   setMmbApplying(true);
+  //   try {
+  //     const phone = sessionStorage.getItem("userPhone") || "";
+  //     await saveShortLender(phone, "MMB");
+  //     const res = await applyToShortMMB();
+
+  //     if (res.success) {
+       
+  //       const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || initialUtmLink;
+  //       if (redirectUrl) {
+  //         window.open(redirectUrl, "_blank");
+  //       }
+  //     } else {
+  //       toast.error(res.message || "Something went wrong. Please try again.", { duration: 4000 });
+  //     }
+  //   } catch (err) {
+  //     console.error("MMB apply failed:", err);
+  //     toast.error("Something went wrong. Please try again.", { duration: 4000 });
+  //   } finally {
+  //     setMmbApplying(false);
+  //   }
+  // };
+
   const handleApply = async (lenderName: string, utmLink?: string) => {
     // OTP verification
     const allowed = await guardActivity();
@@ -435,6 +487,12 @@ export default function DashboardOffers() {
       handleRamFinCorpApply(utmLink);
       return;
     }
+
+    // Route MMB to specific handler
+    // if (lenderName === "MMB") {
+    //   handleMMBApply(utmLink);
+    //   return;
+    // }
 
     // For other lenders, save and open UTM link
     const phone = sessionStorage.getItem("userPhone") || "";
