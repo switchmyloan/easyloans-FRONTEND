@@ -49,7 +49,7 @@ const LENDER_ORDER = [
  "RamFinCorp",
   "TejasLoan",
   "RupiNow",
-  "MMB",
+  
   "CashMySalary",
   "Vivifi",
   "RapidMoney",
@@ -60,6 +60,7 @@ const LENDER_ORDER = [
   "Apollo",
   "LendingPlate",
   "F1SpeedLoan",
+  "MMB",
   "Cash2You",
   "RocketCash",
 ];
@@ -70,7 +71,7 @@ const KB_PRIORITY_ORDER = [
   "RamFinCorp",
   "TejasLoan",
   "RupiNow",
-  "MMB",
+
   "CashMySalary",
   "Vivifi",
   "RapidMoney",
@@ -80,6 +81,7 @@ const KB_PRIORITY_ORDER = [
   "Apollo",
   "LendingPlate",
   "F1SpeedLoan",
+    "MMB",
   "Cash2You",
   "RocketCash",
 ];
@@ -90,7 +92,7 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "RamFinCorp",
   "TejasLoan",
   "RupiNow",
-  "MMB",
+
   "CashMySalary",
   "Vivifi",
   "TrueBalance",
@@ -100,6 +102,7 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "Apollo",
   "LendingPlate",
   "F1SpeedLoan",
+    "MMB",
   "Cash2You",
   "RocketCash",
 ];
@@ -109,7 +112,7 @@ const RamFinCorp_PRIORITY_ORDER = [
   "TejasLoan",
   "RupiNow",
   "CashMySalary",
-  "MMB",
+
   "Vivifi",
   "RapidMoney",
   "TrueBalance",
@@ -119,6 +122,7 @@ const RamFinCorp_PRIORITY_ORDER = [
   "Apollo",
   "LendingPlate",
   "F1SpeedLoan",
+    "MMB",
   "Cash2You",
   "RocketCash",
 ];
@@ -128,7 +132,7 @@ const TEJASLOAN_PRIORITY_ORDER = [
   "TejasLoan",
   "RamFinCorp",
     "RupiNow",
-    "MMB",
+
   "CashMySalary",
   "Vivifi",
   "TrueBalance",
@@ -139,6 +143,7 @@ const TEJASLOAN_PRIORITY_ORDER = [
   "Apollo",
   "LendingPlate",
   "F1SpeedLoan",
+      "MMB",
   "Cash2You",
   "RocketCash",
 ];
@@ -149,7 +154,7 @@ const MONEYDOT_PRIORITY_ORDER = [
   "RamFinCorp",
   "TejasLoan",
   "RupiNow",
-  "MMB",
+
   "CashMySalary",
   "Vivifi",
   "RapidMoney",
@@ -159,6 +164,7 @@ const MONEYDOT_PRIORITY_ORDER = [
   "Apollo",
   "LendingPlate",
   "F1SpeedLoan",
+    "MMB",
   "Cash2You",
   "RocketCash",
 ];
@@ -168,7 +174,7 @@ const TRUEFUND_PRIORITY_ORDER = [
   "RamFinCorp",
   "TejasLoan",
   "RupiNow",
-  "MMB",
+
   "CashMySalary",
   "Vivifi",
   "RapidMoney",
@@ -178,6 +184,7 @@ const TRUEFUND_PRIORITY_ORDER = [
   "Apollo",
   "LendingPlate",
   "F1SpeedLoan",
+    "MMB",
   "Cash2You",
   "RocketCash",
 ];
@@ -188,7 +195,7 @@ const CASHMYSalary_PRIORITY_ORDER = [
   "RamFinCorp",
   "TejasLoan",
   "RupiNow",
-  "MMB",
+ 
   "Vivifi",
   "RapidMoney",
   "TrueBalance",
@@ -198,6 +205,7 @@ const CASHMYSalary_PRIORITY_ORDER = [
   "Apollo",
   "LendingPlate",
   "F1SpeedLoan",
+   "MMB",
   "Cash2You",
   "RocketCash",
 ];
@@ -207,7 +215,7 @@ const APOLLO_PRIORITY_ORDER = [
   "RamFinCorp",
   "TejasLoan",
   "RupiNow",
-  "MMB",
+ 
   "CashMySalary",
   "Vivifi",
   "RapidMoney",
@@ -217,6 +225,7 @@ const APOLLO_PRIORITY_ORDER = [
   "MoneyDot",
   "LendingPlate",
   "F1SpeedLoan",
+   "MMB",
   "Cash2You",
   "RocketCash",
 ];
@@ -227,7 +236,7 @@ const F1SPEEDLOAN_PRIORITY_ORDER = [
   "RamFinCorp",
   "TejasLoan",
   "RupiNow",
-  "MMB",
+
   "CashMySalary",
   "Vivifi",
   "RapidMoney",
@@ -237,6 +246,7 @@ const F1SPEEDLOAN_PRIORITY_ORDER = [
   "MoneyDot",
   "Apollo",
   "LendingPlate",
+    "MMB",
   "Cash2You",
   "RocketCash",
 ];
@@ -246,7 +256,7 @@ const RUPINOW_PRIORITY_ORDER = [
   "RupiNow",
   "RamFinCorp",
   "TejasLoan",
-  "MMB",
+
   "CashMySalary",
   "Vivifi",
   "TrueBalance",
@@ -257,6 +267,7 @@ const RUPINOW_PRIORITY_ORDER = [
   "Apollo",
   "LendingPlate",
   "F1SpeedLoan",
+    "MMB",
   "Cash2You",
   "RocketCash",
 ];
@@ -267,7 +278,7 @@ const CASH2YOU_PRIORITY_ORDER = [
   "RamFinCorp",
   "TejasLoan",
   "RupiNow",
-  "MMB",
+ 
   "CashMySalary",
   "Vivifi",
   "RapidMoney",
@@ -277,6 +288,7 @@ const CASH2YOU_PRIORITY_ORDER = [
   "MoneyDot",
   "Apollo",
   "LendingPlate",
+   "MMB",
   "F1SpeedLoan",
   "RocketCash",
 ];
@@ -287,7 +299,7 @@ const ROCKETCASH_PRIORITY_ORDER = [
   "RamFinCorp",
   "TejasLoan",
   "RupiNow",
-  "MMB",
+
   "CashMySalary",
   "Vivifi",
   "RapidMoney",
@@ -297,6 +309,7 @@ const ROCKETCASH_PRIORITY_ORDER = [
   "MoneyDot",
   "Apollo",
   "LendingPlate",
+    "MMB",
   "F1SpeedLoan",
   "Cash2You",
 ];

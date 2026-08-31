@@ -242,7 +242,7 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "CashMySalary",
   // "LoanWalle",
   "TejasLoan",
-  "MMB",
+ 
   "Vivifi",
   "TrueBalance",
   "RapidMoney",
@@ -254,6 +254,7 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "Apollo",
   "LendingPlate",
   "F1SpeedLoan",
+   "MMB",
   "Cash2You",
   "RocketCash",
 ];
