@@ -571,17 +571,19 @@ export default function LoanOffersBanner() {
       await saveShortLender(phone, "RamFinCorp");
       const res = await applyToShortRamFinCorp();
 
-      if (res.success) {
-        // Use redirectUrl from apply API response, fallback to utm_link from apply API,
-        // then fallback to utm_link from get-offer-short-ticket API, then hardcoded fallback
-        const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || initialUtmLink || FALLBACK_UTM_LINKS.RamFinCorp || "https://ramfincorp.com/";
+      const outcome = res.data?.outcome;
+      const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || initialUtmLink || FALLBACK_UTM_LINKS.RamFinCorp || "https://ramfincorp.com/";
+
+      // Redirect only if outcome is BRE_APPROVED or PROCEED_TO_BANK and redirectUrl exists
+      if ((outcome === "BRE_APPROVED" || outcome === "PROCEED_TO_BANK") && redirectUrl) {
         window.open(redirectUrl, "_blank");
       } else {
-        toast.error(res.message || "Something went wrong. Please try again.", { duration: 4000 });
+        // Show Not Eligible modal for any other outcome
+        setShowNotEligible("RamFinCorp");
       }
     } catch (err) {
       console.error("RamFinCorp apply failed:", err);
-      toast.error("Something went wrong. Please try again.", { duration: 4000 });
+      setShowNotEligible("RamFinCorp");
     } finally {
       setRamFinCorpApplying(false);
     }
