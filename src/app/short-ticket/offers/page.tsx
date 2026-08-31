@@ -49,7 +49,6 @@ const LENDER_ORDER = [
  "RamFinCorp",
   "TejasLoan",
   "RupiNow",
-  
   "CashMySalary",
   "Vivifi",
   "RapidMoney",
