@@ -8,7 +8,7 @@ import {
   saveShortLender,
   applyToShortKreditBee,
   applyToShortRamFinCorp,
-  // applyToShortMMB,
+  applyToShortMMB,
   trackShortShownOffers,
   type ShortTicketLender,
   type ShownOfferEntry,
@@ -523,7 +523,7 @@ export default function ShortTicketOffersPage() {
   const [isCash2YouMedium, setIsCash2YouMedium] = useState(false);
   const [isRocketCashMedium, setIsRocketCashMedium] = useState(false);
   const [isMMBMedium, setIsMMBMedium] = useState(false);
-  // const [mmbApplying, setMmbApplying] = useState(false);
+  const [mmbApplying, setMmbApplying] = useState(false);
 
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
   const [priorityVisible, setPriorityVisible] = useState(0);
@@ -703,20 +703,16 @@ export default function ShortTicketOffersPage() {
           break;
         }
 
-        // case "MMB": {
+        case "MMB": {
         
-        //   const mmbDedupData = (data.MMBDedup || data.mmbdedup) as ShortTicketLender | undefined;
-        //   const mmbDedupeStatus = (mmbDedupData?.data as { dedupeStatus?: string })?.dedupeStatus;
-        //   if (mmbDedupeStatus !== "Passed") break;
-        //   ordered.push({ name, utm_link: mmbDedupData?.utm_link });
-        //   break;
-        // }
-
-          case "MMB":
-          // MMB only shows if it comes from API staticLenders
-          if (!utmMap[name]) break;
-          ordered.push({ name, utm_link: utmMap[name] });
+          const mmbDedupData = (data.MMBDedup || data.mmbdedup) as ShortTicketLender | undefined;
+          const mmbDedupeStatus = (mmbDedupData?.data as { message?: string })?.message;
+          if (mmbDedupeStatus !== "user_not_found") break;
+          ordered.push({ name, utm_link: mmbDedupData?.utm_link });
           break;
+        }
+
+        
 
         case "Vivifi": {
           // Vivifi shows unless message indicates rejection
@@ -973,39 +969,37 @@ export default function ShortTicketOffersPage() {
     }
   };
 
-  // const handleMMBApply = async (initialUtmLink?: string) => {
-  //   if (mmbApplying) return;
-  //   setMmbApplying(true);
+  const handleMMBApply = async (initialUtmLink?: string) => {
+    if (mmbApplying) return;
+    setMmbApplying(true);
 
-  //   cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
-  //     Lender: "MMB",
-  //     LenderKey: "MMB",
-  //   });
+    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
+      Lender: "MMB",
+      LenderKey: "MMB",
+    });
 
-  //   try {
-  //     const phone = sessionStorage.getItem("userPhone") || "";
-  //     await saveShortLender(phone, "MMB");
-  //     const res = await applyToShortMMB();
+    try {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveShortLender(phone, "MMB");
+      const res = await applyToShortMMB();
 
-  //     if (res.success) {
-      
-  //       const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || initialUtmLink;
-  //       if (redirectUrl) {
-  //         window.open(redirectUrl, "_blank");
-  //       }
-  //     } else {
-  //       toast.error(res.message || "Something went wrong. Please try again.", {
-  //         duration: 5000,
-  //         style: { maxWidth: 400 },
-  //       });
-  //     }
-  //   } catch (err) {
-  //     console.error("MMB apply failed:", err);
-  //     toast.error("Something went wrong. Please try again.", { duration: 4000 });
-  //   } finally {
-  //     setMmbApplying(false);
-  //   }
-  // };
+      const mmbData = res.data?.MMBCreateLead;
+      if (mmbData?.message === "Signed-in Successfully" && mmbData?.redirectLink) {
+        // Use utm_link from get-offer-short-ticket API (passed as initialUtmLink)
+        if (initialUtmLink) {
+          window.open(initialUtmLink, "_blank");
+        }
+      } else {
+        // Show not eligible modal when apply fails
+        setShowNotEligible("MMB");
+      }
+    } catch (err) {
+      console.error("MMB apply failed:", err);
+      setShowNotEligible("MMB");
+    } finally {
+      setMmbApplying(false);
+    }
+  };
 
   // Resolve lender content
   const resolve = (name: string) => {
@@ -1017,7 +1011,7 @@ export default function ShortTicketOffersPage() {
   const onApplyFor = (lender: OrderedLender) => {
     if (lender.name === "KreditBee") return handleKreditBeeApply;
     if (lender.name === "RamFinCorp") return () => handleRamFinCorpApply(lender.utm_link);
-    // if (lender.name === "MMB") return () => handleMMBApply(lender.utm_link);
+    if (lender.name === "MMB") return () => handleMMBApply(lender.utm_link);
     return () => handleApply(lender.name, lender.utm_link);
   };
 

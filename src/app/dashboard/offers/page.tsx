@@ -14,7 +14,7 @@ import {
   saveShortLender,
   applyToShortKreditBee,
   applyToShortRamFinCorp,
-  // applyToShortMMB,
+  applyToShortMMB,
 } from "@/lib/api";
 
 // ============================================================
@@ -98,8 +98,12 @@ function mapShownOfferToDashboardOffer(
   const lenderData = data[shownOffer.lenderName] as { utm_link?: string } | undefined;
   const utmLink =
     lenderData?.utm_link || shownOffer.utmLink || FALLBACK_UTM_LINKS[shownOffer.lenderName] || undefined;
+
+  // Normalize API lender names to display names (e.g., MMBDedup → MMB)
+  const normalizedName = shownOffer.lenderName === "MMBDedup" ? "MMB" : shownOffer.lenderName;
+
   return {
-    name: shownOffer.lenderName,
+    name: normalizedName,
     utmLink,
     isOffer: shownOffer.section === "promoted",
   };
@@ -129,7 +133,7 @@ export default function DashboardOffersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [kbApplying, setKbApplying] = useState(false);
   const [ramFinCorpApplying, setRamFinCorpApplying] = useState(false);
-  // const [mmbApplying, setMmbApplying] = useState(false);
+  const [mmbApplying, setMmbApplying] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
 
   useEffect(() => {
@@ -169,12 +173,12 @@ const ramFinCorpData = data.RamFinCorp as {
 
 const isRamFinCorpEligible = ramFinCorpData?.data?.response?.message === "Dedup Success";
 
-// const mmbData = data.MMBDedup as {
-//   data?: { dedupeStatus?: string };
-//   utm_link?: string;
-// } | undefined;
+const mmbData = data.MMBDedup as {
+  data?: { message?: string };
+  utm_link?: string;
+} | undefined;
 
-// const isMmbEligible = mmbData?.data?.dedupeStatus === "Passed"; 
+const isMmbEligible = mmbData?.data?.message === "user_not_found"; 
 
 const rupiNowData = data.RupiNow as {
   dedupeStatus?: string;
@@ -211,9 +215,9 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         if (o.lenderName === "RamFinCorp") {
           return isRamFinCorpEligible;
         }
-        // if (o.lenderName === "MMBDedup") {
-        //   return isMmbEligible;
-        // }
+        if (o.lenderName === "MMBDedup") {
+          return isMmbEligible;
+        }
         if (o.lenderName === "RupiNow") {
           return isRupiNowEligible;
         }
@@ -265,6 +269,8 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         "rocketCash": "RocketCash",
         "MMB": "MMB",
         "mmb": "MMB",
+        "mmbdedup": "MMB",
+        "MMBDedup": "MMB"
       };
       for (const lender of staticLendersArray) {
         if (lender.name && lender.utm_link) {
@@ -418,23 +424,23 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         });
       }
 
-      // Add MMB if eligible (dedupeStatus === "Passed")
-      // if (isMmbEligible && !existingLenderNames.has("MMB")) {
-      //   mappedOffers.push({
-      //     name: "MMB",
-      //     utmLink: mmbData?.utm_link,
-      //     isOffer: false,
-      //   });
-      // }
-
-
-        if (staticLenderUtmLinks["MMB"] && !existingLenderNames.has("MMB")) {
+    // Add MMB if eligible (data.message === "user_not_found")
+      if (isMmbEligible && !existingLenderNames.has("MMB")) {
         mappedOffers.push({
           name: "MMB",
-          utmLink: staticLenderUtmLinks["MMB"],
+          utmLink: mmbData?.utm_link,
           isOffer: false,
         });
       }
+
+
+      //   if (staticLenderUtmLinks["MMB"] && !existingLenderNames.has("MMB")) {
+      //   mappedOffers.push({
+      //     name: "MMB",
+      //     utmLink: staticLenderUtmLinks["MMB"],
+      //     isOffer: false,
+      //   });
+      // }
 
       // Add RupiNow based on API response (only if dedupeStatus === "Passed")
       if (isRupiNowEligible && !existingLenderNames.has("RupiNow")) {
@@ -533,29 +539,30 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
     }
   };
 
-  // const handleMMBApply = async (initialUtmLink?: string) => {
-  //   if (mmbApplying) return;
-  //   setMmbApplying(true);
-  //   try {
-  //     const phone = sessionStorage.getItem("userPhone") || "";
-  //     await saveShortLender(phone, "MMB");
-  //     const res = await applyToShortMMB();
+  const handleMMBApply = async (initialUtmLink?: string) => {
+    if (mmbApplying) return;
+    setMmbApplying(true);
+    try {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveShortLender(phone, "MMB");
+      const res = await applyToShortMMB();
 
-  //     if (res.success) {
-  //       // Use redirectUrl from apply API response, fallback to utm_link from apply API,
-  //       // then fallback to utm_link from get-offer-short-ticket API, then hardcoded fallback
-  //       const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || initialUtmLink || FALLBACK_UTM_LINKS["MMB"] || "https://www.mmb.in/";
-  //       window.open(redirectUrl, "_blank");
-  //     } else {
-  //       toast.error(res.message || "Something went wrong. Please try again.", { duration: 4000 });
-  //     }
-  //   } catch (err) {
-  //     console.error("MMB apply failed:", err);
-  //     toast.error("Something went wrong. Please try again.", { duration: 4000 });
-  //   } finally {
-  //     setMmbApplying(false);
-  //   }
-  //   }
+      const mmbData = res.data?.MMBCreateLead;
+      if (mmbData?.message === "Signed-in Successfully" && mmbData?.redirectLink) {
+        // Use utm_link from get-offer-short-ticket API (passed as initialUtmLink)
+        const redirectUrl = initialUtmLink || FALLBACK_UTM_LINKS["MMB"] || "https://www.mmb.in/";
+        window.open(redirectUrl, "_blank");
+      } else {
+        // Show not eligible modal when apply fails
+        setShowNotEligible("MMB");
+      }
+    } catch (err) {
+      console.error("MMB apply failed:", err);
+      setShowNotEligible("MMB");
+    } finally {
+      setMmbApplying(false);
+    }
+  };
 
   const handleApply = async (lenderName: string, utmLink?: string) => {
     const allowed = await guardActivity();
@@ -571,10 +578,10 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
       return;
     }
 
-    // if (lenderName === "MMB") {
-    //   handleMMBApply(utmLink);
-    //   return;
-    // }
+    if (lenderName === "MMB") {
+      handleMMBApply(utmLink);
+      return;
+    }
 
     // For other lenders, save and open UTM link
     const phone = sessionStorage.getItem("userPhone") || "";

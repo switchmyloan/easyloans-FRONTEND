@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Lock, Zap, CheckCircle, Clock, ChevronRight } from "lucide-react";
 import { STATIC_LENDER_LOGOS, LENDER_FEATURE_TAGS, DEFAULT_FEATURE_TAG, DASHBOARD_PRIORITY_ORDER, LENDER_FEATURE_BADGES, DEFAULT_FEATURE_BADGES } from "@/lib/constants";
-import { getStoredShortExistingUserOffers, saveShortLender, applyToShortKreditBee, applyToShortRamFinCorp } from "@/lib/api";
+import { getStoredShortExistingUserOffers, saveShortLender, applyToShortKreditBee, applyToShortRamFinCorp, applyToShortMMB } from "@/lib/api";
 import toast, { Toaster } from "react-hot-toast";
 import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
 import { useOtpGuard } from "@/app/dashboard/layout";
@@ -112,7 +112,7 @@ export default function LoanOffersBanner() {
   const [otherLenders, setOtherLenders] = useState<PreviousLender[]>([]);
   const [kbApplying, setKbApplying] = useState(false);
   const [ramFinCorpApplying, setRamFinCorpApplying] = useState(false);
-  // const [mmbApplying, setMmbApplying] = useState(false);
+  const [mmbApplying, setMmbApplying] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
 
   useEffect(() => {
@@ -139,8 +139,8 @@ export default function LoanOffersBanner() {
       const rupiNowData = data.RupiNow as { dedupeStatus?: string; utm_link?: string } | undefined;
       const isRupiNowEligible = rupiNowData?.dedupeStatus === "Passed";
 
-      // const mmbData = data.MMBDedup as { data?: { dedupeStatus?: string }; utm_link?: string } | undefined;
-      // const isMmbEligible = mmbData?.data?.dedupeStatus === "Passed";
+      const mmbData = data.MMBDedup as { data?: { message?: string }; utm_link?: string } | undefined;
+      const isMmbEligible = mmbData?.data?.message === "user_not_found";
 
       // Try both capitalized and lowercase keys (API returns lowercase for vivifi)
       const vivifiData = (data.Vivifi || data.vivifi) as { message?: string; utm_link?: string } | undefined;
@@ -305,15 +305,15 @@ export default function LoanOffersBanner() {
         });
       }
 
-      // Add MMB if eligible (dedupeStatus === "Passed")
-      // if (isMmbEligible && !addedLenders.has("MMB")) {
-      //   addedLenders.add("MMB");
-      //   eligibleLenders.push({
-      //     id: "MMB",
-      //     name: "MMB",
-      //     prefix: "M",
-      //   });
-      // }
+      // Add MMB if eligible (message === "user_not_found")
+      if (isMmbEligible && !addedLenders.has("MMB")) {
+        addedLenders.add("MMB");
+        eligibleLenders.push({
+          id: "MMB",
+          name: "MMB",
+          prefix: "M",
+        });
+      }
 
       // Add Apollo only if it comes from API staticLenders
       const apolloFromApi = staticLendersArray.find(
@@ -354,18 +354,7 @@ export default function LoanOffersBanner() {
         });
       }
 
-      // Add MMB only if it comes from API staticLenders
-      const mmbFromApi = staticLendersArray.find(
-        (l) => l.name?.toLowerCase() === "mmb"
-      );
-      if (mmbFromApi?.utm_link && !addedLenders.has("MMB")) {
-        addedLenders.add("MMB");
-        eligibleLenders.push({
-          id: "MMB",
-          name: "MMB",
-          prefix: "M",
-        });
-      }
+    
 
       // Check if user came via UTM medium link - prioritize that lender
       const utmMedium = (sessionStorage.getItem("utm_medium") || "").toLowerCase();
@@ -433,15 +422,7 @@ export default function LoanOffersBanner() {
         });
       }
 
-      // If UTM is mmb and MMB exists in staticLenders but wasn't added yet, add it now
-      if (utmLenderName === "MMB" && mmbFromApi?.utm_link && !addedLenders.has("MMB")) {
-        addedLenders.add("MMB");
-        eligibleLenders.push({
-          id: "MMB",
-          name: "MMB",
-          prefix: "M",
-        });
-      }
+     
 
       // If UTM is rupinow and RupiNow is eligible but wasn't added yet, add it now
       if (utmLenderName === "RupiNow" && isRupiNowEligible && !addedLenders.has("RupiNow")) {
@@ -463,15 +444,7 @@ export default function LoanOffersBanner() {
         });
       }
 
-      // If UTM is mmb and MMB is eligible but wasn't added yet, add it now
-      // if (utmLenderName === "MMB" && isMmbEligible && !addedLenders.has("MMB")) {
-      //   addedLenders.add("MMB");
-      //   eligibleLenders.push({
-      //     id: "MMB",
-      //     name: "MMB",
-      //     prefix: "M",
-      //   });
-      // }
+    
 
       // // If UTM is asapfinance, add ASAPFinance if not already added
       // if (utmLenderName === "ASAPFinance" && !addedLenders.has("ASAPFinance")) {
@@ -615,29 +588,31 @@ export default function LoanOffersBanner() {
   };
 
   // MMB special apply handler - calls the API first
-  // const handleMMBApply = async (initialUtmLink?: string) => {
-  //   if (mmbApplying) return;
-  //   setMmbApplying(true);
-  //   try {
-  //     const phone = sessionStorage.getItem("userPhone") || "";
-  //     await saveShortLender(phone, "MMB");
-  //     const res = await applyToShortMMB();
+  const handleMMBApply = async (initialUtmLink?: string) => {
+    if (mmbApplying) return;
+    setMmbApplying(true);
+    try {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveShortLender(phone, "MMB");
+      const res = await applyToShortMMB();
 
-  //     if (res.success) {
-  //       const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || initialUtmLink;
-  //       if (redirectUrl) {
-  //         window.open(redirectUrl, "_blank");
-  //       }
-  //     } else {
-  //       toast.error(res.message || "Something went wrong. Please try again.", { duration: 4000 });
-  //     }
-  //   } catch (err) {
-  //     console.error("MMB apply failed:", err);
-  //     toast.error("Something went wrong. Please try again.", { duration: 4000 });
-  //   } finally {
-  //     setMmbApplying(false);
-  //   }
-  // };
+      const mmbData = res.data?.MMBCreateLead;
+      if (mmbData?.message === "Signed-in Successfully" && mmbData?.redirectLink) {
+        // Use utm_link from get-offer-short-ticket API (passed as initialUtmLink)
+        if (initialUtmLink) {
+          window.open(initialUtmLink, "_blank");
+        }
+      } else {
+        // Show not eligible modal when apply fails
+        setShowNotEligible("MMB");
+      }
+    } catch (err) {
+      console.error("MMB apply failed:", err);
+      setShowNotEligible("MMB");
+    } finally {
+      setMmbApplying(false);
+    }
+  };
 
   // Apply to the hero lender — redirect to its UTM link
   // KreditBee and RamFinCorp have special handling with API call
@@ -662,13 +637,13 @@ export default function LoanOffersBanner() {
     }
 
     // Special handling for MMB
-    // if (displayLender.id === "MMB") {
-    //   // Get utm_link from stored data for fallback
-    //   const data = getStoredShortExistingUserOffers()?.data as Record<string, unknown> | undefined;
-    //   const mmbData = data?.MMBDedup as { utm_link?: string } | undefined;
-    //   handleMMBApply(mmbData?.utm_link);
-    //   return;
-    // }
+    if (displayLender.id === "MMB") {
+      // Get utm_link from stored data for fallback
+      const data = getStoredShortExistingUserOffers()?.data as Record<string, unknown> | undefined;
+      const mmbData = data?.MMBDedup as { utm_link?: string } | undefined;
+      handleMMBApply(mmbData?.utm_link);
+      return;
+    }
 
     const phone = sessionStorage.getItem("userPhone") || "";
     await saveShortLender(phone, displayLender.id);
