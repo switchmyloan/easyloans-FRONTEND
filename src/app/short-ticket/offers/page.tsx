@@ -983,10 +983,17 @@ export default function ShortTicketOffersPage() {
       const res = await applyToShortMMB();
 
       const mmbData = res.data?.MMBCreateLead;
-      if (mmbData?.message === "Signed-in Successfully" && mmbData?.redirectLink) {
-        // Use utm_link from get-offer-short-ticket API (passed as initialUtmLink)
+      // Check if message is "Signed-in Successfully" AND redirectLink is available
+      const isSignedIn = mmbData?.message === "Signed-in Successfully";
+      const hasRedirectLink = mmbData?.redirectLink && mmbData.redirectLink.trim() !== "";
+
+      if (isSignedIn && hasRedirectLink) {
+        // Redirect to utm_link from MMBDedup (passed as initialUtmLink)
         if (initialUtmLink) {
           window.open(initialUtmLink, "_blank");
+        } else {
+          // No utm_link available from MMBDedup
+          setShowNotEligible("MMB");
         }
       } else {
         // Show not eligible modal when apply fails
