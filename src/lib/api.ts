@@ -1823,11 +1823,11 @@ export interface LoanWalleApplyResponse {
 }
 
 /**
- * Applies to LoanWalle partners (TejasLoan or F1SpeedLoan).
- * @param partnerName - "Tejas" for TejasLoan, "F1" for F1SpeedLoan
+ * Applies to LoanWalle partners (TejasLoan, F1SpeedLoan, ToofanLoan, or RupeeRaftaar).
+ * @param partnerName - "Tejas" for TejasLoan, "F1" for F1SpeedLoan, "Toofan" for ToofanLoan, "RupeeRaftaar" for RupeeRaftaar
  */
 export async function applyToLoanWalle(
-  partnerName: "Tejas" | "F1"
+  partnerName: "Tejas" | "F1" | "Toofan" | "RupeeRaftaar"
 ): Promise<LoanWalleApplyResponse> {
   const raw = sessionStorage.getItem("userFormData");
   if (!raw) throw new Error("User data not found. Please fill the form first.");
@@ -1856,7 +1856,13 @@ export async function applyToLoanWalle(
   });
 
   if (!res.ok) {
-    throw new Error(`Failed to apply to ${partnerName === "Tejas" ? "TejasLoan" : "F1SpeedLoan"}. Please try again.`);
+    const partnerDisplayName = {
+      Tejas: "TejasLoan",
+      F1: "F1SpeedLoan",
+      Toofan: "ToofanLoan",
+      RupeeRaftaar: "RupeeRaftaar",
+    }[partnerName];
+    throw new Error(`Failed to apply to ${partnerDisplayName}. Please try again.`);
   }
 
   const json: LoanWalleApplyResponse = await res.json();

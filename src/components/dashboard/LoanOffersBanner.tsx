@@ -9,6 +9,7 @@ import { STATIC_LENDER_LOGOS, LENDER_FEATURE_TAGS, DEFAULT_FEATURE_TAG, DASHBOAR
 import { getStoredShortExistingUserOffers, saveShortLender, applyToShortKreditBee, applyToShortRamFinCorp, applyToShortMMB, applyToLoanWalle } from "@/lib/api";
 import toast, { Toaster } from "react-hot-toast";
 import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
+import LoanWalleLenderModal from "@/components/offers/LoanWalleLenderModal";
 import { useOtpGuard } from "@/app/dashboard/layout";
 import RingImageSection from "./RingImageSection";
 
@@ -50,6 +51,13 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   cash2you: "Cash2You",
   rocketcash: "RocketCash",
   mmb: "MMB",
+  loanwalle: "LoanWalle",
+};
+
+// Map ToofanLoan and RupeeRaftaar to LoanWalle for display purposes
+const LENDER_DISPLAY_MAP: Record<string, string> = {
+  ToofanLoan: "LoanWalle",
+  RupeeRaftaar: "LoanWalle",
 };
 
 // ============================================================
@@ -116,6 +124,13 @@ export default function LoanOffersBanner() {
   const [tejasLoanApplying, setTejasLoanApplying] = useState(false);
   const [f1SpeedLoanApplying, setF1SpeedLoanApplying] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
+
+  // LoanWalle modal state
+  const [showLoanWalleModal, setShowLoanWalleModal] = useState(false);
+  const [loanWalleLenders, setLoanWalleLenders] = useState<{
+    toofanLoan?: { name: string; displayName: string; utmLink: string; logo: string };
+    rupeeRaftaar?: { name: string; displayName: string; utmLink: string; logo: string };
+  }>({});
 
   useEffect(() => {
     const existingUserData = getStoredShortExistingUserOffers();
@@ -356,7 +371,47 @@ export default function LoanOffersBanner() {
         });
       }
 
-    
+      // Add LoanWalle if ToofanLoan OR RupeeRaftaar is available in staticLenders
+      const toofanLoanFromApi = staticLendersArray.find(
+        (l) => l.name?.toLowerCase() === "toofanloan"
+      );
+      const rupeeRaftaarFromApi = staticLendersArray.find(
+        (l) => l.name?.toLowerCase() === "rupeeraftaar"
+      );
+      if ((toofanLoanFromApi?.utm_link || rupeeRaftaarFromApi?.utm_link) && !addedLenders.has("LoanWalle")) {
+        addedLenders.add("LoanWalle");
+        eligibleLenders.push({
+          id: "LoanWalle",
+          name: "LoanWalle",
+          prefix: "L",
+        });
+
+        // Store the lender options for the modal
+        const loanWalleOptions: {
+          toofanLoan?: { name: string; displayName: string; utmLink: string; logo: string };
+          rupeeRaftaar?: { name: string; displayName: string; utmLink: string; logo: string };
+        } = {};
+
+        if (toofanLoanFromApi?.utm_link) {
+          loanWalleOptions.toofanLoan = {
+            name: "ToofanLoan",
+            displayName: "Toofan Loan",
+            utmLink: toofanLoanFromApi.utm_link,
+            logo: "/toofan-loan.png",
+          };
+        }
+
+        if (rupeeRaftaarFromApi?.utm_link) {
+          loanWalleOptions.rupeeRaftaar = {
+            name: "RupeeRaftaar",
+            displayName: "Rupee Raftaar",
+            utmLink: rupeeRaftaarFromApi.utm_link,
+            logo: "/Rupee-Raftaaar.png",
+          };
+        }
+
+        setLoanWalleLenders(loanWalleOptions);
+      }
 
       // Check if user came via UTM medium link - prioritize that lender
       const utmMedium = (sessionStorage.getItem("utm_medium") || "").toLowerCase();
@@ -424,7 +479,15 @@ export default function LoanOffersBanner() {
         });
       }
 
-     
+      // If UTM is loanwalle and LoanWalle (via ToofanLoan or RupeeRaftaar) exists but wasn't added yet, add it now
+      if (utmLenderName === "LoanWalle" && (toofanLoanFromApi?.utm_link || rupeeRaftaarFromApi?.utm_link) && !addedLenders.has("LoanWalle")) {
+        addedLenders.add("LoanWalle");
+        eligibleLenders.push({
+          id: "LoanWalle",
+          name: "LoanWalle",
+          prefix: "L",
+        });
+      }
 
       // If UTM is rupinow and RupiNow is eligible but wasn't added yet, add it now
       if (utmLenderName === "RupiNow" && isRupiNowEligible && !addedLenders.has("RupiNow")) {
@@ -487,7 +550,12 @@ export default function LoanOffersBanner() {
         // Find the most recently clicked lender that is in DASHBOARD_PRIORITY_ORDER and is eligible
         let mainLenderFromSelected: PreviousLender | null = null;
         for (const selected of sortedByRecent) {
-          const lenderName = selected.lenderName;
+          let lenderName = selected.lenderName;
+
+          // Map ToofanLoan and RupeeRaftaar to LoanWalle for display
+          if (LENDER_DISPLAY_MAP[lenderName]) {
+            lenderName = LENDER_DISPLAY_MAP[lenderName];
+          }
 
           // Skip if not in dashboard priority order
           if (!DASHBOARD_PRIORITY_ORDER.includes(lenderName)) continue;
@@ -499,7 +567,7 @@ export default function LoanOffersBanner() {
           if (lenderName === "MoneyDot" && !isMoneyDotEligible) continue;
           if (lenderName === "RamFinCorp" && !isRamFinCorpEligible) continue;
           if (lenderName === "Vivifi" && !isVivifiEligible) continue;
-     
+
 
           // Found an eligible lender in priority order
           mainLenderFromSelected = {
@@ -673,6 +741,37 @@ export default function LoanOffersBanner() {
     }
   };
 
+  // LoanWalle apply handler - shows modal if both options available, redirects directly if only one
+  const handleLoanWalleApply = async () => {
+    const hasToofan = !!loanWalleLenders.toofanLoan;
+    const hasRupeeRaftaar = !!loanWalleLenders.rupeeRaftaar;
+
+    // If both are available, show the modal
+    if (hasToofan && hasRupeeRaftaar) {
+      setShowLoanWalleModal(true);
+      return;
+    }
+
+    // If only one is available, redirect directly
+    const singleLender = loanWalleLenders.toofanLoan || loanWalleLenders.rupeeRaftaar;
+    if (singleLender) {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveShortLender(phone, singleLender.name);
+
+      window.open(singleLender.utmLink, "_blank");
+    }
+  };
+
+  // Handle lender selection from LoanWalle modal
+  const handleLoanWalleLenderSelect = async (lenderName: string, utmLink: string) => {
+    setShowLoanWalleModal(false);
+
+    const phone = sessionStorage.getItem("userPhone") || "";
+    await saveShortLender(phone, lenderName);
+
+    window.open(utmLink, "_blank");
+  };
+
   // Apply to the hero lender — redirect to its UTM link
   // KreditBee and RamFinCorp have special handling with API call
   const handleHeroApply = async () => {
@@ -723,6 +822,12 @@ export default function LoanOffersBanner() {
         (l) => l.name?.toLowerCase() === "f1speedloan"
       );
       handleF1SpeedLoanApply(f1Lender?.utm_link);
+      return;
+    }
+
+    // Special handling for LoanWalle - show modal or redirect directly
+    if (displayLender.id === "LoanWalle") {
+      handleLoanWalleApply();
       return;
     }
 
@@ -981,6 +1086,25 @@ export default function LoanOffersBanner() {
         onExplore={() => {
           setShowNotEligible(null);
           window.location.href = "/dashboard/offers";
+        }}
+      />
+    )}
+
+    {/* LoanWalle Lender Selection modal */}
+    {showLoanWalleModal && (
+      <LoanWalleLenderModal
+        onClose={() => setShowLoanWalleModal(false)}
+        hasToofan={!!loanWalleLenders.toofanLoan}
+        hasRupeeRaftaar={!!loanWalleLenders.rupeeRaftaar}
+        onSelectToofan={() => {
+          if (loanWalleLenders.toofanLoan) {
+            handleLoanWalleLenderSelect("ToofanLoan", loanWalleLenders.toofanLoan.utmLink);
+          }
+        }}
+        onSelectRupeeRaftaar={() => {
+          if (loanWalleLenders.rupeeRaftaar) {
+            handleLoanWalleLenderSelect("RupeeRaftaar", loanWalleLenders.rupeeRaftaar.utmLink);
+          }
         }}
       />
     )}

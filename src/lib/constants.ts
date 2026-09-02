@@ -40,7 +40,7 @@ export const STATIC_LENDER_LOGOS: Record<
   KreditBee: { src: "/kreditbee-logo.svg" },
   // SpeedoLoan: { src: "/speedoloan.png" },
   CashMySalary: { src: "/cashmysalary.webp" },
-  // LoanWalle: { src: "/loanwalle.webp" },
+  LoanWalle: { src: "/loanwalle.webp" },
   TrueFund: { src: "/truefund.svg" },
   MoneyDot: { src: "/moneydot.png" },
   RupiNow: { src: "/rupinow.png" },
@@ -52,6 +52,8 @@ export const STATIC_LENDER_LOGOS: Record<
   Cash2You: { src: "/CashToYouLogo.svg" },
   RocketCash: { src: "/RocketCashLogo.png" },
   MMB: { src: "/MMB_Logo.png" },
+  RupeeRaftaar: { src: "/Rupee-Raftaaar.png", darkBg: true },
+  ToofanLoan: { src: "/toofan-loan.png" },
 };
 
 export const STATIC_LENDER_DETAILS: Record<
@@ -166,12 +168,12 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Quick Approval and No Hidden Charges",
     interestRate: "Interest Rates start at 1%* per day",
   },
-  // LoanWalle: {
-  //   headline: "Get up to ₹1,00,000 with quick approval!",
-  //   description: "Personal loans with fast disbursement and No Prepayment Charges",
-  //   keyFeature: "Quick Approval and No Prepayment Charges",
-  //   interestRate: "Interest Rates start at 1%* per day",
-  // },
+  LoanWalle: {
+    headline: "Get up to ₹1,00,000 with quick approval!",
+    description: "Personal loans with fast disbursement and No Prepayment Charges",
+    keyFeature: "Quick Approval and No Prepayment Charges",
+    interestRate: "Interest Rates start at 1%* per day",
+  },
   TrueFund: {
     headline: "Get up to ₹50,000 with quick approval!",
     description: "Personal loans with Instant Loan Approval and Smart & Efficient Processing",
@@ -253,6 +255,7 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "MMB",
   "Cash2You",
   "RocketCash",
+ "LoanWalle",
 ];
 
 // Short feature tags for each lender (displayed in offer cards)
@@ -264,7 +267,7 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   Vivifi: "Flexible loan options",
   // SpeedoLoan: "Quick approval",
   CashMySalary: "Quick approval",
-  // LoanWalle: "Only for EPFO registered users",
+  LoanWalle: "Only for EPFO registered users",
   TejasLoan: "Only for EPFO registered users",
   TrueFund: "Quick approval",
   MoneyDot: "no collateral",
@@ -304,11 +307,11 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "Same Day Disbursement", description: "Same day transfer" },
     { title: "No Prepayment Charges", description: "No hiddenpayment charges" },
   ],
-  // LoanWalle: [
-  //   { title: "Quick Approval", description: "Fast processing" },
-  //   { title: "Flexible Repayment", description: "Easy repayment options" },
-  //   { title: "Flexible Tenure", description: "No Prepayment Charges" },
-  // ],
+  LoanWalle: [
+    { title: "Quick Approval", description: "Fast processing" },
+    { title: "Flexible Repayment", description: "Easy repayment options" },
+    { title: "Flexible Tenure", description: "No Prepayment Charges" },
+  ],
     TejasLoan: [
     { title: "Quick Approval", description: "Fast processing" },
     { title: "Flexible Repayment", description: "Easy repayment options" },
@@ -377,7 +380,7 @@ export const DEFAULT_FEATURE_TAG = "Quick approval";
 export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   RapidMoney: ["Quick Approval", "Flexible Repayment", "Up to ₹15,000"],
   Vivifi: ["0% Foreclose Charge", "Highest Approval", "Quick Disbursal"],
-  // LoanWalle: ["EPFO Users Only", "No Prepayment Fee", "Quick Approval"],
+  LoanWalle: ["EPFO Users Only", "No Prepayment Fee", "Quick Approval"],
   TejasLoan: ["EPFO Users Only", "No Prepayment Fee", "Quick Approval"],
   KreditBee: ["Upto 100% off on PF", "Loans up to ₹10 Lakh", "Instant Disbursal"],
   TrueBalance: ["Loans up to ₹2 Lakh", "Minimal Docs", "Quick Approval"],
@@ -407,7 +410,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   Vivifi: 500000,           // ₹5 Lakhs
   // SpeedoLoan: 50000,      // ₹50,000
   CashMySalary: 50000,    // ₹50,000
-  // LoanWalle: 100000,      // ₹1 Lakh
+  LoanWalle: 100000,      // ₹1 Lakh
   TejasLoan: 100000,      // ₹1 Lakh
   TrueFund: 50000,      // ₹50,000
   MoneyDot: 100000,      // ₹1 Lakhs

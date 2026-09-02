@@ -6,6 +6,7 @@ import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
 import OfferCard from "@/components/offers/OfferCard";
 import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
+import LoanWalleLenderModal from "@/components/offers/LoanWalleLenderModal";
 import { getStaticLenderDetail, STATIC_LENDER_LOGOS, DASHBOARD_PRIORITY_ORDER, LENDER_FEATURE_TAGS } from "@/lib/constants";
 import { useOtpGuard } from "@/app/dashboard/layout";
 
@@ -45,7 +46,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   MMB: "MMB",
   // SpeedoLoan: "SpeedoLoan",
   CashMySalary: "CashMySalary",
-  // LoanWalle: "LoanWalle",
+  LoanWalle: "LoanWalle",
   TrueFund: "TrueFund",
   MoneyDot: "MoneyDot",
   RupiNow: "RupiNow",
@@ -55,6 +56,8 @@ const DISPLAY_NAMES: Record<string, string> = {
   F1SpeedLoan: "F1 Speed Loan",
   Cash2You: "CashToYou",
   RocketCash: "Rocket Cash",
+  ToofanLoan: "Toofan Loan",
+  RupeeRaftaar: "Rupee Raftaar",
 };
 
 const DASHBOARD_VISIBLE_COUNT = 4;
@@ -105,11 +108,26 @@ function mapShownOfferToDashboardOffer(
 }
 
 // Sort offers by dashboard priority order
-function sortOffersByPriority(offers: DashboardOffer[]): DashboardOffer[] {
+function sortOffersByPriority(offers: DashboardOffer[], priorityLender?: string): DashboardOffer[] {
   // Final choke point: drop retired lenders no matter which path added them.
-  return [...offers]
-    .filter((o) => !REMOVED_LENDERS.includes(o.name))
-    .sort((a, b) => {
+  const filtered = [...offers].filter((o) => !REMOVED_LENDERS.includes(o.name));
+
+  // If there's a priority lender (from utm_medium), put it first
+  if (priorityLender) {
+    const priorityIndex = filtered.findIndex((o) => o.name === priorityLender);
+    if (priorityIndex > 0) {
+      const [priorityOffer] = filtered.splice(priorityIndex, 1);
+      filtered.unshift(priorityOffer);
+    }
+  }
+
+  // Sort remaining offers by dashboard priority order
+  return filtered.sort((a, b) => {
+    // Keep priority lender at position 0 if it exists
+    if (priorityLender) {
+      if (a.name === priorityLender) return -1;
+      if (b.name === priorityLender) return 1;
+    }
     const priorityA = DASHBOARD_PRIORITY_ORDER.indexOf(a.name);
     const priorityB = DASHBOARD_PRIORITY_ORDER.indexOf(b.name);
     // If not in priority list, put at the end
@@ -132,7 +150,21 @@ export default function DashboardOffers() {
   const [f1SpeedLoanApplying, setF1SpeedLoanApplying] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
 
+  // LoanWalle modal state
+  const [showLoanWalleModal, setShowLoanWalleModal] = useState(false);
+  const [loanWalleLenders, setLoanWalleLenders] = useState<{
+    toofanLoan?: { name: string; displayName: string; utmLink: string; logo: string };
+    rupeeRaftaar?: { name: string; displayName: string; utmLink: string; logo: string };
+  }>({});
+
   useEffect(() => {
+    // Check utm_medium for priority lender
+    const utmMedium = (sessionStorage.getItem("utm_medium") || "").toLowerCase();
+    let priorityLenderLocal: string | undefined = undefined;
+    if (utmMedium === "loanwalle") {
+      priorityLenderLocal = "LoanWalle";
+    }
+
     const existingUserData = getStoredShortExistingUserOffers();
     const userExists = existingUserData?.data?.found || existingUserData?.data?.exists;
 
@@ -211,7 +243,13 @@ export default function DashboardOffers() {
         "MMB": "MMB",
         "mmb": "MMB",
         "mmbdedup": "MMB",
-        "MMBDedup": "MMB"
+        "MMBDedup": "MMB",
+        "ToofanLoan": "ToofanLoan",
+        "toofanloan": "ToofanLoan",
+        "RupeeRaftaar": "RupeeRaftaar",
+        "rupeeraftaar": "RupeeRaftaar",
+        "LoanWalle": "LoanWalle",
+        "loanwalle": "LoanWalle"
       };
       for (const lender of staticLendersArray) {
         if (lender.name && lender.utm_link) {
@@ -383,10 +421,47 @@ export default function DashboardOffers() {
         });
       }
 
-     
+      // LoanWalle logic: Show LoanWalle card if ToofanLoan OR RupeeRaftaar is available in staticLenders
+      const toofanLoanUtm = staticLenderUtmLinks["ToofanLoan"];
+      const rupeeRaftaarUtm = staticLenderUtmLinks["RupeeRaftaar"];
 
-      // Sort offers by dashboard priority order
-      const sortedOffers = sortOffersByPriority(mappedOffers);
+      if ((toofanLoanUtm || rupeeRaftaarUtm) && !existingLenderNames.has("LoanWalle")) {
+        // Store the lender options for the modal
+        const loanWalleOptions: {
+          toofanLoan?: { name: string; displayName: string; utmLink: string; logo: string };
+          rupeeRaftaar?: { name: string; displayName: string; utmLink: string; logo: string };
+        } = {};
+
+        if (toofanLoanUtm) {
+          loanWalleOptions.toofanLoan = {
+            name: "ToofanLoan",
+            displayName: "Toofan Loan",
+            utmLink: toofanLoanUtm,
+            logo: "/toofan-loan.png",
+          };
+        }
+
+        if (rupeeRaftaarUtm) {
+          loanWalleOptions.rupeeRaftaar = {
+            name: "RupeeRaftaar",
+            displayName: "Rupee Raftaar",
+            utmLink: rupeeRaftaarUtm,
+            logo: "/Rupee-Raftaaar.png",
+          };
+        }
+
+        setLoanWalleLenders(loanWalleOptions);
+
+        // Add LoanWalle to offers list
+        mappedOffers.push({
+          name: "LoanWalle",
+          utmLink: undefined,
+          isOffer: false,
+        });
+      }
+
+      // Sort offers by dashboard priority order (with utm_medium priority lender first)
+      const sortedOffers = sortOffersByPriority(mappedOffers, priorityLenderLocal);
       setOffers(sortedOffers);
     } else {
       setOffers([]);
@@ -526,6 +601,35 @@ export default function DashboardOffers() {
     }
   };
 
+  const handleLoanWalleApply = async () => {
+    const hasToofan = !!loanWalleLenders.toofanLoan;
+    const hasRupeeRaftaar = !!loanWalleLenders.rupeeRaftaar;
+
+    // If both are available, show the modal
+    if (hasToofan && hasRupeeRaftaar) {
+      setShowLoanWalleModal(true);
+      return;
+    }
+
+    // If only one is available, redirect directly
+    const singleLender = loanWalleLenders.toofanLoan || loanWalleLenders.rupeeRaftaar;
+    if (singleLender) {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveShortLender(phone, singleLender.name);
+
+      window.open(singleLender.utmLink, "_blank");
+    }
+  };
+
+  const handleLoanWalleLenderSelect = async (lenderName: string, utmLink: string) => {
+    setShowLoanWalleModal(false);
+
+    const phone = sessionStorage.getItem("userPhone") || "";
+    await saveShortLender(phone, lenderName);
+
+    window.open(utmLink, "_blank");
+  };
+
   const handleApply = async (lenderName: string, utmLink?: string) => {
     // OTP verification
     const allowed = await guardActivity();
@@ -558,6 +662,12 @@ export default function DashboardOffers() {
     // Route F1SpeedLoan to specific handler
     if (lenderName === "F1SpeedLoan") {
       handleF1SpeedLoanApply(utmLink);
+      return;
+    }
+
+    // Route LoanWalle to specific handler (opens modal)
+    if (lenderName === "LoanWalle") {
+      handleLoanWalleApply();
       return;
     }
 
@@ -670,6 +780,25 @@ export default function DashboardOffers() {
           onExplore={() => {
             setShowNotEligible(null);
             window.location.href = "/dashboard/offers";
+          }}
+        />
+      )}
+
+      {/* LoanWalle Lender Selection modal */}
+      {showLoanWalleModal && (
+        <LoanWalleLenderModal
+          onClose={() => setShowLoanWalleModal(false)}
+          hasToofan={!!loanWalleLenders.toofanLoan}
+          hasRupeeRaftaar={!!loanWalleLenders.rupeeRaftaar}
+          onSelectToofan={() => {
+            if (loanWalleLenders.toofanLoan) {
+              handleLoanWalleLenderSelect("ToofanLoan", loanWalleLenders.toofanLoan.utmLink);
+            }
+          }}
+          onSelectRupeeRaftaar={() => {
+            if (loanWalleLenders.rupeeRaftaar) {
+              handleLoanWalleLenderSelect("RupeeRaftaar", loanWalleLenders.rupeeRaftaar.utmLink);
+            }
           }}
         />
       )}

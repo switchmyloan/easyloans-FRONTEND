@@ -17,6 +17,7 @@ import {
 import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
 import ScratchCoupon from "@/components/offers/ScratchCoupon";
 import OfferCard from "@/components/offers/OfferCard";
+import LoanWalleLenderModal from "@/components/offers/LoanWalleLenderModal";
 import TrustBadges from "@/components/ui/TrustBadges";
 import GradientBanner from "@/components/ui/GradientBanner";
 import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "@/lib/clevertap";
@@ -43,6 +44,9 @@ const DISPLAY_NAMES: Record<string, string> = {
   LendingPlate: "LendingPlate",
   Cash2You: "CashTouYou",
   RocketCash: "Rocket Cash",
+  ToofanLoan: "Toofan Loan",
+  RupeeRaftaar: "Rupee Raftaar",
+  LoanWalle: "LoanWalle",
 };
 
 // Default render order
@@ -63,6 +67,7 @@ const LENDER_ORDER = [
   "MMB",
   "Cash2You",
   "RocketCash",
+  "LoanWalle",
 ];
 
 // When utm_medium=kreditbee: KreditBee first
@@ -83,6 +88,7 @@ const KB_PRIORITY_ORDER = [
     "MMB",
   "Cash2You",
   "RocketCash",
+  "LoanWalle",
 ];
 
 // When utm_medium=rapidmoney: RapidMoney first
@@ -104,6 +110,7 @@ const RAPIDMONEY_PRIORITY_ORDER = [
     "MMB",
   "Cash2You",
   "RocketCash",
+  "LoanWalle",
 ];
 
 const RamFinCorp_PRIORITY_ORDER = [
@@ -123,6 +130,7 @@ const RamFinCorp_PRIORITY_ORDER = [
     "MMB",
   "Cash2You",
   "RocketCash",
+  "LoanWalle",
 ];
 
 // When utm_medium=tejasloan: TejasLoan first
@@ -143,6 +151,7 @@ const TEJASLOAN_PRIORITY_ORDER = [
       "MMB",
   "Cash2You",
   "RocketCash",
+  "LoanWalle",
 ];
 
 // When utm_medium=moneydot: MoneyDot first
@@ -163,6 +172,7 @@ const MONEYDOT_PRIORITY_ORDER = [
     "MMB",
   "Cash2You",
   "RocketCash",
+  "LoanWalle",
 ];
 
 const TRUEFUND_PRIORITY_ORDER = [
@@ -182,6 +192,7 @@ const TRUEFUND_PRIORITY_ORDER = [
     "MMB",
   "Cash2You",
   "RocketCash",
+  "LoanWalle",
 ];
 
 
@@ -202,6 +213,7 @@ const CASHMYSalary_PRIORITY_ORDER = [
    "MMB",
   "Cash2You",
   "RocketCash",
+  "LoanWalle",
 ];
 
 const APOLLO_PRIORITY_ORDER = [
@@ -221,6 +233,7 @@ const APOLLO_PRIORITY_ORDER = [
    "MMB",
   "Cash2You",
   "RocketCash",
+  "LoanWalle",
 ];
 
 // When utm_medium=f1speedloan: F1SpeedLoan first
@@ -241,6 +254,7 @@ const F1SPEEDLOAN_PRIORITY_ORDER = [
     "MMB",
   "Cash2You",
   "RocketCash",
+  "LoanWalle",
 ];
 
 // When utm_medium=rupinow: RupiNow first
@@ -261,6 +275,7 @@ const RUPINOW_PRIORITY_ORDER = [
     "MMB",
   "Cash2You",
   "RocketCash",
+  "LoanWalle",
 ];
 
 // When utm_medium=cash2you: Cash2You first
@@ -281,6 +296,7 @@ const CASH2YOU_PRIORITY_ORDER = [
    "MMB",
   "F1SpeedLoan",
   "RocketCash",
+  "LoanWalle",
 ];
 
 // When utm_medium=rocketcash: RocketCash first
@@ -301,6 +317,7 @@ const ROCKETCASH_PRIORITY_ORDER = [
     "MMB",
   "F1SpeedLoan",
   "Cash2You",
+  "LoanWalle",
 ];
 
 const MMB_PRIORITY_ORDER = [
@@ -318,6 +335,28 @@ const MMB_PRIORITY_ORDER = [
   "Apollo",
   "LendingPlate",
   "F1SpeedLoan",
+  "Cash2You",
+  "RocketCash",
+  "LoanWalle",
+];
+
+// When utm_medium=loanwalle: LoanWalle first
+const LOANWALLE_PRIORITY_ORDER = [
+  "LoanWalle",
+  "RamFinCorp",
+  "TejasLoan",
+  "RupiNow",
+  "CashMySalary",
+  "Vivifi",
+  "RapidMoney",
+  "TrueBalance",
+  "KreditBee",
+  "TrueFund",
+  "MoneyDot",
+  "Apollo",
+  "LendingPlate",
+  "F1SpeedLoan",
+  "MMB",
   "Cash2You",
   "RocketCash",
 ];
@@ -374,6 +413,12 @@ const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   "rocketCash": "RocketCash",
   "MMB": "MMB",
   "mmb": "MMB",
+  "ToofanLoan": "ToofanLoan",
+  "toofanloan": "ToofanLoan",
+  "RupeeRaftaar": "RupeeRaftaar",
+  "rupeeraftaar": "RupeeRaftaar",
+  "LoanWalle": "LoanWalle",
+  "loanwalle": "LoanWalle",
 };
 
 function getUtmLink(
@@ -513,6 +558,7 @@ export default function ShortTicketOffersPage() {
   const [isCash2YouMedium, setIsCash2YouMedium] = useState(false);
   const [isRocketCashMedium, setIsRocketCashMedium] = useState(false);
   const [isMMBMedium, setIsMMBMedium] = useState(false);
+  const [isLoanWalleMedium, setIsLoanWalleMedium] = useState(false);
   const [mmbApplying, setMmbApplying] = useState(false);
   const [tejasLoanApplying, setTejasLoanApplying] = useState(false);
   const [f1SpeedLoanApplying, setF1SpeedLoanApplying] = useState(false);
@@ -525,6 +571,13 @@ export default function ShortTicketOffersPage() {
   // Track applying/applied state for all lenders to prevent double clicks
   const [applyingLenders, setApplyingLenders] = useState<Set<string>>(new Set());
   const [appliedLenders, setAppliedLenders] = useState<Set<string>>(new Set());
+
+  // LoanWalle modal state
+  const [showLoanWalleModal, setShowLoanWalleModal] = useState(false);
+  const [loanWalleLenders, setLoanWalleLenders] = useState<{
+    toofanLoan?: { name: string; displayName: string; utmLink: string; logo: string };
+    rupeeRaftaar?: { name: string; displayName: string; utmLink: string; logo: string };
+  }>({});
 
   useEffect(() => {
     const response = getStoredShortTicketOffers();
@@ -608,6 +661,8 @@ export default function ShortTicketOffersPage() {
     setIsRocketCashMedium(isRocketCashMediumLocal);
     const isMMBMediumLocal = utmMedium === "mmb";
     setIsMMBMedium(isMMBMediumLocal);
+    const isLoanWalleMediumLocal = utmMedium === "loanwalle";
+    setIsLoanWalleMedium(isLoanWalleMediumLocal);
 
     let renderOrder = LENDER_ORDER;
     let initialVisible = 4;
@@ -656,6 +711,9 @@ export default function ShortTicketOffersPage() {
       initialVisible = 5;
     } else if (isMMBMediumLocal) {
       renderOrder = MMB_PRIORITY_ORDER;
+      initialVisible = 5;
+    } else if (isLoanWalleMediumLocal) {
+      renderOrder = LOANWALLE_PRIORITY_ORDER;
       initialVisible = 5;
     }
 
@@ -820,6 +878,42 @@ export default function ShortTicketOffersPage() {
           const lpLink = utmMap[name] || FALLBACK_UTM.LendingPlate;
           if (!lpLink) break;
           ordered.push({ name, utm_link: lpLink });
+          break;
+        }
+
+        case "LoanWalle": {
+          // LoanWalle shows if ToofanLoan OR RupeeRaftaar is available in staticLenders
+          const toofanLoanUtm = utmMap["ToofanLoan"];
+          const rupeeRaftaarUtm = utmMap["RupeeRaftaar"];
+
+          if (!toofanLoanUtm && !rupeeRaftaarUtm) break;
+
+          // Store the lender options for the modal
+          const loanWalleOptions: {
+            toofanLoan?: { name: string; displayName: string; utmLink: string; logo: string };
+            rupeeRaftaar?: { name: string; displayName: string; utmLink: string; logo: string };
+          } = {};
+
+          if (toofanLoanUtm) {
+            loanWalleOptions.toofanLoan = {
+              name: "ToofanLoan",
+              displayName: "Toofan Loan",
+              utmLink: toofanLoanUtm,
+              logo: "/toofan-loan.png",
+            };
+          }
+
+          if (rupeeRaftaarUtm) {
+            loanWalleOptions.rupeeRaftaar = {
+              name: "RupeeRaftaar",
+              displayName: "Rupee Raftaar",
+              utmLink: rupeeRaftaarUtm,
+              logo: "/Rupee-Raftaaar.png",
+            };
+          }
+
+          setLoanWalleLenders(loanWalleOptions);
+          ordered.push({ name: "LoanWalle", utm_link: undefined });
           break;
         }
 
@@ -1082,6 +1176,47 @@ export default function ShortTicketOffersPage() {
     }
   };
 
+  const handleLoanWalleApply = async () => {
+    const hasToofan = !!loanWalleLenders.toofanLoan;
+    const hasRupeeRaftaar = !!loanWalleLenders.rupeeRaftaar;
+
+    // If both are available, show the modal
+    if (hasToofan && hasRupeeRaftaar) {
+      setShowLoanWalleModal(true);
+      return;
+    }
+
+    // If only one is available, redirect directly
+    const singleLender = loanWalleLenders.toofanLoan || loanWalleLenders.rupeeRaftaar;
+    if (singleLender) {
+      cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
+        Lender: singleLender.displayName,
+        LenderKey: singleLender.name,
+      });
+
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveShortLender(phone, singleLender.name);
+
+      window.open(singleLender.utmLink, "_blank");
+      setAppliedLenders((prev) => new Set(prev).add("LoanWalle"));
+    }
+  };
+
+  const handleLoanWalleLenderSelect = async (lenderName: string, utmLink: string) => {
+    setShowLoanWalleModal(false);
+
+    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
+      Lender: DISPLAY_NAMES[lenderName] || lenderName,
+      LenderKey: lenderName,
+    });
+
+    const phone = sessionStorage.getItem("userPhone") || "";
+    await saveShortLender(phone, lenderName);
+
+    window.open(utmLink, "_blank");
+    setAppliedLenders((prev) => new Set(prev).add("LoanWalle"));
+  };
+
   // Resolve lender content
   const resolve = (name: string) => {
     const detail = getStaticLenderDetail(name);
@@ -1095,12 +1230,13 @@ export default function ShortTicketOffersPage() {
     if (lender.name === "MMB") return () => handleMMBApply(lender.utm_link);
     if (lender.name === "TejasLoan") return () => handleTejasLoanApply(lender.utm_link);
     if (lender.name === "F1SpeedLoan") return () => handleF1SpeedLoanApply(lender.utm_link);
+    if (lender.name === "LoanWalle") return handleLoanWalleApply;
     return () => handleApply(lender.name, lender.utm_link);
   };
 
   // Hero card logic
-  const showHeroFlow = isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium || isTejasLoanMedium || isMoneyDotMedium || isTrueFundMedium || /* isASAPFinanceMedium || */ /* isSpeedoLoanMedium || */ isCashMySalaryMedium || isApolloMedium || isF1SpeedLoanMedium || isRupiNowMedium || isCash2YouMedium || isRocketCashMedium || isMMBMedium;
-  const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : isTejasLoanMedium ? "TejasLoan" : isMoneyDotMedium ? "MoneyDot" : isTrueFundMedium ? "TrueFund" : /* isASAPFinanceMedium ? "ASAPFinance" : */ /* isSpeedoLoanMedium ? "SpeedoLoan" : */ isCashMySalaryMedium ? "CashMySalary" : isApolloMedium ? "Apollo" : isF1SpeedLoanMedium ? "F1SpeedLoan" : isRupiNowMedium ? "RupiNow" : isCash2YouMedium ? "Cash2You" : isRocketCashMedium ? "RocketCash" : isMMBMedium ? "MMB" : null;
+  const showHeroFlow = isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium || isTejasLoanMedium || isMoneyDotMedium || isTrueFundMedium || /* isASAPFinanceMedium || */ /* isSpeedoLoanMedium || */ isCashMySalaryMedium || isApolloMedium || isF1SpeedLoanMedium || isRupiNowMedium || isCash2YouMedium || isRocketCashMedium || isMMBMedium || isLoanWalleMedium;
+  const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : isTejasLoanMedium ? "TejasLoan" : isMoneyDotMedium ? "MoneyDot" : isTrueFundMedium ? "TrueFund" : /* isASAPFinanceMedium ? "ASAPFinance" : */ /* isSpeedoLoanMedium ? "SpeedoLoan" : */ isCashMySalaryMedium ? "CashMySalary" : isApolloMedium ? "Apollo" : isF1SpeedLoanMedium ? "F1SpeedLoan" : isRupiNowMedium ? "RupiNow" : isCash2YouMedium ? "Cash2You" : isRocketCashMedium ? "RocketCash" : isMMBMedium ? "MMB" : isLoanWalleMedium ? "LoanWalle" : null;
   const heroIdx = heroName ? visibleLenders.findIndex((l) => l.name === heroName) : -1;
   const showHeroCard = showHeroFlow && heroIdx === 0 && visibleLenders.length > 0;
   const heroLender = showHeroCard ? visibleLenders[0] : null;
@@ -1528,6 +1664,25 @@ export default function ShortTicketOffersPage() {
           description={coupon.description}
           couponCode={coupon.code}
           onClose={() => setShowScratch(false)}
+        />
+      )}
+
+      {/* LoanWalle Lender Selection modal */}
+      {showLoanWalleModal && (
+        <LoanWalleLenderModal
+          onClose={() => setShowLoanWalleModal(false)}
+          hasToofan={!!loanWalleLenders.toofanLoan}
+          hasRupeeRaftaar={!!loanWalleLenders.rupeeRaftaar}
+          onSelectToofan={() => {
+            if (loanWalleLenders.toofanLoan) {
+              handleLoanWalleLenderSelect("ToofanLoan", loanWalleLenders.toofanLoan.utmLink);
+            }
+          }}
+          onSelectRupeeRaftaar={() => {
+            if (loanWalleLenders.rupeeRaftaar) {
+              handleLoanWalleLenderSelect("RupeeRaftaar", loanWalleLenders.rupeeRaftaar.utmLink);
+            }
+          }}
         />
       )}
     </>
