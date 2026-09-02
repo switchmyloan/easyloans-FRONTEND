@@ -9,6 +9,7 @@ import {
   applyToShortKreditBee,
   applyToShortRamFinCorp,
   applyToShortMMB,
+  applyToLoanWalle,
   trackShortShownOffers,
   type ShortTicketLender,
   type ShownOfferEntry,
@@ -70,7 +71,6 @@ const KB_PRIORITY_ORDER = [
   "RamFinCorp",
   "TejasLoan",
   "RupiNow",
-
   "CashMySalary",
   "Vivifi",
   "RapidMoney",
@@ -111,7 +111,6 @@ const RamFinCorp_PRIORITY_ORDER = [
   "TejasLoan",
   "RupiNow",
   "CashMySalary",
-
   "Vivifi",
   "RapidMoney",
   "TrueBalance",
@@ -131,7 +130,6 @@ const TEJASLOAN_PRIORITY_ORDER = [
   "TejasLoan",
   "RamFinCorp",
     "RupiNow",
-
   "CashMySalary",
   "Vivifi",
   "TrueBalance",
@@ -153,7 +151,6 @@ const MONEYDOT_PRIORITY_ORDER = [
   "RamFinCorp",
   "TejasLoan",
   "RupiNow",
-
   "CashMySalary",
   "Vivifi",
   "RapidMoney",
@@ -173,7 +170,6 @@ const TRUEFUND_PRIORITY_ORDER = [
   "RamFinCorp",
   "TejasLoan",
   "RupiNow",
-
   "CashMySalary",
   "Vivifi",
   "RapidMoney",
@@ -194,7 +190,6 @@ const CASHMYSalary_PRIORITY_ORDER = [
   "RamFinCorp",
   "TejasLoan",
   "RupiNow",
- 
   "Vivifi",
   "RapidMoney",
   "TrueBalance",
@@ -214,7 +209,6 @@ const APOLLO_PRIORITY_ORDER = [
   "RamFinCorp",
   "TejasLoan",
   "RupiNow",
- 
   "CashMySalary",
   "Vivifi",
   "RapidMoney",
@@ -235,7 +229,6 @@ const F1SPEEDLOAN_PRIORITY_ORDER = [
   "RamFinCorp",
   "TejasLoan",
   "RupiNow",
-
   "CashMySalary",
   "Vivifi",
   "RapidMoney",
@@ -255,7 +248,6 @@ const RUPINOW_PRIORITY_ORDER = [
   "RupiNow",
   "RamFinCorp",
   "TejasLoan",
-
   "CashMySalary",
   "Vivifi",
   "TrueBalance",
@@ -277,7 +269,6 @@ const CASH2YOU_PRIORITY_ORDER = [
   "RamFinCorp",
   "TejasLoan",
   "RupiNow",
- 
   "CashMySalary",
   "Vivifi",
   "RapidMoney",
@@ -298,7 +289,6 @@ const ROCKETCASH_PRIORITY_ORDER = [
   "RamFinCorp",
   "TejasLoan",
   "RupiNow",
-
   "CashMySalary",
   "Vivifi",
   "RapidMoney",
@@ -524,12 +514,17 @@ export default function ShortTicketOffersPage() {
   const [isRocketCashMedium, setIsRocketCashMedium] = useState(false);
   const [isMMBMedium, setIsMMBMedium] = useState(false);
   const [mmbApplying, setMmbApplying] = useState(false);
+  const [tejasLoanApplying, setTejasLoanApplying] = useState(false);
+  const [f1SpeedLoanApplying, setF1SpeedLoanApplying] = useState(false);
 
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
   const [priorityVisible, setPriorityVisible] = useState(0);
   const [showAll, setShowAll] = useState(false);
   const [showScratch, setShowScratch] = useState(false);
   const [coupon, setCoupon] = useState<KBCoupon | null>(null);
+  // Track applying/applied state for all lenders to prevent double clicks
+  const [applyingLenders, setApplyingLenders] = useState<Set<string>>(new Set());
+  const [appliedLenders, setAppliedLenders] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const response = getStoredShortTicketOffers();
@@ -870,15 +865,31 @@ export default function ShortTicketOffersPage() {
     priorityVisible > 0 && !showAll && orderedLenders.length > priorityVisible;
 
   const handleApply = async (lenderName: string, url?: string) => {
-    const phone = sessionStorage.getItem("userPhone") || "";
-    await saveShortLender(phone, lenderName);
+    // Prevent double clicks
+    if (applyingLenders.has(lenderName) || appliedLenders.has(lenderName)) return;
 
-    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
-      Lender: DISPLAY_NAMES[lenderName] || lenderName,
-      LenderKey: lenderName,
-    });
+    setApplyingLenders((prev) => new Set(prev).add(lenderName));
 
-    if (url) window.open(url, "_blank");
+    try {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveShortLender(phone, lenderName);
+
+      cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
+        Lender: DISPLAY_NAMES[lenderName] || lenderName,
+        LenderKey: lenderName,
+      });
+
+      if (url) window.open(url, "_blank");
+
+      // Mark as applied after successful click
+      setAppliedLenders((prev) => new Set(prev).add(lenderName));
+    } finally {
+      setApplyingLenders((prev) => {
+        const next = new Set(prev);
+        next.delete(lenderName);
+        return next;
+      });
+    }
   };
 
   const handleKreditBeeApply = async () => {
@@ -956,6 +967,7 @@ export default function ShortTicketOffersPage() {
       // Redirect only if outcome is BRE_APPROVED or PROCEED_TO_BANK and redirectUrl exists
       if ((outcome === "BRE_APPROVED" || outcome === "PROCEED_TO_BANK") && redirectUrl) {
         window.open(redirectUrl, "_blank");
+        setAppliedLenders((prev) => new Set(prev).add("RamFinCorp"));
       } else {
         // Show Not Eligible modal for any other outcome
         setShowNotEligible("RamFinCorp");
@@ -991,6 +1003,7 @@ export default function ShortTicketOffersPage() {
         // Redirect to utm_link from MMBDedup (passed as initialUtmLink)
         if (initialUtmLink) {
           window.open(initialUtmLink, "_blank");
+          setAppliedLenders((prev) => new Set(prev).add("MMB"));
         } else {
           // No utm_link available from MMBDedup
           setShowNotEligible("MMB");
@@ -1007,6 +1020,68 @@ export default function ShortTicketOffersPage() {
     }
   };
 
+  const handleTejasLoanApply = async (initialUtmLink?: string) => {
+    if (tejasLoanApplying) return;
+    setTejasLoanApplying(true);
+
+    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
+      Lender: "Tejas Loan",
+      LenderKey: "TejasLoan",
+    });
+
+    try {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveShortLender(phone, "TejasLoan");
+      await applyToLoanWalle("Tejas");
+
+      // Redirect to UTM link after successful API call
+      if (initialUtmLink) {
+        window.open(initialUtmLink, "_blank");
+        setAppliedLenders((prev) => new Set(prev).add("TejasLoan"));
+      }
+    } catch (err) {
+      console.error("TejasLoan apply failed:", err);
+      // Still redirect on error - the UTM link flow should continue
+      if (initialUtmLink) {
+        window.open(initialUtmLink, "_blank");
+        setAppliedLenders((prev) => new Set(prev).add("TejasLoan"));
+      }
+    } finally {
+      setTejasLoanApplying(false);
+    }
+  };
+
+  const handleF1SpeedLoanApply = async (initialUtmLink?: string) => {
+    if (f1SpeedLoanApplying) return;
+    setF1SpeedLoanApplying(true);
+
+    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
+      Lender: "F1 Speed Loan",
+      LenderKey: "F1SpeedLoan",
+    });
+
+    try {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveShortLender(phone, "F1SpeedLoan");
+      await applyToLoanWalle("F1");
+
+      // Redirect to UTM link after successful API call
+      if (initialUtmLink) {
+        window.open(initialUtmLink, "_blank");
+        setAppliedLenders((prev) => new Set(prev).add("F1SpeedLoan"));
+      }
+    } catch (err) {
+      console.error("F1SpeedLoan apply failed:", err);
+      // Still redirect on error - the UTM link flow should continue
+      if (initialUtmLink) {
+        window.open(initialUtmLink, "_blank");
+        setAppliedLenders((prev) => new Set(prev).add("F1SpeedLoan"));
+      }
+    } finally {
+      setF1SpeedLoanApplying(false);
+    }
+  };
+
   // Resolve lender content
   const resolve = (name: string) => {
     const detail = getStaticLenderDetail(name);
@@ -1018,6 +1093,8 @@ export default function ShortTicketOffersPage() {
     if (lender.name === "KreditBee") return handleKreditBeeApply;
     if (lender.name === "RamFinCorp") return () => handleRamFinCorpApply(lender.utm_link);
     if (lender.name === "MMB") return () => handleMMBApply(lender.utm_link);
+    if (lender.name === "TejasLoan") return () => handleTejasLoanApply(lender.utm_link);
+    if (lender.name === "F1SpeedLoan") return () => handleF1SpeedLoanApply(lender.utm_link);
     return () => handleApply(lender.name, lender.utm_link);
   };
 
@@ -1107,8 +1184,8 @@ export default function ShortTicketOffersPage() {
           {showHeroCard && heroLender && (() => {
             const c = resolve(heroLender.name);
             const heroDisplayName = DISPLAY_NAMES[heroLender.name] || heroLender.name;
-            const heroApplying = heroLender.name === "KreditBee" && kbApplying;
-            const heroApplied = heroLender.name === "KreditBee" && kbApplied;
+            const heroApplying = heroLender.name === "KreditBee" ? kbApplying : heroLender.name === "RamFinCorp" ? ramFinCorpApplying : heroLender.name === "MMB" ? mmbApplying : heroLender.name === "TejasLoan" ? tejasLoanApplying : heroLender.name === "F1SpeedLoan" ? f1SpeedLoanApplying : applyingLenders.has(heroLender.name);
+            const heroApplied = heroLender.name === "KreditBee" ? kbApplied : appliedLenders.has(heroLender.name);
             const heroDisabled = heroApplying || heroApplied;
             const heroLabel = heroApplying ? "Applying..." : heroApplied ? "Applied" : null;
             const applyHandler = onApplyFor(heroLender);
@@ -1345,12 +1422,17 @@ export default function ShortTicketOffersPage() {
             }>
               {otherLenders.map((lender, idx) => {
                 const isKB = lender.name === "KreditBee";
+                const isRFC = lender.name === "RamFinCorp";
+                const isMMB = lender.name === "MMB";
+                const isTejasLoan = lender.name === "TejasLoan";
+                const isF1SpeedLoan = lender.name === "F1SpeedLoan";
                 const c = resolve(lender.name);
                 const displayName = DISPLAY_NAMES[lender.name] || lender.name;
                 const logoSrc = c.logo;
                 const logoDarkBg = c.logoMeta?.darkBg;
-                const isApplying = isKB && kbApplying;
-                const isApplied = isKB && kbApplied;
+                // Determine applying/applied state based on lender type
+                const isApplying = isKB ? kbApplying : isRFC ? ramFinCorpApplying : isMMB ? mmbApplying : isTejasLoan ? tejasLoanApplying : isF1SpeedLoan ? f1SpeedLoanApplying : applyingLenders.has(lender.name);
+                const isApplied = isKB ? kbApplied : appliedLenders.has(lender.name);
                 const applyHandler = onApplyFor(lender);
 
                 return (

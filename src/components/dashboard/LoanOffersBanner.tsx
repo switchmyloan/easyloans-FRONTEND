@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Lock, Zap, CheckCircle, Clock, ChevronRight } from "lucide-react";
 import { STATIC_LENDER_LOGOS, LENDER_FEATURE_TAGS, DEFAULT_FEATURE_TAG, DASHBOARD_PRIORITY_ORDER, LENDER_FEATURE_BADGES, DEFAULT_FEATURE_BADGES } from "@/lib/constants";
-import { getStoredShortExistingUserOffers, saveShortLender, applyToShortKreditBee, applyToShortRamFinCorp, applyToShortMMB } from "@/lib/api";
+import { getStoredShortExistingUserOffers, saveShortLender, applyToShortKreditBee, applyToShortRamFinCorp, applyToShortMMB, applyToLoanWalle } from "@/lib/api";
 import toast, { Toaster } from "react-hot-toast";
 import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
 import { useOtpGuard } from "@/app/dashboard/layout";
@@ -113,6 +113,8 @@ export default function LoanOffersBanner() {
   const [kbApplying, setKbApplying] = useState(false);
   const [ramFinCorpApplying, setRamFinCorpApplying] = useState(false);
   const [mmbApplying, setMmbApplying] = useState(false);
+  const [tejasLoanApplying, setTejasLoanApplying] = useState(false);
+  const [f1SpeedLoanApplying, setF1SpeedLoanApplying] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
 
   useEffect(() => {
@@ -623,6 +625,54 @@ export default function LoanOffersBanner() {
     }
   };
 
+  // TejasLoan special apply handler - calls the LoanWalle API first
+  const handleTejasLoanApply = async (initialUtmLink?: string) => {
+    if (tejasLoanApplying) return;
+    setTejasLoanApplying(true);
+    try {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveShortLender(phone, "TejasLoan");
+      await applyToLoanWalle("Tejas");
+
+      // Redirect to UTM link after API call
+      if (initialUtmLink) {
+        window.open(initialUtmLink, "_blank");
+      }
+    } catch (err) {
+      console.error("TejasLoan apply failed:", err);
+      // Still redirect on error - the UTM link flow should continue
+      if (initialUtmLink) {
+        window.open(initialUtmLink, "_blank");
+      }
+    } finally {
+      setTejasLoanApplying(false);
+    }
+  };
+
+  // F1SpeedLoan special apply handler - calls the LoanWalle API first
+  const handleF1SpeedLoanApply = async (initialUtmLink?: string) => {
+    if (f1SpeedLoanApplying) return;
+    setF1SpeedLoanApplying(true);
+    try {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveShortLender(phone, "F1SpeedLoan");
+      await applyToLoanWalle("F1");
+
+      // Redirect to UTM link after API call
+      if (initialUtmLink) {
+        window.open(initialUtmLink, "_blank");
+      }
+    } catch (err) {
+      console.error("F1SpeedLoan apply failed:", err);
+      // Still redirect on error - the UTM link flow should continue
+      if (initialUtmLink) {
+        window.open(initialUtmLink, "_blank");
+      }
+    } finally {
+      setF1SpeedLoanApplying(false);
+    }
+  };
+
   // Apply to the hero lender — redirect to its UTM link
   // KreditBee and RamFinCorp have special handling with API call
   const handleHeroApply = async () => {
@@ -651,6 +701,28 @@ export default function LoanOffersBanner() {
       const data = getStoredShortExistingUserOffers()?.data as Record<string, unknown> | undefined;
       const mmbData = data?.MMBDedup as { utm_link?: string } | undefined;
       handleMMBApply(mmbData?.utm_link);
+      return;
+    }
+
+    // Special handling for TejasLoan
+    if (displayLender.id === "TejasLoan") {
+      const data = getStoredShortExistingUserOffers()?.data as Record<string, unknown> | undefined;
+      const staticLendersArray = (data?.staticLenders || []) as Array<{ name?: string; utm_link?: string }>;
+      const tejasLender = staticLendersArray.find(
+        (l) => l.name?.toLowerCase() === "tejas" || l.name?.toLowerCase() === "tejasloan"
+      );
+      handleTejasLoanApply(tejasLender?.utm_link);
+      return;
+    }
+
+    // Special handling for F1SpeedLoan
+    if (displayLender.id === "F1SpeedLoan") {
+      const data = getStoredShortExistingUserOffers()?.data as Record<string, unknown> | undefined;
+      const staticLendersArray = (data?.staticLenders || []) as Array<{ name?: string; utm_link?: string }>;
+      const f1Lender = staticLendersArray.find(
+        (l) => l.name?.toLowerCase() === "f1speedloan"
+      );
+      handleF1SpeedLoanApply(f1Lender?.utm_link);
       return;
     }
 

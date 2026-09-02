@@ -16,6 +16,7 @@ import {
   applyToShortKreditBee,
   applyToShortRamFinCorp,
   applyToShortMMB,
+  applyToLoanWalle,
 } from "@/lib/api";
 
 // ============================================================
@@ -127,6 +128,8 @@ export default function DashboardOffers() {
   const [kbApplying, setKbApplying] = useState(false);
   const [ramFinCorpApplying, setRamFinCorpApplying] = useState(false);
   const [mmbApplying, setMmbApplying] = useState(false);
+  const [tejasLoanApplying, setTejasLoanApplying] = useState(false);
+  const [f1SpeedLoanApplying, setF1SpeedLoanApplying] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
 
   useEffect(() => {
@@ -477,6 +480,52 @@ export default function DashboardOffers() {
     }
   };
 
+  const handleTejasLoanApply = async (initialUtmLink?: string) => {
+    if (tejasLoanApplying) return;
+    setTejasLoanApplying(true);
+    try {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveShortLender(phone, "TejasLoan");
+      await applyToLoanWalle("Tejas");
+
+      // Redirect to UTM link after API call
+      if (initialUtmLink) {
+        window.open(initialUtmLink, "_blank");
+      }
+    } catch (err) {
+      console.error("TejasLoan apply failed:", err);
+      // Still redirect on error - the UTM link flow should continue
+      if (initialUtmLink) {
+        window.open(initialUtmLink, "_blank");
+      }
+    } finally {
+      setTejasLoanApplying(false);
+    }
+  };
+
+  const handleF1SpeedLoanApply = async (initialUtmLink?: string) => {
+    if (f1SpeedLoanApplying) return;
+    setF1SpeedLoanApplying(true);
+    try {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveShortLender(phone, "F1SpeedLoan");
+      await applyToLoanWalle("F1");
+
+      // Redirect to UTM link after API call
+      if (initialUtmLink) {
+        window.open(initialUtmLink, "_blank");
+      }
+    } catch (err) {
+      console.error("F1SpeedLoan apply failed:", err);
+      // Still redirect on error - the UTM link flow should continue
+      if (initialUtmLink) {
+        window.open(initialUtmLink, "_blank");
+      }
+    } finally {
+      setF1SpeedLoanApplying(false);
+    }
+  };
+
   const handleApply = async (lenderName: string, utmLink?: string) => {
     // OTP verification
     const allowed = await guardActivity();
@@ -497,6 +546,18 @@ export default function DashboardOffers() {
     // Route MMB to specific handler
     if (lenderName === "MMB") {
       handleMMBApply(utmLink);
+      return;
+    }
+
+    // Route TejasLoan to specific handler
+    if (lenderName === "TejasLoan") {
+      handleTejasLoanApply(utmLink);
+      return;
+    }
+
+    // Route F1SpeedLoan to specific handler
+    if (lenderName === "F1SpeedLoan") {
+      handleF1SpeedLoanApply(utmLink);
       return;
     }
 
@@ -565,7 +626,7 @@ export default function DashboardOffers() {
               ? LENDER_FEATURE_TAGS[lenderName] || LENDER_CUSTOM_BADGE[lenderName] || (offer.isOffer ? "Pre-Qualified" : "Matched")
               : null;
 
-            const isApplying = lenderName === "KreditBee" ? kbApplying : false;
+            const isApplying = lenderName === "KreditBee" ? kbApplying : lenderName === "RamFinCorp" ? ramFinCorpApplying : lenderName === "MMB" ? mmbApplying : lenderName === "TejasLoan" ? tejasLoanApplying : lenderName === "F1SpeedLoan" ? f1SpeedLoanApplying : false;
 
             return (
               <OfferCard
