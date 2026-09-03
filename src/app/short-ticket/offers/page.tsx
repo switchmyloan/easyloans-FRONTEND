@@ -8,7 +8,7 @@ import {
   saveShortLender,
   applyToShortKreditBee,
   applyToShortRamFinCorp,
-  applyToShortMMB,
+  // applyToShortMMB, // Commented out - now redirecting directly to utm_link
   applyToLoanWalle,
   trackShortShownOffers,
   type ShortTicketLender,
@@ -1106,26 +1106,30 @@ export default function ShortTicketOffersPage() {
     try {
       const phone = sessionStorage.getItem("userPhone") || "";
       await saveShortLender(phone, "MMB");
-      const res = await applyToShortMMB();
 
-      const mmbData = res.data?.MMBCreateLead;
-      // Check if message is "Signed-in Successfully" AND redirectLink is available
-      const isSignedIn = mmbData?.message === "Signed-in Successfully";
-      const hasRedirectLink = mmbData?.redirectLink && mmbData.redirectLink.trim() !== "";
-
-      if (isSignedIn && hasRedirectLink) {
-        // Redirect to utm_link from MMBDedup (passed as initialUtmLink)
-        if (initialUtmLink) {
-          window.open(initialUtmLink, "_blank");
-          setAppliedLenders((prev) => new Set(prev).add("MMB"));
-        } else {
-          // No utm_link available from MMBDedup
-          setShowNotEligible("MMB");
-        }
+      // Directly redirect to utm_link without calling API
+      if (initialUtmLink) {
+        window.open(initialUtmLink, "_blank");
+        setAppliedLenders((prev) => new Set(prev).add("MMB"));
       } else {
-        // Show not eligible modal when apply fails
         setShowNotEligible("MMB");
       }
+
+      // Commented out API call - keeping for reference
+      // const res = await applyToShortMMB();
+      // const mmbData = res.data?.MMBCreateLead;
+      // const isSignedIn = mmbData?.message === "Signed-in Successfully";
+      // const hasRedirectLink = mmbData?.redirectLink && mmbData.redirectLink.trim() !== "";
+      // if (isSignedIn && hasRedirectLink) {
+      //   if (initialUtmLink) {
+      //     window.open(initialUtmLink, "_blank");
+      //     setAppliedLenders((prev) => new Set(prev).add("MMB"));
+      //   } else {
+      //     setShowNotEligible("MMB");
+      //   }
+      // } else {
+      //   setShowNotEligible("MMB");
+      // }
     } catch (err) {
       console.error("MMB apply failed:", err);
       setShowNotEligible("MMB");
@@ -1217,6 +1221,15 @@ export default function ShortTicketOffersPage() {
       const phone = sessionStorage.getItem("userPhone") || "";
       await saveShortLender(phone, singleLender.name);
 
+      // Call LoanWalle leads API before redirecting
+      const partnerName = singleLender.name === "ToofanLoan" ? "Toofan" : "RupeeRaftaar";
+      try {
+        await applyToLoanWalle(partnerName);
+      } catch (err) {
+        console.error(`${singleLender.name} leads API failed:`, err);
+        // Still redirect on error - the UTM link flow should continue
+      }
+
       window.open(singleLender.utmLink, "_blank");
       setAppliedLenders((prev) => new Set(prev).add("LoanWalle"));
     }
@@ -1232,6 +1245,14 @@ export default function ShortTicketOffersPage() {
 
     const phone = sessionStorage.getItem("userPhone") || "";
     await saveShortLender(phone, lenderName);
+
+    // Call LoanWalle leads API for internal tracking (non-blocking)
+    const partnerName = lenderName === "ToofanLoan" ? "Toofan" : "RupeeRaftaar";
+    try {
+      await applyToLoanWalle(partnerName);
+    } catch (err) {
+      console.error(`${lenderName} leads API failed:`, err);
+    }
 
     window.open(utmLink, "_blank");
     setAppliedLenders((prev) => new Set(prev).add("LoanWalle"));
