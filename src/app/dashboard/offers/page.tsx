@@ -15,7 +15,7 @@ import {
   saveShortLender,
   applyToShortKreditBee,
   applyToShortRamFinCorp,
-  applyToShortMMB,
+  // applyToShortMMB, // Commented out - now redirecting directly to utm_link
   applyToLoanWalle,
 } from "@/lib/api";
 
@@ -606,17 +606,19 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
       await saveShortLender(phone, "RamFinCorp");
       const res = await applyToShortRamFinCorp();
 
-      if (res.success) {
-        // Use redirectUrl from apply API response, fallback to utm_link from apply API,
-        // then fallback to utm_link from get-offer-short-ticket API, then hardcoded fallback
-        const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || initialUtmLink || FALLBACK_UTM_LINKS["RamFinCorp"] || "https://ramfincorp.com/";
+      const outcome = res.data?.outcome;
+      const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || initialUtmLink || FALLBACK_UTM_LINKS["RamFinCorp"];
+
+      // Redirect only if outcome is BRE_APPROVED or PROCEED_TO_BANK and redirectUrl exists
+      if ((outcome === "BRE_APPROVED" || outcome === "PROCEED_TO_BANK") && redirectUrl) {
         window.open(redirectUrl, "_blank");
       } else {
-        toast.error(res.message || "Something went wrong. Please try again.", { duration: 4000 });
+        // Show Not Eligible modal for any other outcome
+        setShowNotEligible("RamFinCorp");
       }
     } catch (err) {
       console.error("RamFinCorp apply failed:", err);
-      toast.error("Something went wrong. Please try again.", { duration: 4000 });
+      setShowNotEligible("RamFinCorp");
     } finally {
       setRamFinCorpApplying(false);
     }
@@ -628,25 +630,28 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
     try {
       const phone = sessionStorage.getItem("userPhone") || "";
       await saveShortLender(phone, "MMB");
-      const res = await applyToShortMMB();
 
-      const mmbData = res.data?.MMBCreateLead;
-      // Check if message is "Signed-in Successfully" AND redirectLink is available
-      const isSignedIn = mmbData?.message === "Signed-in Successfully";
-      const hasRedirectLink = mmbData?.redirectLink && mmbData.redirectLink.trim() !== "";
-
-      if (isSignedIn && hasRedirectLink) {
-        // Redirect to utm_link from MMBDedup (passed as initialUtmLink)
-        if (initialUtmLink) {
-          window.open(initialUtmLink, "_blank");
-        } else {
-          // No utm_link available from MMBDedup
-          setShowNotEligible("MMB");
-        }
+      // Directly redirect to utm_link without calling API
+      if (initialUtmLink) {
+        window.open(initialUtmLink, "_blank");
       } else {
-        // Show not eligible modal when apply fails
         setShowNotEligible("MMB");
       }
+
+      // Commented out API call - keeping for reference
+      // const res = await applyToShortMMB();
+      // const mmbData = res.data?.MMBCreateLead;
+      // const isSignedIn = mmbData?.message === "Signed-in Successfully";
+      // const hasRedirectLink = mmbData?.redirectLink && mmbData.redirectLink.trim() !== "";
+      // if (isSignedIn && hasRedirectLink) {
+      //   if (initialUtmLink) {
+      //     window.open(initialUtmLink, "_blank");
+      //   } else {
+      //     setShowNotEligible("MMB");
+      //   }
+      // } else {
+      //   setShowNotEligible("MMB");
+      // }
     } catch (err) {
       console.error("MMB apply failed:", err);
       setShowNotEligible("MMB");
