@@ -722,6 +722,14 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
       const phone = sessionStorage.getItem("userPhone") || "";
       await saveShortLender(phone, singleLender.name);
 
+      // Call LoanWalle leads API for internal tracking (non-blocking)
+      const partnerName = singleLender.name === "ToofanLoan" ? "Toofan" : "RupeeRaftaar";
+      try {
+        await applyToLoanWalle(partnerName);
+      } catch (err) {
+        console.error(`${singleLender.name} leads API failed:`, err);
+      }
+
       window.open(singleLender.utmLink, "_blank");
     }
   };
@@ -731,6 +739,14 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
 
     const phone = sessionStorage.getItem("userPhone") || "";
     await saveShortLender(phone, lenderName);
+
+    // Call LoanWalle leads API for internal tracking (non-blocking)
+    const partnerName = lenderName === "ToofanLoan" ? "Toofan" : "RupeeRaftaar";
+    try {
+      await applyToLoanWalle(partnerName);
+    } catch (err) {
+      console.error(`${lenderName} leads API failed:`, err);
+    }
 
     window.open(utmLink, "_blank");
   };

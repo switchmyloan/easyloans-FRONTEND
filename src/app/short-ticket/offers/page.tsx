@@ -1201,6 +1201,15 @@ export default function ShortTicketOffersPage() {
       const phone = sessionStorage.getItem("userPhone") || "";
       await saveShortLender(phone, singleLender.name);
 
+      // Call LoanWalle leads API before redirecting
+      const partnerName = singleLender.name === "ToofanLoan" ? "Toofan" : "RupeeRaftaar";
+      try {
+        await applyToLoanWalle(partnerName);
+      } catch (err) {
+        console.error(`${singleLender.name} leads API failed:`, err);
+        // Still redirect on error - the UTM link flow should continue
+      }
+
       window.open(singleLender.utmLink, "_blank");
       setAppliedLenders((prev) => new Set(prev).add("LoanWalle"));
     }
@@ -1216,6 +1225,14 @@ export default function ShortTicketOffersPage() {
 
     const phone = sessionStorage.getItem("userPhone") || "";
     await saveShortLender(phone, lenderName);
+
+    // Call LoanWalle leads API for internal tracking (non-blocking)
+    const partnerName = lenderName === "ToofanLoan" ? "Toofan" : "RupeeRaftaar";
+    try {
+      await applyToLoanWalle(partnerName);
+    } catch (err) {
+      console.error(`${lenderName} leads API failed:`, err);
+    }
 
     window.open(utmLink, "_blank");
     setAppliedLenders((prev) => new Set(prev).add("LoanWalle"));
