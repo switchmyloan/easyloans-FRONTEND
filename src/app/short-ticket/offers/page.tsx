@@ -752,6 +752,9 @@ export default function ShortTicketOffersPage() {
             (lender?.data as { response?: { message?: string } })?.response?.message || ""
           );
           if (ramFinCorpMessage !== "Dedup Success") break;
+          // Track RamFinCorp card shown after dedup success
+          console.log("[RamFinCorp] Dedup success - card shown, firing CleverTap event");
+          cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_SUCCESS_CARD_SHOWN);
           ordered.push({ name, utm_link: lender?.utm_link });
           break;
         }
@@ -1045,6 +1048,10 @@ export default function ShortTicketOffersPage() {
     if (ramFinCorpApplying) return;
     setRamFinCorpApplying(true);
 
+    // Track RamFinCorp apply clicked
+    console.log("[RamFinCorp] Apply clicked - firing CleverTap event");
+    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_CLICKED);
+
     cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
       Lender: "Ram FinCorp",
       LenderKey: "RamFinCorp",
@@ -1058,16 +1065,29 @@ export default function ShortTicketOffersPage() {
       const outcome = res.data?.outcome;
       const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || initialUtmLink || FALLBACK_UTM.RamFinCorp;
 
+      console.log("[RamFinCorp] Apply outcome:", outcome);
+
       // Redirect only if outcome is BRE_APPROVED or PROCEED_TO_BANK and redirectUrl exists
-      if ((outcome === "BRE_APPROVED" || outcome === "PROCEED_TO_BANK") && redirectUrl) {
+      if (outcome === "BRE_APPROVED" && redirectUrl) {
+        console.log("[RamFinCorp] BRE_APPROVED - firing CleverTap event");
+        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_BRE_APPROVED);
+        window.open(redirectUrl, "_blank");
+        setAppliedLenders((prev) => new Set(prev).add("RamFinCorp"));
+      } else if (outcome === "PROCEED_TO_BANK" && redirectUrl) {
+        console.log("[RamFinCorp] PROCEED_TO_BANK - firing CleverTap event");
+        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_PROCEED_TO_BANK);
         window.open(redirectUrl, "_blank");
         setAppliedLenders((prev) => new Set(prev).add("RamFinCorp"));
       } else {
         // Show Not Eligible modal for any other outcome
+        console.log("[RamFinCorp] Not eligible - firing CleverTap event");
+        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_NOT_ELIGIBLE);
         setShowNotEligible("RamFinCorp");
       }
     } catch (err) {
       console.error("RamFinCorp apply failed:", err);
+      console.log("[RamFinCorp] Apply failed - firing not eligible CleverTap event");
+      cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_NOT_ELIGIBLE);
       setShowNotEligible("RamFinCorp");
     } finally {
       setRamFinCorpApplying(false);

@@ -266,4 +266,14 @@ export const CLEVERTAP_EVENTS = {
   EASY_LENDER_CLICKED: "Easy - Lender Clicked",
   /** Fired when the visitor changes the site language, tagged with the chosen language. */
   EASY_LANGUAGE_SELECTED: "Easy - Language Selected",
+    /** RamFinCorp: Fired when card is shown after dedup success. */
+  EASY_RAMFINCORP_DEDUP_SUCCESS_CARD_SHOWN: "Easy - ramfincorp_dedup_success_card_shown",
+  /** RamFinCorp: Fired when user clicks Apply. */
+  EASY_RAMFINCORP_APPLY_CLICKED: "Easy - ramfincorp_apply_clicked",
+  /** RamFinCorp: Fired when apply outcome is BRE_APPROVED. */
+  EASY_RAMFINCORP_APPLY_BRE_APPROVED: "Easy - ramfincorp_apply_bre_approved",
+  /** RamFinCorp: Fired when apply outcome is PROCEED_TO_BANK. */
+  EASY_RAMFINCORP_APPLY_PROCEED_TO_BANK: "Easy - ramfincorp_apply_proceed_to_bank",
+  /** RamFinCorp: Fired when user is not eligible. */
+  EASY_RAMFINCORP_APPLY_NOT_ELIGIBLE: "Easy - ramfincorp_apply_not_eligible",
 } as const;

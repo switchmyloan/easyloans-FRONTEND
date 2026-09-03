@@ -18,6 +18,7 @@ import {
   applyToShortMMB,
   applyToLoanWalle,
 } from "@/lib/api";
+import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "@/lib/clevertap";
 
 // ============================================================
 // Types
@@ -461,6 +462,9 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
 
       // Add RamFinCorp if eligible (data.response.message === "Dedup Success")
       if (isRamFinCorpEligible && !existingLenderNames.has("RamFinCorp")) {
+        // Track RamFinCorp card shown after dedup success
+        console.log("[RamFinCorp] Dedup success - card shown, firing CleverTap event");
+        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_SUCCESS_CARD_SHOWN);
         mappedOffers.push({
           name: "RamFinCorp",
           utmLink: ramFinCorpData?.utm_link || FALLBACK_UTM_LINKS["RamFinCorp"],
@@ -601,21 +605,41 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
   const handleRamFinCorpApply = async (initialUtmLink?: string) => {
     if (ramFinCorpApplying) return;
     setRamFinCorpApplying(true);
+
+    // Track RamFinCorp apply clicked
+    console.log("[RamFinCorp] Apply clicked - firing CleverTap event");
+    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_CLICKED);
+
     try {
       const phone = sessionStorage.getItem("userPhone") || "";
       await saveShortLender(phone, "RamFinCorp");
       const res = await applyToShortRamFinCorp();
 
-      if (res.success) {
-        // Use redirectUrl from apply API response, fallback to utm_link from apply API,
-        // then fallback to utm_link from get-offer-short-ticket API, then hardcoded fallback
-        const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || initialUtmLink || FALLBACK_UTM_LINKS["RamFinCorp"] || "https://ramfincorp.com/";
+      const outcome = res.data?.outcome;
+      const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || initialUtmLink || FALLBACK_UTM_LINKS["RamFinCorp"] || "https://ramfincorp.com/";
+
+      console.log("[RamFinCorp] Apply outcome:", outcome);
+
+      if (outcome === "BRE_APPROVED" && redirectUrl) {
+        console.log("[RamFinCorp] BRE_APPROVED - firing CleverTap event");
+        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_BRE_APPROVED);
+        window.open(redirectUrl, "_blank");
+      } else if (outcome === "PROCEED_TO_BANK" && redirectUrl) {
+        console.log("[RamFinCorp] PROCEED_TO_BANK - firing CleverTap event");
+        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_PROCEED_TO_BANK);
+        window.open(redirectUrl, "_blank");
+      } else if (res.success) {
+        // Fallback for success without specific outcome
         window.open(redirectUrl, "_blank");
       } else {
+        console.log("[RamFinCorp] Not eligible - firing CleverTap event");
+        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_NOT_ELIGIBLE);
         toast.error(res.message || "Something went wrong. Please try again.", { duration: 4000 });
       }
     } catch (err) {
       console.error("RamFinCorp apply failed:", err);
+      console.log("[RamFinCorp] Apply failed - firing not eligible CleverTap event");
+      cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_NOT_ELIGIBLE);
       toast.error("Something went wrong. Please try again.", { duration: 4000 });
     } finally {
       setRamFinCorpApplying(false);
