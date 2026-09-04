@@ -635,7 +635,7 @@ export default function LoanOffersBanner() {
 
   // RamFinCorp special apply handler - calls the new API endpoint
   const handleRamFinCorpApply = async (initialUtmLink?: string) => {
-    debugger
+    // debugger
     if (ramFinCorpApplying) return;
     setRamFinCorpApplying(true);
     try {

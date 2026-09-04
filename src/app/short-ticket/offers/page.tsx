@@ -1045,7 +1045,7 @@ export default function ShortTicketOffersPage() {
   };
 
   const handleRamFinCorpApply = async (initialUtmLink?: string) => {
-    debugger
+    // debugger
     if (ramFinCorpApplying) return;
     setRamFinCorpApplying(true);
 

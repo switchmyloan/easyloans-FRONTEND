@@ -497,7 +497,7 @@ export default function DashboardOffers() {
   };
 
   const handleRamFinCorpApply = async (initialUtmLink?: string) => {
-    debugger
+    // debugger
     if (ramFinCorpApplying) return;
     setRamFinCorpApplying(true);
     try {
