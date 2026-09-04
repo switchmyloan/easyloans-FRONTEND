@@ -51,23 +51,23 @@ const DISPLAY_NAMES: Record<string, string> = {
 
 // Default render order
 const LENDER_ORDER = [
- "RamFinCorp",
+  "RamFinCorp",
   "TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
   "RapidMoney",
-  "TrueBalance",
-  "KreditBee",
-  "TrueFund",
-  "MoneyDot",
-  "Apollo",
-  "LendingPlate",
   "F1SpeedLoan",
+  "KreditBee",
+  "MoneyDot",
+  "LoanWalle",
+  "Apollo",
   "MMB",
   "Cash2You",
   "RocketCash",
-  "LoanWalle",
+  "TrueBalance",
+  // Not in the requested priority list — kept at the end so it still renders if offered.
+  "TrueFund",
 ];
 
 // When utm_medium=kreditbee: KreditBee first
