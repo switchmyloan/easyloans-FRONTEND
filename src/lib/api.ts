@@ -1078,73 +1078,74 @@ export interface RamFinCorpApplyResponse {
 }
 
 // ---------- SmartCoin API ----------
+// SmartCoin has been commented out from the project
 
-export interface SmartCoinCreateLeadResponse {
-  statusCode: number;
-  data: {
-    SmartCoinLead: {
-      success: boolean;
-      message: string;
-      data: {
-        requestBody: {
-          phone_number: string;
-          pan: string;
-          email: string;
-          name_as_per_pan: string;
-          net_monthly_income: number;
-          date_of_birth: string;
-          current_residence_pin_code: string;
-          employment_type: string;
-        };
-        response: {
-          created_at: string;
-          message: string;
-          leadId: string;
-          status: string;
-        };
-      };
-      statusCode: number;
-      utm_link: string;
-    };
-  };
-  message: string;
-  success: boolean;
-}
+// export interface SmartCoinCreateLeadResponse {
+//   statusCode: number;
+//   data: {
+//     SmartCoinLead: {
+//       success: boolean;
+//       message: string;
+//       data: {
+//         requestBody: {
+//           phone_number: string;
+//           pan: string;
+//           email: string;
+//           name_as_per_pan: string;
+//           net_monthly_income: number;
+//           date_of_birth: string;
+//           current_residence_pin_code: string;
+//           employment_type: string;
+//         };
+//         response: {
+//           created_at: string;
+//           message: string;
+//           leadId: string;
+//           status: string;
+//         };
+//       };
+//       statusCode: number;
+//       utm_link: string;
+//     };
+//   };
+//   message: string;
+//   success: boolean;
+// }
 
-export async function applyToSmartCoin(): Promise<SmartCoinCreateLeadResponse> {
-  const raw = sessionStorage.getItem("userFormData");
-  if (!raw) throw new Error("User data not found. Please fill the form first.");
+// export async function applyToSmartCoin(): Promise<SmartCoinCreateLeadResponse> {
+//   const raw = sessionStorage.getItem("userFormData");
+//   if (!raw) throw new Error("User data not found. Please fill the form first.");
 
-  const userData = JSON.parse(raw);
-  const shortOfferLeadId = sessionStorage.getItem("shortOfferLeadId");
+//   const userData = JSON.parse(raw);
+//   const shortOfferLeadId = sessionStorage.getItem("shortOfferLeadId");
 
-  const body = {
-    type: "short",
-    id: shortOfferLeadId ? Number(shortOfferLeadId) : undefined,
-    mobileNumber: userData.mobileNumber,
-    email: userData.email,
-    firstName: userData.firstName,
-    lastName: userData.lastName,
-    panNumber: userData.panNumber,
-    dateOfBirth: userData.dateOfBirth,
-    gender: userData.gender,
-    pincode: userData.pincode,
-    jobType: userData.jobType,
-    monthlySalary: Number(userData.monthlySalary),
-    loanAmount: Number(userData.loanAmount),
-  };
+//   const body = {
+//     type: "short",
+//     id: shortOfferLeadId ? Number(shortOfferLeadId) : undefined,
+//     mobileNumber: userData.mobileNumber,
+//     email: userData.email,
+//     firstName: userData.firstName,
+//     lastName: userData.lastName,
+//     panNumber: userData.panNumber,
+//     dateOfBirth: userData.dateOfBirth,
+//     gender: userData.gender,
+//     pincode: userData.pincode,
+//     jobType: userData.jobType,
+//     monthlySalary: Number(userData.monthlySalary),
+//     loanAmount: Number(userData.loanAmount),
+//   };
 
-  const res = await fetch(`${BASE_URL}/onSubmit/smartcoin-create-lead`, {
-    method: "POST",
-    headers: PARTNER_HEADERS,
-    body: JSON.stringify(body),
-  });
+//   const res = await fetch(`${BASE_URL}/onSubmit/smartcoin-create-lead`, {
+//     method: "POST",
+//     headers: PARTNER_HEADERS,
+//     body: JSON.stringify(body),
+//   });
 
-  if (!res.ok) throw new Error("Failed to apply to SmartCoin. Please try again.");
+//   if (!res.ok) throw new Error("Failed to apply to SmartCoin. Please try again.");
 
-  const json: SmartCoinCreateLeadResponse = await res.json();
-  return json;
-}
+//   const json: SmartCoinCreateLeadResponse = await res.json();
+//   return json;
+// }
 
 export async function applyToShortRamFinCorp(): Promise<RamFinCorpApplyResponse> {
   const raw = sessionStorage.getItem("userFormData");

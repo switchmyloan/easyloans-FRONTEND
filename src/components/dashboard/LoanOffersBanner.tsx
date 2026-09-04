@@ -6,7 +6,8 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Lock, Zap, CheckCircle, Clock, ChevronRight } from "lucide-react";
 import { STATIC_LENDER_LOGOS, LENDER_FEATURE_TAGS, DEFAULT_FEATURE_TAG, DASHBOARD_PRIORITY_ORDER, LENDER_FEATURE_BADGES, DEFAULT_FEATURE_BADGES } from "@/lib/constants";
-import { getStoredShortExistingUserOffers, saveShortLender, applyToShortKreditBee, applyToShortRamFinCorp, applyToSmartCoin, applyToLoanWalle } from "@/lib/api";
+import { getStoredShortExistingUserOffers, saveShortLender, applyToShortKreditBee, applyToShortRamFinCorp, applyToLoanWalle } from "@/lib/api";
+// applyToSmartCoin removed - SmartCoin commented out from project
 // applyToShortMMB removed - now redirecting directly to utm_link
 import toast, { Toaster } from "react-hot-toast";
 import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
@@ -38,7 +39,7 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   rapidmoney: "RapidMoney",
   kreditbee: "KreditBee",
   ramfincorp: "RamFinCorp",
-  olyv: "SmartCoin",
+  // olyv: "SmartCoin",
   truebalance: "TrueBalance",
   // speedoloan: "SpeedoLoan",
   cashmysalary: "CashMySalary",
@@ -122,7 +123,7 @@ export default function LoanOffersBanner() {
   const [otherLenders, setOtherLenders] = useState<PreviousLender[]>([]);
   const [kbApplying, setKbApplying] = useState(false);
   const [ramFinCorpApplying, setRamFinCorpApplying] = useState(false);
-  const [smartCoinApplying, setSmartCoinApplying] = useState(false);
+  // const [smartCoinApplying, setSmartCoinApplying] = useState(false);
   const [mmbApplying, setMmbApplying] = useState(false);
   const [tejasLoanApplying, setTejasLoanApplying] = useState(false);
   const [f1SpeedLoanApplying, setF1SpeedLoanApplying] = useState(false);
@@ -147,7 +148,7 @@ export default function LoanOffersBanner() {
       const trueFundData = data.TrueFund as { message?: string; utm_link?: string; data?: { response?: { message?: string } } } | undefined;
       const moneyDotData = data.MoneyDot as { data?: { response?: { can_attribute?: boolean } }; utm_link?: string } | undefined;
       const ramFinCorpData = data.RamFinCorp as { data?: { response?: { message?: string } }; utm_link?: string } | undefined;
-      const smartCoinDedupeData = (data.smartCoinDedupe || data.SmartCoinDedupe) as { isDuplicate?: boolean; utm_link?: string } | undefined;
+      // const smartCoinDedupeData = (data.smartCoinDedupe || data.SmartCoinDedupe) as { isDuplicate?: boolean; utm_link?: string } | undefined;
 
       const trueFundMessage = (trueFundData?.message || "").toLowerCase();
       const trueFundResponseMessage = (trueFundData?.data?.response?.message || "").toLowerCase();
@@ -156,7 +157,7 @@ export default function LoanOffersBanner() {
         trueFundResponseMessage.includes("user details received sucessfully");
       const isMoneyDotEligible = moneyDotData?.data?.response?.can_attribute === true;
       const isRamFinCorpEligible = ramFinCorpData?.data?.response?.message === "Dedup Success";
-      const isSmartCoinEligible = smartCoinDedupeData?.isDuplicate === false;
+      // const isSmartCoinEligible = smartCoinDedupeData?.isDuplicate === false;
 
       const rupiNowData = data.RupiNow as { dedupeStatus?: string; utm_link?: string } | undefined;
       const isRupiNowEligible = rupiNowData?.dedupeStatus === "Passed";
@@ -194,7 +195,7 @@ export default function LoanOffersBanner() {
         if (lenderName === "MoneyDot" && !isMoneyDotEligible) continue;
         if (lenderName === "RupiNow" && !isRupiNowEligible) continue;
         if (lenderName === "RamFinCorp" && !isRamFinCorpEligible) continue;
-        if (lenderName === "SmartCoin" && !isSmartCoinEligible) continue;
+        // if (lenderName === "SmartCoin" && !isSmartCoinEligible) continue;
         if (lenderName === "Vivifi" && !isVivifiEligible) continue;
       
 
@@ -329,14 +330,15 @@ export default function LoanOffersBanner() {
       }
 
       // Add SmartCoin if eligible (isDuplicate === false)
-      if (isSmartCoinEligible && !addedLenders.has("SmartCoin")) {
-        addedLenders.add("SmartCoin");
-        eligibleLenders.push({
-          id: "SmartCoin",
-          name: "SmartCoin",
-          prefix: "S",
-        });
-      }
+      // SmartCoin commented out from project
+      // if (isSmartCoinEligible && !addedLenders.has("SmartCoin")) {
+      //   addedLenders.add("SmartCoin");
+      //   eligibleLenders.push({
+      //     id: "SmartCoin",
+      //     name: "SmartCoin",
+      //     prefix: "S",
+      //   });
+      // }
 
       // Add MMB if eligible (message === "user_not_found")
       if (isMmbEligible && !addedLenders.has("MMB")) {
@@ -582,7 +584,7 @@ export default function LoanOffersBanner() {
           if (lenderName === "TrueFund" && !isTrueFundEligible) continue;
           if (lenderName === "MoneyDot" && !isMoneyDotEligible) continue;
           if (lenderName === "RamFinCorp" && !isRamFinCorpEligible) continue;
-          if (lenderName === "SmartCoin" && !isSmartCoinEligible) continue;
+          // if (lenderName === "SmartCoin" && !isSmartCoinEligible) continue;
           if (lenderName === "Vivifi" && !isVivifiEligible) continue;
 
 
@@ -684,31 +686,32 @@ export default function LoanOffersBanner() {
   };
 
   // SmartCoin special apply handler - calls the API first
-  const handleSmartCoinApply = async (initialUtmLink?: string) => {
-    if (smartCoinApplying) return;
-    setSmartCoinApplying(true);
-    try {
-      const phone = sessionStorage.getItem("userPhone") || "";
-      await saveShortLender(phone, "SmartCoin");
-      const res = await applyToSmartCoin();
+  // SmartCoin commented out from project
+  // const handleSmartCoinApply = async (initialUtmLink?: string) => {
+  //   if (smartCoinApplying) return;
+  //   setSmartCoinApplying(true);
+  //   try {
+  //     const phone = sessionStorage.getItem("userPhone") || "";
+  //     await saveShortLender(phone, "SmartCoin");
+  //     const res = await applyToSmartCoin();
 
-      const smartCoinLead = res.data?.SmartCoinLead;
-      const leadMessage = smartCoinLead?.data?.response?.message || "";
-      const utmLink = smartCoinLead?.utm_link || initialUtmLink;
+  //     const smartCoinLead = res.data?.SmartCoinLead;
+  //     const leadMessage = smartCoinLead?.data?.response?.message || "";
+  //     const utmLink = smartCoinLead?.utm_link || initialUtmLink;
 
-      // Only redirect if lead was created successfully
-      if (leadMessage === "Lead created successfully" && utmLink) {
-        window.open(utmLink, "_blank");
-      } else {
-        setShowNotEligible("SmartCoin");
-      }
-    } catch (err) {
-      console.error("SmartCoin apply failed:", err);
-      setShowNotEligible("SmartCoin");
-    } finally {
-      setSmartCoinApplying(false);
-    }
-  };
+  //     // Only redirect if lead was created successfully
+  //     if (leadMessage === "Lead created successfully" && utmLink) {
+  //       window.open(utmLink, "_blank");
+  //     } else {
+  //       setShowNotEligible("SmartCoin");
+  //     }
+  //   } catch (err) {
+  //     console.error("SmartCoin apply failed:", err);
+  //     setShowNotEligible("SmartCoin");
+  //   } finally {
+  //     setSmartCoinApplying(false);
+  //   }
+  // };
 
   // MMB special apply handler - directly redirects to utm_link
   const handleMMBApply = async (initialUtmLink?: string) => {
@@ -865,13 +868,14 @@ export default function LoanOffersBanner() {
     }
 
     // Special handling for SmartCoin
-    if (displayLender.id === "SmartCoin") {
-      // Get utm_link from stored data for fallback
-      const data = getStoredShortExistingUserOffers()?.data as Record<string, unknown> | undefined;
-      const smartCoinData = (data?.smartCoinDedupe || data?.SmartCoinDedupe) as { utm_link?: string } | undefined;
-      handleSmartCoinApply(smartCoinData?.utm_link);
-      return;
-    }
+    // SmartCoin commented out from project
+    // if (displayLender.id === "SmartCoin") {
+    //   // Get utm_link from stored data for fallback
+    //   const data = getStoredShortExistingUserOffers()?.data as Record<string, unknown> | undefined;
+    //   const smartCoinData = (data?.smartCoinDedupe || data?.SmartCoinDedupe) as { utm_link?: string } | undefined;
+    //   handleSmartCoinApply(smartCoinData?.utm_link);
+    //   return;
+    // }
 
     // Special handling for MMB
     if (displayLender.id === "MMB") {
