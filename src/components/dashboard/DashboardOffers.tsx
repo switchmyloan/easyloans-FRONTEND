@@ -497,6 +497,7 @@ export default function DashboardOffers() {
   };
 
   const handleRamFinCorpApply = async (initialUtmLink?: string) => {
+    debugger
     if (ramFinCorpApplying) return;
     setRamFinCorpApplying(true);
     try {
@@ -509,6 +510,12 @@ export default function DashboardOffers() {
 
       // Redirect only if outcome is BRE_APPROVED or PROCEED_TO_BANK and redirectUrl exists
       if ((outcome === "BRE_APPROVED" || outcome === "PROCEED_TO_BANK") && redirectUrl) {
+        window.open(redirectUrl, "_blank");
+      } else if (redirectUrl) {
+        // Any other outcome but we still have a link (e.g. customerAuth /
+        // LEAD_ALREADY_EXISTS auto-login) — send the user through instead of
+        // showing Not Eligible.
+        console.log("[RamFinCorp] Redirecting to:", redirectUrl);
         window.open(redirectUrl, "_blank");
       } else {
         // Show Not Eligible modal for any other outcome

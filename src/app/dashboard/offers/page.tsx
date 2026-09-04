@@ -631,6 +631,12 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
       } else if (res.success) {
         // Fallback for success without specific outcome
         window.open(redirectUrl, "_blank");
+      } else if (redirectUrl) {
+        // Any other outcome but we still have a link (e.g. customerAuth /
+        // LEAD_ALREADY_EXISTS auto-login) — send the user through instead of
+        // showing Not Eligible.
+        console.log("[RamFinCorp] Redirecting to:", redirectUrl);
+        window.open(redirectUrl, "_blank");
       } else {
         console.log("[RamFinCorp] Not eligible - firing CleverTap event");
         cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_NOT_ELIGIBLE);

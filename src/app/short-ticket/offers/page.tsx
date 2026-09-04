@@ -1045,6 +1045,7 @@ export default function ShortTicketOffersPage() {
   };
 
   const handleRamFinCorpApply = async (initialUtmLink?: string) => {
+    debugger
     if (ramFinCorpApplying) return;
     setRamFinCorpApplying(true);
 
@@ -1068,7 +1069,7 @@ export default function ShortTicketOffersPage() {
       console.log("[RamFinCorp] Apply outcome:", outcome);
 
       // Redirect only if outcome is BRE_APPROVED or PROCEED_TO_BANK and redirectUrl exists
-      if (outcome === "BRE_APPROVED" && redirectUrl) {
+      if (outcome === "BRE_APPROVED" && redirectUrl ) {
         console.log("[RamFinCorp] BRE_APPROVED - firing CleverTap event");
         cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_BRE_APPROVED);
         window.open(redirectUrl, "_blank");
@@ -1076,6 +1077,11 @@ export default function ShortTicketOffersPage() {
       } else if (outcome === "PROCEED_TO_BANK" && redirectUrl) {
         console.log("[RamFinCorp] PROCEED_TO_BANK - firing CleverTap event");
         cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_PROCEED_TO_BANK);
+        window.open(redirectUrl, "_blank");
+        setAppliedLenders((prev) => new Set(prev).add("RamFinCorp"));
+      } else if (redirectUrl) {
+       console.log("[RamFinCorp] Redirecting to:", redirectUrl);
+        // cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_PROCEED_TO_BANK);
         window.open(redirectUrl, "_blank");
         setAppliedLenders((prev) => new Set(prev).add("RamFinCorp"));
       } else {
