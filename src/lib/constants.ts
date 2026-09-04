@@ -35,6 +35,7 @@ export const STATIC_LENDER_LOGOS: Record<
 > = {
   RapidMoney: { src: "/rapidmoney.svg" },
   RamFinCorp: { src: "/ramfinCorp.png" },
+  SmartCoin: { src: "/olyv.png" },
   Vivifi: { src: "/vivifi.webp" },
   TrueBalance: { src: "/truebalance.png" },
   KreditBee: { src: "/kreditbee-logo.svg" },
@@ -118,6 +119,12 @@ export const STATIC_LENDER_DETAILS: Record<
     headline: "Get Personal Loans from ₹5,000 to ₹2 Lakhs",
     description: "Quick personal loans with minimal documentation and fast disbursements",
     keyFeature: "Instant Approval and Same Day Disbursement",
+    interestRate: "Interest Rates start at 1.5%* per month",
+  },
+  SmartCoin: {
+    headline: "Get up to ₹5,00,000 with quick approval!",
+    description: "Personal loans with fast disbursement and No Prepayment Charges",
+    keyFeature: "Quick Approval and No Prepayment Charges",
     interestRate: "Interest Rates start at 1.5%* per month",
   },
   poonawalla: {
@@ -244,6 +251,7 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "RupiNow",
   "CashMySalary",
   "Vivifi",
+   "SmartCoin",
   "RapidMoney",
   "TrueBalance",
   "KreditBee",
@@ -264,6 +272,7 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   TrueBalance: "Quick approval",
   RapidMoney: "Quick approval",
   RamFinCorp: "Instant Approval and Same Day Disbursement",
+  SmartCoin: "Quick approval",
   Vivifi: "Flexible loan options",
   // SpeedoLoan: "Quick approval",
   CashMySalary: "Quick approval",
@@ -306,6 +315,11 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "Instant Approval", description: "Same day processing" },
     { title: "Same Day Disbursement", description: "Same day transfer" },
     { title: "No Prepayment Charges", description: "No hiddenpayment charges" },
+  ],
+ SmartCoin: [
+    { title: "Quick Approval", description: "Fast processing" },
+    { title: "Up to ₹5 Lakh", description: "High loan amount" },
+    { title: "Flexible Repayment", description: "Easy repayment options" },
   ],
   LoanWalle: [
     { title: "Quick Approval", description: "Fast processing" },
@@ -385,6 +399,7 @@ export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   KreditBee: ["Upto 100% off on PF", "Loans up to ₹10 Lakh", "Instant Disbursal"],
   TrueBalance: ["Loans up to ₹2 Lakh", "Minimal Docs", "Quick Approval"],
   RamFinCorp: ["Instant Approval", "Same Day Disbursement", "No Prepayment Charges"],
+  SmartCoin: ["Quick Approval", "Instant Disbursement", "Up to ₹5 Lakh"],
   MoneyDot: ["Loans up to ₹1 Lakh", "Zero Paperwork", "No Collateral"],
   // SpeedoLoan: ["Quick Approval", "No Hidden Charges", "Up to ₹50,000"],
   CashMySalary: ["Quick Approval", "No Hidden Charges", "Up to ₹50,000"],
@@ -407,6 +422,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   TrueBalance: 200000,      // ₹2 Lakhs
   RapidMoney: 15000,        // ₹15,000
   RamFinCorp: 200000,       // ₹2 Lakhs
+  SmartCoin: 500000,        // ₹5 Lakhs
   Vivifi: 500000,           // ₹5 Lakhs
   // SpeedoLoan: 50000,      // ₹50,000
   CashMySalary: 50000,    // ₹50,000

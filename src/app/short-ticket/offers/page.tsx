@@ -8,6 +8,7 @@ import {
   saveShortLender,
   applyToShortKreditBee,
   applyToShortRamFinCorp,
+  applyToSmartCoin,
   // applyToShortMMB, // Commented out - now redirecting directly to utm_link
   applyToLoanWalle,
   trackShortShownOffers,
@@ -28,6 +29,7 @@ import { Clock, Contact, Lock } from "lucide-react";
 const DISPLAY_NAMES: Record<string, string> = {
   RapidMoney: "RapidMoney",
   RamFinCorp: "RamFinCorp",
+  SmartCoin: "Olyv",
   Vivifi: "Vivifi",
   MMB: "MMB",
   KreditBee: "Kreditbee",
@@ -56,6 +58,7 @@ const LENDER_ORDER = [
   "RupiNow",
   "CashMySalary",
   "Vivifi",
+   "SmartCoin",
   "RapidMoney",
   "F1SpeedLoan",
   "KreditBee",
@@ -78,6 +81,7 @@ const KB_PRIORITY_ORDER = [
   "RupiNow",
   "CashMySalary",
   "Vivifi",
+  "SmartCoin",
   "RapidMoney",
   "TrueBalance",
   "TrueFund",
@@ -100,6 +104,7 @@ const RAPIDMONEY_PRIORITY_ORDER = [
 
   "CashMySalary",
   "Vivifi",
+  "SmartCoin",
   "TrueBalance",
   "KreditBee",
   "TrueFund",
@@ -119,6 +124,7 @@ const RamFinCorp_PRIORITY_ORDER = [
   "RupiNow",
   "CashMySalary",
   "Vivifi",
+  "SmartCoin",
   "RapidMoney",
   "TrueBalance",
   "KreditBee",
@@ -140,6 +146,7 @@ const TEJASLOAN_PRIORITY_ORDER = [
     "RupiNow",
   "CashMySalary",
   "Vivifi",
+   "SmartCoin",
   "TrueBalance",
   "RapidMoney",
   "KreditBee",
@@ -162,6 +169,7 @@ const MONEYDOT_PRIORITY_ORDER = [
   "RupiNow",
   "CashMySalary",
   "Vivifi",
+  "SmartCoin",
   "RapidMoney",
   "TrueBalance",
   "KreditBee",
@@ -182,6 +190,7 @@ const TRUEFUND_PRIORITY_ORDER = [
   "RupiNow",
   "CashMySalary",
   "Vivifi",
+  "SmartCoin",
   "RapidMoney",
   "TrueBalance",
   "KreditBee",
@@ -202,6 +211,7 @@ const CASHMYSalary_PRIORITY_ORDER = [
   "TejasLoan",
   "RupiNow",
   "Vivifi",
+  "SmartCoin",
   "RapidMoney",
   "TrueBalance",
   "KreditBee",
@@ -223,6 +233,7 @@ const APOLLO_PRIORITY_ORDER = [
   "RupiNow",
   "CashMySalary",
   "Vivifi",
+  "SmartCoin",
   "RapidMoney",
   "TrueBalance",
   "KreditBee",
@@ -244,6 +255,7 @@ const F1SPEEDLOAN_PRIORITY_ORDER = [
   "RupiNow",
   "CashMySalary",
   "Vivifi",
+  "SmartCoin",
   "RapidMoney",
   "TrueBalance",
   "KreditBee",
@@ -264,6 +276,7 @@ const RUPINOW_PRIORITY_ORDER = [
   "TejasLoan",
   "CashMySalary",
   "Vivifi",
+  "SmartCoin",
   "TrueBalance",
   "RapidMoney",
   "KreditBee",
@@ -286,6 +299,7 @@ const CASH2YOU_PRIORITY_ORDER = [
   "RupiNow",
   "CashMySalary",
   "Vivifi",
+  "SmartCoin",
   "RapidMoney",
   "TrueBalance",
   "KreditBee",
@@ -307,6 +321,7 @@ const ROCKETCASH_PRIORITY_ORDER = [
   "RupiNow",
   "CashMySalary",
   "Vivifi",
+  "SmartCoin",
   "RapidMoney",
   "TrueBalance",
   "KreditBee",
@@ -327,6 +342,7 @@ const MMB_PRIORITY_ORDER = [
   "RupiNow",
   "CashMySalary",
   "Vivifi",
+  "SmartCoin",
   "RapidMoney",
   "TrueBalance",
   "KreditBee",
@@ -344,6 +360,29 @@ const MMB_PRIORITY_ORDER = [
 const LOANWALLE_PRIORITY_ORDER = [
   "LoanWalle",
   "RamFinCorp",
+ 
+  "TejasLoan",
+  "RupiNow",
+  "CashMySalary",
+  "Vivifi",
+   "SmartCoin",
+  "RapidMoney",
+  "TrueBalance",
+  "KreditBee",
+  "TrueFund",
+  "MoneyDot",
+  "Apollo",
+  "LendingPlate",
+  "F1SpeedLoan",
+  "MMB",
+  "Cash2You",
+  "RocketCash",
+];
+
+// When utm_medium=smartcoin: SmartCoin first
+const SMARTCOIN_PRIORITY_ORDER = [
+  "SmartCoin",
+  "RamFinCorp",
   "TejasLoan",
   "RupiNow",
   "CashMySalary",
@@ -359,6 +398,7 @@ const LOANWALLE_PRIORITY_ORDER = [
   "MMB",
   "Cash2You",
   "RocketCash",
+  "LoanWalle",
 ];
 
 const FALLBACK_UTM: Record<string, string> = {
@@ -380,6 +420,9 @@ const FALLBACK_UTM: Record<string, string> = {
 // Map API names to internal lender names
 const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   "RamFinCorp": "RamFinCorp",
+  "SmartCoin": "SmartCoin",
+  "smartcoin": "SmartCoin",
+  "Smartcoin": "SmartCoin",
   // "Speedoloan": "SpeedoLoan",
   // "speedoloan": "SpeedoLoan",
   // "SpeedoLoan": "SpeedoLoan",
@@ -480,6 +523,13 @@ function getUtmLink(
       return directLink || null;
     }
 
+    case "SmartCoin": {
+      // SmartCoin data comes from API as "smartCoinDedupe" key, not "SmartCoin"
+      // So lender here will be undefined - eligibility is checked in main switch using data.smartCoinDedupe
+      // Just return null here, the main switch handles utm_link from smartCoinDedupe
+      return null;
+    }
+
     case "TrueFund": {
       // TrueFund is shown only if API response message contains "user details received sucessfully"
       const trueFundMessage = (lender.message || "").toLowerCase();
@@ -559,7 +609,9 @@ export default function ShortTicketOffersPage() {
   const [isRocketCashMedium, setIsRocketCashMedium] = useState(false);
   const [isMMBMedium, setIsMMBMedium] = useState(false);
   const [isLoanWalleMedium, setIsLoanWalleMedium] = useState(false);
+  const [isSmartCoinMedium, setIsSmartCoinMedium] = useState(false);
   const [mmbApplying, setMmbApplying] = useState(false);
+  const [smartCoinApplying, setSmartCoinApplying] = useState(false);
   const [tejasLoanApplying, setTejasLoanApplying] = useState(false);
   const [f1SpeedLoanApplying, setF1SpeedLoanApplying] = useState(false);
 
@@ -663,6 +715,8 @@ export default function ShortTicketOffersPage() {
     setIsMMBMedium(isMMBMediumLocal);
     const isLoanWalleMediumLocal = utmMedium === "loanwalle";
     setIsLoanWalleMedium(isLoanWalleMediumLocal);
+    const isSmartCoinMediumLocal = utmMedium === "olyv";
+    setIsSmartCoinMedium(isSmartCoinMediumLocal);
 
     let renderOrder = LENDER_ORDER;
     let initialVisible = 4;
@@ -715,6 +769,9 @@ export default function ShortTicketOffersPage() {
     } else if (isLoanWalleMediumLocal) {
       renderOrder = LOANWALLE_PRIORITY_ORDER;
       initialVisible = 5;
+    } else if (isSmartCoinMediumLocal) {
+      renderOrder = SMARTCOIN_PRIORITY_ORDER;
+      initialVisible = 5;
     }
 
     // Build ordered list based on eligibility
@@ -756,6 +813,16 @@ export default function ShortTicketOffersPage() {
           console.log("[RamFinCorp] Dedup success - card shown, firing CleverTap event");
           cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_SUCCESS_CARD_SHOWN);
           ordered.push({ name, utm_link: lender?.utm_link });
+          break;
+        }
+
+        case "SmartCoin": {
+          // SmartCoin is shown based on API response (isDuplicate === false)
+          // API returns this as "smartCoinDedupe"
+          const smartCoinDedupeData = (data.smartCoinDedupe || data.SmartCoinDedupe) as ShortTicketLender | undefined;
+          const smartCoinIsDuplicate = (smartCoinDedupeData as { isDuplicate?: boolean })?.isDuplicate;
+          if (smartCoinIsDuplicate !== false) break;
+          ordered.push({ name, utm_link: smartCoinDedupeData?.utm_link });
           break;
         }
 
@@ -1100,6 +1167,37 @@ export default function ShortTicketOffersPage() {
     }
   };
 
+  const handleSmartCoinApply = async (initialUtmLink?: string) => {
+    if (smartCoinApplying) return;
+    setSmartCoinApplying(true);
+
+    try {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveShortLender(phone, "SmartCoin");
+      const res = await applyToSmartCoin();
+
+      const smartCoinLead = res.data?.SmartCoinLead;
+      const leadMessage = smartCoinLead?.data?.response?.message || "";
+      const utmLink = smartCoinLead?.utm_link || initialUtmLink;
+
+      console.log("[SmartCoin] Lead response message:", leadMessage);
+
+      // Only redirect if lead was created successfully
+      if (leadMessage === "Lead created successfully" && utmLink) {
+        window.open(utmLink, "_blank");
+        setAppliedLenders((prev) => new Set(prev).add("SmartCoin"));
+      } else {
+        // Show Not Eligible modal
+        setShowNotEligible("SmartCoin");
+      }
+    } catch (err) {
+     
+      setShowNotEligible("SmartCoin");
+    } finally {
+      setSmartCoinApplying(false);
+    }
+  };
+
   const handleMMBApply = async (initialUtmLink?: string) => {
     if (mmbApplying) return;
     setMmbApplying(true);
@@ -1274,6 +1372,7 @@ export default function ShortTicketOffersPage() {
   const onApplyFor = (lender: OrderedLender) => {
     if (lender.name === "KreditBee") return handleKreditBeeApply;
     if (lender.name === "RamFinCorp") return () => handleRamFinCorpApply(lender.utm_link);
+    if (lender.name === "SmartCoin") return () => handleSmartCoinApply(lender.utm_link);
     if (lender.name === "MMB") return () => handleMMBApply(lender.utm_link);
     if (lender.name === "TejasLoan") return () => handleTejasLoanApply(lender.utm_link);
     if (lender.name === "F1SpeedLoan") return () => handleF1SpeedLoanApply(lender.utm_link);
@@ -1282,8 +1381,8 @@ export default function ShortTicketOffersPage() {
   };
 
   // Hero card logic
-  const showHeroFlow = isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium || isTejasLoanMedium || isMoneyDotMedium || isTrueFundMedium || /* isASAPFinanceMedium || */ /* isSpeedoLoanMedium || */ isCashMySalaryMedium || isApolloMedium || isF1SpeedLoanMedium || isRupiNowMedium || isCash2YouMedium || isRocketCashMedium || isMMBMedium || isLoanWalleMedium;
-  const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : isTejasLoanMedium ? "TejasLoan" : isMoneyDotMedium ? "MoneyDot" : isTrueFundMedium ? "TrueFund" : /* isASAPFinanceMedium ? "ASAPFinance" : */ /* isSpeedoLoanMedium ? "SpeedoLoan" : */ isCashMySalaryMedium ? "CashMySalary" : isApolloMedium ? "Apollo" : isF1SpeedLoanMedium ? "F1SpeedLoan" : isRupiNowMedium ? "RupiNow" : isCash2YouMedium ? "Cash2You" : isRocketCashMedium ? "RocketCash" : isMMBMedium ? "MMB" : isLoanWalleMedium ? "LoanWalle" : null;
+  const showHeroFlow = isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium || isSmartCoinMedium || isTejasLoanMedium || isMoneyDotMedium || isTrueFundMedium || /* isASAPFinanceMedium || */ /* isSpeedoLoanMedium || */ isCashMySalaryMedium || isApolloMedium || isF1SpeedLoanMedium || isRupiNowMedium || isCash2YouMedium || isRocketCashMedium || isMMBMedium || isLoanWalleMedium;
+  const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : isSmartCoinMedium ? "SmartCoin" : isTejasLoanMedium ? "TejasLoan" : isMoneyDotMedium ? "MoneyDot" : isTrueFundMedium ? "TrueFund" : /* isASAPFinanceMedium ? "ASAPFinance" : */ /* isSpeedoLoanMedium ? "SpeedoLoan" : */ isCashMySalaryMedium ? "CashMySalary" : isApolloMedium ? "Apollo" : isF1SpeedLoanMedium ? "F1SpeedLoan" : isRupiNowMedium ? "RupiNow" : isCash2YouMedium ? "Cash2You" : isRocketCashMedium ? "RocketCash" : isMMBMedium ? "MMB" : isLoanWalleMedium ? "LoanWalle" : null;
   const heroIdx = heroName ? visibleLenders.findIndex((l) => l.name === heroName) : -1;
   const showHeroCard = showHeroFlow && heroIdx === 0 && visibleLenders.length > 0;
   const heroLender = showHeroCard ? visibleLenders[0] : null;
@@ -1367,7 +1466,7 @@ export default function ShortTicketOffersPage() {
           {showHeroCard && heroLender && (() => {
             const c = resolve(heroLender.name);
             const heroDisplayName = DISPLAY_NAMES[heroLender.name] || heroLender.name;
-            const heroApplying = heroLender.name === "KreditBee" ? kbApplying : heroLender.name === "RamFinCorp" ? ramFinCorpApplying : heroLender.name === "MMB" ? mmbApplying : heroLender.name === "TejasLoan" ? tejasLoanApplying : heroLender.name === "F1SpeedLoan" ? f1SpeedLoanApplying : applyingLenders.has(heroLender.name);
+            const heroApplying = heroLender.name === "KreditBee" ? kbApplying : heroLender.name === "RamFinCorp" ? ramFinCorpApplying : heroLender.name === "SmartCoin" ? smartCoinApplying : heroLender.name === "MMB" ? mmbApplying : heroLender.name === "TejasLoan" ? tejasLoanApplying : heroLender.name === "F1SpeedLoan" ? f1SpeedLoanApplying : applyingLenders.has(heroLender.name);
             const heroApplied = heroLender.name === "KreditBee" ? kbApplied : appliedLenders.has(heroLender.name);
             const heroDisabled = heroApplying || heroApplied;
             const heroLabel = heroApplying ? "Applying..." : heroApplied ? "Applied" : null;
@@ -1606,6 +1705,7 @@ export default function ShortTicketOffersPage() {
               {otherLenders.map((lender, idx) => {
                 const isKB = lender.name === "KreditBee";
                 const isRFC = lender.name === "RamFinCorp";
+                const isSmartCoin = lender.name === "SmartCoin";
                 const isMMB = lender.name === "MMB";
                 const isTejasLoan = lender.name === "TejasLoan";
                 const isF1SpeedLoan = lender.name === "F1SpeedLoan";
@@ -1614,7 +1714,7 @@ export default function ShortTicketOffersPage() {
                 const logoSrc = c.logo;
                 const logoDarkBg = c.logoMeta?.darkBg;
                 // Determine applying/applied state based on lender type
-                const isApplying = isKB ? kbApplying : isRFC ? ramFinCorpApplying : isMMB ? mmbApplying : isTejasLoan ? tejasLoanApplying : isF1SpeedLoan ? f1SpeedLoanApplying : applyingLenders.has(lender.name);
+                const isApplying = isKB ? kbApplying : isRFC ? ramFinCorpApplying : isSmartCoin ? smartCoinApplying : isMMB ? mmbApplying : isTejasLoan ? tejasLoanApplying : isF1SpeedLoan ? f1SpeedLoanApplying : applyingLenders.has(lender.name);
                 const isApplied = isKB ? kbApplied : appliedLenders.has(lender.name);
                 const applyHandler = onApplyFor(lender);
 

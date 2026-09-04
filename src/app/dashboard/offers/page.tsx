@@ -15,6 +15,7 @@ import {
   saveShortLender,
   applyToShortKreditBee,
   applyToShortRamFinCorp,
+  applyToSmartCoin,
   // applyToShortMMB, // Commented out - now redirecting directly to utm_link
   applyToLoanWalle,
 } from "@/lib/api";
@@ -43,6 +44,7 @@ const DISPLAY_NAMES: Record<string, string> = {
   RapidMoney: "RapidMoney",
   TrueBalance: "TrueBalance",
   RamFinCorp: "Ram FinCorp",
+  SmartCoin: "Olyv",
   MMB: "MMB",
   // SpeedoLoan: "SpeedoLoan",
   CashMySalary: "CashMySalary",
@@ -153,6 +155,7 @@ export default function DashboardOffersPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [kbApplying, setKbApplying] = useState(false);
   const [ramFinCorpApplying, setRamFinCorpApplying] = useState(false);
+  const [smartCoinApplying, setSmartCoinApplying] = useState(false);
   const [mmbApplying, setMmbApplying] = useState(false);
   const [tejasLoanApplying, setTejasLoanApplying] = useState(false);
   const [f1SpeedLoanApplying, setF1SpeedLoanApplying] = useState(false);
@@ -211,6 +214,13 @@ const ramFinCorpData = data.RamFinCorp as {
 } | undefined;
 
 const isRamFinCorpEligible = ramFinCorpData?.data?.response?.message === "Dedup Success";
+
+const smartCoinDedupeData = (data.smartCoinDedupe || data.SmartCoinDedupe) as {
+  isDuplicate?: boolean;
+  utm_link?: string;
+} | undefined;
+
+const isSmartCoinEligible = smartCoinDedupeData?.isDuplicate === false;
 
 const mmbData = data.MMBDedup as {
   data?: { message?: string };
@@ -278,6 +288,11 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         // "Speedoloan": "SpeedoLoan",
         // "speedoloan": "SpeedoLoan",
         // "SpeedoLoan": "SpeedoLoan",
+        "SmartCoin": "SmartCoin",
+        "smartcoin": "SmartCoin",
+        "Smartcoin": "SmartCoin",
+        "smartCoinDedupe": "SmartCoin",
+        "SmartCoinDedupe": "SmartCoin",
         "CashMySalary": "CashMySalary",
         "cashmysalary": "CashMySalary",
         "Cashmysalary": "CashMySalary",
@@ -472,6 +487,15 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         });
       }
 
+      // Add SmartCoin if eligible (isDuplicate === false)
+      if (isSmartCoinEligible && !existingLenderNames.has("SmartCoin")) {
+        mappedOffers.push({
+          name: "SmartCoin",
+          utmLink: smartCoinDedupeData?.utm_link,
+          isOffer: false,
+        });
+      }
+
     // Add MMB if eligible (data.message === "user_not_found")
       if (isMmbEligible && !existingLenderNames.has("MMB")) {
         mappedOffers.push({
@@ -652,6 +676,32 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
     }
   };
 
+  const handleSmartCoinApply = async (initialUtmLink?: string) => {
+    if (smartCoinApplying) return;
+    setSmartCoinApplying(true);
+    try {
+      const phone = sessionStorage.getItem("userPhone") || "";
+      await saveShortLender(phone, "SmartCoin");
+      const res = await applyToSmartCoin();
+
+      const smartCoinLead = res.data?.SmartCoinLead;
+      const leadMessage = smartCoinLead?.data?.response?.message || "";
+      const utmLink = smartCoinLead?.utm_link || initialUtmLink;
+
+      // Only redirect if lead was created successfully
+      if (leadMessage === "Lead created successfully" && utmLink) {
+        window.open(utmLink, "_blank");
+      } else {
+        setShowNotEligible("SmartCoin");
+      }
+    } catch (err) {
+      console.error("SmartCoin apply failed:", err);
+      setShowNotEligible("SmartCoin");
+    } finally {
+      setSmartCoinApplying(false);
+    }
+  };
+
   const handleMMBApply = async (initialUtmLink?: string) => {
     if (mmbApplying) return;
     setMmbApplying(true);
@@ -793,6 +843,11 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
       return;
     }
 
+    if (lenderName === "SmartCoin") {
+      handleSmartCoinApply(utmLink);
+      return;
+    }
+
     if (lenderName === "MMB") {
       handleMMBApply(utmLink);
       return;
@@ -877,7 +932,7 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
                 ? LENDER_FEATURE_TAGS[lenderName] || LENDER_CUSTOM_BADGE[lenderName] || (offer.isOffer ? "Pre-Qualified" : "Matched")
                 : null;
 
-              const isApplying = lenderName === "KreditBee" ? kbApplying : lenderName === "RamFinCorp" ? ramFinCorpApplying : lenderName === "MMB" ? mmbApplying : lenderName === "TejasLoan" ? tejasLoanApplying : lenderName === "F1SpeedLoan" ? f1SpeedLoanApplying : false;
+              const isApplying = lenderName === "KreditBee" ? kbApplying : lenderName === "RamFinCorp" ? ramFinCorpApplying : lenderName === "SmartCoin" ? smartCoinApplying : lenderName === "MMB" ? mmbApplying : lenderName === "TejasLoan" ? tejasLoanApplying : lenderName === "F1SpeedLoan" ? f1SpeedLoanApplying : false;
 
               return (
                 <OfferCard
