@@ -63,8 +63,8 @@ const DISPLAY_NAMES: Record<string, string> = {
 const DASHBOARD_VISIBLE_COUNT = 4;
 
 const FALLBACK_UTM_LINKS: Record<string, string> = {
-  // SmartCoin: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
-  // SmartCoinHighIntent: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
+  SmartCoin: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
+  SmartCoinHighIntent: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
   RamFinCorp: "https://ramfincorp.com/",
   Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
   RapidMoney: "https://web.rapidmoney.in/borrower/login?utm_source=creadylandingpage&utm_extsource=abc&utm_medium=rapidmoney&utm_campaign=xyz&utm_campaignID=def",
@@ -86,7 +86,7 @@ const BADGE_VISIBLE_COUNT = 2;
 
 // Lenders that have been removed and should not be displayed
 // Lenders that have been removed and should not be displayed
-const REMOVED_LENDERS = ["MPokket", "Loan112", "SmartCoin", "SmartCoinHighIntent"];
+const REMOVED_LENDERS = ["MPokket", "Loan112"];
 
 // ============================================================
 // Utility Functions
