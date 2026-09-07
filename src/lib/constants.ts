@@ -246,24 +246,24 @@ export const STATIC_LENDER_DETAILS: Record<
 // Dashboard priority order - lenders are displayed in this order when available
 // Lower index = higher priority (shown first)
 export const DASHBOARD_PRIORITY_ORDER: string[] = [
- "RamFinCorp",
+  "RamFinCorp",
   "TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
   "SmartCoin",
   "RapidMoney",
-  "TrueBalance",
-  "KreditBee",
-  "TrueFund",
-  "MoneyDot",
-  "Apollo",
-  "LendingPlate",
   "F1SpeedLoan",
+  "KreditBee",
+  "MoneyDot",
+  "LoanWalle",
+  "Apollo",
   "MMB",
   "Cash2You",
   "RocketCash",
- "LoanWalle",
+  "TrueBalance",
+  // Not in the requested priority list — kept at the end so it still renders if offered.
+  "TrueFund",
 ];
 
 // Short feature tags for each lender (displayed in offer cards)
