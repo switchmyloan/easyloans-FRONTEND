@@ -39,28 +39,30 @@ interface ShownOffer {
 // ============================================================
 // Constants
 // ============================================================
+// Ordered to match DASHBOARD_PRIORITY_ORDER (lookup-only map — order is cosmetic).
 const DISPLAY_NAMES: Record<string, string> = {
-  KreditBee: "KreditBee",
-  RapidMoney: "RapidMoney",
-  TrueBalance: "TrueBalance",
   RamFinCorp: "Ram FinCorp",
-  SmartCoin: "Olyv",
-  MMB: "MMB",
-  // SpeedoLoan: "SpeedoLoan",
-  CashMySalary: "CashMySalary",
-  LoanWalle: "LoanWalle",
-  TrueFund: "TrueFund",
-  MoneyDot: "MoneyDot",
-  RupiNow: "RupiNow",
-  // ASAPFinance: "ASAPFinance",
-  Apollo: "Apollo",
-  LendingPlate: "LendingPlate",
   TejasLoan: "Tejas Loan",
+  RupiNow: "RupiNow",
+  CashMySalary: "CashMySalary",
+  SmartCoin: "Olyv",
+  RapidMoney: "RapidMoney",
   F1SpeedLoan: "F1 Speed Loan",
+  KreditBee: "KreditBee",
+  MoneyDot: "MoneyDot",
+  LoanWalle: "LoanWalle",
+  Apollo: "Apollo",
+  MMB: "MMB",
   Cash2You: "CashToYou",
   RocketCash: "Rocket Cash",
+  TrueBalance: "TrueBalance",
+  TrueFund: "TrueFund",
+  // Not in the dashboard priority order (kept for name lookup only):
+  LendingPlate: "LendingPlate",
   ToofanLoan: "Toofan Loan",
   RupeeRaftaar: "Rupee Raftaar",
+  // SpeedoLoan: "SpeedoLoan",
+  // ASAPFinance: "ASAPFinance",
 };
 
 const FALLBACK_UTM_LINKS: Record<string, string> = {
