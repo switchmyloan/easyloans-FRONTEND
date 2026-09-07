@@ -6,14 +6,14 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Lock, Zap, CheckCircle, Clock, ChevronRight } from "lucide-react";
 import { STATIC_LENDER_LOGOS, LENDER_FEATURE_TAGS, DEFAULT_FEATURE_TAG, DASHBOARD_PRIORITY_ORDER, LENDER_FEATURE_BADGES, DEFAULT_FEATURE_BADGES } from "@/lib/constants";
-import { getStoredShortExistingUserOffers, saveShortLender, applyToShortKreditBee, applyToLoanWalle, applyToSmartCoin } from "@/lib/api";
-// applyToShortMMB removed - now redirecting directly to utm_link
+import { getStoredShortExistingUserOffers, saveShortLender, applyToLoanWalle } from "@/lib/api";
 import toast, { Toaster } from "react-hot-toast";
 import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
 import LoanWalleLenderModal from "@/components/offers/LoanWalleLenderModal";
 import SessionActiveBanner from "@/components/shared/SessionActiveBanner";
 import { useOtpGuard } from "@/app/dashboard/layout";
 import { useRamFinCorpApply } from "@/hooks/useRamFinCorpApply";
+import { useKreditBeeApply, useSmartCoinApply, useMMBApply, useTejasLoanApply, useF1SpeedLoanApply } from "@/hooks/useLenderApply";
 import RingImageSection from "./RingImageSection";
 
 // Lender UTM links — used when an offer doesn't carry its own utmLink. Same set
@@ -122,20 +122,21 @@ export default function LoanOffersBanner() {
   const { guardActivity } = useOtpGuard();
   const [mainLender, setMainLender] = useState<PreviousLender | null>(null);
   const [otherLenders, setOtherLenders] = useState<PreviousLender[]>([]);
-  const [kbApplying, setKbApplying] = useState(false);
-  const [smartCoinApplying, setSmartCoinApplying] = useState(false);
-  const [mmbApplying, setMmbApplying] = useState(false);
-  const [tejasLoanApplying, setTejasLoanApplying] = useState(false);
-  const [f1SpeedLoanApplying, setF1SpeedLoanApplying] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
 
-  // RamFinCorp hook - handles apply logic, loading state, and session active banner
+  // Lender hooks - handle apply logic and loading state
   const {
     apply: applyRamFinCorp,
     applying: ramFinCorpApplying,
     sessionActiveMessage,
     clearSessionActiveMessage,
   } = useRamFinCorpApply();
+
+  const { apply: applyKreditBee, applying: kbApplying } = useKreditBeeApply();
+  const { apply: applySmartCoin, applying: smartCoinApplying } = useSmartCoinApply();
+  const { apply: applyMMB, applying: mmbApplying } = useMMBApply();
+  const { apply: applyTejasLoan, applying: tejasLoanApplying } = useTejasLoanApply();
+  const { apply: applyF1SpeedLoan, applying: f1SpeedLoanApplying } = useF1SpeedLoanApply();
 
   // LoanWalle modal state
   const [showLoanWalleModal, setShowLoanWalleModal] = useState(false);
@@ -629,32 +630,13 @@ export default function LoanOffersBanner() {
   // Get up to 3 other lenders for "More offers" section
   const moreOffers = otherLenders.slice(0, 3);
 
-  // KreditBee special apply handler - calls the API first
+  // KreditBee special apply handler - uses shared hook
   const handleKreditBeeApply = async () => {
-    if (kbApplying) return;
-    setKbApplying(true);
-    try {
-      const phone = sessionStorage.getItem("userPhone") || "";
-      await saveShortLender(phone, "KreditBee");
-      const res = await applyToShortKreditBee();
-
-      const kb = res.data?.KreditBee;
-      const kbMessage = (kb?.message || "").toLowerCase();
-
-      const isKbSuccess = kb?.success === true;
-      const isRejected =
-        kbMessage.includes("not approved") || kbMessage.includes("rejected");
-
-      if (!isKbSuccess || isRejected) {
-        setShowNotEligible("KreditBee");
-      } else {
-        window.open("https://www.kreditbee.in/signin", "_blank");
-      }
-    } catch (err) {
-      console.error("KreditBee apply failed:", err);
-      toast.error("Something went wrong. Please try again.", { duration: 4000 });
-    } finally {
-      setKbApplying(false);
+    const result = await applyKreditBee();
+    if (result.status === "notEligible") {
+      setShowNotEligible("KreditBee");
+    } else if (result.status === "error") {
+      toast.error(result.message || "Something went wrong. Please try again.", { duration: 4000 });
     }
   };
 
@@ -667,116 +649,28 @@ export default function LoanOffersBanner() {
     }
   };
 
-  // SmartCoin special apply handler - calls the API first
+  // SmartCoin special apply handler - uses shared hook
   const handleSmartCoinApply = async (initialUtmLink?: string) => {
-    if (smartCoinApplying) return;
-    setSmartCoinApplying(true);
-    try {
-      const phone = sessionStorage.getItem("userPhone") || "";
-      await saveShortLender(phone, "SmartCoin");
-      const res = await applyToSmartCoin();
-
-      const smartCoinLead = res.data?.SmartCoinLead;
-      const leadMessage = smartCoinLead?.data?.response?.message || "";
-      const utmLink = smartCoinLead?.utm_link || initialUtmLink;
-
-      // Only redirect if lead was created successfully
-      if (leadMessage === "Lead created successfully" && utmLink) {
-        window.open(utmLink, "_blank");
-      } else {
-        setShowNotEligible("SmartCoin");
-      }
-    } catch (err) {
-      console.error("SmartCoin apply failed:", err);
+    const result = await applySmartCoin(initialUtmLink);
+    if (result.status === "notEligible" || result.status === "error") {
       setShowNotEligible("SmartCoin");
-    } finally {
-      setSmartCoinApplying(false);
     }
   };
 
-  // MMB special apply handler - directly redirects to utm_link
+  // MMB special apply handler - uses shared hook
   const handleMMBApply = async (initialUtmLink?: string) => {
-    if (mmbApplying) return;
-    setMmbApplying(true);
-    try {
-      const phone = sessionStorage.getItem("userPhone") || "";
-      await saveShortLender(phone, "MMB");
-
-      // Directly redirect to utm_link without calling API
-      if (initialUtmLink) {
-        window.open(initialUtmLink, "_blank");
-      } else {
-        setShowNotEligible("MMB");
-      }
-
-      // Commented out API call - keeping for reference
-      // const res = await applyToShortMMB();
-      // const mmbData = res.data?.MMBCreateLead;
-      // const isSignedIn = mmbData?.message === "Signed-in Successfully";
-      // const hasRedirectLink = mmbData?.redirectLink && mmbData.redirectLink.trim() !== "";
-      // if (isSignedIn && hasRedirectLink) {
-      //   if (initialUtmLink) {
-      //     window.open(initialUtmLink, "_blank");
-      //   } else {
-      //     setShowNotEligible("MMB");
-      //   }
-      // } else {
-      //   setShowNotEligible("MMB");
-      // }
-    } catch (err) {
-      console.error("MMB apply failed:", err);
+    const result = await applyMMB(initialUtmLink);
+    if (result.status === "notEligible" || result.status === "error") {
       setShowNotEligible("MMB");
-    } finally {
-      setMmbApplying(false);
     }
   };
 
-  // TejasLoan special apply handler - calls the LoanWalle API first
   const handleTejasLoanApply = async (initialUtmLink?: string) => {
-    if (tejasLoanApplying) return;
-    setTejasLoanApplying(true);
-    try {
-      const phone = sessionStorage.getItem("userPhone") || "";
-      await saveShortLender(phone, "TejasLoan");
-      await applyToLoanWalle("Tejas");
-
-      // Redirect to UTM link after API call
-      if (initialUtmLink) {
-        window.open(initialUtmLink, "_blank");
-      }
-    } catch (err) {
-      console.error("TejasLoan apply failed:", err);
-      // Still redirect on error - the UTM link flow should continue
-      if (initialUtmLink) {
-        window.open(initialUtmLink, "_blank");
-      }
-    } finally {
-      setTejasLoanApplying(false);
-    }
+    await applyTejasLoan(initialUtmLink);
   };
 
-  // F1SpeedLoan special apply handler - calls the LoanWalle API first
   const handleF1SpeedLoanApply = async (initialUtmLink?: string) => {
-    if (f1SpeedLoanApplying) return;
-    setF1SpeedLoanApplying(true);
-    try {
-      const phone = sessionStorage.getItem("userPhone") || "";
-      await saveShortLender(phone, "F1SpeedLoan");
-      await applyToLoanWalle("F1");
-
-      // Redirect to UTM link after API call
-      if (initialUtmLink) {
-        window.open(initialUtmLink, "_blank");
-      }
-    } catch (err) {
-      console.error("F1SpeedLoan apply failed:", err);
-      // Still redirect on error - the UTM link flow should continue
-      if (initialUtmLink) {
-        window.open(initialUtmLink, "_blank");
-      }
-    } finally {
-      setF1SpeedLoanApplying(false);
-    }
+    await applyF1SpeedLoan(initialUtmLink);
   };
 
   // LoanWalle apply handler - shows modal if both options available, redirects directly if only one

@@ -2,13 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getStaticLenderDetail, STATIC_LENDER_LOGOS, getEligibleCoupon, type KBCoupon, LENDER_FEATURE_TAGS, getLenderFeatures } from "@/lib/constants";
+import { getStaticLenderDetail, STATIC_LENDER_LOGOS, getEligibleCoupon, type KBCoupon, LENDER_FEATURE_TAGS, getLenderFeatures, DISPLAY_NAMES } from "@/lib/constants";
 import {
   getStoredShortTicketOffers,
   saveShortLender,
-  applyToShortKreditBee,
-  // applyToShortMMB, // Commented out - now redirecting directly to utm_link
-  applyToSmartCoin,
   applyToLoanWalle,
   trackShortShownOffers,
   type ShortTicketLender,
@@ -23,34 +20,10 @@ import TrustBadges from "@/components/ui/TrustBadges";
 import GradientBanner from "@/components/ui/GradientBanner";
 import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "@/lib/clevertap";
 import { useRamFinCorpApply } from "@/hooks/useRamFinCorpApply";
+import { useKreditBeeApply, useSmartCoinApply, useMMBApply, useTejasLoanApply, useF1SpeedLoanApply } from "@/hooks/useLenderApply";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { Clock, Contact, Lock } from "lucide-react";
-
-const DISPLAY_NAMES: Record<string, string> = {
-  RapidMoney: "RapidMoney",
-  RamFinCorp: "RamFinCorp",
-  SmartCoin: "Olyv",
-  Vivifi: "Vivifi",
-  MMB: "MMB",
-  KreditBee: "Kreditbee",
-  TrueBalance: "TrueBalance",
-  // SpeedoLoan: "SpeedoLoan",
-  CashMySalary: "CashMySalary",
-  TejasLoan: "Tejas Loan",
-  F1SpeedLoan: "F1 Speed Loan",
-  TrueFund: "TrueFund",
-  MoneyDot: "MoneyDot",
-  RupiNow: "RupiNow",
-  // ASAPFinance: "ASAPFinance",
-  Apollo: "Apollo",
-  LendingPlate: "LendingPlate",
-  Cash2You: "CashTouYou",
-  RocketCash: "Rocket Cash",
-  ToofanLoan: "Toofan Loan",
-  RupeeRaftaar: "Rupee Raftaar",
-  LoanWalle: "LoanWalle",
-};
 
 // Default render order
 const LENDER_ORDER = [
@@ -573,7 +546,6 @@ export default function ShortTicketOffersPage() {
   const [orderedLenders, setOrderedLenders] = useState<OrderedLender[]>([]);
   const [isSalaried, setIsSalaried] = useState(false);
   const [loaded, setLoaded] = useState(false);
-  const [kbApplying, setKbApplying] = useState(false);
   const [kbApplied, setKbApplied] = useState(false);
   const [firstName, setFirstName] = useState<string>("");
   const [isKbMedium, setIsKbMedium] = useState(false);
@@ -593,15 +565,10 @@ export default function ShortTicketOffersPage() {
   const [isMMBMedium, setIsMMBMedium] = useState(false);
   const [isLoanWalleMedium, setIsLoanWalleMedium] = useState(false);
   const [isSmartCoinMedium, setIsSmartCoinMedium] = useState(false);
-  const [mmbApplying, setMmbApplying] = useState(false);
-  const [smartCoinApplying, setSmartCoinApplying] = useState(false);
-  const [tejasLoanApplying, setTejasLoanApplying] = useState(false);
-  const [f1SpeedLoanApplying, setF1SpeedLoanApplying] = useState(false);
-
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
   const [priorityVisible, setPriorityVisible] = useState(0);
 
-  // RamFinCorp hook - handles apply logic, loading state, and session active banner
+  // Lender hooks - handle apply logic and loading state
   const {
     apply: applyRamFinCorp,
     applying: ramFinCorpApplying,
@@ -610,6 +577,36 @@ export default function ShortTicketOffersPage() {
   } = useRamFinCorpApply({
     onSuccess: () => {
       setAppliedLenders((prev) => new Set(prev).add("RamFinCorp"));
+    },
+  });
+
+  const { apply: applyKreditBee, applying: kbApplying } = useKreditBeeApply({
+    onSuccess: () => {
+      setAppliedLenders((prev) => new Set(prev).add("KreditBee"));
+    },
+  });
+
+  const { apply: applySmartCoin, applying: smartCoinApplying } = useSmartCoinApply({
+    onSuccess: () => {
+      setAppliedLenders((prev) => new Set(prev).add("SmartCoin"));
+    },
+  });
+
+  const { apply: applyMMB, applying: mmbApplying } = useMMBApply({
+    onSuccess: () => {
+      setAppliedLenders((prev) => new Set(prev).add("MMB"));
+    },
+  });
+
+  const { apply: applyTejasLoan, applying: tejasLoanApplying } = useTejasLoanApply({
+    onSuccess: () => {
+      setAppliedLenders((prev) => new Set(prev).add("TejasLoan"));
+    },
+  });
+
+  const { apply: applyF1SpeedLoan, applying: f1SpeedLoanApplying } = useF1SpeedLoanApply({
+    onSuccess: () => {
+      setAppliedLenders((prev) => new Set(prev).add("F1SpeedLoan"));
     },
   });
   const [showAll, setShowAll] = useState(false);
@@ -962,18 +959,18 @@ export default function ShortTicketOffersPage() {
           if (toofanLoanUtm) {
             loanWalleOptions.toofanLoan = {
               name: "ToofanLoan",
-              displayName: "Toofan Loan",
+              displayName: DISPLAY_NAMES["ToofanLoan"] || "Toofan Loan",
               utmLink: toofanLoanUtm,
-              logo: "/toofan-loan.png",
+              logo: STATIC_LENDER_LOGOS["ToofanLoan"]?.src || "/toofan-loan.png",
             };
           }
 
           if (rupeeRaftaarUtm) {
             loanWalleOptions.rupeeRaftaar = {
               name: "RupeeRaftaar",
-              displayName: "Rupee Raftaar",
+              displayName: DISPLAY_NAMES["RupeeRaftaar"] || "Rupee Raftaar",
               utmLink: rupeeRaftaarUtm,
-              logo: "/Rupee-Raftaaar.png",
+              logo: STATIC_LENDER_LOGOS["RupeeRaftaar"]?.src || "/Rupee-Raftaaar.png",
             };
           }
 
@@ -1053,56 +1050,27 @@ export default function ShortTicketOffersPage() {
 
   const handleKreditBeeApply = async () => {
     if (kbApplying || kbApplied) return;
-    setKbApplying(true);
 
     cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
       Lender: "Kreditbee",
       LenderKey: "KreditBee",
     });
 
+    // Use UTM link from orderedLenders if available, otherwise use fallback
+    const kbLender = orderedLenders.find((l) => l.name === "KreditBee");
+    const redirectUrl = kbLender?.utm_link || FALLBACK_UTM.KreditBee;
+
+    const result = await applyKreditBee(redirectUrl);
+
+    setKbApplied(true);
     try {
-      const phone = sessionStorage.getItem("userPhone") || "";
-      await saveShortLender(phone, "KreditBee");
-      const res = await applyToShortKreditBee();
+      sessionStorage.setItem("kbApplied", "1");
+    } catch { }
 
-      setKbApplied(true);
-      try {
-        sessionStorage.setItem("kbApplied", "1");
-      } catch { }
-
-      const kb = res.data?.KreditBee;
-      const kbMessage = (kb?.message || "").toLowerCase();
-      const leadStatus = (
-        (kb?.data as { response?: { model?: { leadStatus?: string } } })?.response?.model?.leadStatus || ""
-      ).toLowerCase();
-
-      const isKbSuccess = kb?.success === true;
-      const isNotApproved =
-        kbMessage.includes("not approved") ||
-        kbMessage.includes("rejected") ||
-        leadStatus === "not approved" ||
-        leadStatus === "rejected";
-      const isApproved = !isNotApproved && (kbMessage.includes("approved") || leadStatus === "approved");
-      const isDuplicate = kbMessage.includes("duplicate");
-
-      if (isKbSuccess && isApproved && !isDuplicate) {
-        // Use UTM link from orderedLenders if available, otherwise use fallback
-        const kbLender = orderedLenders.find((l) => l.name === "KreditBee");
-        const redirectUrl = kbLender?.utm_link || FALLBACK_UTM.KreditBee;
-        window.open(redirectUrl, "_blank");
-      } else if (isNotApproved || !isKbSuccess) {
-        setShowNotEligible("Kreditbee");
-      } else {
-        toast.error(kb?.message || "Your application was not approved.", {
-          duration: 5000,
-          style: { maxWidth: 400 },
-        });
-      }
-    } catch (err) {
-      console.error("KreditBee apply failed:", err);
-      toast.error("Something went wrong. Please try again.", { duration: 4000 });
-    } finally {
-      setKbApplying(false);
+    if (result.status === "notEligible") {
+      setShowNotEligible("Kreditbee");
+    } else if (result.status === "error") {
+      toast.error(result.message || "Something went wrong. Please try again.", { duration: 4000 });
     }
   };
 
@@ -1120,142 +1088,40 @@ export default function ShortTicketOffersPage() {
     }
   };
 
-  // SmartCoin special apply handler - calls the API first
+  // SmartCoin special apply handler - uses shared hook
   const handleSmartCoinApply = async (initialUtmLink?: string) => {
-    if (smartCoinApplying) return;
-    setSmartCoinApplying(true);
-
-    try {
-      const phone = sessionStorage.getItem("userPhone") || "";
-      await saveShortLender(phone, "SmartCoin");
-      const res = await applyToSmartCoin();
-
-      const smartCoinLead = res.data?.SmartCoinLead;
-      const leadMessage = smartCoinLead?.data?.response?.message || "";
-      const utmLink = smartCoinLead?.utm_link || initialUtmLink;
-
-      console.log("[SmartCoin] Lead response message:", leadMessage);
-
-      // Only redirect if lead was created successfully
-      if (leadMessage === "Lead created successfully" && utmLink) {
-        window.open(utmLink, "_blank");
-        setAppliedLenders((prev) => new Set(prev).add("SmartCoin"));
-      } else {
-        // Show Not Eligible modal
-        setShowNotEligible("SmartCoin");
-      }
-    } catch (err) {
-
+    const result = await applySmartCoin(initialUtmLink);
+    if (result.status === "notEligible" || result.status === "error") {
       setShowNotEligible("SmartCoin");
-    } finally {
-      setSmartCoinApplying(false);
     }
   };
 
   const handleMMBApply = async (initialUtmLink?: string) => {
-    if (mmbApplying) return;
-    setMmbApplying(true);
-
     cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
       Lender: "MMB",
       LenderKey: "MMB",
     });
 
-    try {
-      const phone = sessionStorage.getItem("userPhone") || "";
-      await saveShortLender(phone, "MMB");
-
-      // Directly redirect to utm_link without calling API
-      if (initialUtmLink) {
-        window.open(initialUtmLink, "_blank");
-        setAppliedLenders((prev) => new Set(prev).add("MMB"));
-      } else {
-        setShowNotEligible("MMB");
-      }
-
-      // Commented out API call - keeping for reference
-      // const res = await applyToShortMMB();
-      // const mmbData = res.data?.MMBCreateLead;
-      // const isSignedIn = mmbData?.message === "Signed-in Successfully";
-      // const hasRedirectLink = mmbData?.redirectLink && mmbData.redirectLink.trim() !== "";
-      // if (isSignedIn && hasRedirectLink) {
-      //   if (initialUtmLink) {
-      //     window.open(initialUtmLink, "_blank");
-      //     setAppliedLenders((prev) => new Set(prev).add("MMB"));
-      //   } else {
-      //     setShowNotEligible("MMB");
-      //   }
-      // } else {
-      //   setShowNotEligible("MMB");
-      // }
-    } catch (err) {
-      console.error("MMB apply failed:", err);
+    const result = await applyMMB(initialUtmLink);
+    if (result.status === "notEligible" || result.status === "error") {
       setShowNotEligible("MMB");
-    } finally {
-      setMmbApplying(false);
     }
   };
 
   const handleTejasLoanApply = async (initialUtmLink?: string) => {
-    if (tejasLoanApplying) return;
-    setTejasLoanApplying(true);
-
     cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
       Lender: "Tejas Loan",
       LenderKey: "TejasLoan",
     });
-
-    try {
-      const phone = sessionStorage.getItem("userPhone") || "";
-      await saveShortLender(phone, "TejasLoan");
-      await applyToLoanWalle("Tejas");
-
-      // Redirect to UTM link after successful API call
-      if (initialUtmLink) {
-        window.open(initialUtmLink, "_blank");
-        setAppliedLenders((prev) => new Set(prev).add("TejasLoan"));
-      }
-    } catch (err) {
-      console.error("TejasLoan apply failed:", err);
-      // Still redirect on error - the UTM link flow should continue
-      if (initialUtmLink) {
-        window.open(initialUtmLink, "_blank");
-        setAppliedLenders((prev) => new Set(prev).add("TejasLoan"));
-      }
-    } finally {
-      setTejasLoanApplying(false);
-    }
+    await applyTejasLoan(initialUtmLink);
   };
 
   const handleF1SpeedLoanApply = async (initialUtmLink?: string) => {
-    if (f1SpeedLoanApplying) return;
-    setF1SpeedLoanApplying(true);
-
     cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
       Lender: "F1 Speed Loan",
       LenderKey: "F1SpeedLoan",
     });
-
-    try {
-      const phone = sessionStorage.getItem("userPhone") || "";
-      await saveShortLender(phone, "F1SpeedLoan");
-      await applyToLoanWalle("F1");
-
-      // Redirect to UTM link after successful API call
-      if (initialUtmLink) {
-        window.open(initialUtmLink, "_blank");
-        setAppliedLenders((prev) => new Set(prev).add("F1SpeedLoan"));
-      }
-    } catch (err) {
-      console.error("F1SpeedLoan apply failed:", err);
-      // Still redirect on error - the UTM link flow should continue
-      if (initialUtmLink) {
-        window.open(initialUtmLink, "_blank");
-        setAppliedLenders((prev) => new Set(prev).add("F1SpeedLoan"));
-      }
-    } finally {
-      setF1SpeedLoanApplying(false);
-    }
+    await applyF1SpeedLoan(initialUtmLink);
   };
 
   const handleLoanWalleApply = async () => {

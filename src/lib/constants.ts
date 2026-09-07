@@ -57,6 +57,29 @@ export const STATIC_LENDER_LOGOS: Record<
   ToofanLoan: { src: "/toofan-loan.png" },
 };
 
+export const DISPLAY_NAMES: Record<string, string> = {
+  KreditBee: "KreditBee",
+  RapidMoney: "RapidMoney",
+  RamFinCorp: "Ram FinCorp",
+  SmartCoin: "Olyv",
+  Vivifi: "Vivifi",
+  MMB: "MMB",
+  TrueBalance: "TrueBalance",
+  CashMySalary: "CashMySalary",
+  TejasLoan: "Tejas Loan",
+  F1SpeedLoan: "F1 Speed Loan",
+  TrueFund: "TrueFund",
+  MoneyDot: "MoneyDot",
+  RupiNow: "RupiNow",
+  Apollo: "Apollo",
+  LendingPlate: "LendingPlate",
+  Cash2You: "CashToYou",
+  RocketCash: "Rocket Cash",
+  ToofanLoan: "Toofan Loan",
+  RupeeRaftaar: "Rupee Raftaar",
+  LoanWalle: "LoanWalle",
+};
+
 export const STATIC_LENDER_DETAILS: Record<
   string,
   {

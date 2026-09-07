@@ -9,15 +9,13 @@ import OfferCard from "@/components/offers/OfferCard";
 import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
 import LoanWalleLenderModal from "@/components/offers/LoanWalleLenderModal";
 import SessionActiveBanner from "@/components/shared/SessionActiveBanner";
-import { getStaticLenderDetail, STATIC_LENDER_LOGOS, DASHBOARD_PRIORITY_ORDER, LENDER_FEATURE_TAGS } from "@/lib/constants";
+import { getStaticLenderDetail, STATIC_LENDER_LOGOS, DASHBOARD_PRIORITY_ORDER, LENDER_FEATURE_TAGS, DISPLAY_NAMES } from "@/lib/constants";
 import { useOtpGuard } from "@/app/dashboard/layout";
 import { useRamFinCorpApply } from "@/hooks/useRamFinCorpApply";
+import { useKreditBeeApply, useSmartCoinApply, useMMBApply, useTejasLoanApply, useF1SpeedLoanApply } from "@/hooks/useLenderApply";
 import {
   getStoredShortExistingUserOffers,
   saveShortLender,
-  applyToShortKreditBee,
-  applyToSmartCoin,
-  // applyToShortMMB, // Commented out - now redirecting directly to utm_link
   applyToLoanWalle,
 } from "@/lib/api";
 import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "@/lib/clevertap";
@@ -40,32 +38,6 @@ interface ShownOffer {
 // ============================================================
 // Constants
 // ============================================================
-// Ordered to match DASHBOARD_PRIORITY_ORDER (lookup-only map — order is cosmetic).
-const DISPLAY_NAMES: Record<string, string> = {
-  RamFinCorp: "Ram FinCorp",
-  TejasLoan: "Tejas Loan",
-  RupiNow: "RupiNow",
-  CashMySalary: "CashMySalary",
-  SmartCoin: "Olyv",
-  RapidMoney: "RapidMoney",
-  F1SpeedLoan: "F1 Speed Loan",
-  KreditBee: "KreditBee",
-  MoneyDot: "MoneyDot",
-  LoanWalle: "LoanWalle",
-  Apollo: "Apollo",
-  MMB: "MMB",
-  Cash2You: "CashToYou",
-  RocketCash: "Rocket Cash",
-  TrueBalance: "TrueBalance",
-  TrueFund: "TrueFund",
-  // Not in the dashboard priority order (kept for name lookup only):
-  LendingPlate: "LendingPlate",
-  ToofanLoan: "Toofan Loan",
-  RupeeRaftaar: "Rupee Raftaar",
-  // SpeedoLoan: "SpeedoLoan",
-  // ASAPFinance: "ASAPFinance",
-};
-
 const FALLBACK_UTM_LINKS: Record<string, string> = {
   SmartCoin: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
   RamFinCorp: "https://ramfincorp.com/",
@@ -156,20 +128,21 @@ export default function DashboardOffersPage() {
   const { guardActivity } = useOtpGuard();
   const [offers, setOffers] = useState<DashboardOffer[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [kbApplying, setKbApplying] = useState(false);
-  const [smartCoinApplying, setSmartCoinApplying] = useState(false);
-  const [mmbApplying, setMmbApplying] = useState(false);
-  const [tejasLoanApplying, setTejasLoanApplying] = useState(false);
-  const [f1SpeedLoanApplying, setF1SpeedLoanApplying] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
 
-  // RamFinCorp hook - handles apply logic, loading state, and session active banner
+  // Lender hooks - handle apply logic and loading state
   const {
     apply: applyRamFinCorp,
     applying: ramFinCorpApplying,
     sessionActiveMessage,
     clearSessionActiveMessage,
   } = useRamFinCorpApply();
+
+  const { apply: applyKreditBee, applying: kbApplying } = useKreditBeeApply();
+  const { apply: applySmartCoin, applying: smartCoinApplying } = useSmartCoinApply();
+  const { apply: applyMMB, applying: mmbApplying } = useMMBApply();
+  const { apply: applyTejasLoan, applying: tejasLoanApplying } = useTejasLoanApply();
+  const { apply: applyF1SpeedLoan, applying: f1SpeedLoanApplying } = useF1SpeedLoanApply();
 
   // LoanWalle modal state
   const [showLoanWalleModal, setShowLoanWalleModal] = useState(false);
@@ -575,18 +548,18 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         if (toofanLoanUtm) {
           loanWalleOptions.toofanLoan = {
             name: "ToofanLoan",
-            displayName: "Toofan Loan",
+            displayName: DISPLAY_NAMES["ToofanLoan"] || "Toofan Loan",
             utmLink: toofanLoanUtm,
-            logo: "/toofan-loan.png",
+            logo: STATIC_LENDER_LOGOS["ToofanLoan"]?.src || "/toofan-loan.png",
           };
         }
 
         if (rupeeRaftaarUtm) {
           loanWalleOptions.rupeeRaftaar = {
             name: "RupeeRaftaar",
-            displayName: "Rupee Raftaar",
+            displayName: DISPLAY_NAMES["RupeeRaftaar"] || "Rupee Raftaar",
             utmLink: rupeeRaftaarUtm,
-            logo: "/Rupee-Raftaaar.png",
+            logo: STATIC_LENDER_LOGOS["RupeeRaftaar"]?.src || "/Rupee-Raftaaar.png",
           };
         }
 
@@ -610,29 +583,11 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
   }, []);
 
   const handleKreditBeeApply = async (utmLink?: string) => {
-    if (kbApplying) return;
-    setKbApplying(true);
-    try {
-      const phone = sessionStorage.getItem("userPhone") || "";
-      await saveShortLender(phone, "KreditBee");
-      const res = await applyToShortKreditBee();
-
-      const kb = res.data?.KreditBee;
-      const kbMessage = (kb?.message || "").toLowerCase();
-      const isKbSuccess = kb?.success === true;
-      const isRejected = kbMessage.includes("not approved") || kbMessage.includes("rejected");
-
-      if (!isKbSuccess || isRejected) {
-        setShowNotEligible("KreditBee");
-      } else {
-        const redirectUrl = utmLink || "https://www.kreditbee.in/signin";
-        window.open(redirectUrl, "_blank");
-      }
-    } catch (err) {
-      console.error("KreditBee apply failed:", err);
-      toast.error("Something went wrong. Please try again.", { duration: 4000 });
-    } finally {
-      setKbApplying(false);
+    const result = await applyKreditBee(utmLink);
+    if (result.status === "notEligible") {
+      setShowNotEligible("KreditBee");
+    } else if (result.status === "error") {
+      toast.error(result.message || "Something went wrong. Please try again.", { duration: 4000 });
     }
   };
 
@@ -645,111 +600,25 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
   };
 
   const handleSmartCoinApply = async (initialUtmLink?: string) => {
-    if (smartCoinApplying) return;
-    setSmartCoinApplying(true);
-    try {
-      const phone = sessionStorage.getItem("userPhone") || "";
-      await saveShortLender(phone, "SmartCoin");
-      const res = await applyToSmartCoin();
-
-      const smartCoinLead = res.data?.SmartCoinLead;
-      const leadMessage = smartCoinLead?.data?.response?.message || "";
-      const utmLink = smartCoinLead?.utm_link || initialUtmLink;
-
-      // Only redirect if lead was created successfully
-      if (leadMessage === "Lead created successfully" && utmLink) {
-        window.open(utmLink, "_blank");
-      } else {
-        setShowNotEligible("SmartCoin");
-      }
-    } catch (err) {
-      console.error("SmartCoin apply failed:", err);
+    const result = await applySmartCoin(initialUtmLink);
+    if (result.status === "notEligible" || result.status === "error") {
       setShowNotEligible("SmartCoin");
-    } finally {
-      setSmartCoinApplying(false);
     }
   };
 
   const handleMMBApply = async (initialUtmLink?: string) => {
-    if (mmbApplying) return;
-    setMmbApplying(true);
-    try {
-      const phone = sessionStorage.getItem("userPhone") || "";
-      await saveShortLender(phone, "MMB");
-
-      // Directly redirect to utm_link without calling API
-      if (initialUtmLink) {
-        window.open(initialUtmLink, "_blank");
-      } else {
-        setShowNotEligible("MMB");
-      }
-
-      // Commented out API call - keeping for reference
-      // const res = await applyToShortMMB();
-      // const mmbData = res.data?.MMBCreateLead;
-      // const isSignedIn = mmbData?.message === "Signed-in Successfully";
-      // const hasRedirectLink = mmbData?.redirectLink && mmbData.redirectLink.trim() !== "";
-      // if (isSignedIn && hasRedirectLink) {
-      //   if (initialUtmLink) {
-      //     window.open(initialUtmLink, "_blank");
-      //   } else {
-      //     setShowNotEligible("MMB");
-      //   }
-      // } else {
-      //   setShowNotEligible("MMB");
-      // }
-    } catch (err) {
-      console.error("MMB apply failed:", err);
+    const result = await applyMMB(initialUtmLink);
+    if (result.status === "notEligible" || result.status === "error") {
       setShowNotEligible("MMB");
-    } finally {
-      setMmbApplying(false);
     }
   };
 
   const handleTejasLoanApply = async (initialUtmLink?: string) => {
-    if (tejasLoanApplying) return;
-    setTejasLoanApplying(true);
-    try {
-      const phone = sessionStorage.getItem("userPhone") || "";
-      await saveShortLender(phone, "TejasLoan");
-      await applyToLoanWalle("Tejas");
-
-      // Redirect to UTM link after API call
-      if (initialUtmLink) {
-        window.open(initialUtmLink, "_blank");
-      }
-    } catch (err) {
-      console.error("TejasLoan apply failed:", err);
-      // Still redirect on error - the UTM link flow should continue
-      if (initialUtmLink) {
-        window.open(initialUtmLink, "_blank");
-      }
-    } finally {
-      setTejasLoanApplying(false);
-    }
+    await applyTejasLoan(initialUtmLink);
   };
 
   const handleF1SpeedLoanApply = async (initialUtmLink?: string) => {
-    if (f1SpeedLoanApplying) return;
-    setF1SpeedLoanApplying(true);
-    try {
-      const phone = sessionStorage.getItem("userPhone") || "";
-      await saveShortLender(phone, "F1SpeedLoan");
-      await applyToLoanWalle("F1");
-
-      // Redirect to UTM link after API call
-      if (initialUtmLink) {
-        window.open(initialUtmLink, "_blank");
-      }
-    } catch (err) {
-      console.error("F1SpeedLoan apply failed:", err);
-      // Still redirect on error - the UTM link flow should continue
-      if (initialUtmLink) {
-        window.open(initialUtmLink, "_blank");
-      }
-    } finally {
-      setF1SpeedLoanApplying(false);
-    }
+    await applyF1SpeedLoan(initialUtmLink);
   };
 
   const handleLoanWalleApply = async () => {
