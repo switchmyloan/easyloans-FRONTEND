@@ -6,12 +6,14 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Lock, Zap, CheckCircle, Clock, ChevronRight } from "lucide-react";
 import { STATIC_LENDER_LOGOS, LENDER_FEATURE_TAGS, DEFAULT_FEATURE_TAG, DASHBOARD_PRIORITY_ORDER, LENDER_FEATURE_BADGES, DEFAULT_FEATURE_BADGES } from "@/lib/constants";
-import { getStoredShortExistingUserOffers, saveShortLender, applyToShortKreditBee, applyToShortRamFinCorp, applyToLoanWalle, applyToSmartCoin } from "@/lib/api";
+import { getStoredShortExistingUserOffers, saveShortLender, applyToShortKreditBee, applyToLoanWalle, applyToSmartCoin } from "@/lib/api";
 // applyToShortMMB removed - now redirecting directly to utm_link
 import toast, { Toaster } from "react-hot-toast";
 import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
 import LoanWalleLenderModal from "@/components/offers/LoanWalleLenderModal";
+import SessionActiveBanner from "@/components/shared/SessionActiveBanner";
 import { useOtpGuard } from "@/app/dashboard/layout";
+import { useRamFinCorpApply } from "@/hooks/useRamFinCorpApply";
 import RingImageSection from "./RingImageSection";
 
 // Lender UTM links — used when an offer doesn't carry its own utmLink. Same set
@@ -121,13 +123,19 @@ export default function LoanOffersBanner() {
   const [mainLender, setMainLender] = useState<PreviousLender | null>(null);
   const [otherLenders, setOtherLenders] = useState<PreviousLender[]>([]);
   const [kbApplying, setKbApplying] = useState(false);
-  const [ramFinCorpApplying, setRamFinCorpApplying] = useState(false);
   const [smartCoinApplying, setSmartCoinApplying] = useState(false);
   const [mmbApplying, setMmbApplying] = useState(false);
   const [tejasLoanApplying, setTejasLoanApplying] = useState(false);
   const [f1SpeedLoanApplying, setF1SpeedLoanApplying] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
-  const [sessionActiveMessage, setSessionActiveMessage] = useState<string | null>(null);
+
+  // RamFinCorp hook - handles apply logic, loading state, and session active banner
+  const {
+    apply: applyRamFinCorp,
+    applying: ramFinCorpApplying,
+    sessionActiveMessage,
+    clearSessionActiveMessage,
+  } = useRamFinCorpApply();
 
   // LoanWalle modal state
   const [showLoanWalleModal, setShowLoanWalleModal] = useState(false);
@@ -650,40 +658,12 @@ export default function LoanOffersBanner() {
     }
   };
 
-  // RamFinCorp special apply handler - calls the new API endpoint
+  // RamFinCorp special apply handler - uses shared hook
   const handleRamFinCorpApply = async () => {
-    if (ramFinCorpApplying) return;
-    setRamFinCorpApplying(true);
-    try {
-      const phone = sessionStorage.getItem("userPhone") || "";
-      await saveShortLender(phone, "RamFinCorp");
-      const res = await applyToShortRamFinCorp();
-
-      const outcome = res.data?.outcome;
-      const flow = res.data?.flow;
-      const redirectUrl = res.data?.redirectUrl?.trim() || "";
-
-      console.log("[RamFinCorp] outcome:", outcome, "flow:", flow, "redirectUrl:", redirectUrl);
-
-      // Only redirect on successful outcomes with a valid redirectUrl from API
-      if ((outcome === "BRE_APPROVED" || outcome === "PROCEED_TO_BANK") && redirectUrl) {
-        window.open(redirectUrl, "_blank");
-      } else if (flow === "sessionActive") {
-        // User has an active session - show the API message
-        const msg = res.message || "Your previous session is still active. Please try again later.";
-        console.log("[RamFinCorp] Session active - showing message:", msg);
-        setSessionActiveMessage(msg);
-        // Auto-hide after 5 seconds
-        setTimeout(() => setSessionActiveMessage(null), 5000);
-      } else {
-        // Show Not Eligible modal for BAD_REQUEST, REJECTED, or missing redirectUrl
-        setShowNotEligible("RamFinCorp");
-      }
-    } catch (err) {
-      console.error("RamFinCorp apply failed:", err);
+    const result = await applyRamFinCorp();
+    // Show NotEligible modal for notEligible or error status
+    if (result.status === "notEligible" || result.status === "error") {
       setShowNotEligible("RamFinCorp");
-    } finally {
-      setRamFinCorpApplying(false);
     }
   };
 
@@ -950,23 +930,10 @@ export default function LoanOffersBanner() {
     <Toaster position="top-center" />
 
     {/* Session Active Notification Banner */}
-    {sessionActiveMessage && (
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-amber-50 border border-amber-300 text-amber-800 px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 max-w-md"
-      >
-        <span className="text-xl">⚠️</span>
-        <span className="text-sm font-medium">{sessionActiveMessage}</span>
-        <button
-          onClick={() => setSessionActiveMessage(null)}
-          className="ml-2 text-amber-600 hover:text-amber-800"
-        >
-          ✕
-        </button>
-      </motion.div>
-    )}
+    <SessionActiveBanner
+      message={sessionActiveMessage}
+      onClose={clearSessionActiveMessage}
+    />
 
     <motion.div
       initial={{ opacity: 0, y: 10 }}

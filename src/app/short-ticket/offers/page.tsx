@@ -7,7 +7,6 @@ import {
   getStoredShortTicketOffers,
   saveShortLender,
   applyToShortKreditBee,
-  applyToShortRamFinCorp,
   // applyToShortMMB, // Commented out - now redirecting directly to utm_link
   applyToSmartCoin,
   applyToLoanWalle,
@@ -19,9 +18,11 @@ import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
 import ScratchCoupon from "@/components/offers/ScratchCoupon";
 import OfferCard from "@/components/offers/OfferCard";
 import LoanWalleLenderModal from "@/components/offers/LoanWalleLenderModal";
+import SessionActiveBanner from "@/components/shared/SessionActiveBanner";
 import TrustBadges from "@/components/ui/TrustBadges";
 import GradientBanner from "@/components/ui/GradientBanner";
 import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "@/lib/clevertap";
+import { useRamFinCorpApply } from "@/hooks/useRamFinCorpApply";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { Clock, Contact, Lock } from "lucide-react";
@@ -574,7 +575,6 @@ export default function ShortTicketOffersPage() {
   const [loaded, setLoaded] = useState(false);
   const [kbApplying, setKbApplying] = useState(false);
   const [kbApplied, setKbApplied] = useState(false);
-  const [ramFinCorpApplying, setRamFinCorpApplying] = useState(false);
   const [firstName, setFirstName] = useState<string>("");
   const [isKbMedium, setIsKbMedium] = useState(false);
   const [isRapidMoneyMedium, setIsRapidMoneyMedium] = useState(false);
@@ -599,8 +599,19 @@ export default function ShortTicketOffersPage() {
   const [f1SpeedLoanApplying, setF1SpeedLoanApplying] = useState(false);
 
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
-  const [sessionActiveMessage, setSessionActiveMessage] = useState<string | null>(null);
   const [priorityVisible, setPriorityVisible] = useState(0);
+
+  // RamFinCorp hook - handles apply logic, loading state, and session active banner
+  const {
+    apply: applyRamFinCorp,
+    applying: ramFinCorpApplying,
+    sessionActiveMessage,
+    clearSessionActiveMessage,
+  } = useRamFinCorpApply({
+    onSuccess: () => {
+      setAppliedLenders((prev) => new Set(prev).add("RamFinCorp"));
+    },
+  });
   const [showAll, setShowAll] = useState(false);
   const [showScratch, setShowScratch] = useState(false);
   const [coupon, setCoupon] = useState<KBCoupon | null>(null);
@@ -1096,56 +1107,16 @@ export default function ShortTicketOffersPage() {
   };
 
   const handleRamFinCorpApply = async () => {
-    if (ramFinCorpApplying) return;
-    setRamFinCorpApplying(true);
-
-    console.log("[RamFinCorp] Apply clicked");
-    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_CLICKED);
+    // Track lender clicked event (not in hook since it's specific to this page)
     cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
       Lender: "Ram FinCorp",
       LenderKey: "RamFinCorp",
     });
 
-    try {
-      const phone = sessionStorage.getItem("userPhone") || "";
-      await saveShortLender(phone, "RamFinCorp");
-      const res = await applyToShortRamFinCorp();
-
-      const outcome = res.data?.outcome;
-      const flow = res.data?.flow;
-      const redirectUrl = res.data?.redirectUrl?.trim() || "";
-
-      console.log("[RamFinCorp] outcome:", outcome, "flow:", flow, "redirectUrl:", redirectUrl);
-
-      // Only redirect on successful outcomes with a valid redirectUrl from API
-      if ((outcome === "BRE_APPROVED" || outcome === "PROCEED_TO_BANK") && redirectUrl) {
-        console.log(`[RamFinCorp] ${outcome} - redirecting`);
-        cleverTapTrackEvent(
-          outcome === "BRE_APPROVED"
-            ? CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_BRE_APPROVED
-            : CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_PROCEED_TO_BANK
-        );
-        window.open(redirectUrl, "_blank");
-        setAppliedLenders((prev) => new Set(prev).add("RamFinCorp"));
-      } else if (flow === "sessionActive") {
-        // User has an active session - show the API message
-        const msg = res.message || "Your previous session is still active. Please try again later.";
-        console.log("[RamFinCorp] Session active - showing message:", msg);
-        setSessionActiveMessage(msg);
-        // Auto-hide after 5 seconds
-        setTimeout(() => setSessionActiveMessage(null), 5000);
-      } else {
-        // Show Not Eligible modal for BAD_REQUEST, REJECTED, or missing redirectUrl
-        console.log("[RamFinCorp] Not eligible - outcome:", outcome);
-        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_NOT_ELIGIBLE);
-        setShowNotEligible("RamFinCorp");
-      }
-    } catch (err) {
-      console.error("RamFinCorp apply failed:", err);
-      cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_NOT_ELIGIBLE);
+    const result = await applyRamFinCorp();
+    // Show NotEligible modal for notEligible or error status
+    if (result.status === "notEligible" || result.status === "error") {
       setShowNotEligible("RamFinCorp");
-    } finally {
-      setRamFinCorpApplying(false);
     }
   };
 
@@ -1374,23 +1345,10 @@ export default function ShortTicketOffersPage() {
   return (
     <>
       {/* Session Active Notification Banner */}
-      {sessionActiveMessage && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-amber-50 border border-amber-300 text-amber-800 px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 max-w-md"
-        >
-          <span className="text-xl">⚠️</span>
-          <span className="text-sm font-medium">{sessionActiveMessage}</span>
-          <button
-            onClick={() => setSessionActiveMessage(null)}
-            className="ml-2 text-amber-600 hover:text-amber-800"
-          >
-            ✕
-          </button>
-        </motion.div>
-      )}
+      <SessionActiveBanner
+        message={sessionActiveMessage}
+        onClose={clearSessionActiveMessage}
+      />
 
       <main className="min-h-screen bg-[#F0E4FD] overflow-x-hidden relative">
         {/* Background decorations */}
