@@ -127,6 +127,7 @@ export default function LoanOffersBanner() {
   const [tejasLoanApplying, setTejasLoanApplying] = useState(false);
   const [f1SpeedLoanApplying, setF1SpeedLoanApplying] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
+  const [sessionActiveMessage, setSessionActiveMessage] = useState<string | null>(null);
 
   // LoanWalle modal state
   const [showLoanWalleModal, setShowLoanWalleModal] = useState(false);
@@ -650,8 +651,7 @@ export default function LoanOffersBanner() {
   };
 
   // RamFinCorp special apply handler - calls the new API endpoint
-  const handleRamFinCorpApply = async (initialUtmLink?: string) => {
-    // debugger
+  const handleRamFinCorpApply = async () => {
     if (ramFinCorpApplying) return;
     setRamFinCorpApplying(true);
     try {
@@ -660,19 +660,23 @@ export default function LoanOffersBanner() {
       const res = await applyToShortRamFinCorp();
 
       const outcome = res.data?.outcome;
-      const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || initialUtmLink || FALLBACK_UTM_LINKS.RamFinCorp || "https://ramfincorp.com/";
+      const flow = res.data?.flow;
+      const redirectUrl = res.data?.redirectUrl?.trim() || "";
 
-      // Redirect only if outcome is BRE_APPROVED or PROCEED_TO_BANK and redirectUrl exists
+      console.log("[RamFinCorp] outcome:", outcome, "flow:", flow, "redirectUrl:", redirectUrl);
+
+      // Only redirect on successful outcomes with a valid redirectUrl from API
       if ((outcome === "BRE_APPROVED" || outcome === "PROCEED_TO_BANK") && redirectUrl) {
         window.open(redirectUrl, "_blank");
-      } else if (redirectUrl) {
-        // Any other outcome but we still have a link (e.g. customerAuth /
-        // LEAD_ALREADY_EXISTS auto-login) — send the user through instead of
-        // showing Not Eligible.
-        console.log("[RamFinCorp] Redirecting to:", redirectUrl);
-        window.open(redirectUrl, "_blank");
+      } else if (flow === "sessionActive") {
+        // User has an active session - show the API message
+        const msg = res.message || "Your previous session is still active. Please try again later.";
+        console.log("[RamFinCorp] Session active - showing message:", msg);
+        setSessionActiveMessage(msg);
+        // Auto-hide after 5 seconds
+        setTimeout(() => setSessionActiveMessage(null), 5000);
       } else {
-        // Show Not Eligible modal for any other outcome
+        // Show Not Eligible modal for BAD_REQUEST, REJECTED, or missing redirectUrl
         setShowNotEligible("RamFinCorp");
       }
     } catch (err) {
@@ -857,10 +861,7 @@ export default function LoanOffersBanner() {
 
     // Special handling for RamFinCorp
     if (displayLender.id === "RamFinCorp") {
-      // Get utm_link from stored data for fallback
-      const data = getStoredShortExistingUserOffers()?.data as Record<string, unknown> | undefined;
-      const ramFinCorpData = data?.RamFinCorp as { utm_link?: string } | undefined;
-      handleRamFinCorpApply(ramFinCorpData?.utm_link);
+      handleRamFinCorpApply();
       return;
     }
 
@@ -947,6 +948,26 @@ export default function LoanOffersBanner() {
   return (
     <>
     <Toaster position="top-center" />
+
+    {/* Session Active Notification Banner */}
+    {sessionActiveMessage && (
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-amber-50 border border-amber-300 text-amber-800 px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 max-w-md"
+      >
+        <span className="text-xl">⚠️</span>
+        <span className="text-sm font-medium">{sessionActiveMessage}</span>
+        <button
+          onClick={() => setSessionActiveMessage(null)}
+          className="ml-2 text-amber-600 hover:text-amber-800"
+        >
+          ✕
+        </button>
+      </motion.div>
+    )}
+
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}

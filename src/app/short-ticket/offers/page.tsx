@@ -599,6 +599,7 @@ export default function ShortTicketOffersPage() {
   const [f1SpeedLoanApplying, setF1SpeedLoanApplying] = useState(false);
 
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
+  const [sessionActiveMessage, setSessionActiveMessage] = useState<string | null>(null);
   const [priorityVisible, setPriorityVisible] = useState(0);
   const [showAll, setShowAll] = useState(false);
   const [showScratch, setShowScratch] = useState(false);
@@ -1094,15 +1095,12 @@ export default function ShortTicketOffersPage() {
     }
   };
 
-  const handleRamFinCorpApply = async (initialUtmLink?: string) => {
-    // debugger
+  const handleRamFinCorpApply = async () => {
     if (ramFinCorpApplying) return;
     setRamFinCorpApplying(true);
 
-    // Track RamFinCorp apply clicked
-    console.log("[RamFinCorp] Apply clicked - firing CleverTap event");
+    console.log("[RamFinCorp] Apply clicked");
     cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_CLICKED);
-
     cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
       Lender: "Ram FinCorp",
       LenderKey: "RamFinCorp",
@@ -1114,35 +1112,36 @@ export default function ShortTicketOffersPage() {
       const res = await applyToShortRamFinCorp();
 
       const outcome = res.data?.outcome;
-      const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || initialUtmLink || FALLBACK_UTM.RamFinCorp;
+      const flow = res.data?.flow;
+      const redirectUrl = res.data?.redirectUrl?.trim() || "";
 
-      console.log("[RamFinCorp] Apply outcome:", outcome);
+      console.log("[RamFinCorp] outcome:", outcome, "flow:", flow, "redirectUrl:", redirectUrl);
 
-      // Redirect only if outcome is BRE_APPROVED or PROCEED_TO_BANK and redirectUrl exists
-      if (outcome === "BRE_APPROVED" && redirectUrl ) {
-        console.log("[RamFinCorp] BRE_APPROVED - firing CleverTap event");
-        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_BRE_APPROVED);
+      // Only redirect on successful outcomes with a valid redirectUrl from API
+      if ((outcome === "BRE_APPROVED" || outcome === "PROCEED_TO_BANK") && redirectUrl) {
+        console.log(`[RamFinCorp] ${outcome} - redirecting`);
+        cleverTapTrackEvent(
+          outcome === "BRE_APPROVED"
+            ? CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_BRE_APPROVED
+            : CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_PROCEED_TO_BANK
+        );
         window.open(redirectUrl, "_blank");
         setAppliedLenders((prev) => new Set(prev).add("RamFinCorp"));
-      } else if (outcome === "PROCEED_TO_BANK" && redirectUrl) {
-        console.log("[RamFinCorp] PROCEED_TO_BANK - firing CleverTap event");
-        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_PROCEED_TO_BANK);
-        window.open(redirectUrl, "_blank");
-        setAppliedLenders((prev) => new Set(prev).add("RamFinCorp"));
-      } else if (redirectUrl) {
-       console.log("[RamFinCorp] Redirecting to:", redirectUrl);
-        // cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_PROCEED_TO_BANK);
-        window.open(redirectUrl, "_blank");
-        setAppliedLenders((prev) => new Set(prev).add("RamFinCorp"));
+      } else if (flow === "sessionActive") {
+        // User has an active session - show the API message
+        const msg = res.message || "Your previous session is still active. Please try again later.";
+        console.log("[RamFinCorp] Session active - showing message:", msg);
+        setSessionActiveMessage(msg);
+        // Auto-hide after 5 seconds
+        setTimeout(() => setSessionActiveMessage(null), 5000);
       } else {
-        // Show Not Eligible modal for any other outcome
-        console.log("[RamFinCorp] Not eligible - firing CleverTap event");
+        // Show Not Eligible modal for BAD_REQUEST, REJECTED, or missing redirectUrl
+        console.log("[RamFinCorp] Not eligible - outcome:", outcome);
         cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_NOT_ELIGIBLE);
         setShowNotEligible("RamFinCorp");
       }
     } catch (err) {
       console.error("RamFinCorp apply failed:", err);
-      console.log("[RamFinCorp] Apply failed - firing not eligible CleverTap event");
       cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_NOT_ELIGIBLE);
       setShowNotEligible("RamFinCorp");
     } finally {
@@ -1355,7 +1354,7 @@ export default function ShortTicketOffersPage() {
 
   const onApplyFor = (lender: OrderedLender) => {
     if (lender.name === "KreditBee") return handleKreditBeeApply;
-    if (lender.name === "RamFinCorp") return () => handleRamFinCorpApply(lender.utm_link);
+    if (lender.name === "RamFinCorp") return handleRamFinCorpApply;
     if (lender.name === "SmartCoin") return () => handleSmartCoinApply(lender.utm_link);
     if (lender.name === "MMB") return () => handleMMBApply(lender.utm_link);
     if (lender.name === "TejasLoan") return () => handleTejasLoanApply(lender.utm_link);
@@ -1374,6 +1373,25 @@ export default function ShortTicketOffersPage() {
 
   return (
     <>
+      {/* Session Active Notification Banner */}
+      {sessionActiveMessage && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-amber-50 border border-amber-300 text-amber-800 px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 max-w-md"
+        >
+          <span className="text-xl">⚠️</span>
+          <span className="text-sm font-medium">{sessionActiveMessage}</span>
+          <button
+            onClick={() => setSessionActiveMessage(null)}
+            className="ml-2 text-amber-600 hover:text-amber-800"
+          >
+            ✕
+          </button>
+        </motion.div>
+      )}
+
       <main className="min-h-screen bg-[#F0E4FD] overflow-x-hidden relative">
         {/* Background decorations */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">

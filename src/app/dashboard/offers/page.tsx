@@ -162,6 +162,7 @@ export default function DashboardOffersPage() {
   const [tejasLoanApplying, setTejasLoanApplying] = useState(false);
   const [f1SpeedLoanApplying, setF1SpeedLoanApplying] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
+  const [sessionActiveMessage, setSessionActiveMessage] = useState<string | null>(null);
 
   // LoanWalle modal state
   const [showLoanWalleModal, setShowLoanWalleModal] = useState(false);
@@ -628,12 +629,11 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
     }
   };
 
-  const handleRamFinCorpApply = async (initialUtmLink?: string) => {
+  const handleRamFinCorpApply = async () => {
     if (ramFinCorpApplying) return;
     setRamFinCorpApplying(true);
 
-    // Track RamFinCorp apply clicked
-    console.log("[RamFinCorp] Apply clicked - firing CleverTap event");
+    console.log("[RamFinCorp] Apply clicked");
     cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_CLICKED);
 
     try {
@@ -642,35 +642,35 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
       const res = await applyToShortRamFinCorp();
 
       const outcome = res.data?.outcome;
-      const redirectUrl = res.data?.redirectUrl || res.data?.utm_link || initialUtmLink || FALLBACK_UTM_LINKS["RamFinCorp"] || "https://ramfincorp.com/";
+      const flow = res.data?.flow;
+      const redirectUrl = res.data?.redirectUrl?.trim() || "";
 
-      console.log("[RamFinCorp] Apply outcome:", outcome);
+      console.log("[RamFinCorp] outcome:", outcome, "flow:", flow, "redirectUrl:", redirectUrl);
 
-      if (outcome === "BRE_APPROVED" && redirectUrl) {
-        console.log("[RamFinCorp] BRE_APPROVED - firing CleverTap event");
-        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_BRE_APPROVED);
+      // Only redirect on successful outcomes with a valid redirectUrl from API
+      if ((outcome === "BRE_APPROVED" || outcome === "PROCEED_TO_BANK") && redirectUrl) {
+        console.log(`[RamFinCorp] ${outcome} - redirecting`);
+        cleverTapTrackEvent(
+          outcome === "BRE_APPROVED"
+            ? CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_BRE_APPROVED
+            : CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_PROCEED_TO_BANK
+        );
         window.open(redirectUrl, "_blank");
-      } else if (outcome === "PROCEED_TO_BANK" && redirectUrl) {
-        console.log("[RamFinCorp] PROCEED_TO_BANK - firing CleverTap event");
-        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_PROCEED_TO_BANK);
-        window.open(redirectUrl, "_blank");
-      } else if (res.success) {
-        // Fallback for success without specific outcome
-        window.open(redirectUrl, "_blank");
-      } else if (redirectUrl) {
-        // Any other outcome but we still have a link (e.g. customerAuth /
-        // LEAD_ALREADY_EXISTS auto-login) — send the user through instead of
-        // showing Not Eligible.
-        console.log("[RamFinCorp] Redirecting to:", redirectUrl);
-        window.open(redirectUrl, "_blank");
+      } else if (flow === "sessionActive") {
+        // User has an active session - show the API message
+        const msg = res.message || "Your previous session is still active. Please try again later.";
+        console.log("[RamFinCorp] Session active - showing message:", msg);
+        setSessionActiveMessage(msg);
+        // Auto-hide after 5 seconds
+        setTimeout(() => setSessionActiveMessage(null), 5000);
       } else {
-        console.log("[RamFinCorp] Not eligible - firing CleverTap event");
+        // Show error for BAD_REQUEST, REJECTED, or missing redirectUrl
+        console.log("[RamFinCorp] Not eligible - outcome:", outcome);
         cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_NOT_ELIGIBLE);
-        toast.error(res.message || "Something went wrong. Please try again.", { duration: 4000 });
+        toast.error(res.message || "You are not eligible for this offer.", { duration: 4000 });
       }
     } catch (err) {
       console.error("RamFinCorp apply failed:", err);
-      console.log("[RamFinCorp] Apply failed - firing not eligible CleverTap event");
       cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_APPLY_NOT_ELIGIBLE);
       toast.error("Something went wrong. Please try again.", { duration: 4000 });
     } finally {
@@ -841,7 +841,7 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
     }
 
     if (lenderName === "RamFinCorp") {
-      handleRamFinCorpApply(utmLink);
+      handleRamFinCorpApply();
       return;
     }
 
@@ -896,6 +896,26 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
   return (
     <>
       <Toaster position="top-center" />
+
+      {/* Session Active Notification Banner */}
+      {sessionActiveMessage && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-amber-50 border border-amber-300 text-amber-800 px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 max-w-md"
+        >
+          <span className="text-xl">⚠️</span>
+          <span className="text-sm font-medium">{sessionActiveMessage}</span>
+          <button
+            onClick={() => setSessionActiveMessage(null)}
+            className="ml-2 text-amber-600 hover:text-amber-800"
+          >
+            ✕
+          </button>
+        </motion.div>
+      )}
+
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="mb-6">

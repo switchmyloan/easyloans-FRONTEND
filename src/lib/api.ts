@@ -1071,8 +1071,10 @@ export interface RamFinCorpApplyResponse {
   statusCode: number;
   data?: {
     outcome?: string;
+    flow?: string;
     redirectUrl?: string;
     utm_link?: string;
+    retryAfterMs?: number;
     [key: string]: unknown;
   };
 }
