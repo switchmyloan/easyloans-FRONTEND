@@ -468,6 +468,10 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
           utmLink: ramFinCorpData?.utm_link || FALLBACK_UTM_LINKS["RamFinCorp"],
           isOffer: false,
         });
+      } else if (ramFinCorpData && !isRamFinCorpEligible) {
+        // Track RamFinCorp dedup fail - API returned data but user is not eligible
+        console.log("[RamFinCorp] Dedup fail - firing CleverTap event");
+        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_FAIL);
       }
 
       // Add SmartCoin if eligible (isDuplicate === false)

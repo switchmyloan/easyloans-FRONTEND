@@ -800,7 +800,14 @@ export default function ShortTicketOffersPage() {
           const ramFinCorpMessage = (
             (lender?.data as { response?: { message?: string } })?.response?.message || ""
           );
-          if (ramFinCorpMessage !== "Dedup Success") break;
+          if (ramFinCorpMessage !== "Dedup Success") {
+            // Track RamFinCorp dedup fail - API returned data but user is not eligible
+            if (lender?.data) {
+              console.log("[RamFinCorp] Dedup fail - firing CleverTap event");
+              cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_FAIL);
+            }
+            break;
+          }
           // Track RamFinCorp card shown after dedup success
           console.log("[RamFinCorp] Dedup success - card shown, firing CleverTap event");
           cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_SUCCESS_CARD_SHOWN);

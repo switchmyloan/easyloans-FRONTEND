@@ -268,6 +268,8 @@ export const CLEVERTAP_EVENTS = {
   EASY_LANGUAGE_SELECTED: "Easy - Language Selected",
     /** RamFinCorp: Fired when card is shown after dedup success. */
   EASY_RAMFINCORP_DEDUP_SUCCESS_CARD_SHOWN: "Easy - ramfincorp_dedup_success_card_shown",
+  /** RamFinCorp: Fired when response dedup fail. */
+  EASY_RAMFINCORP_DEDUP_FAIL: "Easy - ramfincorp_dedup_fail",
   /** RamFinCorp: Fired when user clicks Apply. */
   EASY_RAMFINCORP_APPLY_CLICKED: "Easy - ramfincorp_apply_clicked",
   /** RamFinCorp: Fired when apply outcome is BRE_APPROVED. */
