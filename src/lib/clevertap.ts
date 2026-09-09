@@ -181,7 +181,7 @@ export function syncCleverTapFromSession(): void {
     Gender: formData.gender ? SESSION_GENDER_TO_CLEVERTAP[formData.gender] : undefined,
     DOB: formData.dateOfBirth ? new Date(formData.dateOfBirth) : undefined,
     Pincode: formData.pincode,
-    Job_Type: formData.jobType,
+    LP_Job_Type: formData.jobType,
     Income: formData.monthlySalary ? Number(formData.monthlySalary) : undefined,
     id_mrn: sessionStorage.getItem("userMrn") ?? undefined,
     "Customer Type": formData.jobType,
@@ -212,7 +212,7 @@ export function syncCleverTapFromSession(): void {
     // shows them in the profile header rather than the "User properties"
     // panel. Duplicate them under custom keys so they also appear there.
     Pincode: formData.pincode,
-    Job_Type: formData.jobType,
+    LP_Job_Type: formData.jobType,
     Income: formData.monthlySalary ? Number(formData.monthlySalary) : undefined,
     id_mrn: sessionStorage.getItem("userMrn") ?? undefined,
     "Customer Type": formData.jobType,

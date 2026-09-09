@@ -428,7 +428,7 @@ function ShortTicketFormContent() {
           DOB: new Date(dobStr),
           Pincode: data.pincode,
           Income: data.monthly_income,
-          Job_Type: data.profile,
+          LP_Job_Type: data.profile,
           "Customer Type": data.profile,
           "Monthly Income": data.monthly_income,
           "Loan Purpose": data.loan_purpose,

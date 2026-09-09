@@ -915,6 +915,16 @@ export async function getOfferShortTicket(
     sessionStorage.setItem("userFormData", JSON.stringify(payload));
   }
 
+  // Track RamFinCorp dedup fail event if applicable (new user flow)
+  const ramFinCorpData = json.data?.RamFinCorp as {
+    data?: { response?: { message?: string } };
+  } | undefined;
+  const isRamFinCorpEligible = ramFinCorpData?.data?.response?.message === "Dedup Success";
+  if (ramFinCorpData && !isRamFinCorpEligible) {
+    console.log("[RamFinCorp] Dedup fail detected in new user API response - firing CleverTap event");
+    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_FAIL);
+  }
+
   return json;
 }
 
@@ -1383,6 +1393,16 @@ export async function getExistingShortUserOffer(
         sessionStorage.setItem("userMrn", json.data.user.mrn);
       }
     }
+  }
+
+  // Track RamFinCorp dedup fail event if applicable
+  const ramFinCorpData = json.data.RamFinCorp as {
+    data?: { response?: { message?: string } };
+  } | undefined;
+  const isRamFinCorpEligible = ramFinCorpData?.data?.response?.message === "Dedup Success";
+  if (ramFinCorpData && !isRamFinCorpEligible) {
+    console.log("[RamFinCorp] Dedup fail detected in API response - firing CleverTap event");
+    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_FAIL);
   }
 
   return json;
