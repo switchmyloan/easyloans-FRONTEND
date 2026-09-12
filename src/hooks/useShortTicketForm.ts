@@ -8,6 +8,8 @@ import {
   getOfferShortTicket,
   saveShortDraftLead,
   getStoredShortLeadId,
+  checkExistingUser,
+  getExistingShortUserDetails,
   type ShortTicketPayload,
 } from "@/lib/api";
 
@@ -152,7 +154,31 @@ export function useShortTicketForm(): [ShortTicketFormState, ShortTicketFormActi
         shortSessionId,
       });
 
-      // Show brief loading then move to stage 2
+      // Check for existing user (lightweight check)
+      try {
+        const checkUserResponse = await checkExistingUser(mobile);
+        const userExists = checkUserResponse.data.exists;
+
+        if (userExists) {
+          // Fetch existing user details
+          await getExistingShortUserDetails(mobile);
+
+          // Returning user - mark as OTP verified
+          sessionStorage.setItem("dashboardOtpVerified", "true");
+          sessionStorage.setItem("dashboardRequiresLogin", "false");
+          sessionStorage.setItem("shortDashboardRequiresLogin", "false");
+          sessionStorage.removeItem("shortDashboardLinkToken");
+
+          // Redirect to dashboard
+          window.location.href = "/dashboard";
+          return;
+        }
+      } catch (err) {
+        // If check fails, continue with normal flow (new user)
+        console.warn("checkExistingUser failed:", err);
+      }
+
+      // New user - show brief loading then move to stage 2
       setStage("loading");
 
       // Small delay for loading screen

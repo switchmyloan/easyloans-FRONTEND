@@ -565,43 +565,112 @@ export async function verifyOtp(payload: {
   return json as VerifyOtpResponse;
 }
 
-// ---------- Stage 2: Get offers ----------
+// ---------- Check Existing User ----------
 
-const JOB_TYPE_MAP: Record<string, string> = {
-  Salaried: "SALARIED",
-  "Self Employed": "SELF_EMPLOYED",
-  "Business Owner": "BUSINESS_OWNER",
-  Freelancer: "FREELANCER",
-  Student: "STUDENT",
-  Other: "OTHER",
-};
-
-const GENDER_MAP: Record<string, string> = {
-  Male: "MALE",
-  Female: "FEMALE",
-  Other: "OTHER",
-};
-
-function formatDOB(dob: Date | string): string {
-  const d = typeof dob === "string" ? new Date(dob) : dob;
-  return d.toISOString().split("T")[0];
+export interface CheckExistingUserResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: {
+    exists: boolean;
+    phone: string;
+  };
 }
 
-export interface GetOffersPayload {
-  name: string;
-  first_name: string;
-  last_name: string;
-  mobile: string;
+const CHECK_USER_API_KEY = "3bbda80daa4dbf6c3e2ab527d02b2bf9bb42a5186a83e5e7ea688673c2f812ac";
+
+export async function checkExistingUser(phone: string): Promise<CheckExistingUserResponse> {
+  const res = await fetch(`${BASE_URL}/onsubmit/check-existing-user`, {
+    method: "POST",
+    headers: {
+      "X-API-Key": CHECK_USER_API_KEY,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ phone, type: "short" }),
+  });
+
+  if (!res.ok) throw new Error("Failed to check user status. Please try again.");
+
+  const json: CheckExistingUserResponse = await res.json();
+
+  if (json.statusCode !== 200) {
+    throw new Error(json.message || "Failed to check user status.");
+  }
+
+  return json;
+}
+
+// ---------- Get Existing Short User Details ----------
+
+export interface ExistingShortUserDetails {
+  firstName: string;
+  lastName: string;
+  mobileNumber: string;
   email: string;
   gender: string;
   pincode: string;
-  pan_no: string;
-  dob: Date | string;
-  profile: string;
-  monthly_income: number;
-  loan_purpose: string;
-  loan_amount: number;
-  mrn?: string | null;
+  panNumber: string;
+  dateOfBirth: string;
+  jobType: string;
+  monthlySalary: number;
+  loanPurpose: string;
+  loanAmount: number;
+  isSalaried: boolean;
+  mrn: string | null;
+}
+
+export interface GetExistingShortUserDetailsResponse {
+  statusCode: number;
+  success: boolean;
+  message: string;
+  data: {
+    found: boolean;
+    user?: ExistingShortUserDetails;
+  };
+}
+
+export async function getExistingShortUserDetails(
+  phone: string
+): Promise<GetExistingShortUserDetailsResponse> {
+  const res = await fetch(`${BASE_URL}/onSubmit/get-existing-short-user-details`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ phone }),
+  });
+
+  if (!res.ok) throw new Error("Failed to fetch user details. Please try again.");
+
+  const json: GetExistingShortUserDetailsResponse = await res.json();
+
+  if (json.statusCode !== 200) {
+    throw new Error(json.message || "Failed to fetch user details.");
+  }
+
+  // Store user data in session if found
+  if (isBrowser() && json.data.found && json.data.user) {
+    const user = json.data.user;
+    sessionStorage.setItem("userPhone", user.mobileNumber);
+    sessionStorage.setItem("userFirstName", user.firstName);
+    sessionStorage.setItem("userLoanAmount", String(user.loanAmount));
+    if (user.mrn) sessionStorage.setItem("userMrn", user.mrn);
+
+    sessionStorage.setItem("userFormData", JSON.stringify({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      mobileNumber: user.mobileNumber,
+      email: user.email,
+      panNumber: user.panNumber,
+      dateOfBirth: user.dateOfBirth,
+      gender: user.gender,
+      pincode: user.pincode,
+      jobType: user.jobType,
+      monthlySalary: String(user.monthlySalary),
+      loanAmount: String(user.loanAmount),
+      loanPurpose: user.loanPurpose,
+    }));
+  }
+
+  return json;
 }
 
 // ---------- Offers API response types ----------
@@ -611,109 +680,7 @@ export interface StaticLender {
   utm_link: string;
 }
 
-export interface LenderResponse {
-  success: boolean;
-  message: string;
-  data: unknown;
-  statusCode: number;
-  utm_link?: string;
-  isDuplicate?: boolean;
-}
-
-export interface OffersApiResponse {
-  statusCode: number;
-  success: boolean;
-  message: string;
-  data: {
-    MoneyView: LenderResponse;
-    KreditBee: LenderResponse;
-    SmartCoinHighIntent?: LenderResponse;
-    TrueBalance?: LenderResponse;
-    Zype_Dedupe?: LenderResponse;
-    isSalaried: boolean;
-    staticLenders: StaticLender[];
-  };
-}
-
-const OFFERS_SESSION_KEY = "offersResponse";
-
-export async function getOffers(
-  payload: GetOffersPayload
-): Promise<OffersApiResponse> {
-  const isSalaried = payload.profile === "Salaried";
-
-  const mrn = payload.mrn || getStoredMrn();
-  console.log("[MRN] POST /get-offer-kb-mv — mrn:", mrn);
-
-  const body = {
-    name: payload.name,
-    firstName: payload.first_name,
-    lastName: payload.last_name,
-    email: payload.email,
-    dateOfBirth: formatDOB(payload.dob),
-    gender: GENDER_MAP[payload.gender] || payload.gender,
-    jobType: JOB_TYPE_MAP[payload.profile] || payload.profile,
-    isSalaried,
-    loanAmount: String(payload.loan_amount),
-    mobileNumber: payload.mobile,
-    monthlySalary: Number(payload.monthly_income),
-    onboardingStep: "",
-    panNumber: payload.pan_no,
-    pincode: payload.pincode,
-    loanPurpose: payload.loan_purpose,
-    ...(mrn ? { mrn } : {}),
-  };
-
-  const res = await fetch(`${BASE_URL}/onSubmit/get-offer-kb-mv`, {
-    method: "POST",
-    headers: PARTNER_HEADERS,
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) throw new Error("Failed to fetch offers. Please try again.");
-
-  const json: OffersApiResponse = await res.json();
-
-  if (json.statusCode !== 200 || !json.success) {
-    throw new Error(json.message || "Failed to fetch offers. Please try again.");
-  }
-
-  sessionStorage.setItem(OFFERS_SESSION_KEY, JSON.stringify(json));
-  sessionStorage.setItem("userPhone", payload.mobile);
-  sessionStorage.setItem("userLoanAmount", String(payload.loan_amount));
-
-  // Store user data for lender-specific apply APIs (e.g. KreditBee)
-  sessionStorage.setItem("userFormData", JSON.stringify({
-    firstName: payload.first_name,
-    lastName: payload.last_name,
-    mobileNumber: payload.mobile,
-    email: payload.email,
-    panNumber: payload.pan_no,
-    dateOfBirth: formatDOB(payload.dob),
-    gender: payload.gender,
-    pincode: payload.pincode,
-    jobType: JOB_TYPE_MAP[payload.profile] || payload.profile,
-    monthlySalary: String(payload.monthly_income),
-    loanAmount: String(payload.loan_amount),
-    loanPurpose: payload.loan_purpose,
-  }));
-
-  return json;
-}
-
-export function getStoredOffers(): OffersApiResponse | null {
-  const raw = sessionStorage.getItem(OFFERS_SESSION_KEY);
-  if (!raw) return null;
-  try {
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
-}
-
-// ---------- Save Lender (on Apply Now click) ----------
-
-// ---------- Apply to KreditBee ----------
+// ---------- Apply response types (shared by short-ticket lender APIs) ----------
 
 export interface KreditBeeApplyResponse {
   statusCode: number;
@@ -729,26 +696,6 @@ export interface KreditBeeApplyResponse {
   };
 }
 
-export async function applyToKreditBee(): Promise<KreditBeeApplyResponse> {
-  const raw = sessionStorage.getItem("userFormData");
-  if (!raw) throw new Error("User data not found. Please fill the form first.");
-
-  const userData = JSON.parse(raw);
-
-  const res = await fetch(`${BASE_URL}/onSubmit/kreditbee`, {
-    method: "POST",
-    headers: PARTNER_HEADERS,
-    body: JSON.stringify(userData),
-  });
-
-  if (!res.ok) throw new Error("Failed to apply to KreditBee. Please try again.");
-
-  const json: KreditBeeApplyResponse = await res.json();
-  return json;
-}
-
-// ---------- Apply to MoneyView ----------
-
 export interface MoneyViewApplyResponse {
   statusCode: number;
   success: boolean;
@@ -761,37 +708,6 @@ export interface MoneyViewApplyResponse {
       statusCode: number;
     };
   };
-}
-
-export async function applyToMoneyView(): Promise<MoneyViewApplyResponse> {
-  const raw = sessionStorage.getItem("userFormData");
-  if (!raw) throw new Error("User data not found. Please fill the form first.");
-
-  const userData = JSON.parse(raw);
-
-  const body = {
-    firstName: userData.firstName,
-    lastName: userData.lastName,
-    mobileNumber: userData.mobileNumber,
-    panNumber: userData.panNumber,
-    gender: (userData.gender || "").toLowerCase(),
-    dateOfBirth: userData.dateOfBirth,
-    jobType: (userData.jobType || "").toLowerCase(),
-    monthlySalary: Number(userData.monthlySalary),
-    pincode: userData.pincode,
-    email: userData.email,
-  };
-
-  const res = await fetch(`${BASE_URL}/onSubmit/money-view`, {
-    method: "POST",
-    headers: PARTNER_HEADERS,
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) throw new Error("Failed to apply to MoneyView. Please try again.");
-
-  const json: MoneyViewApplyResponse = await res.json();
-  return json;
 }
 
 // ---------- Short Ticket (WhatsApp / campaign flow) ----------
@@ -936,27 +852,6 @@ export function getStoredShortTicketOffers(): ShortTicketResponse | null {
     return JSON.parse(raw);
   } catch {
     return null;
-  }
-}
-
-// ---------- Save Lender (on Apply Now click) ----------
-
-export async function saveLender(phoneNumber: string, lenderName: string): Promise<void> {
-  try {
-    const mrn = getStoredMrn();
-    console.log("[MRN] POST /save-lender — mrn:", mrn);
-    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, { Lender: lenderName });
-    await fetch(`${BASE_URL}/onSubmit/save-lender`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        phoneNumber,
-        lenders: [{ lenderName }],
-        ...(mrn ? { mrn } : {}),
-      }),
-    });
-  } catch (err) {
-    console.error("Failed to save lender:", err);
   }
 }
 
@@ -1320,93 +1215,94 @@ export interface ShortExistingUserOffersResponse {
   success: boolean;
 }
 
-/**
- * Fetches existing offers for a short ticket user by mobile number.
- * Stores the response in sessionStorage for dashboard components.
- */
-export async function getExistingShortUserOffer(
-  mobileNumber: string,
-  utmParams?: { utm_source?: string | null; utm_medium?: string | null }
-): Promise<ShortExistingUserOffersResponse> {
-  // Get UTM params from arguments first, then fallback to sessionStorage
-  const utmSource = utmParams?.utm_source ?? (isBrowser() ? sessionStorage.getItem("utm_source") : null);
-  const utmMedium = utmParams?.utm_medium ?? (isBrowser() ? sessionStorage.getItem("utm_medium") : null);
+// /**
+//  * Fetches existing offers for a short ticket user by mobile number.
+//  * Stores the response in sessionStorage for dashboard components.
+//  * @deprecated Use checkExistingUser + getExistingShortUserDetails instead
+//  */
+// export async function getExistingShortUserOffer(
+//   mobileNumber: string,
+//   utmParams?: { utm_source?: string | null; utm_medium?: string | null }
+// ): Promise<ShortExistingUserOffersResponse> {
+//   // Get UTM params from arguments first, then fallback to sessionStorage
+//   const utmSource = utmParams?.utm_source ?? (isBrowser() ? sessionStorage.getItem("utm_source") : null);
+//   const utmMedium = utmParams?.utm_medium ?? (isBrowser() ? sessionStorage.getItem("utm_medium") : null);
 
-  const body = {
-    mobileNumber,
-    ...(utmSource ? { utm_source: utmSource } : {}),
-    ...(utmMedium ? { utm_medium: utmMedium } : {}),
-  };
+//   const body = {
+//     mobileNumber,
+//     ...(utmSource ? { utm_source: utmSource } : {}),
+//     ...(utmMedium ? { utm_medium: utmMedium } : {}),
+//   };
 
-  console.log("[getExistingShortUserOffer] body:", body);
+//   console.log("[getExistingShortUserOffer] body:", body);
 
-  const res = await fetch(`${BASE_URL}/onSubmit/get-existing-short-user-offer`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+//   const res = await fetch(`${BASE_URL}/onSubmit/get-existing-short-user-offer`, {
+//     method: "POST",
+//     headers: { "Content-Type": "application/json" },
+//     body: JSON.stringify(body),
+//   });
 
-  if (!res.ok) throw new Error("Failed to fetch user data. Please try again.");
+//   if (!res.ok) throw new Error("Failed to fetch user data. Please try again.");
 
-  // Check if response is JSON before parsing
-  const contentType = res.headers.get("content-type");
-  if (!contentType || !contentType.includes("application/json")) {
-    throw new Error("Server returned invalid response. Please try again.");
-  }
+//   // Check if response is JSON before parsing
+//   const contentType = res.headers.get("content-type");
+//   if (!contentType || !contentType.includes("application/json")) {
+//     throw new Error("Server returned invalid response. Please try again.");
+//   }
 
-  const json: ShortExistingUserOffersResponse = await res.json();
+//   const json: ShortExistingUserOffersResponse = await res.json();
 
-  if (json.statusCode !== 200) {
-    throw new Error(json.message || "Failed to fetch user data.");
-  }
+//   if (json.statusCode !== 200) {
+//     throw new Error(json.message || "Failed to fetch user data.");
+//   }
 
-  // Store the response in session
-  if (isBrowser()) {
-    sessionStorage.setItem(SHORT_EXISTING_USER_SESSION_KEY, JSON.stringify(json));
+//   // Store the response in session
+//   if (isBrowser()) {
+//     sessionStorage.setItem(SHORT_EXISTING_USER_SESSION_KEY, JSON.stringify(json));
 
-    // Store shortOfferLeadId for save-lender API calls
-    if (json.data.shortOfferLeadId) {
-      sessionStorage.setItem("shortOfferLeadId", json.data.shortOfferLeadId);
-    }
+//     // Store shortOfferLeadId for save-lender API calls
+//     if (json.data.shortOfferLeadId) {
+//       sessionStorage.setItem("shortOfferLeadId", json.data.shortOfferLeadId);
+//     }
 
-    // If user found, store their data
-    const userExists = json.data.found || json.data.exists;
-    if (userExists && json.data.user) {
-      sessionStorage.setItem("userFirstName", json.data.user.firstName);
-      sessionStorage.setItem("userPhone", json.data.user.mobileNumber);
-      sessionStorage.setItem("userLoanAmount", String(json.data.user.loanAmount));
-      sessionStorage.setItem("userFormData", JSON.stringify({
-        firstName: json.data.user.firstName,
-        lastName: json.data.user.lastName,
-        mobileNumber: json.data.user.mobileNumber,
-        email: json.data.user.email,
-        panNumber: json.data.user.panNumber,
-        dateOfBirth: json.data.user.dateOfBirth,
-        gender: json.data.user.gender,
-        pincode: json.data.user.pincode,
-        jobType: json.data.user.jobType,
-        monthlySalary: String(json.data.user.monthlySalary),
-        loanAmount: String(json.data.user.loanAmount),
-        loanPurpose: json.data.user.loanPurpose,
-      }));
-      if (json.data.user.mrn) {
-        sessionStorage.setItem("userMrn", json.data.user.mrn);
-      }
-    }
-  }
+//     // If user found, store their data
+//     const userExists = json.data.found || json.data.exists;
+//     if (userExists && json.data.user) {
+//       sessionStorage.setItem("userFirstName", json.data.user.firstName);
+//       sessionStorage.setItem("userPhone", json.data.user.mobileNumber);
+//       sessionStorage.setItem("userLoanAmount", String(json.data.user.loanAmount));
+//       sessionStorage.setItem("userFormData", JSON.stringify({
+//         firstName: json.data.user.firstName,
+//         lastName: json.data.user.lastName,
+//         mobileNumber: json.data.user.mobileNumber,
+//         email: json.data.user.email,
+//         panNumber: json.data.user.panNumber,
+//         dateOfBirth: json.data.user.dateOfBirth,
+//         gender: json.data.user.gender,
+//         pincode: json.data.user.pincode,
+//         jobType: json.data.user.jobType,
+//         monthlySalary: String(json.data.user.monthlySalary),
+//         loanAmount: String(json.data.user.loanAmount),
+//         loanPurpose: json.data.user.loanPurpose,
+//       }));
+//       if (json.data.user.mrn) {
+//         sessionStorage.setItem("userMrn", json.data.user.mrn);
+//       }
+//     }
+//   }
 
-  // Track RamFinCorp dedup fail event if applicable
-  const ramFinCorpData = json.data.RamFinCorp as {
-    data?: { response?: { message?: string } };
-  } | undefined;
-  const isRamFinCorpEligible = ramFinCorpData?.data?.response?.message === "Dedup Success";
-  if (ramFinCorpData && !isRamFinCorpEligible) {
-    console.log("[RamFinCorp] Dedup fail detected in API response - firing CleverTap event");
-    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_FAIL);
-  }
+//   // Track RamFinCorp dedup fail event if applicable
+//   const ramFinCorpData = json.data.RamFinCorp as {
+//     data?: { response?: { message?: string } };
+//   } | undefined;
+//   const isRamFinCorpEligible = ramFinCorpData?.data?.response?.message === "Dedup Success";
+//   if (ramFinCorpData && !isRamFinCorpEligible) {
+//     console.log("[RamFinCorp] Dedup fail detected in API response - firing CleverTap event");
+//     cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_FAIL);
+//   }
 
-  return json;
-}
+//   return json;
+// }
 
 export function getStoredShortExistingUserOffers(): ShortExistingUserOffersResponse | null {
   if (!isBrowser()) return null;

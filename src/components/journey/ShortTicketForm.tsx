@@ -13,7 +13,8 @@ import {
   saveShortDraftLead,
   submitLead,
   mapLeadToFormDefaults,
-  getExistingShortUserOffer,
+  checkExistingUser,
+  getExistingShortUserDetails,
   type SendOtpResponse,
   type PrefilledStage2,
 } from "@/lib/api";
@@ -308,20 +309,18 @@ function ShortTicketFormContent() {
         return;
       }
 
-      // Check for existing user offers (returning user detection)
+      // Check for existing user (lightweight check)
       try {
-        const utmSource = sessionStorage.getItem("utm_source");
-        const utmMedium = sessionStorage.getItem("utm_medium");
-        const existingUserResponse = await getExistingShortUserOffer(stage1Data.mobile, {
-          utm_source: utmSource,
-          utm_medium: utmMedium,
-        });
-        const userExists = existingUserResponse.data.found || existingUserResponse.data.exists;
+        const checkUserResponse = await checkExistingUser(stage1Data.mobile);
+        const userExists = checkUserResponse.data.exists;
 
         if (userExists) {
           cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_EXISTING_USER_IDENTIFIED, {
             Phone: `+91${stage1Data.mobile}`,
           });
+
+          // Fetch existing user details
+          await getExistingShortUserDetails(stage1Data.mobile);
 
           // Sync full profile from session
           syncCleverTapFromSession();
@@ -340,7 +339,7 @@ function ShortTicketFormContent() {
         }
       } catch (err) {
         // If check fails, continue with normal flow (new user)
-        console.warn("getExistingShortUserOffer check failed:", err);
+        console.warn("checkExistingUser failed:", err);
       }
 
       // New user - continue to stage2

@@ -13,6 +13,8 @@ import {
   saveShortDraftLead,
   submitLead,
   mapLeadToFormDefaults,
+  checkExistingUser,
+  getExistingShortUserDetails,
   type SendOtpResponse,
   type PrefilledStage2,
 } from "@/lib/api";
@@ -236,10 +238,36 @@ function ShortTicketJourneyContent() {
         setOtpError(err instanceof Error ? err.message : "Invalid OTP. Please try again.");
         return;
       }
+
+      // Check for existing user (lightweight check)
+      try {
+        const checkUserResponse = await checkExistingUser(stage1Data.mobile);
+        const userExists = checkUserResponse.data.exists;
+
+        if (userExists) {
+          // Fetch existing user details
+          await getExistingShortUserDetails(stage1Data.mobile);
+
+          // Returning user - mark as OTP verified
+          sessionStorage.setItem("dashboardOtpVerified", "true");
+          sessionStorage.setItem("dashboardRequiresLogin", "false");
+          sessionStorage.setItem("shortDashboardRequiresLogin", "false");
+          sessionStorage.removeItem("shortDashboardLinkToken");
+
+          // Redirect to dashboard
+          router.push("/dashboard");
+          return;
+        }
+      } catch (err) {
+        // If check fails, continue with normal flow (new user)
+        console.warn("checkExistingUser failed:", err);
+      }
+
+      // New user - continue to stage2
       setStage("loading");
       setTimeout(() => setStage("stage2"), LOADING_DELAY_MS);
     },
-    [stage1Data, otpData]
+    [stage1Data, otpData, router]
   );
 
   const handleOtpResend = useCallback(async () => {
