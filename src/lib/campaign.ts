@@ -5,30 +5,30 @@
 // additive and wrapped in this flag, so turning it off restores the original
 // design exactly — nothing else needs editing.
 //
-// TO TURN THE INDEPENDENCE DAY THEME OFF:
-//   set NEXT_PUBLIC_CAMPAIGN=none in .env (then restart / rebuild)
-//   — or change the fallback below from "independence" to "none".
+// TO SWITCH CAMPAIGNS:
+//   set NEXT_PUBLIC_CAMPAIGN=ganpati|independence|none in .env (then restart / rebuild)
+//   — or change the fallback below.
 // ============================================================
 
-export type Campaign = "independence" | "none";
+export type Campaign = "independence" | "ganpati" | "none";
 
 // NEXT_PUBLIC_* values are inlined at build time, so a change here needs a
 // rebuild (dev server restart) to take effect.
 export const ACTIVE_CAMPAIGN: Campaign =
-  (process.env.NEXT_PUBLIC_CAMPAIGN as Campaign | undefined) || "independence";
+  (process.env.NEXT_PUBLIC_CAMPAIGN as Campaign | undefined) || "ganpati";
 
 export const isIndependenceCampaign = ACTIVE_CAMPAIGN === "independence";
+export const isGanpatiCampaign = ACTIVE_CAMPAIGN === "ganpati";
 
 /**
  * Centre-column hero illustration (the India Gate / flag / doves artwork).
- *
- * Save the artwork to `public/independence-hero.png` (PNG keeps the
- * transparent background; a .webp export works too — just update the path).
- *
- * If the file is missing the hero column falls back to a built-in SVG scene,
- * so a wrong path degrades gracefully instead of showing a broken image.
  */
 export const INDEPENDENCE_HERO_SRC = "/independence-hero.png";
+
+/**
+ * Ganpati hero illustration.
+ */
+export const GANPATI_HERO_SRC = "/flowers/ganeshji1.png";
 
 // Tricolour tokens — kept here so every campaign component uses the same values.
 export const TRICOLOUR = {

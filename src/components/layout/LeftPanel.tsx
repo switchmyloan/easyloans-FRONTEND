@@ -12,13 +12,11 @@ import {
 } from "lucide-react";
 import TrustedPartners from "./TrustedPartners";
 import {
-  IndependenceBadge,
-  IndependenceDecor,
-  IndependenceHeadline,
-  IndependenceMobileBackdrop,
-  IndependenceMobileIntro,
-} from "@/components/campaign/Independence";
-import { isIndependenceCampaign } from "@/lib/campaign";
+  GanpatiBadge,
+  GanpatiHeadline,
+  GanpatiMobileIntro,
+} from "@/components/campaign/Ganpati";
+import { isGanpatiCampaign } from "@/lib/campaign";
 
 
 
@@ -61,13 +59,12 @@ export default function LeftPanel() {
   return (
     <aside className="relative w-full font-sans text-[#1b1e6b] lg:w-[50%] 2xl:w-[55%]">
       {/* Seasonal skin — renders nothing when the campaign is off. */}
-      <IndependenceMobileIntro />
-      <IndependenceDecor />
+      <GanpatiMobileIntro />
+      {/* GanpatiDecor moved to page level for full-width positioning */}
 
       {/* Mobile Header Section */}
-      <div className="relative lg:hidden px-4 pt-4 pb-2">
-        {/* India Gate washed behind the header — nothing when the campaign is off */}
-        <IndependenceMobileBackdrop />
+      <div className="relative lg:hidden px-4 pt-16 pb-2">
+        {/* GanpatiMobileBackdrop is absolutely positioned at page top */}
 
         {/* Logo + Language Toggle Row */}
         <div className="relative flex items-center justify-center mb-4">
@@ -92,9 +89,9 @@ export default function LeftPanel() {
         </div>
 
         {/* Campaign badge — mobile has no headline, so the pill carries the theme */}
-        {isIndependenceCampaign && (
+        {isGanpatiCampaign && (
           <div className="relative mb-3 flex justify-center">
-            <IndependenceBadge />
+            <GanpatiBadge />
           </div>
         )}
 
@@ -126,8 +123,8 @@ export default function LeftPanel() {
         <div className="space-y-3 2xl:space-y-4 3xl:space-y-5 [@media(max-height:900px)]:space-y-2">
             {/* Headline - desktop only. The campaign headline replaces it while
                 the skin is on; with the campaign off this is the original. */}
-            {isIndependenceCampaign ? (
-              <IndependenceHeadline />
+            {isGanpatiCampaign ? (
+              <GanpatiHeadline />
             ) : (
               <div className="space-y-2 text-left 2xl:space-y-3">
              <h2 className="text-2xl font-extrabold leading-[0.95] tracking-[-0.05em] text-[#161a6d] sm:text-[1.75rem] lg:max-w-104 lg:text-[3rem] xl:text-[3.5rem] 2xl:text-[4rem] 3xl:text-[5rem] [@media(max-height:900px)]:text-[1.85rem]">

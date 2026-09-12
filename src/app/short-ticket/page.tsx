@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import ShortTicketForm from "@/components/journey/ShortTicketForm";
 import LeftPanel from "@/components/layout/LeftPanel";
-import { IndependenceBackdrop } from "@/components/campaign/Independence";
+import { GanpatiBackdrop, GanpatiDecor, GanpatiMobileBackdrop, GanpatiMobileFooter } from "@/components/campaign/Ganpati";
 import TrustedPartners from "@/components/layout/TrustedPartners";
 import GradientBanner from "@/components/ui/GradientBanner";
 
@@ -32,11 +32,14 @@ export default function ShortTicketPage() {
           <div className="absolute right-[-300px] bottom-[-10%] h-[420px] w-[420px] rounded-full bg-[#f7e9c4] blur-3xl" />
         </div>
 
+        <GanpatiDecor />
+        <GanpatiMobileBackdrop />
+
         {/* content */}
         <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col-reverse px-4 py-4 lg:flex-row lg:items-center lg:justify-center lg:gap-6 lg:px-6 lg:py-2 lg:min-h-screen 2xl:max-w-7xl 2xl:gap-10 2xl:px-10 3xl:max-w-400 3xl:gap-16">
-          <IndependenceBackdrop />
+          <GanpatiBackdrop />
           <LeftPanel />
-          
+          <GanpatiMobileFooter />
           <ShortTicketForm />
           <div className="w-full lg:hidden mb-3 mt-4">
             <div className="flex justify-center mb-4">

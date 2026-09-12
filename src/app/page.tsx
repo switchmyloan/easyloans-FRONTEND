@@ -39,7 +39,7 @@ const GENDER_TO_CLEVERTAP: Record<string, "M" | "F" | undefined> = {
 let hasTrackedLanding = false;
 
 import LeftPanel from "@/components/layout/LeftPanel";
-import { IndependenceBackdrop } from "@/components/campaign/Independence";
+import { GanpatiBackdrop, GanpatiDecor, GanpatiMobileBackdrop, GanpatiMobileFooter } from "@/components/campaign/Ganpati";
 import Stage1Form from "@/components/forms/Stage1Form";
 import OtpForm from "@/components/forms/OtpForm";
 import GradientBanner from "@/components/ui/GradientBanner";
@@ -421,7 +421,9 @@ function HomeContent() {
           <div className="absolute right-[-300px] bottom-[-10%] h-[420px] w-[420px] rounded-full bg-[#f7e9c4] blur-3xl" />
         </div>
 
-        <IndependenceBackdrop />
+        <GanpatiDecor />
+        <GanpatiMobileBackdrop />
+        <GanpatiBackdrop />
 
         <LeftPanel />
         
@@ -580,6 +582,9 @@ function HomeContent() {
                     </div>
                   </div>
                 </div>
+
+                {/* Ganpati Image - Mobile */}
+                <GanpatiMobileFooter />
 
                 {/* Data Safety Notice */}
                 <div className="flex flex-col items-center text-center text-[#717aa2]">

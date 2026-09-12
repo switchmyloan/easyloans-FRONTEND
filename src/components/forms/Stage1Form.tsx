@@ -10,6 +10,7 @@ import FormInput from "@/components/ui/FormInput";
 import ProgressBar from "@/components/ui/ProgressBar";
 import { useSearchParams } from "next/navigation";
 import { MoveRight } from "lucide-react";
+import { GanpatiCornerRibbon } from "@/components/campaign/Ganpati";
 
 function formatIndianCurrency(num: number): string {
   return "₹" + num.toLocaleString("en-IN");
@@ -179,6 +180,9 @@ function Stage1FormContent({
     >
       <div className="absolute -top-12 -right-12 w-36 h-36 bg-white/5 rounded-full blur-2xl pointer-events-none 2xl:w-44 2xl:h-44 3xl:w-52 3xl:h-52" />
       <div className="absolute -bottom-8 -left-8 w-28 h-28 bg-[#A6FF00]/5 rounded-full blur-2xl pointer-events-none 2xl:w-36 2xl:h-36 3xl:w-44 3xl:h-44" />
+
+      {/* Ganpati corner image for mobile */}
+      <GanpatiCornerRibbon />
 
       <div className="relative z-10">
         <ProgressBar percent={30} />
