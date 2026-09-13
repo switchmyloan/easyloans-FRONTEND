@@ -98,43 +98,62 @@ export function GanpatiDecor() {
     { left: "70%", delay: 8, duration: 11, size: 12 },
   ];
 
+  // Fewer petals for mobile (performance)
+  const mobilePetals = [
+    { left: "10%", delay: 0, duration: 10, size: 12 },
+    { left: "30%", delay: 2, duration: 12, size: 10 },
+    { left: "50%", delay: 1, duration: 11, size: 11 },
+    { left: "70%", delay: 3, duration: 10, size: 12 },
+    { left: "90%", delay: 1.5, duration: 12, size: 10 },
+  ];
+
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden hidden lg:block" aria-hidden="true">
-      {/* Left corner flower - desktop only */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/flowers/left-flower.svg"
-        alt=""
-        className="absolute left-0 top-0 h-auto w-28"
-      />
-      {/* Right corner flower - desktop only */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/flowers/right-flower.svg"
-        alt=""
-        className="absolute right-0 top-0 h-auto w-28"
-      />
+    <>
+      {/* Mobile falling petals */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden lg:hidden" aria-hidden="true">
+        {mobilePetals.map((petal, i) => (
+          <FallingPetal key={i} {...petal} />
+        ))}
+      </div>
 
-      {/* Bottom left lotus - desktop only */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/flowers/left-lotus.svg"
-        alt=""
-        className="absolute -left-9 -bottom-5 h-auto w-32"
-      />
-      {/* Bottom right lotus - desktop only */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/flowers/right-lotus.svg"
-        alt=""
-        className="absolute -right-9 -bottom-5 h-auto w-32"
-      />
+      {/* Desktop: corner flowers + falling petals */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden hidden lg:block" aria-hidden="true">
+        {/* Left corner flower - desktop only */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/flowers/left-flower.svg"
+          alt=""
+          className="absolute left-0 top-0 h-auto w-28"
+        />
+        {/* Right corner flower - desktop only */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/flowers/right-flower.svg"
+          alt=""
+          className="absolute right-0 top-0 h-auto w-28"
+        />
 
-      {/* Falling rose petals - desktop only */}
-      {petals.map((petal, i) => (
-        <FallingPetal key={i} {...petal} />
-      ))}
-    </div>
+        {/* Bottom left lotus - desktop only */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/flowers/left-lotus.svg"
+          alt=""
+          className="absolute -left-9 -bottom-5 h-auto w-32"
+        />
+        {/* Bottom right lotus - desktop only */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/flowers/right-lotus.svg"
+          alt=""
+          className="absolute -right-9 -bottom-5 h-auto w-32"
+        />
+
+        {/* Falling rose petals - desktop */}
+        {petals.map((petal, i) => (
+          <FallingPetal key={i} {...petal} />
+        ))}
+      </div>
+    </>
   );
 }
 

@@ -160,7 +160,7 @@ export function useShortTicketForm(): [ShortTicketFormState, ShortTicketFormActi
         const userExists = checkUserResponse.data.exists;
 
         if (userExists) {
-          // Fetch existing user details
+          // Fetch existing user details and offers
           await getExistingShortUserDetails(mobile);
 
           // Returning user - mark as OTP verified
