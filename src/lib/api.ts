@@ -165,48 +165,6 @@ export interface DraftLeadPayload {
   utm_medium?: string | null;
 }
 
-function buildDraftLeadBody(data: DraftLeadPayload) {
-  const sessionId = getOrCreateLeadSessionId();
-  const loanPurpose =
-    typeof data.loan_purpose === "string" && data.loan_purpose.trim()
-      ? data.loan_purpose
-      : undefined;
-
-  // Get UTM params from payload or fallback to sessionStorage
-  const utmSource = data.utm_source || (isBrowser() ? sessionStorage.getItem("utm_source") : null);
-  const utmMedium = data.utm_medium || (isBrowser() ? sessionStorage.getItem("utm_medium") : null);
-
-  return {
-    sessionId,
-    fullName: data.fullName || null,
-    firstName: data.firstName || null,
-    lastName: data.lastName || null,
-    email: data.email || null,
-    panNumber: data.pan_no || null,
-    dateOfBirth: data.dob || null,
-    gender: data.gender || null,
-    pincode: data.pincode || null,
-    jobType: data.profile || null,
-    monthlySalary:
-      typeof data.monthly_income === "number" &&
-      !Number.isNaN(data.monthly_income)
-        ? data.monthly_income
-        : null,
-    loanAmount:
-      typeof data.loan_amount === "number" && !Number.isNaN(data.loan_amount)
-        ? data.loan_amount
-        : null,
-    ...(loanPurpose ? { loanPurpose } : {}),
-    mobileNumber: data.phone || null,
-    mrn: getStoredMrn() || null,
-    consent_tnc: data.consent_tnc ?? false,
-    consent_credit: data.consent_credit ?? false,
-    consent_communication: data.consent_communication ?? false,
-    ...(utmSource ? { utm_source: utmSource } : {}),
-    ...(utmMedium ? { utm_medium: utmMedium } : {}),
-  };
-}
-
 export async function submitLead(data: {
   // Optional: stage 1 stopped collecting a name (the bureau lookup returns it),
   // and /leadsGeneration reads only `phone` — it never looks at this field.
@@ -241,63 +199,6 @@ export async function submitLead(data: {
   return json;
 }
 
-
-export async function Createlead(
-  data: DraftLeadPayload
-): Promise<LeadsResponse> {
-  const draftBody = buildDraftLeadBody(data);
-  console.log("[MRN] POST /applynew-view-draft — mrn:", draftBody.mrn);
-
-  const res = await fetch(`${BASE_URL}/onSubmit/applynew-view-draft`, {
-    method: "POST",
-    headers: PARTNER_HEADERS,
-    body: JSON.stringify(draftBody),
-  });
-
-  if (!res.ok) throw new Error("Lead generation failed. Please try again.");
-
-  const json: LeadsResponse = await res.json();
-
-  if (![200, 201].includes(json.statusCode)) {
-    throw new Error(json.message || "Lead generation failed. Please try again.");
-  }
-
-  storeLeadResponse(json);
-
-  return json;
-}
-
-
-export async function onChangeUpdateLead(
-  data: DraftLeadPayload
-): Promise<LeadsResponse> {
-  const leadId = getStoredLeadId();
-
-  if (!leadId) {
-    throw new Error("Draft lead id not found for update.");
-  }
-
-  const draftBody = buildDraftLeadBody(data);
-  console.log("[MRN] PUT /applynew-view-draft/%s — mrn:", leadId, draftBody.mrn);
-
-  const res = await fetch(`${BASE_URL}/onSubmit/applynew-view-draft/${leadId}`, {
-    method: "PUT",
-    headers: PARTNER_HEADERS,
-    body: JSON.stringify(draftBody),
-  });
-
-  if (!res.ok) throw new Error("Lead generation failed. Please try again.");
-
-  const json: LeadsResponse = await res.json();
-
-  if (json.statusCode !== 200) {
-    throw new Error(json.message || "Lead generation failed. Please try again.");
-  }
-
-  storeLeadResponse(json);
-
-  return json;
-}
 
 // ---------- Short ticket draft (cready short form) ----------
 
