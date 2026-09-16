@@ -278,4 +278,14 @@ export const CLEVERTAP_EVENTS = {
   EASY_RAMFINCORP_APPLY_PROCEED_TO_BANK: "Easy - ramfincorp_apply_proceed_to_bank",
   /** RamFinCorp: Fired when user is not eligible. */
   EASY_RAMFINCORP_APPLY_NOT_ELIGIBLE: "Easy - ramfincorp_apply_not_eligible",
+  /** SmartCoin: Fired when card is shown after dedup success. */
+  EASY_SMARTCOIN_DEDUP_SUCCESS_CARD_SHOWN: "Easy - smartcoin_dedup_success_card_shown",
+  /** SmartCoin: Fired when response dedup fail. */
+  EASY_SMARTCOIN_DEDUP_FAIL: "Easy - smartcoin_dedup_fail",
+  /** SmartCoin: Fired when user clicks Apply. */
+  EASY_SMARTCOIN_APPLY_CLICKED: "Easy - smartcoin_apply_clicked",
+  /** SmartCoin: Fired when apply is successful and user is redirected. */
+  EASY_SMARTCOIN_APPLY_SUCCESS: "Easy - smartcoin_apply_success",
+  /** SmartCoin: Fired when user is not eligible. */
+  EASY_SMARTCOIN_APPLY_NOT_ELIGIBLE: "Easy - smartcoin_apply_not_eligible",
 } as const;

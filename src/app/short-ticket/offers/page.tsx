@@ -820,7 +820,17 @@ export default function ShortTicketOffersPage() {
           // API returns this as "smartCoinDedupe"
           const smartCoinDedupeData = (data.smartCoinDedupe || data.SmartCoinDedupe) as ShortTicketLender | undefined;
           const smartCoinIsDuplicate = (smartCoinDedupeData as { isDuplicate?: boolean })?.isDuplicate;
-          if (smartCoinIsDuplicate !== false) break;
+          if (smartCoinIsDuplicate !== false) {
+            // Track SmartCoin dedup fail - API returned data but user is a duplicate
+            if (smartCoinDedupeData) {
+              console.log("[SmartCoin] Dedup fail - firing CleverTap event");
+              cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_SMARTCOIN_DEDUP_FAIL);
+            }
+            break;
+          }
+          // Track SmartCoin card shown after dedup success
+          console.log("[SmartCoin] Dedup success - card shown, firing CleverTap event");
+          cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_SMARTCOIN_DEDUP_SUCCESS_CARD_SHOWN);
           ordered.push({ name, utm_link: smartCoinDedupeData?.utm_link });
           break;
         }

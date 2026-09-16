@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { saveShortLender, applyToShortKreditBee, applyToSmartCoin, applyToLoanWalle } from "@/lib/api";
+import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "@/lib/clevertap";
 
 // ============================================================
 // Types
@@ -88,6 +89,10 @@ export function useSmartCoinApply(options: UseLenderApplyOptions = {}) {
 
       setApplying(true);
 
+      // Track click event
+      console.log("[SmartCoin] Apply clicked");
+      cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_SMARTCOIN_APPLY_CLICKED);
+
       try {
         const phone = sessionStorage.getItem("userPhone") || "";
         await saveShortLender(phone, "SmartCoin");
@@ -100,12 +105,16 @@ export function useSmartCoinApply(options: UseLenderApplyOptions = {}) {
 
         // Only redirect if lead was created successfully
         if (leadMessage === "Lead created successfully" && utmLink) {
+          console.log("[SmartCoin] Apply success - redirecting");
+          cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_SMARTCOIN_APPLY_SUCCESS);
           window.open(utmLink, "_blank");
           options.onSuccess?.();
           return { status: "success" };
         }
 
         // Not eligible
+        console.log("[SmartCoin] Not eligible");
+        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_SMARTCOIN_APPLY_NOT_ELIGIBLE);
         options.onNotEligible?.();
         return {
           status: "notEligible",
@@ -113,6 +122,7 @@ export function useSmartCoinApply(options: UseLenderApplyOptions = {}) {
         };
       } catch (err) {
         console.error("SmartCoin apply failed:", err);
+        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_SMARTCOIN_APPLY_NOT_ELIGIBLE);
         return {
           status: "error",
           message: "Something went wrong. Please try again.",
