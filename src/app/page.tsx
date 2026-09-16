@@ -140,13 +140,6 @@ function HomeContent() {
     };
   }, []);
 
-  const scheduleDraftSave = useCallback(() => {
-    if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
-    draftTimerRef.current = setTimeout(() => {
-      saveShortDraftLead(buildDraftPayload());
-    }, 600);
-  }, [buildDraftPayload]);
-
   useEffect(() => {
     return () => {
       if (draftTimerRef.current) clearTimeout(draftTimerRef.current);
@@ -156,17 +149,15 @@ function HomeContent() {
   const handleStage1Change = useCallback(
     (data: Partial<Stage1Data>) => {
       stage1DraftRef.current = { ...stage1DraftRef.current, ...data };
-      scheduleDraftSave();
     },
-    [scheduleDraftSave]
+    []
   );
 
   const handleStage2Change = useCallback(
     (data: Partial<Stage2Data>) => {
       stage2DraftRef.current = { ...stage2DraftRef.current, ...data };
-      scheduleDraftSave();
     },
-    [scheduleDraftSave]
+    []
   );
 
   const handleStage1 = useCallback(async (data: Stage1Data) => {
@@ -188,17 +179,6 @@ function HomeContent() {
     } catch (err) {
       console.warn("submitLead (stage1) failed:", err);
       setPrefilledStage2(null);
-    }
-    try {
-      await saveShortDraftLead({
-        phone: data.mobile,
-        loan_amount: data.loan_amount,
-        consent_tnc: data.consent_tnc,
-        consent_credit: data.consent_credit,
-        consent_communication: data.consent_communication,
-      });
-    } catch (err) {
-      console.warn("saveShortDraftLead (stage1) failed:", err);
     }
     try {
       const res = await sendOtp(data.mobile);
@@ -228,6 +208,15 @@ function HomeContent() {
             typeof window !== "undefined"
               ? sessionStorage.getItem("shortLeadDraftSessionId") || undefined
               : undefined,
+        });
+
+        // Save draft after OTP verification
+        await saveShortDraftLead({
+          phone: stage1Data.mobile,
+          loan_amount: stage1Data.loan_amount,
+          consent_tnc: stage1Data.consent_tnc,
+          consent_credit: stage1Data.consent_credit,
+          consent_communication: stage1Data.consent_communication,
         });
 
         // CleverTap: Track OTP verification

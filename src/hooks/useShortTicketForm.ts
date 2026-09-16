@@ -69,43 +69,15 @@ export function useShortTicketForm(): [ShortTicketFormState, ShortTicketFormActi
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Handle Stage 1 form change (for draft saving)
+  // Handle Stage 1 form change
   const handleStage1Change = useCallback((data: Partial<Stage1Data>) => {
     setStage1Data(data);
-
-    // Save draft in background
-    if (data.mobile && data.mobile.length >= 5) {
-      saveShortDraftLead({
-        phone: data.mobile,
-        loan_amount: data.loan_amount,
-        consent_tnc: data.consent_tnc,
-        consent_credit: data.consent_credit,
-        consent_communication: data.consent_communication,
-      }).catch(console.warn);
-    }
   }, []);
 
-  // Handle Stage 2 form change (for draft saving)
+  // Handle Stage 2 form change
   const handleStage2Change = useCallback((data: Partial<Stage2Data>) => {
     setStage2Data(data);
-
-    // Save draft in background
-    if (mobile) {
-      saveShortDraftLead({
-        phone: mobile,
-        loan_amount: loanAmount,
-        email: data.email,
-        pan_no: data.pan_no,
-        dob: data.dob ? formatDOB(data.dob) : undefined,
-        gender: data.gender,
-        pincode: data.pincode,
-        profile: data.profile,
-        monthly_income: data.monthly_income,
-        loan_purpose: data.loan_purpose,
-        ...stage1Data,
-      }).catch(console.warn);
-    }
-  }, [mobile, loanAmount, stage1Data]);
+  }, []);
 
   // Handle Stage 1 submit
   const handleStage1Submit = useCallback(async (data: Stage1Data) => {
@@ -116,15 +88,6 @@ export function useShortTicketForm(): [ShortTicketFormState, ShortTicketFormActi
       setStage1Data(data);
       setMobile(data.mobile);
       setLoanAmount(data.loan_amount);
-
-      // Save draft lead
-      await saveShortDraftLead({
-        phone: data.mobile,
-        loan_amount: data.loan_amount,
-        consent_tnc: data.consent_tnc,
-        consent_credit: data.consent_credit,
-        consent_communication: data.consent_communication,
-      });
 
       // Send OTP
       const otpRes = await sendOtp(data.mobile);
@@ -152,6 +115,15 @@ export function useShortTicketForm(): [ShortTicketFormState, ShortTicketFormActi
         expiresAt: otpExpiresAt,
         mobileNumber: mobile,
         shortSessionId,
+      });
+
+      // Save draft after OTP verification
+      await saveShortDraftLead({
+        phone: mobile,
+        loan_amount: loanAmount,
+        consent_tnc: stage1Data.consent_tnc,
+        consent_credit: stage1Data.consent_credit,
+        consent_communication: stage1Data.consent_communication,
       });
 
       // Check for existing user (lightweight check)
