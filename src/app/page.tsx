@@ -521,7 +521,7 @@ function HomeContent() {
                 )}
               </AnimatePresence>
 
-              <footer className="text-center text-gray-400 text-[11px] mt-6">
+              <footer className="text-center text-gray-400 text-[10px] mt-2">
                 Copyright &copy; 2026 SwitchMyLoan Pvt. Ltd. All Rights
                 Reserved.
               </footer>

@@ -19,9 +19,19 @@ import {
 } from "lucide-react";
 import { cleverTapLogout } from "@/lib/clevertap";
 
-//const LOGOUT_REDIRECT_URL = "https://easyloans.cready.in/";
-//const LOGOUT_REDIRECT_URL = process.env.LOGOUT_REDIRECT_URL ;
-const LOGOUT_REDIRECT_URL = process.env.NEXT_PUBLIC_LOGOUT_REDIRECT_URL!;
+// Where "Logout" sends the user — their landing site. Picked from the actual
+// host so it works in both places without any env config: localhost while
+// developing, the live site in production.
+const getLogoutRedirectUrl = () => {
+  if (
+    typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1")
+  ) {
+    return "http://localhost:3000/";
+  }
+  return "https://easyloans.cready.in/";
+};
 
 const mainNavItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -66,7 +76,7 @@ export default function Sidebar() {
     setMobileOpen(false);
 
     // Full page navigation to external URL
-    window.location.href = LOGOUT_REDIRECT_URL;
+    window.location.href = getLogoutRedirectUrl();
   };
 
   const isActive = (href: string) => {
