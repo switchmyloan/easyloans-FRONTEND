@@ -769,6 +769,15 @@ export async function getOfferShortTicket(
     cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_FAIL);
   }
 
+  // Track SmartCoin dedup fail event if applicable (new user flow)
+  const smartCoinDedupeData = (json.data?.smartCoinDedupe || json.data?.SmartCoinDedupe) as {
+    isDuplicate?: boolean;
+  } | undefined;
+  if (smartCoinDedupeData && smartCoinDedupeData.isDuplicate !== false) {
+    console.log("[SmartCoin] Dedup fail detected in new user API response - firing CleverTap event");
+    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_SMARTCOIN_DEDUP_FAIL);
+  }
+
   return json;
 }
 
@@ -1226,6 +1235,15 @@ export async function getExistingShortUserOffer(
   if (ramFinCorpData && !isRamFinCorpEligible) {
     console.log("[RamFinCorp] Dedup fail detected in API response - firing CleverTap event");
     cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_FAIL);
+  }
+
+  // Track SmartCoin dedup fail event if applicable (existing user flow)
+  const smartCoinDedupeData = (json.data.smartCoinDedupe || json.data.SmartCoinDedupe) as {
+    isDuplicate?: boolean;
+  } | undefined;
+  if (smartCoinDedupeData && smartCoinDedupeData.isDuplicate !== false) {
+    console.log("[SmartCoin] Dedup fail detected in API response - firing CleverTap event");
+    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_SMARTCOIN_DEDUP_FAIL);
   }
 
   return json;

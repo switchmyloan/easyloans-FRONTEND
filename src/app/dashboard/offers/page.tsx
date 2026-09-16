@@ -476,11 +476,18 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
 
       // Add SmartCoin if eligible (isDuplicate === false)
       if (isSmartCoinEligible && !existingLenderNames.has("SmartCoin")) {
+        // Track SmartCoin card shown after dedup success
+        console.log("[SmartCoin] Dedup success - card shown, firing CleverTap event");
+        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_SMARTCOIN_DEDUP_SUCCESS_CARD_SHOWN);
         mappedOffers.push({
           name: "SmartCoin",
           utmLink: smartCoinDedupeData?.utm_link,
           isOffer: false,
         });
+      } else if (smartCoinDedupeData && !isSmartCoinEligible) {
+        // Track SmartCoin dedup fail - API returned data but user is a duplicate
+        console.log("[SmartCoin] Dedup fail - firing CleverTap event");
+        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_SMARTCOIN_DEDUP_FAIL);
       }
 
     // Add MMB if eligible (data.message === "user_not_found")
