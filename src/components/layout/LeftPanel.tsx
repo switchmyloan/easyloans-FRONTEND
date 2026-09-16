@@ -57,7 +57,7 @@ export default function LeftPanel() {
   const [isHindi, setIsHindi] = useState(false);
 
   return (
-    <aside className="relative w-full font-sans text-[#1b1e6b] lg:w-[50%] 2xl:w-[55%]">
+    <aside className="relative w-full font-sans text-[#1b1e6b] lg:flex lg:w-[50%] lg:flex-col lg:justify-center 2xl:w-[55%]">
       {/* Seasonal skin — renders nothing when the campaign is off. */}
       <GanpatiMobileIntro />
       {/* GanpatiDecor moved to page level for full-width positioning */}
