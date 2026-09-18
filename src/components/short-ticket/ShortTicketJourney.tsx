@@ -210,6 +210,7 @@ function ShortTicketJourneyContent() {
             typeof window !== "undefined"
               ? sessionStorage.getItem("shortLeadDraftSessionId") || undefined
               : undefined,
+              type: "short",
         });
 
         // Save draft after OTP verification
