@@ -477,7 +477,7 @@ export function getLenderFeatures(name: string): [LenderFeature, LenderFeature, 
   return UTM_MEDIUM_LENDERS_FEATURES[name] || DEFAULT_LENDER_FEATURES;
 }
 
-export const LOADING_DELAY_MS = 3000;
+export const LOADING_DELAY_MS = 1000;
 
 // ---------- KreditBee Coupons ----------
 

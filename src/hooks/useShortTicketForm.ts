@@ -115,6 +115,7 @@ export function useShortTicketForm(): [ShortTicketFormState, ShortTicketFormActi
         expiresAt: otpExpiresAt,
         mobileNumber: mobile,
         shortSessionId,
+         type: "short", 
       });
 
       // Save draft after OTP verification

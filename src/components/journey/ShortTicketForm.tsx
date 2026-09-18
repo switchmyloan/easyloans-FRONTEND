@@ -250,10 +250,12 @@ function ShortTicketFormContent() {
             typeof window !== "undefined"
               ? sessionStorage.getItem("leadDraftSessionId") || undefined
               : undefined,
+              
           shortSessionId:
             typeof window !== "undefined"
               ? sessionStorage.getItem("shortLeadDraftSessionId") || undefined
               : undefined,
+              type: "short", // Add the type field with the value "short_ticket"
         });
 
         // Save draft after OTP verification

@@ -195,7 +195,7 @@ function HomeContent() {
       if (!stage1Data || !otpData) return;
       setOtpError(null);
       try {
-        await verifyOtp({
+       const otpRes =  await verifyOtp({
           otp,
           hashedOtp: otpData.hashedOtp,
           expiresAt: otpData.expiresAt,
@@ -208,8 +208,9 @@ function HomeContent() {
             typeof window !== "undefined"
               ? sessionStorage.getItem("shortLeadDraftSessionId") || undefined
               : undefined,
+               type: "short", 
         });
-
+console.log(otpRes?.data?.exists, "otpRes?.data?.exists");
         // Save draft after OTP verification
         await saveShortDraftLead({
           phone: stage1Data.mobile,
@@ -236,18 +237,7 @@ function HomeContent() {
           Phone: `+91${stage1Data.mobile}`,
         });
         console.log("EASY_OTP_VERIFIED event tracked");
-      } catch (err) {
-        console.error("verifyOtp failed:", err);
-        setOtpError(err instanceof Error ? err.message : "Invalid OTP. Please try again.");
-        return;
-      }
-
-      // Check for existing user (lightweight check)
-      try {
-        const checkUserResponse = await checkExistingUser(stage1Data.mobile);
-        const userExists = checkUserResponse.data.exists;
-
-        if (userExists) {
+         if (otpRes?.data?.exists) {
           // CleverTap: Track existing user
           cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_EXISTING_USER_IDENTIFIED, {
             Phone: `+91${stage1Data.mobile}`,
@@ -268,14 +258,54 @@ function HomeContent() {
           router.push("/dashboard");
           return;
         }
+
+           // New user - continue to stage2
+        setStage("loading");
+        setTimeout(() => setStage("stage2"), LOADING_DELAY_MS);
+
       } catch (err) {
-        // If check fails, continue with normal flow (new user)
-        console.warn("checkExistingUser failed:", err);
+        console.error("verifyOtp failed:", err);
+        setOtpError(err instanceof Error ? err.message : "Invalid OTP. Please try again.");
+        return;
       }
 
-      // New user - continue to stage2
-      setStage("loading");
-      setTimeout(() => setStage("stage2"), LOADING_DELAY_MS);
+      // Check for existing user (lightweight check)
+      // try {
+      //   const checkUserResponse = await checkExistingUser(stage1Data.mobile);
+      //   const userExists = checkUserResponse.data.exists;
+
+      //   if (userExists) {
+      //     // CleverTap: Track existing user
+      //     cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_EXISTING_USER_IDENTIFIED, {
+      //       Phone: `+91${stage1Data.mobile}`,
+      //     });
+
+      //     // Fetch existing user details
+      //     await getExistingShortUserDetails(stage1Data.mobile);
+
+      //     syncCleverTapFromSession();
+
+      //     // Returning user - mark as OTP verified
+      //     sessionStorage.setItem("dashboardOtpVerified", "true");
+      //     sessionStorage.setItem("dashboardRequiresLogin", "false");
+      //     sessionStorage.setItem("shortDashboardRequiresLogin", "false");
+      //     sessionStorage.removeItem("shortDashboardLinkToken");
+
+      //     // Redirect to dashboard
+      //     router.push("/dashboard");
+      //     return;
+      //   }
+
+      //      // New user - continue to stage2
+      //   setStage("loading");
+      //   setTimeout(() => setStage("stage2"), LOADING_DELAY_MS);
+
+      // } catch (err) {
+      //   // If check fails, continue with normal flow (new user)
+      //   console.warn("checkExistingUser failed:", err);
+      // }
+
+   
     },
     [stage1Data, otpData, router]
   );

@@ -423,7 +423,7 @@ export async function sendOtp(mobileNumber: string): Promise<SendOtpResponse> {
 
 export interface VerifyOtpResponse {
   statusCode: number;
-  data: { isVerified: boolean };
+  data: { isVerified: boolean ,exists: boolean};
   message: string;
   success: boolean;
 }
@@ -437,7 +437,10 @@ export async function verifyOtp(payload: {
   mobileNumber?: string;
   sessionId?: string;
   // sessionId of the short draft (short_apply_new_draft_leads) if applicable.
+  
   shortSessionId?: string;
+   type: string;
+   
 }): Promise<VerifyOtpResponse> {
   const res = await fetch(`${BASE_URL}/onSubmit/verify-otp`, {
     method: "POST",
@@ -484,7 +487,7 @@ export async function checkExistingUser(phone: string): Promise<CheckExistingUse
   const res = await fetch(`${BASE_URL}/onsubmit/check-existing-user`, {
     method: "POST",
     headers: {
-      "X-API-Key": CHECK_USER_API_KEY,
+     // "X-API-Key": CHECK_USER_API_KEY,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ phone, type: "short" }),
