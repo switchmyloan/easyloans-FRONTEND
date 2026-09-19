@@ -155,52 +155,52 @@ export default function OfferCard({
      className={`relative overflow-hidden rounded-[16px] border border-[#e9ddff] bg-gradient-to-br from-[#faf8ff] to-[#f6f1ff] shadow-[0_6px_20px_rgba(139,92,246,0.08)] transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(139,92,246,0.16)] h-full flex flex-col ${fadedClass}`}
     >
       <div className="p-3 sm:p-4 flex flex-col flex-1">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-2">
-          {/* Left */}
-          <div className="flex items-center gap-2 min-w-0">
-            <div
-              className={`w-12 h-12 rounded-xl border flex items-center justify-center shrink-0 ${
-                logoDarkBg
-                  ? "bg-gray-800 border-gray-700"
-                  : "bg-white border-[#ebe5ff]"
-              }`}
-            >
-              {lenderLogo}
-            </div>
-
-            <div className="min-w-0">
-              <p className="text-[11px] font-medium text-gray-600 truncate">
-                {lenderName}
-              </p>
-              {featureTag && (
-                <p className="text-[10px] font-medium text-gray-500 truncate">
-                  {featureTag}
-                </p>
-              )}
-            </div>
+        {/* Header Row - Logo + Name */}
+        <div className="flex items-center gap-2">
+          {/* Logo */}
+          <div
+            className={`w-12 h-12 rounded-xl border flex items-center justify-center shrink-0 ${
+              logoDarkBg
+                ? "bg-gray-800 border-gray-700"
+                : "bg-white border-[#ebe5ff]"
+            }`}
+          >
+            {lenderLogo}
           </div>
 
-          {/* Badge */}
-          {badgeText && (
-            badgeText.toLowerCase().includes("waiver") ? (
-              // Special IDFC waiver badge - gold/amber theme to stand out
-              <div className="flex shrink-0 items-center gap-0.5 rounded-full border border-amber-400 bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 shadow-sm max-w-35 sm:max-w-none">
-                <span className="text-xs">🎉</span>
-                <span className="truncate">{badgeText}</span>
-              </div>
-            ) : (
-              // Regular badge
-              <div className="flex shrink-0 items-center gap-1 rounded-full border border-[#e6d8ff] bg-[#faf7ff] px-2 py-0.5 text-[10px] font-semibold text-violet-600 max-w-35 sm:max-w-none">
-                <Star className="w-2.5 h-2.5 fill-current shrink-0" />
-                <span className="truncate">{badgeText}</span>
-              </div>
-            )
-          )}
+          {/* Name */}
+          <p className="text-[11px] font-medium text-gray-700">
+            {lenderName}
+          </p>
         </div>
 
+        {/* Tags Row - Feature Tag and/or Badge below logo */}
+        {(featureTag || badgeText) && (
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
+            {featureTag && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-[#e6d8ff] bg-[#faf7ff] px-2 py-0.5 text-[8px] font-semibold text-violet-600">
+                <Star className="w-2 h-2 fill-current shrink-0" />
+                {featureTag}
+              </span>
+            )}
+            {badgeText && (
+              badgeText.toLowerCase().includes("waiver") ? (
+                <span className="inline-flex items-center gap-0.5 rounded-full border border-amber-400 bg-amber-50 px-2 py-0.5 text-[8px] font-semibold text-amber-700">
+                  <span className="text-[10px]">🎉</span>
+                  {badgeText}
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 rounded-full border border-[#e6d8ff] bg-[#faf7ff] px-2 py-0.5 text-[8px] font-semibold text-violet-600">
+                  <Star className="w-2 h-2 fill-current shrink-0" />
+                  {badgeText}
+                </span>
+              )
+            )}
+          </div>
+        )}
+
         {/* Headline */}
-        <div className="mt-2.5">
+        <div className="mt-2">
           <h3 className="text-[15px] sm:text-[16px] leading-[1.3] font-bold tracking-tight text-gray-900">
             {headline}
           </h3>
@@ -266,7 +266,7 @@ export default function OfferCard({
           <button
             onClick={onApply}
             disabled={isDisabled}
-            className="group relative h-9 overflow-hidden rounded-lg bg-gradient-to-r from-[#dfff45] via-[#9b6bff] to-[#7c3aed] px-4 text-[11px] font-semibold text-white shadow-md transition-all hover:scale-[1.01] active:scale-[0.98] disabled:opacity-60 cursor-pointer"
+            className="group relative h-9 overflow-hidden rounded-lg bg-gradient-to-r from-[#dfff45] via-[#9b6bff] to-[#7c3aed] px-4 text-[10px] font-semibold text-white shadow-md transition-all hover:scale-[1.01] active:scale-[0.98] disabled:opacity-60 cursor-pointer"
           >
             <span className="relative z-10 flex items-center justify-center gap-1">
               {buttonLabel}

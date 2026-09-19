@@ -313,7 +313,11 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         "RupeeRaftaar": "RupeeRaftaar",
         "rupeeraftaar": "RupeeRaftaar",
         "LoanWalle": "LoanWalle",
-        "loanwalle": "LoanWalle"
+        "loanwalle": "LoanWalle",
+        "DhanPocket": "DhanPocket",
+        "dhanpocket": "DhanPocket",
+        "TurantPaisa": "TurantPaisa",
+        "turantpaisa": "TurantPaisa"
       };
       for (const lender of staticLendersArray) {
         if (lender.name && lender.utm_link) {
@@ -541,6 +545,24 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         mappedOffers.push({
           name: "RocketCash",
           utmLink: staticLenderUtmLinks["RocketCash"],
+          isOffer: false,
+        });
+      }
+
+      // Add DhanPocket only if it comes from API staticLenders
+      if (staticLenderUtmLinks["DhanPocket"] && !existingLenderNames.has("DhanPocket")) {
+        mappedOffers.push({
+          name: "DhanPocket",
+          utmLink: staticLenderUtmLinks["DhanPocket"],
+          isOffer: false,
+        });
+      }
+
+      // Add TurantPaisa only if it comes from API staticLenders
+      if (staticLenderUtmLinks["TurantPaisa"] && !existingLenderNames.has("TurantPaisa")) {
+        mappedOffers.push({
+          name: "TurantPaisa",
+          utmLink: staticLenderUtmLinks["TurantPaisa"],
           isOffer: false,
         });
       }

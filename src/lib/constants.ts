@@ -55,6 +55,8 @@ export const STATIC_LENDER_LOGOS: Record<
   MMB: { src: "/MMB_Logo.png" },
   RupeeRaftaar: { src: "/Rupee-Raftaaar.png", darkBg: true },
   ToofanLoan: { src: "/toofan-loan.png" },
+  DhanPocket: { src: "/dhanpocket.png" }, 
+  TurantPaisa: { src: "/Turantpaisa.png" }, 
 };
 
 export const DISPLAY_NAMES: Record<string, string> = {
@@ -78,6 +80,8 @@ export const DISPLAY_NAMES: Record<string, string> = {
   ToofanLoan: "Toofan Loan",
   RupeeRaftaar: "Rupee Raftaar",
   LoanWalle: "LoanWalle",
+  DhanPocket: "DhanPocket",
+  TurantPaisa: "TurantPaisa",
 };
 
 export const STATIC_LENDER_DETAILS: Record<
@@ -264,12 +268,23 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "No Hidden Fees and Flexible EMI Options",
     interestRate: "Interest Rates start at 1.5%* per month",
   },
+  DhanPocket: {
+    headline: "Get up to ₹1,00,000 with quick approval!",
+    description: "Personal loans with fast disbursement and No Foreclosure charges",
+    keyFeature: "Quick Approval and No Foreclosure charges",
+    interestRate: "Interest Rates start at 12.49%* per annum",
+  },
+  TurantPaisa: {
+    headline: "Get up to ₹40,000 with quick approval!",
+    description: "Personal loans with fast disbursement and No hidden charges",
+    keyFeature: "Quick Approval up to 45 days tenure",
+    interestRate: "Interest Rates start at 1.00%* per day",
+  },
 };
 
 // Dashboard priority order - lenders are displayed in this order when available
 // Lower index = higher priority (shown first)
 export const DASHBOARD_PRIORITY_ORDER: string[] = [
-  "RamFinCorp",
   "TejasLoan",
   "RupiNow",
   "CashMySalary",
@@ -277,6 +292,8 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "SmartCoin",
   "RapidMoney",
   "F1SpeedLoan",
+  "DhanPocket",
+  "TurantPaisa",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -285,7 +302,6 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  // Not in the requested priority list — kept at the end so it still renders if offered.
   "TrueFund",
 ];
 
@@ -310,6 +326,8 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   Cash2You: "Long tenure up to 60 months",
   RocketCash: "Quick short-term loans",
   MMB: "Bank-level security",
+  DhanPocket: "No Foreclosure charges",
+  TurantPaisa: "No hidden charges",
 };
 
 
@@ -399,6 +417,16 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "Up to 45 days", description: "Personal loan amount" },
     { title: "Flexible EMI Options", description: "No hidden fees" },
   ],
+  DhanPocket: [
+    { title: "No Foreclosure charges", description: "No hidden fees" },
+    { title: "100% DIGITAL Online application", description: "Personal loan amount" },
+    { title: "Flexible EMI Options", description: "BANK-LEVEL Security encryption" },
+  ],
+  TurantPaisa: [
+    { title: "No hidden charges", description: "No hidden fees" },
+    { title: "Up to 40,000", description: "Personal loan amount" },
+    { title: "Flexible EMI Options", description: "100% secure & encrypted" },
+  ],
 };
 
 // Default features if lender not found in UTM_MEDIUM_LENDERS_FEATURES
@@ -434,6 +462,8 @@ export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   Cash2You: ["Up to 60 Months Tenure", "Flexible EMI", "Up to ₹40,000"],
   RocketCash: ["Quick Approval", "Up to 21 Days", "Up to ₹20,000"],
   MMB: ["Bank-level security", "Up to 45 days", "No Hidden Fees"],
+  DhanPocket: ["No Foreclosure Charges", "100% Digital", "Up to ₹1 Lakh"],
+  TurantPaisa: ["No Hidden Charges", "Up to 45 Days", "Up to ₹40,000"],
 };
 
 // Default feature badges if lender not found
@@ -460,6 +490,8 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   Cash2You: 40000,      // ₹40,000
   RocketCash: 20000,      // ₹20,000
   MMB: 30000,      // ₹30,000
+  DhanPocket: 100000,      // ₹100,000
+  TurantPaisa: 40000,      // ₹40,000
 };
 
 const DEFAULT_LENDER_DETAIL = {

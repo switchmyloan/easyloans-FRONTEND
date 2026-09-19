@@ -56,6 +56,8 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   rocketcash: "RocketCash",
   mmb: "MMB",
   loanwalle: "LoanWalle",
+  dhanpocket: "DhanPocket",
+  turantpaisa: "TurantPaisa",
 };
 
 // Map ToofanLoan and RupeeRaftaar to LoanWalle for display purposes
@@ -397,6 +399,32 @@ export default function LoanOffersBanner() {
         });
       }
 
+      // Add DhanPocket only if it comes from API staticLenders
+      const dhanPocketFromApi = staticLendersArray.find(
+        (l) => l.name?.toLowerCase() === "dhanpocket"
+      );
+      if (dhanPocketFromApi?.utm_link && !addedLenders.has("DhanPocket")) {
+        addedLenders.add("DhanPocket");
+        eligibleLenders.push({
+          id: "DhanPocket",
+          name: "DhanPocket",
+          prefix: "D",
+        });
+      }
+
+      // Add TurantPaisa only if it comes from API staticLenders
+      const turantPaisaFromApi = staticLendersArray.find(
+        (l) => l.name?.toLowerCase() === "turantpaisa"
+      );
+      if (turantPaisaFromApi?.utm_link && !addedLenders.has("TurantPaisa")) {
+        addedLenders.add("TurantPaisa");
+        eligibleLenders.push({
+          id: "TurantPaisa",
+          name: "TurantPaisa",
+          prefix: "T",
+        });
+      }
+
       // Add LoanWalle if ToofanLoan OR RupeeRaftaar is available in staticLenders
       const toofanLoanFromApi = staticLendersArray.find(
         (l) => l.name?.toLowerCase() === "toofanloan"
@@ -502,6 +530,26 @@ export default function LoanOffersBanner() {
           id: "RocketCash",
           name: "RocketCash",
           prefix: "R",
+        });
+      }
+
+      // If UTM is dhanpocket and DhanPocket exists in staticLenders but wasn't added yet, add it now
+      if (utmLenderName === "DhanPocket" && dhanPocketFromApi?.utm_link && !addedLenders.has("DhanPocket")) {
+        addedLenders.add("DhanPocket");
+        eligibleLenders.push({
+          id: "DhanPocket",
+          name: "DhanPocket",
+          prefix: "D",
+        });
+      }
+
+      // If UTM is turantpaisa and TurantPaisa exists in staticLenders but wasn't added yet, add it now
+      if (utmLenderName === "TurantPaisa" && turantPaisaFromApi?.utm_link && !addedLenders.has("TurantPaisa")) {
+        addedLenders.add("TurantPaisa");
+        eligibleLenders.push({
+          id: "TurantPaisa",
+          name: "TurantPaisa",
+          prefix: "T",
         });
       }
 

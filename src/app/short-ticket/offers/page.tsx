@@ -27,7 +27,6 @@ import { Clock, Contact, Lock } from "lucide-react";
 
 // Default render order
 const LENDER_ORDER = [
-  "RamFinCorp",
   "TejasLoan",
   "RupiNow",
   "CashMySalary",
@@ -35,6 +34,8 @@ const LENDER_ORDER = [
   "SmartCoin",
   "RapidMoney",
   "F1SpeedLoan",
+  "DhanPocket",
+  "TurantPaisa",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -43,21 +44,21 @@ const LENDER_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  // Not in the requested priority list — kept at the end so it still renders if offered.
   "TrueFund",
 ];
 
 // When utm_medium=kreditbee: KreditBee first
 const KB_PRIORITY_ORDER = [
   "KreditBee",
-  "RamFinCorp",
-  "TejasLoan",
+ "TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "F1SpeedLoan",
+  "DhanPocket",
+  "TurantPaisa",
   "MoneyDot",
   "LoanWalle",
   "Apollo",
@@ -71,13 +72,14 @@ const KB_PRIORITY_ORDER = [
 // When utm_medium=rapidmoney: RapidMoney first
 const RAPIDMONEY_PRIORITY_ORDER = [
   "RapidMoney",
-  "RamFinCorp",
   "TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
   "SmartCoin",
   "F1SpeedLoan",
+  "DhanPocket",
+  "TurantPaisa",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -91,13 +93,15 @@ const RAPIDMONEY_PRIORITY_ORDER = [
 
 const RamFinCorp_PRIORITY_ORDER = [
   "RamFinCorp",
-  "TejasLoan",
+ "TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "F1SpeedLoan",
+  "DhanPocket",
+  "TurantPaisa",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -112,13 +116,14 @@ const RamFinCorp_PRIORITY_ORDER = [
 // When utm_medium=tejasloan: TejasLoan first
 const TEJASLOAN_PRIORITY_ORDER = [
   "TejasLoan",
-  "RamFinCorp",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "F1SpeedLoan",
+  "DhanPocket",
+  "TurantPaisa",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -133,14 +138,15 @@ const TEJASLOAN_PRIORITY_ORDER = [
 // When utm_medium=moneydot: MoneyDot first
 const MONEYDOT_PRIORITY_ORDER = [
   "MoneyDot",
-  "RamFinCorp",
-  "TejasLoan",
+ "TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "F1SpeedLoan",
+  "DhanPocket",
+  "TurantPaisa",
   "KreditBee",
   "LoanWalle",
   "Apollo",
@@ -153,14 +159,15 @@ const MONEYDOT_PRIORITY_ORDER = [
 
 const TRUEFUND_PRIORITY_ORDER = [
   "TrueFund",
-  "RamFinCorp",
-  "TejasLoan",
+"TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "F1SpeedLoan",
+  "DhanPocket",
+  "TurantPaisa",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -174,13 +181,14 @@ const TRUEFUND_PRIORITY_ORDER = [
 
 const CASHMYSalary_PRIORITY_ORDER = [
   "CashMySalary",
-  "RamFinCorp",
-  "TejasLoan",
+"TejasLoan",
   "RupiNow",
   "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "F1SpeedLoan",
+  "DhanPocket",
+  "TurantPaisa",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -194,14 +202,15 @@ const CASHMYSalary_PRIORITY_ORDER = [
 
 const APOLLO_PRIORITY_ORDER = [
   "Apollo",
-  "RamFinCorp",
-  "TejasLoan",
+"TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "F1SpeedLoan",
+  "DhanPocket",
+  "TurantPaisa",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -215,13 +224,14 @@ const APOLLO_PRIORITY_ORDER = [
 // When utm_medium=f1speedloan: F1SpeedLoan first
 const F1SPEEDLOAN_PRIORITY_ORDER = [
   "F1SpeedLoan",
-  "RamFinCorp",
-  "TejasLoan",
+"TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
   "SmartCoin",
   "RapidMoney",
+  "DhanPocket",
+  "TurantPaisa",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -236,13 +246,14 @@ const F1SPEEDLOAN_PRIORITY_ORDER = [
 // When utm_medium=rupinow: RupiNow first
 const RUPINOW_PRIORITY_ORDER = [
   "RupiNow",
-  "RamFinCorp",
-  "TejasLoan",
+"TejasLoan",
   "CashMySalary",
   "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "F1SpeedLoan",
+  "DhanPocket",
+  "TurantPaisa",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -257,14 +268,15 @@ const RUPINOW_PRIORITY_ORDER = [
 // When utm_medium=cash2you: Cash2You first
 const CASH2YOU_PRIORITY_ORDER = [
   "Cash2You",
-  "RamFinCorp",
-  "TejasLoan",
+"TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "F1SpeedLoan",
+  "DhanPocket",
+  "TurantPaisa",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -278,14 +290,15 @@ const CASH2YOU_PRIORITY_ORDER = [
 // When utm_medium=rocketcash: RocketCash first
 const ROCKETCASH_PRIORITY_ORDER = [
   "RocketCash",
-  "RamFinCorp",
-  "TejasLoan",
+"TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "F1SpeedLoan",
+  "DhanPocket",
+  "TurantPaisa",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -298,14 +311,15 @@ const ROCKETCASH_PRIORITY_ORDER = [
 
 const MMB_PRIORITY_ORDER = [
   "MMB",
-  "RamFinCorp",
-  "TejasLoan",
+"TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "F1SpeedLoan",
+  "DhanPocket",
+  "TurantPaisa",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -319,14 +333,15 @@ const MMB_PRIORITY_ORDER = [
 // When utm_medium=loanwalle: LoanWalle first
 const LOANWALLE_PRIORITY_ORDER = [
   "LoanWalle",
-  "RamFinCorp",
-  "TejasLoan",
+"TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "F1SpeedLoan",
+  "DhanPocket",
+  "TurantPaisa",
   "KreditBee",
   "MoneyDot",
   "Apollo",
@@ -340,13 +355,14 @@ const LOANWALLE_PRIORITY_ORDER = [
 // When utm_medium=smartcoin: SmartCoin first
 const SMARTCOIN_PRIORITY_ORDER = [
   "SmartCoin",
-  "RamFinCorp",
-  "TejasLoan",
+"TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
   "RapidMoney",
   "F1SpeedLoan",
+  "DhanPocket",
+  "TurantPaisa",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -357,6 +373,51 @@ const SMARTCOIN_PRIORITY_ORDER = [
   "TrueBalance",
   "TrueFund",
 ];
+
+// When utm_medium=dhanpocket: DhanPocket first
+const DHANPOCKET_PRIORITY_ORDER = [
+  "DhanPocket",
+"TejasLoan",
+  "RupiNow",
+  "CashMySalary",
+  "Vivifi",
+  "SmartCoin",
+  "RapidMoney",
+  "F1SpeedLoan",
+  "TurantPaisa",
+  "KreditBee",
+  "MoneyDot",
+  "LoanWalle",
+  "Apollo",
+  "MMB",
+  "Cash2You",
+  "RocketCash",
+  "TrueBalance",
+  "TrueFund",
+];
+
+// When utm_medium=turantpaisa: TurantPaisa first
+const TURANTPAISA_PRIORITY_ORDER = [
+  "TurantPaisa",
+"TejasLoan",
+  "RupiNow",
+  "CashMySalary",
+  "Vivifi",
+  "SmartCoin",
+  "RapidMoney",
+  "F1SpeedLoan",
+  "DhanPocket",
+  "KreditBee",
+  "MoneyDot",
+  "LoanWalle",
+  "Apollo",
+  "MMB",
+  "Cash2You",
+  "RocketCash",
+  "TrueBalance",
+  "TrueFund",
+];
+
 
 const FALLBACK_UTM: Record<string, string> = {
   KreditBee: "https://kredt.be/3ZFfVbz",
@@ -419,6 +480,10 @@ const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   "rupeeraftaar": "RupeeRaftaar",
   "LoanWalle": "LoanWalle",
   "loanwalle": "LoanWalle",
+  "DhanPocket": "DhanPocket",
+  "dhanpocket": "DhanPocket",
+  "TurantPaisa": "TurantPaisa",
+  "turantpaisa": "TurantPaisa",
 };
 
 function getUtmLink(
@@ -452,6 +517,13 @@ function getUtmLink(
 
     case "CashMySalary":
       // CashMySalary only shows if it comes from API staticLenders (no fallback)
+      return directLink || null;
+
+
+    case "DhanPocket":
+      return directLink || null;
+
+    case "TurantPaisa":
       return directLink || null;
 
     case "Vivifi": {
@@ -565,6 +637,8 @@ export default function ShortTicketOffersPage() {
   const [isMMBMedium, setIsMMBMedium] = useState(false);
   const [isLoanWalleMedium, setIsLoanWalleMedium] = useState(false);
   const [isSmartCoinMedium, setIsSmartCoinMedium] = useState(false);
+  const [isDhanPocketMedium, setIsDhanPocketMedium] = useState(false);
+  const [isTurantPaisaMedium, setIsTurantPaisaMedium] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
   const [priorityVisible, setPriorityVisible] = useState(0);
 
@@ -709,6 +783,10 @@ export default function ShortTicketOffersPage() {
     setIsLoanWalleMedium(isLoanWalleMediumLocal);
     const isSmartCoinMediumLocal = utmMedium === "olyv";
     setIsSmartCoinMedium(isSmartCoinMediumLocal);
+    const isDhanPocketMediumLocal = utmMedium === "dhanpocket";
+    setIsDhanPocketMedium(isDhanPocketMediumLocal);
+    const isTurantPaisaMediumLocal = utmMedium === "turantpaisa";
+    setIsTurantPaisaMedium(isTurantPaisaMediumLocal);
 
     let renderOrder = LENDER_ORDER;
     let initialVisible = 4;
@@ -763,6 +841,12 @@ export default function ShortTicketOffersPage() {
       initialVisible = 5;
     } else if (isSmartCoinMediumLocal) {
       renderOrder = SMARTCOIN_PRIORITY_ORDER;
+      initialVisible = 5;
+    } else if (isDhanPocketMediumLocal) {
+      renderOrder = DHANPOCKET_PRIORITY_ORDER;
+      initialVisible = 5;
+    } else if (isTurantPaisaMediumLocal) {
+      renderOrder = TURANTPAISA_PRIORITY_ORDER;
       initialVisible = 5;
     }
 
@@ -996,6 +1080,18 @@ export default function ShortTicketOffersPage() {
           break;
         }
 
+        case "DhanPocket":
+          // DhanPocket only shows if it comes from API staticLenders
+          if (!utmMap[name]) break;
+          ordered.push({ name, utm_link: utmMap[name] });
+          break;
+
+        case "TurantPaisa":
+          // TurantPaisa only shows if it comes from API staticLenders
+          if (!utmMap[name]) break;
+          ordered.push({ name, utm_link: utmMap[name] });
+          break;
+
         default:
           if (utmLink) ordered.push({ name, utm_link: utmLink });
       }
@@ -1218,8 +1314,8 @@ export default function ShortTicketOffersPage() {
   };
 
   // Hero card logic
-  const showHeroFlow = isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium || isSmartCoinMedium || isTejasLoanMedium || isMoneyDotMedium || isTrueFundMedium || /* isASAPFinanceMedium || */ /* isSpeedoLoanMedium || */ isCashMySalaryMedium || isApolloMedium || isF1SpeedLoanMedium || isRupiNowMedium || isCash2YouMedium || isRocketCashMedium || isMMBMedium || isLoanWalleMedium;
-  const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : isSmartCoinMedium ? "SmartCoin" : isTejasLoanMedium ? "TejasLoan" : isMoneyDotMedium ? "MoneyDot" : isTrueFundMedium ? "TrueFund" : /* isASAPFinanceMedium ? "ASAPFinance" : */ /* isSpeedoLoanMedium ? "SpeedoLoan" : */ isCashMySalaryMedium ? "CashMySalary" : isApolloMedium ? "Apollo" : isF1SpeedLoanMedium ? "F1SpeedLoan" : isRupiNowMedium ? "RupiNow" : isCash2YouMedium ? "Cash2You" : isRocketCashMedium ? "RocketCash" : isMMBMedium ? "MMB" : isLoanWalleMedium ? "LoanWalle" : null;
+  const showHeroFlow = isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium || isSmartCoinMedium || isTejasLoanMedium || isMoneyDotMedium || isTrueFundMedium || /* isASAPFinanceMedium || */ /* isSpeedoLoanMedium || */ isCashMySalaryMedium || isApolloMedium || isF1SpeedLoanMedium || isRupiNowMedium || isCash2YouMedium || isRocketCashMedium || isMMBMedium || isLoanWalleMedium || isDhanPocketMedium || isTurantPaisaMedium;
+  const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : isSmartCoinMedium ? "SmartCoin" : isTejasLoanMedium ? "TejasLoan" : isMoneyDotMedium ? "MoneyDot" : isTrueFundMedium ? "TrueFund" : /* isASAPFinanceMedium ? "ASAPFinance" : */ /* isSpeedoLoanMedium ? "SpeedoLoan" : */ isCashMySalaryMedium ? "CashMySalary" : isApolloMedium ? "Apollo" : isF1SpeedLoanMedium ? "F1SpeedLoan" : isRupiNowMedium ? "RupiNow" : isCash2YouMedium ? "Cash2You" : isRocketCashMedium ? "RocketCash" : isMMBMedium ? "MMB" : isLoanWalleMedium ? "LoanWalle" : isDhanPocketMedium ? "DhanPocket" : isTurantPaisaMedium ? "TurantPaisa" : null;
   const heroIdx = heroName ? visibleLenders.findIndex((l) => l.name === heroName) : -1;
   const showHeroCard = showHeroFlow && heroIdx === 0 && visibleLenders.length > 0;
   const heroLender = showHeroCard ? visibleLenders[0] : null;
