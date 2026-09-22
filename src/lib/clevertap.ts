@@ -12,6 +12,35 @@ function getOrCaptureUtm(): { utm_source?: string } {
 // change for browsers that already subscribed under it.
 const WEB_PUSH_SERVICE_WORKER = "/firebase-messaging-sw.js";
 
+
+const CLEVERTAP_VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_CLEVERTAP_VAPID_PUBLIC_KEY?.trim() ?? "";
+
+function toBase64Url(key: ArrayBuffer): string {
+  let binary = "";
+  for (const byte of new Uint8Array(key)) binary += String.fromCharCode(byte);
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+async function prepareWebPushScope(): Promise<boolean> {
+  if (typeof window === "undefined" || !("serviceWorker" in navigator)) return true;
+
+  try {
+    const registration = await navigator.serviceWorker.getRegistration(WEB_PUSH_SERVICE_WORKER);
+    const subscription = await registration?.pushManager.getSubscription();
+    if (!subscription) return true;
+
+    if (!CLEVERTAP_VAPID_PUBLIC_KEY) return false;
+
+    const key = subscription.options.applicationServerKey;
+    if (key && toBase64Url(key) === CLEVERTAP_VAPID_PUBLIC_KEY) return true;
+
+    console.log("[CleverTap] initWebPush: dropping subscription made with a previous VAPID key");
+    return await subscription.unsubscribe();
+  } catch {
+    return true;
+  }
+}
+
 /**
  * A browser PushManager scope can hold only one subscription at a time, keyed
  * to a single applicationServerKey (VAPID key). Once CleverTap has subscribed
