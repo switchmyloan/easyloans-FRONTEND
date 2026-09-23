@@ -10,7 +10,7 @@ import LoanWalleLenderModal from "@/components/offers/LoanWalleLenderModal";
 import SessionActiveBanner from "@/components/shared/SessionActiveBanner";
 import { getStaticLenderDetail, STATIC_LENDER_LOGOS, DASHBOARD_PRIORITY_ORDER, LENDER_FEATURE_TAGS, DISPLAY_NAMES } from "@/lib/constants";
 import { useOtpGuard } from "@/app/dashboard/layout";
-import { useRamFinCorpApply } from "@/hooks/useRamFinCorpApply";
+import { useRamFinCorpApply } from "@/hooks/useRamFinCorpApply"; // stub - RamFinCorp disabled
 import { useKreditBeeApply, useMMBApply, useTejasLoanApply, useF1SpeedLoanApply } from "@/hooks/useLenderApply";
 
 // Import API functions
@@ -43,7 +43,7 @@ const DASHBOARD_VISIBLE_COUNT = 4;
 const FALLBACK_UTM_LINKS: Record<string, string> = {
   SmartCoin: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
   SmartCoinHighIntent: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
-  RamFinCorp: "https://ramfincorp.com/",
+  // RamFinCorp: "https://ramfincorp.com/",
   Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
   RapidMoney: "https://web.rapidmoney.in/borrower/login?utm_source=creadylandingpage&utm_extsource=abc&utm_medium=rapidmoney&utm_campaign=xyz&utm_campaignID=def",
   KreditBee: "https://www.kreditbee.in/signin",
@@ -161,8 +161,9 @@ export default function DashboardOffers() {
       // Map existing shown offers, but filter out RapidMoney if isDuplicate is false,
       // and filter out removed lenders.
       const rapidMoneyData = data.RapidMoney as { isDuplicate?: boolean; utm_link?: string } | undefined;
-      const ramFinCorpData = data.RamFinCorp as { data?: { response?: { message?: string } }; utm_link?: string } | undefined;
-      const isRamFinCorpEligible = ramFinCorpData?.data?.response?.message === "Dedup Success";
+      // const ramFinCorpData = data.RamFinCorp as { data?: { response?: { message?: string } }; utm_link?: string } | undefined;
+      // const isRamFinCorpEligible = ramFinCorpData?.data?.response?.message === "Dedup Success";
+      const isRamFinCorpEligible = false; // RamFinCorp disabled
       const mmbData = data.MMBDedup as { data?: { message?: string }; utm_link?: string } | undefined;
       const isMmbEligible = mmbData?.data?.message === "user_not_found";
 
@@ -174,9 +175,9 @@ export default function DashboardOffers() {
         if (o.lenderName === "RapidMoney") {
           return rapidMoneyData?.isDuplicate === false;
         }
-        if (o.lenderName === "RamFinCorp") {
-          return isRamFinCorpEligible;
-        }
+        // if (o.lenderName === "RamFinCorp") {
+        //   return isRamFinCorpEligible;
+        // }
         if (o.lenderName === "MMB" || o.lenderName === "MMBDedup") {
           return isMmbEligible;
         }
@@ -212,8 +213,8 @@ export default function DashboardOffers() {
         // "asapfinance": "ASAPFinance",
         "Apollo": "Apollo",
         "apollo": "Apollo",
-        "RamFinCorp": "RamFinCorp",
-        "ramfincorp": "RamFinCorp",
+        // "RamFinCorp": "RamFinCorp",
+        // "ramfincorp": "RamFinCorp",
         "Tejas": "TejasLoan",
         "tejas": "TejasLoan",
         "TejasLoan": "TejasLoan",
@@ -235,7 +236,13 @@ export default function DashboardOffers() {
         "RupeeRaftaar": "RupeeRaftaar",
         "rupeeraftaar": "RupeeRaftaar",
         "LoanWalle": "LoanWalle",
-        "loanwalle": "LoanWalle"
+        "loanwalle": "LoanWalle",
+        "DhanPocket": "DhanPocket",
+        "dhanpocket": "DhanPocket",
+        "TurantPaisa": "TurantPaisa",
+        "turantpaisa": "TurantPaisa",
+        "QuickMoney": "QuickMoney",
+        "quickmoney": "QuickMoney"
       };
       for (const lender of staticLendersArray) {
         if (lender.name && lender.utm_link) {
@@ -389,11 +396,38 @@ export default function DashboardOffers() {
         });
       }
 
-      // Add RamFinCorp if eligible (data.response.message === "Dedup Success")
-      if (isRamFinCorpEligible && !existingLenderNames.has("RamFinCorp")) {
+      // // Add RamFinCorp if eligible (data.response.message === "Dedup Success") - RamFinCorp disabled
+      // if (isRamFinCorpEligible && !existingLenderNames.has("RamFinCorp")) {
+      //   mappedOffers.push({
+      //     name: "RamFinCorp",
+      //     utmLink: ramFinCorpData?.utm_link || FALLBACK_UTM_LINKS["RamFinCorp"],
+      //     isOffer: false,
+      //   });
+      // }
+
+      // Add DhanPocket only if it comes from API staticLenders
+      if (staticLenderUtmLinks["DhanPocket"] && !existingLenderNames.has("DhanPocket")) {
         mappedOffers.push({
-          name: "RamFinCorp",
-          utmLink: ramFinCorpData?.utm_link || FALLBACK_UTM_LINKS["RamFinCorp"],
+          name: "DhanPocket",
+          utmLink: staticLenderUtmLinks["DhanPocket"],
+          isOffer: false,
+        });
+      }
+
+      // Add TurantPaisa only if it comes from API staticLenders
+      if (staticLenderUtmLinks["TurantPaisa"] && !existingLenderNames.has("TurantPaisa")) {
+        mappedOffers.push({
+          name: "TurantPaisa",
+          utmLink: staticLenderUtmLinks["TurantPaisa"],
+          isOffer: false,
+        });
+      }
+
+      // Add QuickMoney only if it comes from API staticLenders
+      if (staticLenderUtmLinks["QuickMoney"] && !existingLenderNames.has("QuickMoney")) {
+        mappedOffers.push({
+          name: "QuickMoney",
+          utmLink: staticLenderUtmLinks["QuickMoney"],
           isOffer: false,
         });
       }
@@ -463,13 +497,13 @@ export default function DashboardOffers() {
     }
   };
 
-  const handleRamFinCorpApply = async () => {
-    const result = await applyRamFinCorp();
-    // Show NotEligible modal for notEligible or error status
-    if (result.status === "notEligible" || result.status === "error") {
-      setShowNotEligible("RamFinCorp");
-    }
-  };
+  // const handleRamFinCorpApply = async () => {
+  //   const result = await applyRamFinCorp();
+  //   // Show NotEligible modal for notEligible or error status
+  //   if (result.status === "notEligible" || result.status === "error") {
+  //     setShowNotEligible("RamFinCorp");
+  //   }
+  // };
 
   const handleMMBApply = async (initialUtmLink?: string) => {
     const result = await applyMMB(initialUtmLink);
@@ -542,11 +576,11 @@ export default function DashboardOffers() {
       return;
     }
 
-    // Route RamFinCorp to specific handler
-    if (lenderName === "RamFinCorp") {
-      handleRamFinCorpApply();
-      return;
-    }
+    // // Route RamFinCorp to specific handler - RamFinCorp disabled
+    // if (lenderName === "RamFinCorp") {
+    //   handleRamFinCorpApply();
+    //   return;
+    // }
 
     // Route MMB to specific handler
     if (lenderName === "MMB") {
@@ -644,7 +678,7 @@ export default function DashboardOffers() {
               ? LENDER_FEATURE_TAGS[lenderName] || LENDER_CUSTOM_BADGE[lenderName] || (offer.isOffer ? "Pre-Qualified" : "Matched")
               : null;
 
-            const isApplying = lenderName === "KreditBee" ? kbApplying : lenderName === "RamFinCorp" ? ramFinCorpApplying : lenderName === "MMB" ? mmbApplying : lenderName === "TejasLoan" ? tejasLoanApplying : lenderName === "F1SpeedLoan" ? f1SpeedLoanApplying : false;
+            const isApplying = lenderName === "KreditBee" ? kbApplying : /* lenderName === "RamFinCorp" ? ramFinCorpApplying : */ lenderName === "MMB" ? mmbApplying : lenderName === "TejasLoan" ? tejasLoanApplying : lenderName === "F1SpeedLoan" ? f1SpeedLoanApplying : false;
 
             return (
               <OfferCard

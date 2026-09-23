@@ -12,7 +12,7 @@ import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
 import LoanWalleLenderModal from "@/components/offers/LoanWalleLenderModal";
 import SessionActiveBanner from "@/components/shared/SessionActiveBanner";
 import { useOtpGuard } from "@/app/dashboard/layout";
-import { useRamFinCorpApply } from "@/hooks/useRamFinCorpApply";
+import { useRamFinCorpApply } from "@/hooks/useRamFinCorpApply"; // stub - RamFinCorp disabled
 import { useKreditBeeApply, useSmartCoinApply, useMMBApply, useTejasLoanApply, useF1SpeedLoanApply } from "@/hooks/useLenderApply";
 import RingImageSection from "./RingImageSection";
 
@@ -39,7 +39,7 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
 const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   rapidmoney: "RapidMoney",
   kreditbee: "KreditBee",
-  ramfincorp: "RamFinCorp",
+  // ramfincorp: "RamFinCorp",
   olyv: "SmartCoin",
   truebalance: "TrueBalance",
   // speedoloan: "SpeedoLoan",
@@ -58,6 +58,7 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   loanwalle: "LoanWalle",
   dhanpocket: "DhanPocket",
   turantpaisa: "TurantPaisa",
+  quickmoney: "QuickMoney",
 };
 
 // Map ToofanLoan and RupeeRaftaar to LoanWalle for display purposes
@@ -158,7 +159,7 @@ export default function LoanOffersBanner() {
       const rapidMoneyData = data.RapidMoney as { isDuplicate?: boolean; utm_link?: string } | undefined;
       const trueFundData = data.TrueFund as { message?: string; utm_link?: string; data?: { response?: { message?: string } } } | undefined;
       const moneyDotData = data.MoneyDot as { data?: { response?: { can_attribute?: boolean } }; utm_link?: string } | undefined;
-      const ramFinCorpData = data.RamFinCorp as { data?: { response?: { message?: string } }; utm_link?: string } | undefined;
+      // const ramFinCorpData = data.RamFinCorp as { data?: { response?: { message?: string } }; utm_link?: string } | undefined;
       const smartCoinDedupeData = (data.smartCoinDedupe || data.SmartCoinDedupe) as { isDuplicate?: boolean; utm_link?: string } | undefined;
 
       const trueFundMessage = (trueFundData?.message || "").toLowerCase();
@@ -167,7 +168,8 @@ export default function LoanOffersBanner() {
         trueFundMessage.includes("user details received sucessfully") ||
         trueFundResponseMessage.includes("user details received sucessfully");
       const isMoneyDotEligible = moneyDotData?.data?.response?.can_attribute === true;
-      const isRamFinCorpEligible = ramFinCorpData?.data?.response?.message === "Dedup Success";
+      // const isRamFinCorpEligible = ramFinCorpData?.data?.response?.message === "Dedup Success";
+      const isRamFinCorpEligible = false; // RamFinCorp disabled
       const isSmartCoinEligible = smartCoinDedupeData?.isDuplicate === false;
 
       const rupiNowData = data.RupiNow as { dedupeStatus?: string; utm_link?: string } | undefined;
@@ -330,15 +332,15 @@ export default function LoanOffersBanner() {
 
       
 
-      // Add RamFinCorp if eligible (data.response.message === "Dedup Success")
-      if (isRamFinCorpEligible && !addedLenders.has("RamFinCorp")) {
-        addedLenders.add("RamFinCorp");
-        eligibleLenders.push({
-          id: "RamFinCorp",
-          name: "RamFinCorp",
-          prefix: "R",
-        });
-      }
+      // // Add RamFinCorp if eligible (data.response.message === "Dedup Success")
+      // if (isRamFinCorpEligible && !addedLenders.has("RamFinCorp")) {
+      //   addedLenders.add("RamFinCorp");
+      //   eligibleLenders.push({
+      //     id: "RamFinCorp",
+      //     name: "RamFinCorp",
+      //     prefix: "R",
+      //   });
+      // }
 
       // Add SmartCoin if eligible (isDuplicate === false)
       if (isSmartCoinEligible && !addedLenders.has("SmartCoin")) {
@@ -422,6 +424,19 @@ export default function LoanOffersBanner() {
           id: "TurantPaisa",
           name: "TurantPaisa",
           prefix: "T",
+        });
+      }
+
+      // Add QuickMoney only if it comes from API staticLenders
+      const quickMoneyFromApi = staticLendersArray.find(
+        (l) => l.name?.toLowerCase() === "quickmoney"
+      );
+      if (quickMoneyFromApi?.utm_link && !addedLenders.has("QuickMoney")) {
+        addedLenders.add("QuickMoney");
+        eligibleLenders.push({
+          id: "QuickMoney",
+          name: "QuickMoney",
+          prefix: "Q",
         });
       }
 
@@ -550,6 +565,16 @@ export default function LoanOffersBanner() {
           id: "TurantPaisa",
           name: "TurantPaisa",
           prefix: "T",
+        });
+      }
+
+      // If UTM is quickmoney and QuickMoney exists in staticLenders but wasn't added yet, add it now
+      if (utmLenderName === "QuickMoney" && quickMoneyFromApi?.utm_link && !addedLenders.has("QuickMoney")) {
+        addedLenders.add("QuickMoney");
+        eligibleLenders.push({
+          id: "QuickMoney",
+          name: "QuickMoney",
+          prefix: "Q",
         });
       }
 
@@ -688,14 +713,14 @@ export default function LoanOffersBanner() {
     }
   };
 
-  // RamFinCorp special apply handler - uses shared hook
-  const handleRamFinCorpApply = async () => {
-    const result = await applyRamFinCorp();
-    // Show NotEligible modal for notEligible or error status
-    if (result.status === "notEligible" || result.status === "error") {
-      setShowNotEligible("RamFinCorp");
-    }
-  };
+  // // RamFinCorp special apply handler - uses shared hook (RamFinCorp disabled)
+  // const handleRamFinCorpApply = async () => {
+  //   const result = await applyRamFinCorp();
+  //   // Show NotEligible modal for notEligible or error status
+  //   if (result.status === "notEligible" || result.status === "error") {
+  //     setShowNotEligible("RamFinCorp");
+  //   }
+  // };
 
   // SmartCoin special apply handler - uses shared hook
   const handleSmartCoinApply = async (initialUtmLink?: string) => {
@@ -781,11 +806,11 @@ export default function LoanOffersBanner() {
       return;
     }
 
-    // Special handling for RamFinCorp
-    if (displayLender.id === "RamFinCorp") {
-      handleRamFinCorpApply();
-      return;
-    }
+    // // Special handling for RamFinCorp (disabled)
+    // if (displayLender.id === "RamFinCorp") {
+    //   handleRamFinCorpApply();
+    //   return;
+    // }
 
     // Special handling for SmartCoin
     if (displayLender.id === "SmartCoin") {

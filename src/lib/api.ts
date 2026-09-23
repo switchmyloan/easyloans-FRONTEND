@@ -543,7 +543,7 @@ export interface GetExistingShortUserDetailsResponse {
     RapidMoney?: ShortTicketLender;
     TrueBalance?: ShortTicketLender;
     SmartCoin?: ShortTicketLender;
-    RamFinCorp?: ShortTicketLender;
+    // RamFinCorp?: ShortTicketLender;
     Vivifi?: ShortTicketLender;
     [key: string]: unknown;
   };
@@ -683,7 +683,7 @@ export interface ShortTicketData {
   shortOfferLeadId?: string;
 
   RapidMoney?: ShortTicketLender;
-  RamFinCorp?: ShortTicketLender;
+  // RamFinCorp?: ShortTicketLender;
   KreditBee?: ShortTicketLender;
   TrueBalance?: ShortTicketLender;
   Vivifi?: ShortTicketLender;
@@ -762,15 +762,15 @@ export async function getOfferShortTicket(
     sessionStorage.setItem("userFormData", JSON.stringify(payload));
   }
 
-  // Track RamFinCorp dedup fail event if applicable (new user flow)
-  const ramFinCorpData = json.data?.RamFinCorp as {
-    data?: { response?: { message?: string } };
-  } | undefined;
-  const isRamFinCorpEligible = ramFinCorpData?.data?.response?.message === "Dedup Success";
-  if (ramFinCorpData && !isRamFinCorpEligible) {
-    console.log("[RamFinCorp] Dedup fail detected in new user API response - firing CleverTap event");
-    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_FAIL);
-  }
+  // // Track RamFinCorp dedup fail event if applicable (new user flow)
+  // const ramFinCorpData = json.data?.RamFinCorp as {
+  //   data?: { response?: { message?: string } };
+  // } | undefined;
+  // const isRamFinCorpEligible = ramFinCorpData?.data?.response?.message === "Dedup Success";
+  // if (ramFinCorpData && !isRamFinCorpEligible) {
+  //   console.log("[RamFinCorp] Dedup fail detected in new user API response - firing CleverTap event");
+  //   cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_FAIL);
+  // }
 
   // Track SmartCoin dedup fail event if applicable (new user flow)
   const smartCoinDedupeData = (json.data?.smartCoinDedupe || json.data?.SmartCoinDedupe) as {
@@ -910,19 +910,19 @@ export async function applyToShortMoneyView(): Promise<MoneyViewApplyResponse> {
   return json;
 }
 
-export interface RamFinCorpApplyResponse {
-  success: boolean;
-  message: string;
-  statusCode: number;
-  data?: {
-    outcome?: string;
-    flow?: string;
-    redirectUrl?: string;
-    utm_link?: string;
-    retryAfterMs?: number;
-    [key: string]: unknown;
-  };
-}
+// export interface RamFinCorpApplyResponse {
+//   success: boolean;
+//   message: string;
+//   statusCode: number;
+//   data?: {
+//     outcome?: string;
+//     flow?: string;
+//     redirectUrl?: string;
+//     utm_link?: string;
+//     retryAfterMs?: number;
+//     [key: string]: unknown;
+//   };
+// }
 
 // ---------- SmartCoin API ----------
 
@@ -993,41 +993,41 @@ export async function applyToSmartCoin(): Promise<SmartCoinCreateLeadResponse> {
   return json;
 }
 
-export async function applyToShortRamFinCorp(): Promise<RamFinCorpApplyResponse> {
-  const raw = sessionStorage.getItem("userFormData");
-  if (!raw) throw new Error("User data not found. Please fill the form first.");
+// export async function applyToShortRamFinCorp(): Promise<RamFinCorpApplyResponse> {
+//   const raw = sessionStorage.getItem("userFormData");
+//   if (!raw) throw new Error("User data not found. Please fill the form first.");
 
-  const userData = JSON.parse(raw);
-  const shortOfferLeadId = sessionStorage.getItem("shortOfferLeadId");
+//   const userData = JSON.parse(raw);
+//   const shortOfferLeadId = sessionStorage.getItem("shortOfferLeadId");
 
-  const body = {
-    id: shortOfferLeadId ? Number(shortOfferLeadId) : undefined,
-    // Short ticket: "low" so the backend writes ramfincorpLead to shortOfferLeads
-    // (not offerLeads). offerLeadId is the field it reads for the short flow —
-    // shortSelectedLenders has no offerLead FK, so the id must be sent explicitly.
-    offertype: "low",
-    offerLeadId: shortOfferLeadId ? Number(shortOfferLeadId) : undefined,
-    mobileNumber: userData.mobileNumber,
-    email: userData.email,
-    panNumber: userData.panNumber,
-    pincode: userData.pincode,
-    jobType: userData.jobType,
-    monthlySalary: Number(userData.monthlySalary),
-    loanAmount: Number(userData.loanAmount),
-    loanPurpose: userData.loanPurpose || "Personal Loan",
-  };
+//   const body = {
+//     id: shortOfferLeadId ? Number(shortOfferLeadId) : undefined,
+//     // Short ticket: "low" so the backend writes ramfincorpLead to shortOfferLeads
+//     // (not offerLeads). offerLeadId is the field it reads for the short flow —
+//     // shortSelectedLenders has no offerLead FK, so the id must be sent explicitly.
+//     offertype: "low",
+//     offerLeadId: shortOfferLeadId ? Number(shortOfferLeadId) : undefined,
+//     mobileNumber: userData.mobileNumber,
+//     email: userData.email,
+//     panNumber: userData.panNumber,
+//     pincode: userData.pincode,
+//     jobType: userData.jobType,
+//     monthlySalary: Number(userData.monthlySalary),
+//     loanAmount: Number(userData.loanAmount),
+//     loanPurpose: userData.loanPurpose || "Personal Loan",
+//   };
 
-  const res = await fetch(`${BASE_URL}/onSubmit/get-offer-ramfincorpnew`, {
-    method: "POST",
-    headers: PARTNER_HEADERS,
-    body: JSON.stringify(body),
-  });
+//   const res = await fetch(`${BASE_URL}/onSubmit/get-offer-ramfincorpnew`, {
+//     method: "POST",
+//     headers: PARTNER_HEADERS,
+//     body: JSON.stringify(body),
+//   });
 
-  if (!res.ok) throw new Error("Failed to apply to RamFinCorp. Please try again.");
+//   if (!res.ok) throw new Error("Failed to apply to RamFinCorp. Please try again.");
 
-  const json: RamFinCorpApplyResponse = await res.json();
-  return json;
-}
+//   const json: RamFinCorpApplyResponse = await res.json();
+//   return json;
+// }
 
 // export interface MMBApplyResponse {
 //   success: boolean;
@@ -1146,7 +1146,7 @@ export interface ShortExistingUserOffersResponse {
     RapidMoney?: ShortTicketLender;
     TrueBalance?: ShortTicketLender;
     SmartCoin?: ShortTicketLender;
-    RamFinCorp?: ShortTicketLender;
+    // RamFinCorp?: ShortTicketLender;
     Vivifi?: ShortTicketLender;
 
     [key: string]: unknown;
@@ -1230,15 +1230,15 @@ export async function getExistingShortUserOffer(
     }
   }
 
-  // Track RamFinCorp dedup fail event if applicable
-  const ramFinCorpData = json.data.RamFinCorp as {
-    data?: { response?: { message?: string } };
-  } | undefined;
-  const isRamFinCorpEligible = ramFinCorpData?.data?.response?.message === "Dedup Success";
-  if (ramFinCorpData && !isRamFinCorpEligible) {
-    console.log("[RamFinCorp] Dedup fail detected in API response - firing CleverTap event");
-    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_FAIL);
-  }
+  // // Track RamFinCorp dedup fail event if applicable
+  // const ramFinCorpData = json.data.RamFinCorp as {
+  //   data?: { response?: { message?: string } };
+  // } | undefined;
+  // const isRamFinCorpEligible = ramFinCorpData?.data?.response?.message === "Dedup Success";
+  // if (ramFinCorpData && !isRamFinCorpEligible) {
+  //   console.log("[RamFinCorp] Dedup fail detected in API response - firing CleverTap event");
+  //   cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_FAIL);
+  // }
 
   // Track SmartCoin dedup fail event if applicable (existing user flow)
   const smartCoinDedupeData = (json.data.smartCoinDedupe || json.data.SmartCoinDedupe) as {
@@ -1332,7 +1332,7 @@ export interface ShortDashboardLinkResponse {
     KreditBee?: ShortTicketLender;
     RapidMoney?: ShortTicketLender;
     TrueBalance?: ShortTicketLender;
-    RamFinCorp?: ShortTicketLender;
+    // RamFinCorp?: ShortTicketLender;
     Vivifi?: ShortTicketLender;
     [key: string]: unknown;
   };

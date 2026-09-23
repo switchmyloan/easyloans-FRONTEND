@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { saveShortLender, applyToShortRamFinCorp } from "@/lib/api";
-import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "@/lib/clevertap";
+// RamFinCorp is commented out - this file provides stub exports to prevent import errors
+
+// import { useState, useCallback } from "react";
+// import { saveShortLender, applyToShortRamFinCorp } from "@/lib/api";
+// import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "@/lib/clevertap";
 
 // ============================================================
 // Types
@@ -25,8 +27,25 @@ export interface UseRamFinCorpApplyOptions {
 }
 
 // ============================================================
-// Hook
+// Hook (commented out - RamFinCorp disabled)
 // ============================================================
+export function useRamFinCorpApply(_options: UseRamFinCorpApplyOptions = {}) {
+  // Stub implementation - returns no-op values
+  return {
+    /** Call this to apply to RamFinCorp */
+    apply: async (): Promise<RamFinCorpApplyResult> => ({ status: "error", message: "RamFinCorp is disabled" }),
+    /** Whether the apply is in progress */
+    applying: false,
+    /** Session active message (null if not active) */
+    sessionActiveMessage: null as string | null,
+    /** Clear the session active message manually */
+    clearSessionActiveMessage: () => {},
+  };
+}
+
+/*
+// Original implementation (commented out):
+
 export function useRamFinCorpApply(options: UseRamFinCorpApplyOptions = {}) {
   const { trackEvents = true, onSuccess } = options;
 
@@ -122,13 +141,10 @@ export function useRamFinCorpApply(options: UseRamFinCorpApplyOptions = {}) {
   }, [applying, trackEvents, onSuccess]);
 
   return {
-    /** Call this to apply to RamFinCorp */
     apply,
-    /** Whether the apply is in progress */
     applying,
-    /** Session active message (null if not active) */
     sessionActiveMessage,
-    /** Clear the session active message manually */
     clearSessionActiveMessage,
   };
 }
+*/

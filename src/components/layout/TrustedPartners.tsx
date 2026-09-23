@@ -43,7 +43,7 @@ const TRUST_BADGES: TrustBadge[] = [
 ];
 
 const PARTNER_LOGOS = [
-   "/ramfinCorp.png",
+   // "/ramfinCorp.png",
    "/rapid-black.webp",
    "/kreditbee-logo.svg",
     "/truebalance.webp",

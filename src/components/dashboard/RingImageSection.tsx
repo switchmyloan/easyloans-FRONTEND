@@ -8,7 +8,7 @@ import { CheckCircle } from "lucide-react";
 // Add the image file to /public/ and update the path here
 const LENDER_RING_IMAGES: Record<string, string> = {
   rapidmoney: "/RR-ring.png",
-  ramfincorp: "/RC-ring.png",
+  // ramfincorp: "/RC-ring.png",
   kreditbee: "/KB-ring.png",
   truebalance: "/TB-ring.png",
   vivifi: "/V-ring.png", // Add VV-ring.png to /public/

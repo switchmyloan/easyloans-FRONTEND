@@ -19,7 +19,7 @@ import SessionActiveBanner from "@/components/shared/SessionActiveBanner";
 import TrustBadges from "@/components/ui/TrustBadges";
 import GradientBanner from "@/components/ui/GradientBanner";
 import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "@/lib/clevertap";
-import { useRamFinCorpApply } from "@/hooks/useRamFinCorpApply";
+import { useRamFinCorpApply } from "@/hooks/useRamFinCorpApply"; // stub - RamFinCorp disabled
 import { useKreditBeeApply, useSmartCoinApply, useMMBApply, useTejasLoanApply, useF1SpeedLoanApply } from "@/hooks/useLenderApply";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
@@ -27,6 +27,7 @@ import { Clock, Contact, Lock } from "lucide-react";
 
 // Default render order
 const LENDER_ORDER = [
+  "QuickMoney",
   "TejasLoan",
   "RupiNow",
   "CashMySalary",
@@ -50,7 +51,8 @@ const LENDER_ORDER = [
 // When utm_medium=kreditbee: KreditBee first
 const KB_PRIORITY_ORDER = [
   "KreditBee",
- "TejasLoan",
+  "QuickMoney",
+  "TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
@@ -72,6 +74,7 @@ const KB_PRIORITY_ORDER = [
 // When utm_medium=rapidmoney: RapidMoney first
 const RAPIDMONEY_PRIORITY_ORDER = [
   "RapidMoney",
+  "QuickMoney",
   "TejasLoan",
   "RupiNow",
   "CashMySalary",
@@ -91,31 +94,32 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "TrueFund",
 ];
 
-const RamFinCorp_PRIORITY_ORDER = [
-  "RamFinCorp",
- "TejasLoan",
-  "RupiNow",
-  "CashMySalary",
-  "Vivifi",
-  "SmartCoin",
-  "RapidMoney",
-  "F1SpeedLoan",
-  "DhanPocket",
-  "TurantPaisa",
-  "KreditBee",
-  "MoneyDot",
-  "LoanWalle",
-  "Apollo",
-  "MMB",
-  "Cash2You",
-  "RocketCash",
-  "TrueBalance",
-  "TrueFund",
-];
+// const RamFinCorp_PRIORITY_ORDER = [
+//   "RamFinCorp",
+//  "TejasLoan",
+//   "RupiNow",
+//   "CashMySalary",
+//   "Vivifi",
+//   "SmartCoin",
+//   "RapidMoney",
+//   "F1SpeedLoan",
+//   "DhanPocket",
+//   "TurantPaisa",
+//   "KreditBee",
+//   "MoneyDot",
+//   "LoanWalle",
+//   "Apollo",
+//   "MMB",
+//   "Cash2You",
+//   "RocketCash",
+//   "TrueBalance",
+//   "TrueFund",
+// ];
 
 // When utm_medium=tejasloan: TejasLoan first
 const TEJASLOAN_PRIORITY_ORDER = [
   "TejasLoan",
+  "QuickMoney",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
@@ -138,7 +142,8 @@ const TEJASLOAN_PRIORITY_ORDER = [
 // When utm_medium=moneydot: MoneyDot first
 const MONEYDOT_PRIORITY_ORDER = [
   "MoneyDot",
- "TejasLoan",
+  "QuickMoney",
+  "TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
@@ -159,7 +164,8 @@ const MONEYDOT_PRIORITY_ORDER = [
 
 const TRUEFUND_PRIORITY_ORDER = [
   "TrueFund",
-"TejasLoan",
+  "QuickMoney",
+  "TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
@@ -181,7 +187,8 @@ const TRUEFUND_PRIORITY_ORDER = [
 
 const CASHMYSalary_PRIORITY_ORDER = [
   "CashMySalary",
-"TejasLoan",
+  "QuickMoney",
+  "TejasLoan",
   "RupiNow",
   "Vivifi",
   "SmartCoin",
@@ -202,7 +209,8 @@ const CASHMYSalary_PRIORITY_ORDER = [
 
 const APOLLO_PRIORITY_ORDER = [
   "Apollo",
-"TejasLoan",
+  "QuickMoney",
+  "TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
@@ -224,7 +232,8 @@ const APOLLO_PRIORITY_ORDER = [
 // When utm_medium=f1speedloan: F1SpeedLoan first
 const F1SPEEDLOAN_PRIORITY_ORDER = [
   "F1SpeedLoan",
-"TejasLoan",
+  "QuickMoney",
+  "TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
@@ -246,7 +255,8 @@ const F1SPEEDLOAN_PRIORITY_ORDER = [
 // When utm_medium=rupinow: RupiNow first
 const RUPINOW_PRIORITY_ORDER = [
   "RupiNow",
-"TejasLoan",
+  "QuickMoney",
+  "TejasLoan",
   "CashMySalary",
   "Vivifi",
   "SmartCoin",
@@ -268,7 +278,8 @@ const RUPINOW_PRIORITY_ORDER = [
 // When utm_medium=cash2you: Cash2You first
 const CASH2YOU_PRIORITY_ORDER = [
   "Cash2You",
-"TejasLoan",
+  "QuickMoney",
+  "TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
@@ -290,7 +301,8 @@ const CASH2YOU_PRIORITY_ORDER = [
 // When utm_medium=rocketcash: RocketCash first
 const ROCKETCASH_PRIORITY_ORDER = [
   "RocketCash",
-"TejasLoan",
+  "QuickMoney",
+  "TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
@@ -311,7 +323,8 @@ const ROCKETCASH_PRIORITY_ORDER = [
 
 const MMB_PRIORITY_ORDER = [
   "MMB",
-"TejasLoan",
+  "QuickMoney",
+  "TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
@@ -333,7 +346,8 @@ const MMB_PRIORITY_ORDER = [
 // When utm_medium=loanwalle: LoanWalle first
 const LOANWALLE_PRIORITY_ORDER = [
   "LoanWalle",
-"TejasLoan",
+  "QuickMoney",
+  "TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
@@ -355,7 +369,8 @@ const LOANWALLE_PRIORITY_ORDER = [
 // When utm_medium=smartcoin: SmartCoin first
 const SMARTCOIN_PRIORITY_ORDER = [
   "SmartCoin",
-"TejasLoan",
+  "QuickMoney",
+  "TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
@@ -377,7 +392,8 @@ const SMARTCOIN_PRIORITY_ORDER = [
 // When utm_medium=dhanpocket: DhanPocket first
 const DHANPOCKET_PRIORITY_ORDER = [
   "DhanPocket",
-"TejasLoan",
+  "QuickMoney",
+  "TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
@@ -399,7 +415,8 @@ const DHANPOCKET_PRIORITY_ORDER = [
 // When utm_medium=turantpaisa: TurantPaisa first
 const TURANTPAISA_PRIORITY_ORDER = [
   "TurantPaisa",
-"TejasLoan",
+  "QuickMoney",
+  "TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
@@ -418,10 +435,32 @@ const TURANTPAISA_PRIORITY_ORDER = [
   "TrueFund",
 ];
 
+// When utm_medium=quickmoney: QuickMoney first
+const QUICKMONEY_PRIORITY_ORDER = [
+  "QuickMoney",
+  "TejasLoan",
+  "RupiNow",
+  "CashMySalary",
+  "Vivifi",
+  "SmartCoin",
+  "RapidMoney",
+  "F1SpeedLoan",
+  "DhanPocket",
+  "TurantPaisa",
+  "KreditBee",
+  "MoneyDot",
+  "LoanWalle",
+  "Apollo",
+  "MMB",
+  "Cash2You",
+  "RocketCash",
+  "TrueBalance",
+  "TrueFund",
+];
 
 const FALLBACK_UTM: Record<string, string> = {
   KreditBee: "https://kredt.be/3ZFfVbz",
-  RamFinCorp: "https://ramfincorp.com/",
+  // RamFinCorp: "https://ramfincorp.com/",
   Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
   TrueBalance: "https://truebalance.io/",
   // MPokket: "https://mpokket.com/",
@@ -437,7 +476,7 @@ const FALLBACK_UTM: Record<string, string> = {
 
 // Map API names to internal lender names
 const STATIC_LENDER_NAME_MAP: Record<string, string> = {
-  "RamFinCorp": "RamFinCorp",
+  // "RamFinCorp": "RamFinCorp",
   "SmartCoin": "SmartCoin",
   "smartcoin": "SmartCoin",
   "Smartcoin": "SmartCoin",
@@ -484,6 +523,8 @@ const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   "dhanpocket": "DhanPocket",
   "TurantPaisa": "TurantPaisa",
   "turantpaisa": "TurantPaisa",
+  "QuickMoney": "QuickMoney",
+  "quickmoney": "QuickMoney",
 };
 
 function getUtmLink(
@@ -526,6 +567,9 @@ function getUtmLink(
     case "TurantPaisa":
       return directLink || null;
 
+    case "QuickMoney":
+      return directLink || null;
+
     case "Vivifi": {
       // Vivifi shows unless message indicates rejection
       const vivifiMessage = lender?.message || "";
@@ -543,14 +587,14 @@ function getUtmLink(
     case "Apollo":
       return directLink || null;
 
-    case "RamFinCorp": {
-      // RamFinCorp shows only if data.response.message === "Dedup Success"
-      const ramFinCorpMessage = (
-        (lender?.data as { response?: { message?: string } })?.response?.message || ""
-      );
-      if (ramFinCorpMessage !== "Dedup Success") return null;
-      return directLink || null;
-    }
+    // case "RamFinCorp": {
+    //   // RamFinCorp shows only if data.response.message === "Dedup Success"
+    //   const ramFinCorpMessage = (
+    //     (lender?.data as { response?: { message?: string } })?.response?.message || ""
+    //   );
+    //   if (ramFinCorpMessage !== "Dedup Success") return null;
+    //   return directLink || null;
+    // }
 
     case "SmartCoin": {
       // SmartCoin data comes from API as "smartCoinDedupe" key, not "SmartCoin"
@@ -622,7 +666,8 @@ export default function ShortTicketOffersPage() {
   const [firstName, setFirstName] = useState<string>("");
   const [isKbMedium, setIsKbMedium] = useState(false);
   const [isRapidMoneyMedium, setIsRapidMoneyMedium] = useState(false);
-  const [isRamFinCorpMedium, setIsRamFinCorpMedium] = useState(false);
+  // const [isRamFinCorpMedium, setIsRamFinCorpMedium] = useState(false);
+  const isRamFinCorpMedium = false; // RamFinCorp disabled
   const [isTejasLoanMedium, setIsTejasLoanMedium] = useState(false);
   const [isMoneyDotMedium, setIsMoneyDotMedium] = useState(false);
   const [isTrueFundMedium, setIsTrueFundMedium] = useState(false);
@@ -639,6 +684,7 @@ export default function ShortTicketOffersPage() {
   const [isSmartCoinMedium, setIsSmartCoinMedium] = useState(false);
   const [isDhanPocketMedium, setIsDhanPocketMedium] = useState(false);
   const [isTurantPaisaMedium, setIsTurantPaisaMedium] = useState(false);
+  const [isQuickMoneyMedium, setIsQuickMoneyMedium] = useState(false);
   const [showNotEligible, setShowNotEligible] = useState<string | null>(null);
   const [priorityVisible, setPriorityVisible] = useState(0);
 
@@ -753,8 +799,9 @@ export default function ShortTicketOffersPage() {
     setIsKbMedium(isKbMediumLocal);
     const isRapidMoneyMediumLocal = utmMedium === "rapidmoney";
     setIsRapidMoneyMedium(isRapidMoneyMediumLocal);
-    const isRamFinCorpMediumLocal = utmMedium === "ramfincorp";
-    setIsRamFinCorpMedium(isRamFinCorpMediumLocal);
+    // const isRamFinCorpMediumLocal = utmMedium === "ramfincorp";
+    // setIsRamFinCorpMedium(isRamFinCorpMediumLocal);
+    const isRamFinCorpMediumLocal = false; // RamFinCorp disabled
     const isTejasLoanMediumLocal = utmMedium === "tejasloan";
     setIsTejasLoanMedium(isTejasLoanMediumLocal);
     const isMoneyDotMediumLocal = utmMedium === "moneydot";
@@ -787,6 +834,8 @@ export default function ShortTicketOffersPage() {
     setIsDhanPocketMedium(isDhanPocketMediumLocal);
     const isTurantPaisaMediumLocal = utmMedium === "turantpaisa";
     setIsTurantPaisaMedium(isTurantPaisaMediumLocal);
+    const isQuickMoneyMediumLocal = utmMedium === "quickmoney";
+    setIsQuickMoneyMedium(isQuickMoneyMediumLocal);
 
     let renderOrder = LENDER_ORDER;
     let initialVisible = 4;
@@ -797,9 +846,9 @@ export default function ShortTicketOffersPage() {
     } else if (isRapidMoneyMediumLocal) {
       renderOrder = RAPIDMONEY_PRIORITY_ORDER;
       initialVisible = 5;
-    } else if (isRamFinCorpMediumLocal) {
-      renderOrder = RamFinCorp_PRIORITY_ORDER;
-      initialVisible = 5;
+    // } else if (isRamFinCorpMediumLocal) {
+    //   renderOrder = RamFinCorp_PRIORITY_ORDER;
+    //   initialVisible = 5;
     } else if (isTejasLoanMediumLocal) {
       renderOrder = TEJASLOAN_PRIORITY_ORDER;
       initialVisible = 5;
@@ -848,6 +897,9 @@ export default function ShortTicketOffersPage() {
     } else if (isTurantPaisaMediumLocal) {
       renderOrder = TURANTPAISA_PRIORITY_ORDER;
       initialVisible = 5;
+    } else if (isQuickMoneyMediumLocal) {
+      renderOrder = QUICKMONEY_PRIORITY_ORDER;
+      initialVisible = 5;
     }
 
     // Build ordered list based on eligibility
@@ -877,27 +929,27 @@ export default function ShortTicketOffersPage() {
           ordered.push({ name, utm_link: utmMap[name] });
           break;
 
-        case "RamFinCorp": {
-          // RamFinCorp shows only if data.response.message === "Dedup Success"
-          // Redirect URL comes from applyToShortRamFinCorp API on Apply click
-          // Fallback to utm_link from get-offer-short-ticket API if redirectUrl not available
-          const ramFinCorpMessage = (
-            (lender?.data as { response?: { message?: string } })?.response?.message || ""
-          );
-          if (ramFinCorpMessage !== "Dedup Success") {
-            // Track RamFinCorp dedup fail - API returned data but user is not eligible
-            if (lender?.data) {
-              console.log("[RamFinCorp] Dedup fail - firing CleverTap event");
-              cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_FAIL);
-            }
-            break;
-          }
-          // Track RamFinCorp card shown after dedup success
-          console.log("[RamFinCorp] Dedup success - card shown, firing CleverTap event");
-          cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_SUCCESS_CARD_SHOWN);
-          ordered.push({ name, utm_link: lender?.utm_link });
-          break;
-        }
+        // case "RamFinCorp": {
+        //   // RamFinCorp shows only if data.response.message === "Dedup Success"
+        //   // Redirect URL comes from applyToShortRamFinCorp API on Apply click
+        //   // Fallback to utm_link from get-offer-short-ticket API if redirectUrl not available
+        //   const ramFinCorpMessage = (
+        //     (lender?.data as { response?: { message?: string } })?.response?.message || ""
+        //   );
+        //   if (ramFinCorpMessage !== "Dedup Success") {
+        //     // Track RamFinCorp dedup fail - API returned data but user is not eligible
+        //     if (lender?.data) {
+        //       console.log("[RamFinCorp] Dedup fail - firing CleverTap event");
+        //       cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_FAIL);
+        //     }
+        //     break;
+        //   }
+        //   // Track RamFinCorp card shown after dedup success
+        //   console.log("[RamFinCorp] Dedup success - card shown, firing CleverTap event");
+        //   cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_SUCCESS_CARD_SHOWN);
+        //   ordered.push({ name, utm_link: lender?.utm_link });
+        //   break;
+        // }
 
         case "SmartCoin": {
           // SmartCoin is shown based on API response (isDuplicate === false)
@@ -1092,6 +1144,12 @@ export default function ShortTicketOffersPage() {
           ordered.push({ name, utm_link: utmMap[name] });
           break;
 
+        case "QuickMoney":
+          // QuickMoney only shows if it comes from API staticLenders
+          if (!utmMap[name]) break;
+          ordered.push({ name, utm_link: utmMap[name] });
+          break;
+
         default:
           if (utmLink) ordered.push({ name, utm_link: utmLink });
       }
@@ -1187,19 +1245,19 @@ export default function ShortTicketOffersPage() {
     }
   };
 
-  const handleRamFinCorpApply = async () => {
-    // Track lender clicked event (not in hook since it's specific to this page)
-    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
-      Lender: "Ram FinCorp",
-      LenderKey: "RamFinCorp",
-    });
+  // const handleRamFinCorpApply = async () => {
+  //   // Track lender clicked event (not in hook since it's specific to this page)
+  //   cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
+  //     Lender: "Ram FinCorp",
+  //     LenderKey: "RamFinCorp",
+  //   });
 
-    const result = await applyRamFinCorp();
-    // Show NotEligible modal for notEligible or error status
-    if (result.status === "notEligible" || result.status === "error") {
-      setShowNotEligible("RamFinCorp");
-    }
-  };
+  //   const result = await applyRamFinCorp();
+  //   // Show NotEligible modal for notEligible or error status
+  //   if (result.status === "notEligible" || result.status === "error") {
+  //     setShowNotEligible("RamFinCorp");
+  //   }
+  // };
 
   // SmartCoin special apply handler - uses shared hook
   const handleSmartCoinApply = async (initialUtmLink?: string) => {
@@ -1304,7 +1362,7 @@ export default function ShortTicketOffersPage() {
 
   const onApplyFor = (lender: OrderedLender) => {
     if (lender.name === "KreditBee") return handleKreditBeeApply;
-    if (lender.name === "RamFinCorp") return handleRamFinCorpApply;
+    // if (lender.name === "RamFinCorp") return handleRamFinCorpApply;
     if (lender.name === "SmartCoin") return () => handleSmartCoinApply(lender.utm_link);
     if (lender.name === "MMB") return () => handleMMBApply(lender.utm_link);
     if (lender.name === "TejasLoan") return () => handleTejasLoanApply(lender.utm_link);
@@ -1314,8 +1372,8 @@ export default function ShortTicketOffersPage() {
   };
 
   // Hero card logic
-  const showHeroFlow = isKbMedium || isRapidMoneyMedium || isRamFinCorpMedium || isSmartCoinMedium || isTejasLoanMedium || isMoneyDotMedium || isTrueFundMedium || /* isASAPFinanceMedium || */ /* isSpeedoLoanMedium || */ isCashMySalaryMedium || isApolloMedium || isF1SpeedLoanMedium || isRupiNowMedium || isCash2YouMedium || isRocketCashMedium || isMMBMedium || isLoanWalleMedium || isDhanPocketMedium || isTurantPaisaMedium;
-  const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : isSmartCoinMedium ? "SmartCoin" : isTejasLoanMedium ? "TejasLoan" : isMoneyDotMedium ? "MoneyDot" : isTrueFundMedium ? "TrueFund" : /* isASAPFinanceMedium ? "ASAPFinance" : */ /* isSpeedoLoanMedium ? "SpeedoLoan" : */ isCashMySalaryMedium ? "CashMySalary" : isApolloMedium ? "Apollo" : isF1SpeedLoanMedium ? "F1SpeedLoan" : isRupiNowMedium ? "RupiNow" : isCash2YouMedium ? "Cash2You" : isRocketCashMedium ? "RocketCash" : isMMBMedium ? "MMB" : isLoanWalleMedium ? "LoanWalle" : isDhanPocketMedium ? "DhanPocket" : isTurantPaisaMedium ? "TurantPaisa" : null;
+  const showHeroFlow = isKbMedium || isRapidMoneyMedium || /* isRamFinCorpMedium || */ isSmartCoinMedium || isTejasLoanMedium || isMoneyDotMedium || isTrueFundMedium || /* isASAPFinanceMedium || */ /* isSpeedoLoanMedium || */ isCashMySalaryMedium || isApolloMedium || isF1SpeedLoanMedium || isRupiNowMedium || isCash2YouMedium || isRocketCashMedium || isMMBMedium || isLoanWalleMedium || isDhanPocketMedium || isTurantPaisaMedium || isQuickMoneyMedium;
+  const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isRamFinCorpMedium ? "RamFinCorp" : isSmartCoinMedium ? "SmartCoin" : isTejasLoanMedium ? "TejasLoan" : isMoneyDotMedium ? "MoneyDot" : isTrueFundMedium ? "TrueFund" : /* isASAPFinanceMedium ? "ASAPFinance" : */ /* isSpeedoLoanMedium ? "SpeedoLoan" : */ isCashMySalaryMedium ? "CashMySalary" : isApolloMedium ? "Apollo" : isF1SpeedLoanMedium ? "F1SpeedLoan" : isRupiNowMedium ? "RupiNow" : isCash2YouMedium ? "Cash2You" : isRocketCashMedium ? "RocketCash" : isMMBMedium ? "MMB" : isLoanWalleMedium ? "LoanWalle" : isDhanPocketMedium ? "DhanPocket" : isTurantPaisaMedium ? "TurantPaisa" : isQuickMoneyMedium ? "QuickMoney" : null;
   const heroIdx = heroName ? visibleLenders.findIndex((l) => l.name === heroName) : -1;
   const showHeroCard = showHeroFlow && heroIdx === 0 && visibleLenders.length > 0;
   const heroLender = showHeroCard ? visibleLenders[0] : null;
@@ -1405,7 +1463,7 @@ export default function ShortTicketOffersPage() {
           {showHeroCard && heroLender && (() => {
             const c = resolve(heroLender.name);
             const heroDisplayName = DISPLAY_NAMES[heroLender.name] || heroLender.name;
-            const heroApplying = heroLender.name === "KreditBee" ? kbApplying : heroLender.name === "RamFinCorp" ? ramFinCorpApplying : heroLender.name === "SmartCoin" ? smartCoinApplying : heroLender.name === "MMB" ? mmbApplying : heroLender.name === "TejasLoan" ? tejasLoanApplying : heroLender.name === "F1SpeedLoan" ? f1SpeedLoanApplying : applyingLenders.has(heroLender.name);
+            const heroApplying = heroLender.name === "KreditBee" ? kbApplying : /* heroLender.name === "RamFinCorp" ? ramFinCorpApplying : */ heroLender.name === "SmartCoin" ? smartCoinApplying : heroLender.name === "MMB" ? mmbApplying : heroLender.name === "TejasLoan" ? tejasLoanApplying : heroLender.name === "F1SpeedLoan" ? f1SpeedLoanApplying : applyingLenders.has(heroLender.name);
             const heroApplied = heroLender.name === "KreditBee" ? kbApplied : appliedLenders.has(heroLender.name);
             const heroDisabled = heroApplying || heroApplied;
             const heroLabel = heroApplying ? "Applying..." : heroApplied ? "Applied" : null;
@@ -1643,7 +1701,7 @@ export default function ShortTicketOffersPage() {
             }>
               {otherLenders.map((lender, idx) => {
                 const isKB = lender.name === "KreditBee";
-                const isRFC = lender.name === "RamFinCorp";
+                // const isRFC = lender.name === "RamFinCorp";
                 const isSmartCoin = lender.name === "SmartCoin";
                 const isMMB = lender.name === "MMB";
                 const isTejasLoan = lender.name === "TejasLoan";
@@ -1653,7 +1711,7 @@ export default function ShortTicketOffersPage() {
                 const logoSrc = c.logo;
                 const logoDarkBg = c.logoMeta?.darkBg;
                 // Determine applying/applied state based on lender type
-                const isApplying = isKB ? kbApplying : isRFC ? ramFinCorpApplying : isSmartCoin ? smartCoinApplying : isMMB ? mmbApplying : isTejasLoan ? tejasLoanApplying : isF1SpeedLoan ? f1SpeedLoanApplying : applyingLenders.has(lender.name);
+                const isApplying = isKB ? kbApplying : /* isRFC ? ramFinCorpApplying : */ isSmartCoin ? smartCoinApplying : isMMB ? mmbApplying : isTejasLoan ? tejasLoanApplying : isF1SpeedLoan ? f1SpeedLoanApplying : applyingLenders.has(lender.name);
                 const isApplied = isKB ? kbApplied : appliedLenders.has(lender.name);
                 const applyHandler = onApplyFor(lender);
 

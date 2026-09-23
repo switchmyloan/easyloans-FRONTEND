@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function MobileHeader() {
   const lenders = [
-    { src: "/ramfinCorp.png", alt: "RamfinCorp" },
+    // { src: "/ramfinCorp.png", alt: "RamfinCorp" },
     { src: "/rapid-black.webp", alt: "RapidMoney" },
     { src: "/kreditbee-logo.svg", alt: "KreditBee" },
     { src: "/true.webp", alt: "Truebalance" },

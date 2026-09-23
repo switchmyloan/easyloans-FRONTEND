@@ -34,7 +34,7 @@ export const STATIC_LENDER_LOGOS: Record<
   { src: string; darkBg?: boolean }
 > = {
   RapidMoney: { src: "/rapidmoney.svg" },
-  RamFinCorp: { src: "/ramfinCorp.png" },
+  // RamFinCorp: { src: "/ramfinCorp.png" },
   SmartCoin: { src: "/olyv.png" },
   Vivifi: { src: "/vivifi.webp" },
   TrueBalance: { src: "/truebalance.png" },
@@ -57,12 +57,13 @@ export const STATIC_LENDER_LOGOS: Record<
   ToofanLoan: { src: "/toofan-loan.png" },
   DhanPocket: { src: "/dhanpocket.png" }, 
   TurantPaisa: { src: "/Turantpaisa.png" }, 
+  QuickMoney: { src: "/quickmoney.png" },
 };
 
 export const DISPLAY_NAMES: Record<string, string> = {
   KreditBee: "KreditBee",
   RapidMoney: "RapidMoney",
-  RamFinCorp: "Ram FinCorp",
+  // RamFinCorp: "Ram FinCorp",
   SmartCoin: "Olyv",
   Vivifi: "Vivifi",
   MMB: "MMB",
@@ -82,6 +83,7 @@ export const DISPLAY_NAMES: Record<string, string> = {
   LoanWalle: "LoanWalle",
   DhanPocket: "DhanPocket",
   TurantPaisa: "TurantPaisa",
+  QuickMoney: "QuickMoney",
 };
 
 export const STATIC_LENDER_DETAILS: Record<
@@ -142,12 +144,12 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Quick Access to Lump Sum Amount",
     interestRate: "Interest rate starting from 3.01% per month.",
   },
-  RamFinCorp: {
-    headline: "Get Personal Loans from ₹5,000 to ₹2 Lakhs",
-    description: "Quick personal loans with minimal documentation and fast disbursements",
-    keyFeature: "Instant Approval and Same Day Disbursement",
-    interestRate: "Interest Rates start at 1.5%* per month",
-  },
+  // RamFinCorp: {
+  //   headline: "Get Personal Loans from ₹5,000 to ₹2 Lakhs",
+  //   description: "Quick personal loans with minimal documentation and fast disbursements",
+  //   keyFeature: "Instant Approval and Same Day Disbursement",
+  //   interestRate: "Interest Rates start at 1.5%* per month",
+  // },
   SmartCoin: {
     headline: "Get up to ₹5,00,000 with quick approval!",
     description: "Personal loans with fast disbursement and No Prepayment Charges",
@@ -280,11 +282,18 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Quick Approval up to 45 days tenure",
     interestRate: "Interest Rates start at 1.00%* per day",
   },
+  QuickMoney: {
+    headline: "Get up to ₹25,000 with quick approval!",
+    description: "Personal loans with fast disbursement and Paperless Process",
+    keyFeature: "Quick Approval and Secure & Trusted",
+    interestRate: "Interest Rates start at 3.5%* per month",
+  },
 };
 
 // Dashboard priority order - lenders are displayed in this order when available
 // Lower index = higher priority (shown first)
 export const DASHBOARD_PRIORITY_ORDER: string[] = [
+  "QuickMoney",
   "TejasLoan",
   "RupiNow",
   "CashMySalary",
@@ -310,7 +319,7 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   KreditBee: "High approval chances",
   TrueBalance: "Quick approval",
   RapidMoney: "Quick approval",
-  RamFinCorp: "Instant Approval and Same Day Disbursement",
+  // RamFinCorp: "Instant Approval and Same Day Disbursement",
   SmartCoin: "Quick approval",
   Vivifi: "Flexible loan options",
   // SpeedoLoan: "Quick approval",
@@ -328,6 +337,7 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   MMB: "Bank-level security",
   DhanPocket: "No Foreclosure charges",
   TurantPaisa: "No hidden charges",
+  QuickMoney: "Quick approval",
 };
 
 
@@ -352,11 +362,11 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "Flexible Repayment", description: "Easy repayment options" },
     { title: "Flexible Tenure", description: "Up to 6 months" },
   ],
-  RamFinCorp: [
-    { title: "Instant Approval", description: "Same day processing" },
-    { title: "Same Day Disbursement", description: "Same day transfer" },
-    { title: "No Prepayment Charges", description: "No hiddenpayment charges" },
-  ],
+  // RamFinCorp: [
+  //   { title: "Instant Approval", description: "Same day processing" },
+  //   { title: "Same Day Disbursement", description: "Same day transfer" },
+  //   { title: "No Prepayment Charges", description: "No hiddenpayment charges" },
+  // ],
   SmartCoin: [
     { title: "Quick Approval", description: "Fast processing" },
     { title: "Up to ₹5 Lakh", description: "High loan amount" },
@@ -427,6 +437,12 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "Up to 40,000", description: "Personal loan amount" },
     { title: "Flexible EMI Options", description: "100% secure & encrypted" },
   ],
+  QuickMoney: [
+    { title: "Quick Approval", description: "Fast processing" },
+    { title: "Paperless Process", description: "No hidden fees" },
+    { title: "Up to 25,000", description: "Personal loan amount" },
+  ],
+
 };
 
 // Default features if lender not found in UTM_MEDIUM_LENDERS_FEATURES
@@ -449,7 +465,7 @@ export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   TejasLoan: ["EPFO Users Only", "No Prepayment Fee", "Quick Approval"],
   KreditBee: ["Upto 100% off on PF", "Loans up to ₹10 Lakh", "Instant Disbursal"],
   TrueBalance: ["Loans up to ₹2 Lakh", "Minimal Docs", "Quick Approval"],
-  RamFinCorp: ["Instant Approval", "Same Day Disbursement", "No Prepayment Charges"],
+  // RamFinCorp: ["Instant Approval", "Same Day Disbursement", "No Prepayment Charges"],
   SmartCoin: ["Quick Approval", "Instant Disbursement", "Up to ₹5 Lakh"],
   MoneyDot: ["Loans up to ₹1 Lakh", "Zero Paperwork", "No Collateral"],
   // SpeedoLoan: ["Quick Approval", "No Hidden Charges", "Up to ₹50,000"],
@@ -464,6 +480,7 @@ export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   MMB: ["Bank-level security", "Up to 45 days", "No Hidden Fees"],
   DhanPocket: ["No Foreclosure Charges", "100% Digital", "Up to ₹1 Lakh"],
   TurantPaisa: ["No Hidden Charges", "Up to 45 Days", "Up to ₹40,000"],
+  QuickMoney: ["Quick Approval", "Paperless Process", "Up to 25,000"],
 };
 
 // Default feature badges if lender not found
@@ -474,7 +491,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   KreditBee: 1000000,       // ₹10 Lakhs
   TrueBalance: 200000,      // ₹2 Lakhs
   RapidMoney: 15000,        // ₹15,000
-  RamFinCorp: 200000,       // ₹2 Lakhs
+  // RamFinCorp: 200000,       // ₹2 Lakhs
   SmartCoin: 500000,        // ₹5 Lakhs
   Vivifi: 500000,           // ₹5 Lakhs
   // SpeedoLoan: 50000,      // ₹50,000
@@ -492,6 +509,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   MMB: 30000,      // ₹30,000
   DhanPocket: 100000,      // ₹100,000
   TurantPaisa: 40000,      // ₹40,000
+  QuickMoney: 25000,      // ₹25,000
 };
 
 const DEFAULT_LENDER_DETAIL = {

@@ -11,7 +11,7 @@ import LoanWalleLenderModal from "@/components/offers/LoanWalleLenderModal";
 import SessionActiveBanner from "@/components/shared/SessionActiveBanner";
 import { getStaticLenderDetail, STATIC_LENDER_LOGOS, DASHBOARD_PRIORITY_ORDER, LENDER_FEATURE_TAGS, DISPLAY_NAMES } from "@/lib/constants";
 import { useOtpGuard } from "@/app/dashboard/layout";
-import { useRamFinCorpApply } from "@/hooks/useRamFinCorpApply";
+import { useRamFinCorpApply } from "@/hooks/useRamFinCorpApply"; // stub - RamFinCorp disabled
 import { useKreditBeeApply, useSmartCoinApply, useMMBApply, useTejasLoanApply, useF1SpeedLoanApply } from "@/hooks/useLenderApply";
 import {
   getStoredShortExistingUserOffers,
@@ -40,7 +40,7 @@ interface ShownOffer {
 // ============================================================
 const FALLBACK_UTM_LINKS: Record<string, string> = {
   SmartCoin: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
-  RamFinCorp: "https://ramfincorp.com/",
+  // RamFinCorp: "https://ramfincorp.com/",
   Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
   SmartCoinHighIntent: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
   TrueBalance: "https://truebalance.io/",
@@ -191,12 +191,13 @@ const moneyDotData = data.MoneyDot as {
 const isMoneyDotEligible =
   moneyDotData?.data?.response?.can_attribute === true;
 
-const ramFinCorpData = data.RamFinCorp as {
-  data?: { response?: { message?: string } };
-  utm_link?: string;
-} | undefined;
+// const ramFinCorpData = data.RamFinCorp as {
+//   data?: { response?: { message?: string } };
+//   utm_link?: string;
+// } | undefined;
 
-const isRamFinCorpEligible = ramFinCorpData?.data?.response?.message === "Dedup Success";
+// const isRamFinCorpEligible = ramFinCorpData?.data?.response?.message === "Dedup Success";
+const isRamFinCorpEligible = false; // RamFinCorp disabled
 
 const smartCoinDedupeData = (data.smartCoinDedupe || data.SmartCoinDedupe) as {
   isDuplicate?: boolean;
@@ -244,9 +245,9 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         if (o.lenderName === "MoneyDot") {
           return isMoneyDotEligible;
         }
-        if (o.lenderName === "RamFinCorp") {
-          return isRamFinCorpEligible;
-        }
+        // if (o.lenderName === "RamFinCorp") {
+        //   return isRamFinCorpEligible;
+        // }
         if (o.lenderName === "MMBDedup") {
           return isMmbEligible;
         }
@@ -259,7 +260,7 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
 
       // Add static lenders that should always be shown
       // Note: RapidMoney is now shown based on API response (isDuplicate === false)
-      // Note: TejasLoan, F1SpeedLoan, ASAPFinance, SpeedoLoan, Vivifi, TrueBalance, RamFinCorp are shown only if they come from API staticLenders
+      // Note: TejasLoan, F1SpeedLoan, ASAPFinance, SpeedoLoan, Vivifi, TrueBalance are shown only if they come from API staticLenders (RamFinCorp disabled)
       const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee"];
       const existingLenderNames = new Set(mappedOffers.map((o) => o.name));
 
@@ -290,8 +291,8 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         // "asapfinance": "ASAPFinance",
         "Apollo": "Apollo",
         "apollo": "Apollo",
-        "RamFinCorp": "RamFinCorp",
-        "ramfincorp": "RamFinCorp",
+        // "RamFinCorp": "RamFinCorp",
+        // "ramfincorp": "RamFinCorp",
         "Tejas": "TejasLoan",
         "tejas": "TejasLoan",
         "TejasLoan": "TejasLoan",
@@ -317,7 +318,9 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         "DhanPocket": "DhanPocket",
         "dhanpocket": "DhanPocket",
         "TurantPaisa": "TurantPaisa",
-        "turantpaisa": "TurantPaisa"
+        "turantpaisa": "TurantPaisa",
+        "QuickMoney": "QuickMoney",
+        "quickmoney": "QuickMoney"
       };
       for (const lender of staticLendersArray) {
         if (lender.name && lender.utm_link) {
@@ -462,21 +465,21 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         });
       }
 
-      // Add RamFinCorp if eligible (data.response.message === "Dedup Success")
-      if (isRamFinCorpEligible && !existingLenderNames.has("RamFinCorp")) {
-        // Track RamFinCorp card shown after dedup success
-        console.log("[RamFinCorp] Dedup success - card shown, firing CleverTap event");
-        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_SUCCESS_CARD_SHOWN);
-        mappedOffers.push({
-          name: "RamFinCorp",
-          utmLink: ramFinCorpData?.utm_link || FALLBACK_UTM_LINKS["RamFinCorp"],
-          isOffer: false,
-        });
-      } else if (ramFinCorpData && !isRamFinCorpEligible) {
-        // Track RamFinCorp dedup fail - API returned data but user is not eligible
-        console.log("[RamFinCorp] Dedup fail - firing CleverTap event");
-        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_FAIL);
-      }
+      // // Add RamFinCorp if eligible (data.response.message === "Dedup Success") - RamFinCorp disabled
+      // if (isRamFinCorpEligible && !existingLenderNames.has("RamFinCorp")) {
+      //   // Track RamFinCorp card shown after dedup success
+      //   console.log("[RamFinCorp] Dedup success - card shown, firing CleverTap event");
+      //   cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_SUCCESS_CARD_SHOWN);
+      //   mappedOffers.push({
+      //     name: "RamFinCorp",
+      //     utmLink: ramFinCorpData?.utm_link || FALLBACK_UTM_LINKS["RamFinCorp"],
+      //     isOffer: false,
+      //   });
+      // } else if (ramFinCorpData && !isRamFinCorpEligible) {
+      //   // Track RamFinCorp dedup fail - API returned data but user is not eligible
+      //   console.log("[RamFinCorp] Dedup fail - firing CleverTap event");
+      //   cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_RAMFINCORP_DEDUP_FAIL);
+      // }
 
       // Add SmartCoin if eligible (isDuplicate === false)
       if (isSmartCoinEligible && !existingLenderNames.has("SmartCoin")) {
@@ -567,6 +570,15 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         });
       }
 
+      // Add QuickMoney only if it comes from API staticLenders
+      if (staticLenderUtmLinks["QuickMoney"] && !existingLenderNames.has("QuickMoney")) {
+        mappedOffers.push({
+          name: "QuickMoney",
+          utmLink: staticLenderUtmLinks["QuickMoney"],
+          isOffer: false,
+        });
+      }
+
       // LoanWalle logic: Show LoanWalle card if ToofanLoan OR RupeeRaftaar is available in staticLenders
       const toofanLoanUtm = staticLenderUtmLinks["ToofanLoan"];
       const rupeeRaftaarUtm = staticLenderUtmLinks["RupeeRaftaar"];
@@ -624,13 +636,13 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
     }
   };
 
-  const handleRamFinCorpApply = async () => {
-    const result = await applyRamFinCorp();
-    // Show toast error for notEligible or error status
-    if (result.status === "notEligible" || result.status === "error") {
-      toast.error(result.message || "You are not eligible for this offer.", { duration: 4000 });
-    }
-  };
+  // const handleRamFinCorpApply = async () => {
+  //   const result = await applyRamFinCorp();
+  //   // Show toast error for notEligible or error status
+  //   if (result.status === "notEligible" || result.status === "error") {
+  //     toast.error(result.message || "You are not eligible for this offer.", { duration: 4000 });
+  //   }
+  // };
 
   const handleSmartCoinApply = async (initialUtmLink?: string) => {
     const result = await applySmartCoin(initialUtmLink);
@@ -708,10 +720,10 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
       return;
     }
 
-    if (lenderName === "RamFinCorp") {
-      handleRamFinCorpApply();
-      return;
-    }
+    // if (lenderName === "RamFinCorp") {
+    //   handleRamFinCorpApply();
+    //   return;
+    // }
 
     if (lenderName === "SmartCoin") {
       handleSmartCoinApply(utmLink);
@@ -809,7 +821,7 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
                 ? LENDER_FEATURE_TAGS[lenderName] || LENDER_CUSTOM_BADGE[lenderName] || (offer.isOffer ? "Pre-Qualified" : "Matched")
                 : null;
 
-              const isApplying = lenderName === "KreditBee" ? kbApplying : lenderName === "RamFinCorp" ? ramFinCorpApplying : lenderName === "SmartCoin" ? smartCoinApplying : lenderName === "MMB" ? mmbApplying : lenderName === "TejasLoan" ? tejasLoanApplying : lenderName === "F1SpeedLoan" ? f1SpeedLoanApplying : false;
+              const isApplying = lenderName === "KreditBee" ? kbApplying : /* lenderName === "RamFinCorp" ? ramFinCorpApplying : */ lenderName === "SmartCoin" ? smartCoinApplying : lenderName === "MMB" ? mmbApplying : lenderName === "TejasLoan" ? tejasLoanApplying : lenderName === "F1SpeedLoan" ? f1SpeedLoanApplying : false;
 
               return (
                 <OfferCard
