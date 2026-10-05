@@ -19,6 +19,8 @@ import {
   applyToLoanWalle,
 } from "@/lib/api";
 import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "@/lib/clevertap";
+import StickyLenderBanner from "@/components/offers/StickyLenderBanner";
+
 
 // ============================================================
 // Types
@@ -146,6 +148,7 @@ export default function DashboardOffersPage() {
 
   // LoanWalle modal state
   const [showLoanWalleModal, setShowLoanWalleModal] = useState(false);
+  const [showQuickMoneyBanner, setShowQuickMoneyBanner] = useState(true);
   const [loanWalleLenders, setLoanWalleLenders] = useState<{
     toofanLoan?: { name: string; displayName: string; utmLink: string; logo: string };
     rupeeRaftaar?: { name: string; displayName: string; utmLink: string; logo: string };
@@ -868,6 +871,21 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
           </div>
         )}
       </div>
+
+       {/* Sticky QuickMoney Banner - Mobile Only */}
+        {(() => {
+          const quickMoneyLender = offers.find(l => l.name === "QuickMoney");
+          if (!quickMoneyLender?.utmLink) return null;
+          return (
+            <StickyLenderBanner
+              show={showQuickMoneyBanner}
+              lenderName="QuickMoney"
+              logo="/quickmoney.png"
+              description="Get personal loan Up to ₹25,000 • Fast Approval"
+              onApply={() => handleApply("QuickMoney", quickMoneyLender.utmLink)}
+            />
+          );
+        })()}
 
       {/* Not Eligible Modal */}
       {showNotEligible && (

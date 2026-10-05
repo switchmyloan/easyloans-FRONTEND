@@ -24,6 +24,7 @@ import { useKreditBeeApply, useSmartCoinApply, useMMBApply, useTejasLoanApply, u
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { Clock, Contact, Lock } from "lucide-react";
+import StickyLenderBanner from "@/components/offers/StickyLenderBanner";
 
 // Default render order
 const LENDER_ORDER = [
@@ -738,6 +739,7 @@ export default function ShortTicketOffersPage() {
 
   // LoanWalle modal state
   const [showLoanWalleModal, setShowLoanWalleModal] = useState(false);
+  const [showQuickMoneyBanner, setShowQuickMoneyBanner] = useState(true);
   const [loanWalleLenders, setLoanWalleLenders] = useState<{
     toofanLoan?: { name: string; displayName: string; utmLink: string; logo: string };
     rupeeRaftaar?: { name: string; displayName: string; utmLink: string; logo: string };
@@ -1788,6 +1790,21 @@ export default function ShortTicketOffersPage() {
       </main>
 
       <GradientBanner />
+
+       {/* Sticky QuickMoney Banner - Mobile Only */}
+        {(() => {
+          const quickMoneyLender = orderedLenders.find(l => l.name === "QuickMoney");
+          if (!quickMoneyLender?.utm_link) return null;
+          return (
+            <StickyLenderBanner
+              show={showQuickMoneyBanner}
+              lenderName="QuickMoney"
+              logo="/quickmoney.png"
+              description="Get personal loan Up to ₹25,000 • Fast Approval"
+              onApply={() => handleApply("QuickMoney", quickMoneyLender.utm_link)}
+            />
+          );
+        })()}
 
       {/* Not Eligible popup */}
       {showNotEligible && (
