@@ -57,7 +57,7 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   mmb: "MMB",
   loanwalle: "LoanWalle",
   dhanpocket: "DhanPocket",
-  turantpaisa: "TurantPaisa",
+  // turantpaisa: "TurantPaisa",
   quickmoney: "QuickMoney",
 };
 
@@ -415,17 +415,17 @@ export default function LoanOffersBanner() {
       }
 
       // Add TurantPaisa only if it comes from API staticLenders
-      const turantPaisaFromApi = staticLendersArray.find(
-        (l) => l.name?.toLowerCase() === "turantpaisa"
-      );
-      if (turantPaisaFromApi?.utm_link && !addedLenders.has("TurantPaisa")) {
-        addedLenders.add("TurantPaisa");
-        eligibleLenders.push({
-          id: "TurantPaisa",
-          name: "TurantPaisa",
-          prefix: "T",
-        });
-      }
+      // const turantPaisaFromApi = staticLendersArray.find(
+      //   (l) => l.name?.toLowerCase() === "turantpaisa"
+      // );
+      // if (turantPaisaFromApi?.utm_link && !addedLenders.has("TurantPaisa")) {
+      //   addedLenders.add("TurantPaisa");
+      //   eligibleLenders.push({
+      //     id: "TurantPaisa",
+      //     name: "TurantPaisa",
+      //     prefix: "T",
+      //   });
+      // }
 
       // Add QuickMoney only if it comes from API staticLenders
       const quickMoneyFromApi = staticLendersArray.find(
@@ -559,14 +559,14 @@ export default function LoanOffersBanner() {
       }
 
       // If UTM is turantpaisa and TurantPaisa exists in staticLenders but wasn't added yet, add it now
-      if (utmLenderName === "TurantPaisa" && turantPaisaFromApi?.utm_link && !addedLenders.has("TurantPaisa")) {
-        addedLenders.add("TurantPaisa");
-        eligibleLenders.push({
-          id: "TurantPaisa",
-          name: "TurantPaisa",
-          prefix: "T",
-        });
-      }
+      // if (utmLenderName === "TurantPaisa" && turantPaisaFromApi?.utm_link && !addedLenders.has("TurantPaisa")) {
+      //   addedLenders.add("TurantPaisa");
+      //   eligibleLenders.push({
+      //     id: "TurantPaisa",
+      //     name: "TurantPaisa",
+      //     prefix: "T",
+      //   });
+      // }
 
       // If UTM is quickmoney and QuickMoney exists in staticLenders but wasn't added yet, add it now
       if (utmLenderName === "QuickMoney" && quickMoneyFromApi?.utm_link && !addedLenders.has("QuickMoney")) {

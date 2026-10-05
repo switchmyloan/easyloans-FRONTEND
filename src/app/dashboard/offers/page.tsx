@@ -320,8 +320,8 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         "loanwalle": "LoanWalle",
         "DhanPocket": "DhanPocket",
         "dhanpocket": "DhanPocket",
-        "TurantPaisa": "TurantPaisa",
-        "turantpaisa": "TurantPaisa",
+        // "TurantPaisa": "TurantPaisa",
+        // "turantpaisa": "TurantPaisa",
         "QuickMoney": "QuickMoney",
         "quickmoney": "QuickMoney"
       };
@@ -565,13 +565,13 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
       }
 
       // Add TurantPaisa only if it comes from API staticLenders
-      if (staticLenderUtmLinks["TurantPaisa"] && !existingLenderNames.has("TurantPaisa")) {
-        mappedOffers.push({
-          name: "TurantPaisa",
-          utmLink: staticLenderUtmLinks["TurantPaisa"],
-          isOffer: false,
-        });
-      }
+      // if (staticLenderUtmLinks["TurantPaisa"] && !existingLenderNames.has("TurantPaisa")) {
+      //   mappedOffers.push({
+      //     name: "TurantPaisa",
+      //     utmLink: staticLenderUtmLinks["TurantPaisa"],
+      //     isOffer: false,
+      //   });
+      // }
 
       // Add QuickMoney only if it comes from API staticLenders
       if (staticLenderUtmLinks["QuickMoney"] && !existingLenderNames.has("QuickMoney")) {

@@ -56,7 +56,7 @@ export const STATIC_LENDER_LOGOS: Record<
   RupeeRaftaar: { src: "/Rupee-Raftaaar.png", darkBg: true },
   ToofanLoan: { src: "/toofan-loan.png" },
   DhanPocket: { src: "/dhanpocket.png" }, 
-  TurantPaisa: { src: "/Turantpaisa.png" }, 
+  // TurantPaisa: { src: "/Turantpaisa.png" }, 
   QuickMoney: { src: "/quickmoney.png" },
 };
 
@@ -82,7 +82,7 @@ export const DISPLAY_NAMES: Record<string, string> = {
   RupeeRaftaar: "Rupee Raftaar",
   LoanWalle: "LoanWalle",
   DhanPocket: "DhanPocket",
-  TurantPaisa: "TurantPaisa",
+  // TurantPaisa: "TurantPaisa",
   QuickMoney: "QuickMoney",
 };
 
@@ -276,12 +276,12 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Quick Approval and No Foreclosure charges",
     interestRate: "Interest Rates start at 12.49%* per annum",
   },
-  TurantPaisa: {
-    headline: "Get up to ₹40,000 with quick approval!",
-    description: "Personal loans with fast disbursement and No hidden charges",
-    keyFeature: "Quick Approval up to 45 days tenure",
-    interestRate: "Interest Rates start at 1.00%* per day",
-  },
+  // TurantPaisa: {
+  //   headline: "Get up to ₹40,000 with quick approval!",
+  //   description: "Personal loans with fast disbursement and No hidden charges",
+  //   keyFeature: "Quick Approval up to 45 days tenure",
+  //   interestRate: "Interest Rates start at 1.00%* per day",
+  // },
   QuickMoney: {
     headline: "Get up to ₹25,000 with quick approval!",
     description: "Personal loans with fast disbursement and Paperless Process",
@@ -302,7 +302,8 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "RapidMoney",
   "F1SpeedLoan",
   "DhanPocket",
-  "TurantPaisa",
+  // "TurantPaisa",
+    "TrueFund",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -311,7 +312,7 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "TrueFund",
+
 ];
 
 // Short feature tags for each lender (displayed in offer cards)
@@ -528,57 +529,3 @@ export function getLenderFeatures(name: string): [LenderFeature, LenderFeature, 
 }
 
 export const LOADING_DELAY_MS = 1000;
-
-// ---------- KreditBee Coupons ----------
-
-export interface KBCoupon {
-  code: string;
-  discount: string;
-  description: string;
-  eligibility: ("salaried" | "business")[];
-}
-
-export const KB_COUPONS: KBCoupon[] = [
-  {
-    code: "New100",
-    discount: "100% OFF",
-    description:
-      "100% off processing fee for salaried professionals! Apply now with KreditBee.",
-    eligibility: ["salaried"],
-  },
-  {
-    code: "KBPA50",
-    discount: "50% OFF",
-    description:
-      "50% off processing fee for salaried & business applicants! Limited time offer.",
-    eligibility: ["salaried", "business"],
-  },
-  {
-    code: "LIST70",
-    discount: "70% OFF",
-    description:
-      "70% off processing fee exclusively for business owners! Apply now.",
-    eligibility: ["business"],
-  },
-  {
-    code: "LIST75",
-    discount: "75% OFF",
-    description:
-      "75% off processing fee exclusively for business owners! Apply now.",
-    eligibility: ["business"],
-  },
-  {
-  code: "KOT100",
-    discount: "100% OFF",
-    description:
-      "Up to 100% off processing fee for business applicants! Don't miss out.",
-    eligibility: ["business"],
-  },
-];
-
-export function getEligibleCoupon(profile: string): KBCoupon {
-  const businessProfiles = ["Self Employed", "Freelancer"];
-  const category = businessProfiles.includes(profile) ? "business" : "salaried";
-  const eligible = KB_COUPONS.filter((c) => c.eligibility.includes(category));
-  return eligible[Math.floor(Math.random() * eligible.length)];
-}

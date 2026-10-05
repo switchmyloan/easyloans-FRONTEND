@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getStaticLenderDetail, STATIC_LENDER_LOGOS, getEligibleCoupon, type KBCoupon, LENDER_FEATURE_TAGS, getLenderFeatures, DISPLAY_NAMES } from "@/lib/constants";
+import { getStaticLenderDetail, STATIC_LENDER_LOGOS, LENDER_FEATURE_TAGS, getLenderFeatures, DISPLAY_NAMES } from "@/lib/constants";
 import {
   getStoredShortTicketOffers,
   saveShortLender,
@@ -12,7 +12,6 @@ import {
   type ShownOfferEntry,
 } from "@/lib/api";
 import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
-import ScratchCoupon from "@/components/offers/ScratchCoupon";
 import OfferCard from "@/components/offers/OfferCard";
 import LoanWalleLenderModal from "@/components/offers/LoanWalleLenderModal";
 import SessionActiveBanner from "@/components/shared/SessionActiveBanner";
@@ -37,7 +36,8 @@ const LENDER_ORDER = [
   "RapidMoney",
   "F1SpeedLoan",
   "DhanPocket",
-  "TurantPaisa",
+  // "TurantPaisa",
+    "TrueFund",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -46,7 +46,6 @@ const LENDER_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "TrueFund",
 ];
 
 // When utm_medium=kreditbee: KreditBee first
@@ -61,7 +60,8 @@ const KB_PRIORITY_ORDER = [
   "RapidMoney",
   "F1SpeedLoan",
   "DhanPocket",
-  "TurantPaisa",
+    "TrueFund",
+  // "TurantPaisa",
   "MoneyDot",
   "LoanWalle",
   "Apollo",
@@ -69,7 +69,6 @@ const KB_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "TrueFund",
 ];
 
 // When utm_medium=rapidmoney: RapidMoney first
@@ -83,7 +82,8 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "SmartCoin",
   "F1SpeedLoan",
   "DhanPocket",
-  "TurantPaisa",
+  // "TurantPaisa",
+    "TrueFund",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -92,7 +92,6 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "TrueFund",
 ];
 
 // const RamFinCorp_PRIORITY_ORDER = [
@@ -128,7 +127,8 @@ const TEJASLOAN_PRIORITY_ORDER = [
   "RapidMoney",
   "F1SpeedLoan",
   "DhanPocket",
-  "TurantPaisa",
+  // "TurantPaisa",
+    "TrueFund",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -137,7 +137,6 @@ const TEJASLOAN_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "TrueFund",
 ];
 
 // When utm_medium=moneydot: MoneyDot first
@@ -152,7 +151,8 @@ const MONEYDOT_PRIORITY_ORDER = [
   "RapidMoney",
   "F1SpeedLoan",
   "DhanPocket",
-  "TurantPaisa",
+  // "TurantPaisa",
+    "TrueFund",
   "KreditBee",
   "LoanWalle",
   "Apollo",
@@ -160,7 +160,6 @@ const MONEYDOT_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "TrueFund",
 ];
 
 const TRUEFUND_PRIORITY_ORDER = [
@@ -174,7 +173,7 @@ const TRUEFUND_PRIORITY_ORDER = [
   "RapidMoney",
   "F1SpeedLoan",
   "DhanPocket",
-  "TurantPaisa",
+  // "TurantPaisa",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -196,7 +195,8 @@ const CASHMYSalary_PRIORITY_ORDER = [
   "RapidMoney",
   "F1SpeedLoan",
   "DhanPocket",
-  "TurantPaisa",
+  // "TurantPaisa",
+    "TrueFund",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -205,7 +205,6 @@ const CASHMYSalary_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "TrueFund",
 ];
 
 const APOLLO_PRIORITY_ORDER = [
@@ -219,7 +218,8 @@ const APOLLO_PRIORITY_ORDER = [
   "RapidMoney",
   "F1SpeedLoan",
   "DhanPocket",
-  "TurantPaisa",
+  // "TurantPaisa",
+  "TrueFund",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -227,7 +227,6 @@ const APOLLO_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "TrueFund",
 ];
 
 // When utm_medium=f1speedloan: F1SpeedLoan first
@@ -241,7 +240,8 @@ const F1SPEEDLOAN_PRIORITY_ORDER = [
   "SmartCoin",
   "RapidMoney",
   "DhanPocket",
-  "TurantPaisa",
+  // "TurantPaisa",
+  "TrueFund",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -250,7 +250,6 @@ const F1SPEEDLOAN_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "TrueFund",
 ];
 
 // When utm_medium=rupinow: RupiNow first
@@ -264,7 +263,8 @@ const RUPINOW_PRIORITY_ORDER = [
   "RapidMoney",
   "F1SpeedLoan",
   "DhanPocket",
-  "TurantPaisa",
+  // "TurantPaisa",
+    "TrueFund",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -273,7 +273,6 @@ const RUPINOW_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "TrueFund",
 ];
 
 // When utm_medium=cash2you: Cash2You first
@@ -288,7 +287,8 @@ const CASH2YOU_PRIORITY_ORDER = [
   "RapidMoney",
   "F1SpeedLoan",
   "DhanPocket",
-  "TurantPaisa",
+  // "TurantPaisa",
+    "TrueFund",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -296,7 +296,6 @@ const CASH2YOU_PRIORITY_ORDER = [
   "MMB",
   "RocketCash",
   "TrueBalance",
-  "TrueFund",
 ];
 
 // When utm_medium=rocketcash: RocketCash first
@@ -311,7 +310,8 @@ const ROCKETCASH_PRIORITY_ORDER = [
   "RapidMoney",
   "F1SpeedLoan",
   "DhanPocket",
-  "TurantPaisa",
+  // "TurantPaisa",
+    "TrueFund",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -319,7 +319,6 @@ const ROCKETCASH_PRIORITY_ORDER = [
   "MMB",
   "Cash2You",
   "TrueBalance",
-  "TrueFund",
 ];
 
 const MMB_PRIORITY_ORDER = [
@@ -333,7 +332,8 @@ const MMB_PRIORITY_ORDER = [
   "RapidMoney",
   "F1SpeedLoan",
   "DhanPocket",
-  "TurantPaisa",
+  // "TurantPaisa",
+    "TrueFund",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -341,7 +341,6 @@ const MMB_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "TrueFund",
 ];
 
 // When utm_medium=loanwalle: LoanWalle first
@@ -356,7 +355,8 @@ const LOANWALLE_PRIORITY_ORDER = [
   "RapidMoney",
   "F1SpeedLoan",
   "DhanPocket",
-  "TurantPaisa",
+  // "TurantPaisa",
+    "TrueFund",
   "KreditBee",
   "MoneyDot",
   "Apollo",
@@ -364,7 +364,6 @@ const LOANWALLE_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "TrueFund",
 ];
 
 // When utm_medium=smartcoin: SmartCoin first
@@ -378,7 +377,8 @@ const SMARTCOIN_PRIORITY_ORDER = [
   "RapidMoney",
   "F1SpeedLoan",
   "DhanPocket",
-  "TurantPaisa",
+  // "TurantPaisa",
+    "TrueFund",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -387,7 +387,6 @@ const SMARTCOIN_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "TrueFund",
 ];
 
 // When utm_medium=dhanpocket: DhanPocket first
@@ -401,7 +400,8 @@ const DHANPOCKET_PRIORITY_ORDER = [
   "SmartCoin",
   "RapidMoney",
   "F1SpeedLoan",
-  "TurantPaisa",
+  // "TurantPaisa",
+    "TrueFund",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -410,7 +410,6 @@ const DHANPOCKET_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "TrueFund",
 ];
 
 // When utm_medium=turantpaisa: TurantPaisa first
@@ -447,7 +446,8 @@ const QUICKMONEY_PRIORITY_ORDER = [
   "RapidMoney",
   "F1SpeedLoan",
   "DhanPocket",
-  "TurantPaisa",
+  // "TurantPaisa",
+    "TrueFund",
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
@@ -456,7 +456,6 @@ const QUICKMONEY_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "TrueFund",
 ];
 
 const FALLBACK_UTM: Record<string, string> = {
@@ -522,8 +521,8 @@ const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   "loanwalle": "LoanWalle",
   "DhanPocket": "DhanPocket",
   "dhanpocket": "DhanPocket",
-  "TurantPaisa": "TurantPaisa",
-  "turantpaisa": "TurantPaisa",
+  // "TurantPaisa": "TurantPaisa",
+  // "turantpaisa": "TurantPaisa",
   "QuickMoney": "QuickMoney",
   "quickmoney": "QuickMoney",
 };
@@ -565,8 +564,8 @@ function getUtmLink(
     case "DhanPocket":
       return directLink || null;
 
-    case "TurantPaisa":
-      return directLink || null;
+    // case "TurantPaisa":
+    //   return directLink || null;
 
     case "QuickMoney":
       return directLink || null;
@@ -731,8 +730,6 @@ export default function ShortTicketOffersPage() {
     },
   });
   const [showAll, setShowAll] = useState(false);
-  const [showScratch, setShowScratch] = useState(false);
-  const [coupon, setCoupon] = useState<KBCoupon | null>(null);
   // Track applying/applied state for all lenders to prevent double clicks
   const [applyingLenders, setApplyingLenders] = useState<Set<string>>(new Set());
   const [appliedLenders, setAppliedLenders] = useState<Set<string>>(new Set());
@@ -1140,11 +1137,11 @@ export default function ShortTicketOffersPage() {
           ordered.push({ name, utm_link: utmMap[name] });
           break;
 
-        case "TurantPaisa":
-          // TurantPaisa only shows if it comes from API staticLenders
-          if (!utmMap[name]) break;
-          ordered.push({ name, utm_link: utmMap[name] });
-          break;
+        // case "TurantPaisa":
+        //   // TurantPaisa only shows if it comes from API staticLenders
+        //   if (!utmMap[name]) break;
+        //   ordered.push({ name, utm_link: utmMap[name] });
+        //   break;
 
         case "QuickMoney":
           // QuickMoney only shows if it comes from API staticLenders
@@ -1159,10 +1156,6 @@ export default function ShortTicketOffersPage() {
 
     setPriorityVisible(initialVisible);
     setOrderedLenders(ordered);
-
-    // Pick a profile-based KreditBee coupon
-    const profile = isSalariedFlag ? "Salaried" : "Self Employed";
-    setCoupon(getEligibleCoupon(profile));
 
     // Track shown offers
     try {
@@ -1512,17 +1505,6 @@ export default function ShortTicketOffersPage() {
                         <span className="inline-flex items-center gap-0.5 rounded-full border border-violet-200 bg-violet-50 px-2 py-0.5 text-[9px] font-semibold text-violet-700">
                           Highly Recommended
                         </span>
-                        {heroLender.name === "KreditBee" && (
-                          <button
-                            onClick={() => setShowScratch(true)}
-                            className="inline-flex items-center gap-1 bg-indigo-600 text-white text-[9px] font-semibold px-2 py-0.5 rounded-full cursor-pointer hover:bg-indigo-700 transition-colors"
-                          >
-                            <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
-                            </svg>
-                            Scratch & Win
-                          </button>
-                        )}
                       </div>
                     </div>
 
@@ -1738,17 +1720,6 @@ export default function ShortTicketOffersPage() {
                     applying={isApplying}
                     applied={isApplied}
                     badgeText={LENDER_FEATURE_TAGS[lender.name] || (idx === 0 && !showHeroCard ? "Matched Offer" : undefined)}
-                    badge={isKB ? (
-                      <button
-                        onClick={() => setShowScratch(true)}
-                        className="scratch-badge bg-indigo-600 text-white text-[10px] font-semibold px-2 py-1 rounded-lg cursor-pointer flex items-center gap-1 hover:bg-indigo-700 transition-colors"
-                      >
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
-                        </svg>
-                        Scratch & Win
-                      </button>
-                    ) : undefined}
                   />
                 );
               })}
@@ -1815,16 +1786,6 @@ export default function ShortTicketOffersPage() {
             setShowNotEligible(null);
             setShowAll(true);
           }}
-        />
-      )}
-
-      {/* Scratch Coupon modal */}
-      {showScratch && coupon && (
-        <ScratchCoupon
-          discount={coupon.discount}
-          description={coupon.description}
-          couponCode={coupon.code}
-          onClose={() => setShowScratch(false)}
         />
       )}
 
