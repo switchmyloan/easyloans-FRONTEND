@@ -140,49 +140,49 @@ export function useSmartCoinApply(options: UseLenderApplyOptions = {}) {
 // ============================================================
 // MMB Apply Hook
 // ============================================================
-export function useMMBApply(options: UseLenderApplyOptions = {}) {
-  const [applying, setApplying] = useState(false);
+// export function useMMBApply(options: UseLenderApplyOptions = {}) {
+//   const [applying, setApplying] = useState(false);
 
-  const apply = useCallback(
-    async (utmLink?: string): Promise<LenderApplyResult> => {
-      if (applying) {
-        return { status: "error", message: "Already applying" };
-      }
+//   const apply = useCallback(
+//     async (utmLink?: string): Promise<LenderApplyResult> => {
+//       if (applying) {
+//         return { status: "error", message: "Already applying" };
+//       }
 
-      setApplying(true);
+//       setApplying(true);
 
-      try {
-        const phone = sessionStorage.getItem("userPhone") || "";
-        await saveShortLender(phone, "MMB");
+//       try {
+//         const phone = sessionStorage.getItem("userPhone") || "";
+//         await saveShortLender(phone, "MMB");
 
-        // Directly redirect to utm_link without calling API
-        if (utmLink) {
-          window.open(utmLink, "_blank");
-          options.onSuccess?.();
-          return { status: "success" };
-        }
+//         // Directly redirect to utm_link without calling API
+//         if (utmLink) {
+//           window.open(utmLink, "_blank");
+//           options.onSuccess?.();
+//           return { status: "success" };
+//         }
 
-        // No UTM link available
-        options.onNotEligible?.();
-        return {
-          status: "notEligible",
-          message: "MMB link not available.",
-        };
-      } catch (err) {
-        console.error("MMB apply failed:", err);
-        return {
-          status: "error",
-          message: "Something went wrong. Please try again.",
-        };
-      } finally {
-        setApplying(false);
-      }
-    },
-    [applying, options]
-  );
+//         // No UTM link available
+//         options.onNotEligible?.();
+//         return {
+//           status: "notEligible",
+//           message: "MMB link not available.",
+//         };
+//       } catch (err) {
+//         console.error("MMB apply failed:", err);
+//         return {
+//           status: "error",
+//           message: "Something went wrong. Please try again.",
+//         };
+//       } finally {
+//         setApplying(false);
+//       }
+//     },
+//     [applying, options]
+//   );
 
-  return { apply, applying };
-}
+//   return { apply, applying };
+// }
 
 // ============================================================
 // TejasLoan Apply Hook

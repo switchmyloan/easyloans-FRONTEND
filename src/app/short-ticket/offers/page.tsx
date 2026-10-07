@@ -19,7 +19,7 @@ import TrustBadges from "@/components/ui/TrustBadges";
 import GradientBanner from "@/components/ui/GradientBanner";
 import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "@/lib/clevertap";
 import { useRamFinCorpApply } from "@/hooks/useRamFinCorpApply"; // stub - RamFinCorp disabled
-import { useKreditBeeApply, useSmartCoinApply, useMMBApply, useTejasLoanApply, useF1SpeedLoanApply } from "@/hooks/useLenderApply";
+import { useKreditBeeApply, useSmartCoinApply, /* useMMBApply, */ useTejasLoanApply, useF1SpeedLoanApply } from "@/hooks/useLenderApply";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { Clock, Contact, Lock } from "lucide-react";
@@ -42,7 +42,7 @@ const LENDER_ORDER = [
   "MoneyDot",
   "LoanWalle",
   "Apollo",
-  "MMB",
+  // "MMB",
   "Cash2You",
   "RocketCash",
   "TrueBalance",
@@ -65,7 +65,7 @@ const KB_PRIORITY_ORDER = [
   "MoneyDot",
   "LoanWalle",
   "Apollo",
-  "MMB",
+  // "MMB",
   "Cash2You",
   "RocketCash",
   "TrueBalance",
@@ -88,7 +88,7 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "MoneyDot",
   "LoanWalle",
   "Apollo",
-  "MMB",
+  // "MMB",
   "Cash2You",
   "RocketCash",
   "TrueBalance",
@@ -133,7 +133,7 @@ const TEJASLOAN_PRIORITY_ORDER = [
   "MoneyDot",
   "LoanWalle",
   "Apollo",
-  "MMB",
+  // "MMB",
   "Cash2You",
   "RocketCash",
   "TrueBalance",
@@ -156,7 +156,7 @@ const MONEYDOT_PRIORITY_ORDER = [
   "KreditBee",
   "LoanWalle",
   "Apollo",
-  "MMB",
+  // "MMB",
   "Cash2You",
   "RocketCash",
   "TrueBalance",
@@ -178,7 +178,7 @@ const TRUEFUND_PRIORITY_ORDER = [
   "MoneyDot",
   "LoanWalle",
   "Apollo",
-  "MMB",
+  // "MMB",
   "Cash2You",
   "RocketCash",
   "TrueBalance",
@@ -201,7 +201,7 @@ const CASHMYSalary_PRIORITY_ORDER = [
   "MoneyDot",
   "LoanWalle",
   "Apollo",
-  "MMB",
+  // "MMB",
   "Cash2You",
   "RocketCash",
   "TrueBalance",
@@ -223,7 +223,7 @@ const APOLLO_PRIORITY_ORDER = [
   "KreditBee",
   "MoneyDot",
   "LoanWalle",
-  "MMB",
+  // "MMB",
   "Cash2You",
   "RocketCash",
   "TrueBalance",
@@ -246,7 +246,7 @@ const F1SPEEDLOAN_PRIORITY_ORDER = [
   "MoneyDot",
   "LoanWalle",
   "Apollo",
-  "MMB",
+  // "MMB",
   "Cash2You",
   "RocketCash",
   "TrueBalance",
@@ -269,7 +269,7 @@ const RUPINOW_PRIORITY_ORDER = [
   "MoneyDot",
   "LoanWalle",
   "Apollo",
-  "MMB",
+  // "MMB",
   "Cash2You",
   "RocketCash",
   "TrueBalance",
@@ -293,7 +293,7 @@ const CASH2YOU_PRIORITY_ORDER = [
   "MoneyDot",
   "LoanWalle",
   "Apollo",
-  "MMB",
+  // "MMB",
   "RocketCash",
   "TrueBalance",
 ];
@@ -316,32 +316,32 @@ const ROCKETCASH_PRIORITY_ORDER = [
   "MoneyDot",
   "LoanWalle",
   "Apollo",
-  "MMB",
+  // "MMB",
   "Cash2You",
   "TrueBalance",
 ];
 
-const MMB_PRIORITY_ORDER = [
-  "MMB",
-  "QuickMoney",
-  "TejasLoan",
-  "RupiNow",
-  "CashMySalary",
-  "Vivifi",
-  "SmartCoin",
-  "RapidMoney",
-  "F1SpeedLoan",
-  "DhanPocket",
-  // "TurantPaisa",
-    "TrueFund",
-  "KreditBee",
-  "MoneyDot",
-  "LoanWalle",
-  "Apollo",
-  "Cash2You",
-  "RocketCash",
-  "TrueBalance",
-];
+// const MMB_PRIORITY_ORDER = [
+//   "MMB",
+//   "QuickMoney",
+//   "TejasLoan",
+//   "RupiNow",
+//   "CashMySalary",
+//   "Vivifi",
+//   "SmartCoin",
+//   "RapidMoney",
+//   "F1SpeedLoan",
+//   "DhanPocket",
+//   // "TurantPaisa",
+//     "TrueFund",
+//   "KreditBee",
+//   "MoneyDot",
+//   "LoanWalle",
+//   "Apollo",
+//   "Cash2You",
+//   "RocketCash",
+//   "TrueBalance",
+// ];
 
 // When utm_medium=loanwalle: LoanWalle first
 const LOANWALLE_PRIORITY_ORDER = [
@@ -360,7 +360,7 @@ const LOANWALLE_PRIORITY_ORDER = [
   "KreditBee",
   "MoneyDot",
   "Apollo",
-  "MMB",
+  // "MMB",
   "Cash2You",
   "RocketCash",
   "TrueBalance",
@@ -383,7 +383,7 @@ const SMARTCOIN_PRIORITY_ORDER = [
   "MoneyDot",
   "LoanWalle",
   "Apollo",
-  "MMB",
+  // "MMB",
   "Cash2You",
   "RocketCash",
   "TrueBalance",
@@ -406,7 +406,7 @@ const DHANPOCKET_PRIORITY_ORDER = [
   "MoneyDot",
   "LoanWalle",
   "Apollo",
-  "MMB",
+  // "MMB",
   "Cash2You",
   "RocketCash",
   "TrueBalance",
@@ -428,7 +428,7 @@ const TURANTPAISA_PRIORITY_ORDER = [
   "MoneyDot",
   "LoanWalle",
   "Apollo",
-  "MMB",
+  // "MMB",
   "Cash2You",
   "RocketCash",
   "TrueBalance",
@@ -452,7 +452,7 @@ const QUICKMONEY_PRIORITY_ORDER = [
   "MoneyDot",
   "LoanWalle",
   "Apollo",
-  "MMB",
+  // "MMB",
   "Cash2You",
   "RocketCash",
   "TrueBalance",
@@ -511,8 +511,8 @@ const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   "RocketCash": "RocketCash",
   "rocketcash": "RocketCash",
   "rocketCash": "RocketCash",
-  "MMB": "MMB",
-  "mmb": "MMB",
+  // "MMB": "MMB",
+  // "mmb": "MMB",
   "ToofanLoan": "ToofanLoan",
   "toofanloan": "ToofanLoan",
   "RupeeRaftaar": "RupeeRaftaar",
@@ -679,7 +679,8 @@ export default function ShortTicketOffersPage() {
   const [isRupiNowMedium, setIsRupiNowMedium] = useState(false);
   const [isCash2YouMedium, setIsCash2YouMedium] = useState(false);
   const [isRocketCashMedium, setIsRocketCashMedium] = useState(false);
-  const [isMMBMedium, setIsMMBMedium] = useState(false);
+  // const [isMMBMedium, setIsMMBMedium] = useState(false);
+  const isMMBMedium = false;
   const [isLoanWalleMedium, setIsLoanWalleMedium] = useState(false);
   const [isSmartCoinMedium, setIsSmartCoinMedium] = useState(false);
   const [isDhanPocketMedium, setIsDhanPocketMedium] = useState(false);
@@ -712,11 +713,12 @@ export default function ShortTicketOffersPage() {
     },
   });
 
-  const { apply: applyMMB, applying: mmbApplying } = useMMBApply({
-    onSuccess: () => {
-      setAppliedLenders((prev) => new Set(prev).add("MMB"));
-    },
-  });
+  // const { apply: applyMMB, applying: mmbApplying } = useMMBApply({
+  //   onSuccess: () => {
+  //     setAppliedLenders((prev) => new Set(prev).add("MMB"));
+  //   },
+  // });
+  const mmbApplying = false;
 
   const { apply: applyTejasLoan, applying: tejasLoanApplying } = useTejasLoanApply({
     onSuccess: () => {
@@ -823,8 +825,8 @@ export default function ShortTicketOffersPage() {
     setIsCash2YouMedium(isCash2YouMediumLocal);
     const isRocketCashMediumLocal = utmMedium === "rocketcash";
     setIsRocketCashMedium(isRocketCashMediumLocal);
-    const isMMBMediumLocal = utmMedium === "mmb";
-    setIsMMBMedium(isMMBMediumLocal);
+    // const isMMBMediumLocal = utmMedium === "mmb";
+    // setIsMMBMedium(isMMBMediumLocal);
     const isLoanWalleMediumLocal = utmMedium === "loanwalle";
     setIsLoanWalleMedium(isLoanWalleMediumLocal);
     const isSmartCoinMediumLocal = utmMedium === "olyv";
@@ -881,9 +883,9 @@ export default function ShortTicketOffersPage() {
     } else if (isRocketCashMediumLocal) {
       renderOrder = ROCKETCASH_PRIORITY_ORDER;
       initialVisible = 5;
-    } else if (isMMBMediumLocal) {
-      renderOrder = MMB_PRIORITY_ORDER;
-      initialVisible = 5;
+    // } else if (isMMBMediumLocal) {
+    //   renderOrder = MMB_PRIORITY_ORDER;
+    //   initialVisible = 5;
     } else if (isLoanWalleMediumLocal) {
       renderOrder = LOANWALLE_PRIORITY_ORDER;
       initialVisible = 5;
@@ -970,14 +972,14 @@ export default function ShortTicketOffersPage() {
           break;
         }
 
-        case "MMB": {
-        
-          const mmbDedupData = (data.MMBDedup || data.mmbdedup) as ShortTicketLender | undefined;
-          const mmbDedupeStatus = (mmbDedupData?.data as { message?: string })?.message;
-          if (mmbDedupeStatus !== "user_not_found") break;
-          ordered.push({ name, utm_link: mmbDedupData?.utm_link });
-          break;
-        }
+        // case "MMB": {
+
+        //   const mmbDedupData = (data.MMBDedup || data.mmbdedup) as ShortTicketLender | undefined;
+        //   const mmbDedupeStatus = (mmbDedupData?.data as { message?: string })?.message;
+        //   if (mmbDedupeStatus !== "user_not_found") break;
+        //   ordered.push({ name, utm_link: mmbDedupData?.utm_link });
+        //   break;
+        // }
 
         
 
@@ -1262,17 +1264,17 @@ export default function ShortTicketOffersPage() {
     }
   };
 
-  const handleMMBApply = async (initialUtmLink?: string) => {
-    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
-      Lender: "MMB",
-      LenderKey: "MMB",
-    });
+  // const handleMMBApply = async (initialUtmLink?: string) => {
+  //   cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
+  //     Lender: "MMB",
+  //     LenderKey: "MMB",
+  //   });
 
-    const result = await applyMMB(initialUtmLink);
-    if (result.status === "notEligible" || result.status === "error") {
-      setShowNotEligible("MMB");
-    }
-  };
+  //   const result = await applyMMB(initialUtmLink);
+  //   if (result.status === "notEligible" || result.status === "error") {
+  //     setShowNotEligible("MMB");
+  //   }
+  // };
 
   const handleTejasLoanApply = async (initialUtmLink?: string) => {
     cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
@@ -1359,7 +1361,7 @@ export default function ShortTicketOffersPage() {
     if (lender.name === "KreditBee") return handleKreditBeeApply;
     // if (lender.name === "RamFinCorp") return handleRamFinCorpApply;
     if (lender.name === "SmartCoin") return () => handleSmartCoinApply(lender.utm_link);
-    if (lender.name === "MMB") return () => handleMMBApply(lender.utm_link);
+    // if (lender.name === "MMB") return () => handleMMBApply(lender.utm_link);
     if (lender.name === "TejasLoan") return () => handleTejasLoanApply(lender.utm_link);
     if (lender.name === "F1SpeedLoan") return () => handleF1SpeedLoanApply(lender.utm_link);
     if (lender.name === "LoanWalle") return handleLoanWalleApply;

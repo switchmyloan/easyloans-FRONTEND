@@ -13,7 +13,7 @@ import LoanWalleLenderModal from "@/components/offers/LoanWalleLenderModal";
 import SessionActiveBanner from "@/components/shared/SessionActiveBanner";
 import { useOtpGuard } from "@/app/dashboard/layout";
 import { useRamFinCorpApply } from "@/hooks/useRamFinCorpApply"; // stub - RamFinCorp disabled
-import { useKreditBeeApply, useSmartCoinApply, useMMBApply, useTejasLoanApply, useF1SpeedLoanApply } from "@/hooks/useLenderApply";
+import { useKreditBeeApply, useSmartCoinApply, /* useMMBApply, */ useTejasLoanApply, useF1SpeedLoanApply } from "@/hooks/useLenderApply";
 import RingImageSection from "./RingImageSection";
 
 // Lender UTM links — used when an offer doesn't carry its own utmLink. Same set
@@ -54,7 +54,7 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   rupinow: "RupiNow",
   cash2you: "Cash2You",
   rocketcash: "RocketCash",
-  mmb: "MMB",
+  // mmb: "MMB",
   loanwalle: "LoanWalle",
   dhanpocket: "DhanPocket",
   // turantpaisa: "TurantPaisa",
@@ -137,7 +137,8 @@ export default function LoanOffersBanner() {
 
   const { apply: applyKreditBee, applying: kbApplying } = useKreditBeeApply();
   const { apply: applySmartCoin, applying: smartCoinApplying } = useSmartCoinApply();
-  const { apply: applyMMB, applying: mmbApplying } = useMMBApply();
+  // const { apply: applyMMB, applying: mmbApplying } = useMMBApply();
+  const mmbApplying = false;
   const { apply: applyTejasLoan, applying: tejasLoanApplying } = useTejasLoanApply();
   const { apply: applyF1SpeedLoan, applying: f1SpeedLoanApplying } = useF1SpeedLoanApply();
 
@@ -175,8 +176,9 @@ export default function LoanOffersBanner() {
       const rupiNowData = data.RupiNow as { dedupeStatus?: string; utm_link?: string } | undefined;
       const isRupiNowEligible = rupiNowData?.dedupeStatus === "Passed";
 
-      const mmbData = data.MMBDedup as { data?: { message?: string }; utm_link?: string } | undefined;
-      const isMmbEligible = mmbData?.data?.message === "user_not_found";
+      // const mmbData = data.MMBDedup as { data?: { message?: string }; utm_link?: string } | undefined;
+      // const isMmbEligible = mmbData?.data?.message === "user_not_found";
+      const isMmbEligible = false;
 
       // Try both capitalized and lowercase keys (API returns lowercase for vivifi)
       const vivifiData = (data.Vivifi || data.vivifi) as { message?: string; utm_link?: string } | undefined;
@@ -353,14 +355,14 @@ export default function LoanOffersBanner() {
       }
 
       // Add MMB if eligible (message === "user_not_found")
-      if (isMmbEligible && !addedLenders.has("MMB")) {
-        addedLenders.add("MMB");
-        eligibleLenders.push({
-          id: "MMB",
-          name: "MMB",
-          prefix: "M",
-        });
-      }
+      // if (isMmbEligible && !addedLenders.has("MMB")) {
+      //   addedLenders.add("MMB");
+      //   eligibleLenders.push({
+      //     id: "MMB",
+      //     name: "MMB",
+      //     prefix: "M",
+      //   });
+      // }
 
       // Add Apollo only if it comes from API staticLenders
       const apolloFromApi = staticLendersArray.find(
@@ -731,12 +733,12 @@ export default function LoanOffersBanner() {
   };
 
   // MMB special apply handler - uses shared hook
-  const handleMMBApply = async (initialUtmLink?: string) => {
-    const result = await applyMMB(initialUtmLink);
-    if (result.status === "notEligible" || result.status === "error") {
-      setShowNotEligible("MMB");
-    }
-  };
+  // const handleMMBApply = async (initialUtmLink?: string) => {
+  //   const result = await applyMMB(initialUtmLink);
+  //   if (result.status === "notEligible" || result.status === "error") {
+  //     setShowNotEligible("MMB");
+  //   }
+  // };
 
   const handleTejasLoanApply = async (initialUtmLink?: string) => {
     await applyTejasLoan(initialUtmLink);
@@ -822,13 +824,13 @@ export default function LoanOffersBanner() {
     }
 
     // Special handling for MMB
-    if (displayLender.id === "MMB") {
-      // Get utm_link from stored data for fallback
-      const data = getStoredShortExistingUserOffers()?.data as Record<string, unknown> | undefined;
-      const mmbData = data?.MMBDedup as { utm_link?: string } | undefined;
-      handleMMBApply(mmbData?.utm_link);
-      return;
-    }
+    // if (displayLender.id === "MMB") {
+    //   // Get utm_link from stored data for fallback
+    //   const data = getStoredShortExistingUserOffers()?.data as Record<string, unknown> | undefined;
+    //   const mmbData = data?.MMBDedup as { utm_link?: string } | undefined;
+    //   handleMMBApply(mmbData?.utm_link);
+    //   return;
+    // }
 
     // Special handling for TejasLoan
     if (displayLender.id === "TejasLoan") {

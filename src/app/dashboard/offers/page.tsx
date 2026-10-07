@@ -12,7 +12,7 @@ import SessionActiveBanner from "@/components/shared/SessionActiveBanner";
 import { getStaticLenderDetail, STATIC_LENDER_LOGOS, DASHBOARD_PRIORITY_ORDER, LENDER_FEATURE_TAGS, DISPLAY_NAMES } from "@/lib/constants";
 import { useOtpGuard } from "@/app/dashboard/layout";
 import { useRamFinCorpApply } from "@/hooks/useRamFinCorpApply"; // stub - RamFinCorp disabled
-import { useKreditBeeApply, useSmartCoinApply, useMMBApply, useTejasLoanApply, useF1SpeedLoanApply } from "@/hooks/useLenderApply";
+import { useKreditBeeApply, useSmartCoinApply, /* useMMBApply, */ useTejasLoanApply, useF1SpeedLoanApply } from "@/hooks/useLenderApply";
 import {
   getStoredShortExistingUserOffers,
   saveShortLender,
@@ -84,7 +84,8 @@ function mapShownOfferToDashboardOffer(
     lenderData?.utm_link || shownOffer.utmLink || FALLBACK_UTM_LINKS[shownOffer.lenderName] || undefined;
 
   // Normalize API lender names to display names (e.g., MMBDedup → MMB)
-  const normalizedName = shownOffer.lenderName === "MMBDedup" ? "MMB" : shownOffer.lenderName;
+  // const normalizedName = shownOffer.lenderName === "MMBDedup" ? "MMB" : shownOffer.lenderName;
+  const normalizedName = shownOffer.lenderName;
 
   return {
     name: normalizedName,
@@ -142,7 +143,8 @@ export default function DashboardOffersPage() {
 
   const { apply: applyKreditBee, applying: kbApplying } = useKreditBeeApply();
   const { apply: applySmartCoin, applying: smartCoinApplying } = useSmartCoinApply();
-  const { apply: applyMMB, applying: mmbApplying } = useMMBApply();
+  // const { apply: applyMMB, applying: mmbApplying } = useMMBApply();
+  const mmbApplying = false;
   const { apply: applyTejasLoan, applying: tejasLoanApplying } = useTejasLoanApply();
   const { apply: applyF1SpeedLoan, applying: f1SpeedLoanApplying } = useF1SpeedLoanApply();
 
@@ -209,12 +211,13 @@ const smartCoinDedupeData = (data.smartCoinDedupe || data.SmartCoinDedupe) as {
 
 const isSmartCoinEligible = smartCoinDedupeData?.isDuplicate === false;
 
-const mmbData = data.MMBDedup as {
-  data?: { message?: string };
-  utm_link?: string;
-} | undefined;
+// const mmbData = data.MMBDedup as {
+//   data?: { message?: string };
+//   utm_link?: string;
+// } | undefined;
 
-const isMmbEligible = mmbData?.data?.message === "user_not_found"; 
+// const isMmbEligible = mmbData?.data?.message === "user_not_found";
+const isMmbEligible = false; 
 
 const rupiNowData = data.RupiNow as {
   dedupeStatus?: string;
@@ -251,9 +254,9 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         // if (o.lenderName === "RamFinCorp") {
         //   return isRamFinCorpEligible;
         // }
-        if (o.lenderName === "MMBDedup") {
-          return isMmbEligible;
-        }
+        // if (o.lenderName === "MMBDedup") {
+        //   return isMmbEligible;
+        // }
         if (o.lenderName === "RupiNow") {
           return isRupiNowEligible;
         }
@@ -308,10 +311,10 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         "RocketCash": "RocketCash",
         "rocketcash": "RocketCash",
         "rocketCash": "RocketCash",
-        "MMB": "MMB",
-        "mmb": "MMB",
-        "mmbdedup": "MMB",
-        "MMBDedup": "MMB",
+        // "MMB": "MMB",
+        // "mmb": "MMB",
+        // "mmbdedup": "MMB",
+        // "MMBDedup": "MMB",
         "ToofanLoan": "ToofanLoan",
         "toofanloan": "ToofanLoan",
         "RupeeRaftaar": "RupeeRaftaar",
@@ -501,13 +504,13 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
       }
 
     // Add MMB if eligible (data.message === "user_not_found")
-      if (isMmbEligible && !existingLenderNames.has("MMB")) {
-        mappedOffers.push({
-          name: "MMB",
-          utmLink: mmbData?.utm_link,
-          isOffer: false,
-        });
-      }
+      // if (isMmbEligible && !existingLenderNames.has("MMB")) {
+      //   mappedOffers.push({
+      //     name: "MMB",
+      //     utmLink: mmbData?.utm_link,
+      //     isOffer: false,
+      //   });
+      // }
 
 
       //   if (staticLenderUtmLinks["MMB"] && !existingLenderNames.has("MMB")) {
@@ -654,12 +657,12 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
     }
   };
 
-  const handleMMBApply = async (initialUtmLink?: string) => {
-    const result = await applyMMB(initialUtmLink);
-    if (result.status === "notEligible" || result.status === "error") {
-      setShowNotEligible("MMB");
-    }
-  };
+  // const handleMMBApply = async (initialUtmLink?: string) => {
+  //   const result = await applyMMB(initialUtmLink);
+  //   if (result.status === "notEligible" || result.status === "error") {
+  //     setShowNotEligible("MMB");
+  //   }
+  // };
 
   const handleTejasLoanApply = async (initialUtmLink?: string) => {
     await applyTejasLoan(initialUtmLink);
@@ -733,10 +736,10 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
       return;
     }
 
-    if (lenderName === "MMB") {
-      handleMMBApply(utmLink);
-      return;
-    }
+    // if (lenderName === "MMB") {
+    //   handleMMBApply(utmLink);
+    //   return;
+    // }
 
     if (lenderName === "TejasLoan") {
       handleTejasLoanApply(utmLink);

@@ -52,7 +52,7 @@ export const STATIC_LENDER_LOGOS: Record<
   TejasLoan: { src: "/tejasLogo.png", darkBg: true },
   Cash2You: { src: "/CashToYouLogo.svg" },
   RocketCash: { src: "/RocketCashLogo.png" },
-  MMB: { src: "/MMB_Logo.png" },
+  // MMB: { src: "/MMB_Logo.png" },
   RupeeRaftaar: { src: "/Rupee-Raftaaar.png", darkBg: true },
   ToofanLoan: { src: "/toofan-loan.png" },
   DhanPocket: { src: "/dhanpocket.png" }, 
@@ -66,7 +66,7 @@ export const DISPLAY_NAMES: Record<string, string> = {
   // RamFinCorp: "Ram FinCorp",
   SmartCoin: "Olyv",
   Vivifi: "Vivifi",
-  MMB: "MMB",
+  // MMB: "MMB",
   TrueBalance: "TrueBalance",
   CashMySalary: "CashMySalary",
   TejasLoan: "Tejas Loan",
@@ -264,12 +264,12 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Instant Approval and Quick Disbursement",
     interestRate: "Interest Rates 36-39% per annum",
   },
-  MMB: {
-    headline: "Get Personal Loans from ₹5,000 to ₹30,000",
-    description: "Bank-level security with 256-bit encryption with tenure up to 45 days",
-    keyFeature: "No Hidden Fees and Flexible EMI Options",
-    interestRate: "Interest Rates start at 1.5%* per month",
-  },
+  // MMB: {
+  //   headline: "Get Personal Loans from ₹5,000 to ₹30,000",
+  //   description: "Bank-level security with 256-bit encryption with tenure up to 45 days",
+  //   keyFeature: "No Hidden Fees and Flexible EMI Options",
+  //   interestRate: "Interest Rates start at 1.5%* per month",
+  // },
   DhanPocket: {
     headline: "Get up to ₹1,00,000 with quick approval!",
     description: "Personal loans with fast disbursement and No Foreclosure charges",
@@ -308,7 +308,7 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "MoneyDot",
   "LoanWalle",
   "Apollo",
-  "MMB",
+  // "MMB",
   "Cash2You",
   "RocketCash",
   "TrueBalance",
@@ -335,7 +335,7 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   F1SpeedLoan: "No Prepayment Charges",
   Cash2You: "Long tenure up to 60 months",
   RocketCash: "Quick short-term loans",
-  MMB: "Bank-level security",
+  // MMB: "Bank-level security",
   DhanPocket: "No Foreclosure charges",
   TurantPaisa: "No hidden charges",
   QuickMoney: "Quick approval",
@@ -423,11 +423,11 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "Short-term Loans", description: "Up to 21 days" },
     { title: "Up to ₹20,000", description: "Instant cash" },
   ],
-  MMB: [
-    { title: "Bank-level security", description: "Secure and Trusted" },
-    { title: "Up to 45 days", description: "Personal loan amount" },
-    { title: "Flexible EMI Options", description: "No hidden fees" },
-  ],
+  // MMB: [
+  //   { title: "Bank-level security", description: "Secure and Trusted" },
+  //   { title: "Up to 45 days", description: "Personal loan amount" },
+  //   { title: "Flexible EMI Options", description: "No hidden fees" },
+  // ],
   DhanPocket: [
     { title: "No Foreclosure charges", description: "No hidden fees" },
     { title: "100% DIGITAL Online application", description: "Personal loan amount" },
@@ -478,7 +478,7 @@ export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   F1SpeedLoan: ["No Prepayment Charges", "Quick Approval", "Up to 365 months"],
   Cash2You: ["Up to 60 Months Tenure", "Flexible EMI", "Up to ₹40,000"],
   RocketCash: ["Quick Approval", "Up to 21 Days", "Up to ₹20,000"],
-  MMB: ["Bank-level security", "Up to 45 days", "No Hidden Fees"],
+  // MMB: ["Bank-level security", "Up to 45 days", "No Hidden Fees"],
   DhanPocket: ["No Foreclosure Charges", "100% Digital", "Up to ₹1 Lakh"],
   TurantPaisa: ["No Hidden Charges", "Up to 45 Days", "Up to ₹40,000"],
   QuickMoney: ["Quick Approval", "Paperless Process", "Up to 25,000"],
@@ -507,7 +507,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   F1SpeedLoan: 100000,      // 100,000
   Cash2You: 40000,      // ₹40,000
   RocketCash: 20000,      // ₹20,000
-  MMB: 30000,      // ₹30,000
+  // MMB: 30000,      // ₹30,000
   DhanPocket: 100000,      // ₹100,000
   TurantPaisa: 40000,      // ₹40,000
   QuickMoney: 25000,      // ₹25,000
