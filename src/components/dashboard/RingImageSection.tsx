@@ -8,23 +8,16 @@ import { CheckCircle } from "lucide-react";
 // Add the image file to /public/ and update the path here
 const LENDER_RING_IMAGES: Record<string, string> = {
   rapidmoney: "/RR-ring.png",
-  // ramfincorp: "/RC-ring.png",
   kreditbee: "/KB-ring.png",
   truebalance: "/TB-ring.png",
-  vivifi: "/V-ring.png", // Add VV-ring.png to /public/
+  vivifi: "/V-ring.png",
   loan112: "/L1-ring.png",
-  // speedoloan: "/SL-ring.png",
   loanwalle: "/LW-ring.png",
   truefund: "/TF-ring.png",
   moneydot: "/MD-ring.png",
-  // asapfinance: "/ASAP-ring.png",
   apollo: "/A-ring.png",
   cashmysalary: "/CS-ring.png",
-  f1speedloan: "/F1-ring.png",
-  tejasloan: "/TL-ring.png",
-  // mmb: "/M-ring.png",
   dhanpocket: "/DP-ring.png",
-  // turantpaisa: "/TP-ring.png",
   kamakshimoney: "/KM-ring.png",
 };
 

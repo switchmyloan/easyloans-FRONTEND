@@ -7,16 +7,14 @@ import { ArrowLeft } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 import OfferCard from "@/components/offers/OfferCard";
 import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
-import LoanWalleLenderModal from "@/components/offers/LoanWalleLenderModal";
 import SessionActiveBanner from "@/components/shared/SessionActiveBanner";
 import { getStaticLenderDetail, STATIC_LENDER_LOGOS, DASHBOARD_PRIORITY_ORDER, LENDER_FEATURE_TAGS, DISPLAY_NAMES } from "@/lib/constants";
 import { useOtpGuard } from "@/app/dashboard/layout";
 import { useRamFinCorpApply } from "@/hooks/useRamFinCorpApply"; // stub - RamFinCorp disabled
-import { useKreditBeeApply, useSmartCoinApply, /* useMMBApply, */ useTejasLoanApply, useF1SpeedLoanApply } from "@/hooks/useLenderApply";
+import { useKreditBeeApply, useSmartCoinApply } from "@/hooks/useLenderApply";
 import {
   getStoredShortExistingUserOffers,
   saveShortLender,
-  applyToLoanWalle,
 } from "@/lib/api";
 import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "@/lib/clevertap";
 import StickyLenderBanner from "@/components/offers/StickyLenderBanner";
@@ -143,18 +141,10 @@ export default function DashboardOffersPage() {
 
   const { apply: applyKreditBee, applying: kbApplying } = useKreditBeeApply();
   const { apply: applySmartCoin, applying: smartCoinApplying } = useSmartCoinApply();
-  // const { apply: applyMMB, applying: mmbApplying } = useMMBApply();
-  const mmbApplying = false;
-  const { apply: applyTejasLoan, applying: tejasLoanApplying } = useTejasLoanApply();
-  const { apply: applyF1SpeedLoan, applying: f1SpeedLoanApplying } = useF1SpeedLoanApply();
 
-  // LoanWalle modal state
-  const [showLoanWalleModal, setShowLoanWalleModal] = useState(false);
   const [showQuickMoneyBanner, setShowQuickMoneyBanner] = useState(true);
-  const [loanWalleLenders, setLoanWalleLenders] = useState<{
-    toofanLoan?: { name: string; displayName: string; utmLink: string; logo: string };
-    rupeeRaftaar?: { name: string; displayName: string; utmLink: string; logo: string };
-  }>({});
+  // Store the LoanWalle UTM link (from LoanwalleSalaried or LoanwalleSelfEmployed)
+  const [loanWalleUtmLink, setLoanWalleUtmLink] = useState<string | undefined>(undefined);
 
   // utm_medium priority lender state
   const [priorityLender, setPriorityLender] = useState<string | undefined>(undefined);
@@ -297,14 +287,6 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         // "asapfinance": "ASAPFinance",
         "Apollo": "Apollo",
         "apollo": "Apollo",
-        // "RamFinCorp": "RamFinCorp",
-        // "ramfincorp": "RamFinCorp",
-        "Tejas": "TejasLoan",
-        "tejas": "TejasLoan",
-        "TejasLoan": "TejasLoan",
-        "tejasloan": "TejasLoan",
-        "F1SpeedLoan": "F1SpeedLoan",
-        "f1speedloan": "F1SpeedLoan",
         "Cash2You": "Cash2You",
         "cash2you": "Cash2You",
         "cash2You": "Cash2You",
@@ -315,12 +297,12 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         // "mmb": "MMB",
         // "mmbdedup": "MMB",
         // "MMBDedup": "MMB",
-        "ToofanLoan": "ToofanLoan",
-        "toofanloan": "ToofanLoan",
-        "RupeeRaftaar": "RupeeRaftaar",
-        "rupeeraftaar": "RupeeRaftaar",
         "LoanWalle": "LoanWalle",
         "loanwalle": "LoanWalle",
+        "LoanwalleSalaried": "LoanwalleSalaried",
+        "loanwallesalaried": "LoanwalleSalaried",
+        "LoanwalleSelfEmployed": "LoanwalleSelfEmployed",
+        "loanwalleselfemployed": "LoanwalleSelfEmployed",
         "DhanPocket": "DhanPocket",
         "dhanpocket": "DhanPocket",
         // "TurantPaisa": "TurantPaisa",
@@ -351,36 +333,6 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
             isOffer: false,
           });
         }
-      }
-
-      // // Add LoanWalle only if it comes from API staticLenders
-      // if (staticLenderUtmLinks["LoanWalle"] && !existingLenderNames.has("LoanWalle")) {
-      //   mappedOffers.push({
-      //     name: "LoanWalle",
-      //     utmLink: staticLenderUtmLinks["LoanWalle"],
-      //     isOffer: false,
-      //   });
-      // }
-
-      // Check loanWalleUserFound - if true, hide TejasLoan and F1SpeedLoan
-      const loanWalleUserFound = (data as { loanWalleUserFound?: boolean })?.loanWalleUserFound;
-
-      // Add TejasLoan only if loanWalleUserFound is NOT true AND it exists in staticLenders
-      if (loanWalleUserFound !== true && staticLenderUtmLinks["TejasLoan"] && !existingLenderNames.has("TejasLoan")) {
-        mappedOffers.push({
-          name: "TejasLoan",
-          utmLink: staticLenderUtmLinks["TejasLoan"],
-          isOffer: false,
-        });
-      }
-
-      // Add F1SpeedLoan only if loanWalleUserFound is NOT true AND it exists in staticLenders
-      if (loanWalleUserFound !== true && staticLenderUtmLinks["F1SpeedLoan"] && !existingLenderNames.has("F1SpeedLoan")) {
-        mappedOffers.push({
-          name: "F1SpeedLoan",
-          utmLink: staticLenderUtmLinks["F1SpeedLoan"],
-          isOffer: false,
-        });
       }
 
       // // Add ASAPFinance only if it comes from API staticLenders
@@ -596,41 +548,18 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         });
       }
 
-      // LoanWalle logic: Show LoanWalle card if ToofanLoan OR RupeeRaftaar is available in staticLenders
-      const toofanLoanUtm = staticLenderUtmLinks["ToofanLoan"];
-      const rupeeRaftaarUtm = staticLenderUtmLinks["RupeeRaftaar"];
+      // LoanWalle logic: Show LoanWalle card if LoanwalleSalaried OR LoanwalleSelfEmployed is available in staticLenders
+      // Only one will be received at a time from the API
+      const loanwalleUtm = staticLenderUtmLinks["LoanwalleSalaried"] || staticLenderUtmLinks["LoanwalleSelfEmployed"];
 
-      if ((toofanLoanUtm || rupeeRaftaarUtm) && !existingLenderNames.has("LoanWalle")) {
-        // Store the lender options for the modal
-        const loanWalleOptions: {
-          toofanLoan?: { name: string; displayName: string; utmLink: string; logo: string };
-          rupeeRaftaar?: { name: string; displayName: string; utmLink: string; logo: string };
-        } = {};
-
-        if (toofanLoanUtm) {
-          loanWalleOptions.toofanLoan = {
-            name: "ToofanLoan",
-            displayName: DISPLAY_NAMES["ToofanLoan"] || "Toofan Loan",
-            utmLink: toofanLoanUtm,
-            logo: STATIC_LENDER_LOGOS["ToofanLoan"]?.src || "/toofan-loan.png",
-          };
-        }
-
-        if (rupeeRaftaarUtm) {
-          loanWalleOptions.rupeeRaftaar = {
-            name: "RupeeRaftaar",
-            displayName: DISPLAY_NAMES["RupeeRaftaar"] || "Rupee Raftaar",
-            utmLink: rupeeRaftaarUtm,
-            logo: STATIC_LENDER_LOGOS["RupeeRaftaar"]?.src || "/Rupee-Raftaaar.png",
-          };
-        }
-
-        setLoanWalleLenders(loanWalleOptions);
+      if (loanwalleUtm && !existingLenderNames.has("LoanWalle")) {
+        // Store the UTM link for direct redirect
+        setLoanWalleUtmLink(loanwalleUtm);
 
         // Add LoanWalle to offers list
         mappedOffers.push({
           name: "LoanWalle",
-          utmLink: undefined,
+          utmLink: loanwalleUtm,
           isOffer: false,
         });
       }
@@ -675,57 +604,14 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
   //   }
   // };
 
-  const handleTejasLoanApply = async (initialUtmLink?: string) => {
-    await applyTejasLoan(initialUtmLink);
-  };
-
-  const handleF1SpeedLoanApply = async (initialUtmLink?: string) => {
-    await applyF1SpeedLoan(initialUtmLink);
-  };
-
-  const handleLoanWalleApply = async () => {
-    const hasToofan = !!loanWalleLenders.toofanLoan;
-    const hasRupeeRaftaar = !!loanWalleLenders.rupeeRaftaar;
-
-    // If both are available, show the modal
-    if (hasToofan && hasRupeeRaftaar) {
-      setShowLoanWalleModal(true);
-      return;
-    }
-
-    // If only one is available, redirect directly
-    const singleLender = loanWalleLenders.toofanLoan || loanWalleLenders.rupeeRaftaar;
-    if (singleLender) {
-      const phone = sessionStorage.getItem("userPhone") || "";
-      await saveShortLender(phone, singleLender.name);
-
-      // Call LoanWalle leads API for internal tracking (non-blocking)
-      const partnerName = singleLender.name === "ToofanLoan" ? "Toofan" : "RupeeRaftaar";
-      try {
-        await applyToLoanWalle(partnerName);
-      } catch (err) {
-        console.error(`${singleLender.name} leads API failed:`, err);
-      }
-
-      window.open(singleLender.utmLink, "_blank");
-    }
-  };
-
-  const handleLoanWalleLenderSelect = async (lenderName: string, utmLink: string) => {
-    setShowLoanWalleModal(false);
+  const handleLoanWalleApply = async (utmLink?: string) => {
+    const linkToUse = utmLink || loanWalleUtmLink;
+    if (!linkToUse) return;
 
     const phone = sessionStorage.getItem("userPhone") || "";
-    await saveShortLender(phone, lenderName);
+    await saveShortLender(phone, "LoanWalle");
 
-    // Call LoanWalle leads API for internal tracking (non-blocking)
-    const partnerName = lenderName === "ToofanLoan" ? "Toofan" : "RupeeRaftaar";
-    try {
-      await applyToLoanWalle(partnerName);
-    } catch (err) {
-      console.error(`${lenderName} leads API failed:`, err);
-    }
-
-    window.open(utmLink, "_blank");
+    window.open(linkToUse, "_blank");
   };
 
   const handleApply = async (lenderName: string, utmLink?: string) => {
@@ -747,24 +633,9 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
       return;
     }
 
-    // if (lenderName === "MMB") {
-    //   handleMMBApply(utmLink);
-    //   return;
-    // }
-
-    if (lenderName === "TejasLoan") {
-      handleTejasLoanApply(utmLink);
-      return;
-    }
-
-    if (lenderName === "F1SpeedLoan") {
-      handleF1SpeedLoanApply(utmLink);
-      return;
-    }
-
-    // Route LoanWalle to specific handler (opens modal)
+    // Route LoanWalle to specific handler
     if (lenderName === "LoanWalle") {
-      handleLoanWalleApply();
+      handleLoanWalleApply(utmLink);
       return;
     }
 
@@ -838,7 +709,7 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
                 ? LENDER_FEATURE_TAGS[lenderName] || LENDER_CUSTOM_BADGE[lenderName] || (offer.isOffer ? "Pre-Qualified" : "Matched")
                 : null;
 
-              const isApplying = lenderName === "KreditBee" ? kbApplying : /* lenderName === "RamFinCorp" ? ramFinCorpApplying : */ lenderName === "SmartCoin" ? smartCoinApplying : lenderName === "MMB" ? mmbApplying : lenderName === "TejasLoan" ? tejasLoanApplying : lenderName === "F1SpeedLoan" ? f1SpeedLoanApplying : false;
+              const isApplying = lenderName === "KreditBee" ? kbApplying : lenderName === "SmartCoin" ? smartCoinApplying : false;
 
               return (
                 <OfferCard
@@ -910,24 +781,6 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         />
       )}
 
-      {/* LoanWalle Lender Selection modal */}
-      {showLoanWalleModal && (
-        <LoanWalleLenderModal
-          onClose={() => setShowLoanWalleModal(false)}
-          hasToofan={!!loanWalleLenders.toofanLoan}
-          hasRupeeRaftaar={!!loanWalleLenders.rupeeRaftaar}
-          onSelectToofan={() => {
-            if (loanWalleLenders.toofanLoan) {
-              handleLoanWalleLenderSelect("ToofanLoan", loanWalleLenders.toofanLoan.utmLink);
-            }
-          }}
-          onSelectRupeeRaftaar={() => {
-            if (loanWalleLenders.rupeeRaftaar) {
-              handleLoanWalleLenderSelect("RupeeRaftaar", loanWalleLenders.rupeeRaftaar.utmLink);
-            }
-          }}
-        />
-      )}
     </>
   );
 }

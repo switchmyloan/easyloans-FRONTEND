@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { saveShortLender, applyToShortKreditBee, applyToSmartCoin, applyToLoanWalle } from "@/lib/api";
+import { saveShortLender, applyToShortKreditBee, applyToSmartCoin } from "@/lib/api";
 import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "@/lib/clevertap";
 
 // ============================================================
@@ -184,94 +184,3 @@ export function useSmartCoinApply(options: UseLenderApplyOptions = {}) {
 //   return { apply, applying };
 // }
 
-// ============================================================
-// TejasLoan Apply Hook
-// ============================================================
-export function useTejasLoanApply(options: UseLenderApplyOptions = {}) {
-  const [applying, setApplying] = useState(false);
-
-  const apply = useCallback(
-    async (utmLink?: string): Promise<LenderApplyResult> => {
-      if (applying) {
-        return { status: "error", message: "Already applying" };
-      }
-
-      setApplying(true);
-
-      try {
-        const phone = sessionStorage.getItem("userPhone") || "";
-        await saveShortLender(phone, "TejasLoan");
-        await applyToLoanWalle("Tejas");
-
-        // Redirect to UTM link after API call
-        if (utmLink) {
-          window.open(utmLink, "_blank");
-          options.onSuccess?.();
-        }
-
-        return { status: "success" };
-      } catch (err) {
-        console.error("TejasLoan apply failed:", err);
-        // Still redirect on error - the UTM link flow should continue
-        if (utmLink) {
-          window.open(utmLink, "_blank");
-        }
-        return {
-          status: "error",
-          message: "Something went wrong. Please try again.",
-        };
-      } finally {
-        setApplying(false);
-      }
-    },
-    [applying, options]
-  );
-
-  return { apply, applying };
-}
-
-// ============================================================
-// F1SpeedLoan Apply Hook
-// ============================================================
-export function useF1SpeedLoanApply(options: UseLenderApplyOptions = {}) {
-  const [applying, setApplying] = useState(false);
-
-  const apply = useCallback(
-    async (utmLink?: string): Promise<LenderApplyResult> => {
-      if (applying) {
-        return { status: "error", message: "Already applying" };
-      }
-
-      setApplying(true);
-
-      try {
-        const phone = sessionStorage.getItem("userPhone") || "";
-        await saveShortLender(phone, "F1SpeedLoan");
-        await applyToLoanWalle("F1");
-
-        // Redirect to UTM link after API call
-        if (utmLink) {
-          window.open(utmLink, "_blank");
-          options.onSuccess?.();
-        }
-
-        return { status: "success" };
-      } catch (err) {
-        console.error("F1SpeedLoan apply failed:", err);
-        // Still redirect on error - the UTM link flow should continue
-        if (utmLink) {
-          window.open(utmLink, "_blank");
-        }
-        return {
-          status: "error",
-          message: "Something went wrong. Please try again.",
-        };
-      } finally {
-        setApplying(false);
-      }
-    },
-    [applying, options]
-  );
-
-  return { apply, applying };
-}

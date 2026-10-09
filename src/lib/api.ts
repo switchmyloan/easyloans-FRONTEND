@@ -1745,64 +1745,6 @@ export async function updateUserInfo(
   return json;
 }
 
-// ---------- LoanWalle API (TejasLoan / F1SpeedLoan) ----------
-
-const LOANWALLE_API_URL = "https://loanwalle.cready.in/api/leads";
-const LOANWALLE_API_KEY = "3bbda80daa4dbf6c3e2ab527d02b2bf9bb42a5186a83e5e7ea688673c2f812ac";
-
-export interface LoanWalleApplyResponse {
-  success: boolean;
-  message: string;
-  data?: unknown;
-  [key: string]: unknown;
-}
-
-/**
- * Applies to LoanWalle partners (TejasLoan, F1SpeedLoan, ToofanLoan, or RupeeRaftaar).
- * @param partnerName - "Tejas" for TejasLoan, "F1" for F1SpeedLoan, "Toofan" for ToofanLoan, "RupeeRaftaar" for RupeeRaftaar
- */
-export async function applyToLoanWalle(
-  partnerName: "Tejas" | "F1" | "Toofan" | "RupeeRaftaar"
-): Promise<LoanWalleApplyResponse> {
-  const raw = sessionStorage.getItem("userFormData");
-  if (!raw) throw new Error("User data not found. Please fill the form first.");
-
-  const userData = JSON.parse(raw);
-  const utmSource = isBrowser() ? sessionStorage.getItem("utm_source") || "" : "";
-  const utmMedium = isBrowser() ? sessionStorage.getItem("utm_medium") || "" : "";
-
-  const body = {
-    pan: userData.panNumber,
-    partnerName,
-    mobile: userData.mobileNumber,
-    name: `${userData.firstName || ""} ${userData.lastName || ""}`.trim(),
-    utmSource,
-    utmMedium,
-    type: "short",
-  };
-
-  const res = await fetch(LOANWALLE_API_URL, {
-    method: "POST",
-    headers: {
-      "X-API-Key": LOANWALLE_API_KEY,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
-
-  if (!res.ok) {
-    const partnerDisplayName = {
-      Tejas: "TejasLoan",
-      F1: "F1SpeedLoan",
-      Toofan: "ToofanLoan",
-      RupeeRaftaar: "RupeeRaftaar",
-    }[partnerName];
-    throw new Error(`Failed to apply to ${partnerDisplayName}. Please try again.`);
-  }
-
-  const json: LoanWalleApplyResponse = await res.json();
-  return json;
-}
 
 export async function verifyShortDashboardLinkOtp(
   token: string,

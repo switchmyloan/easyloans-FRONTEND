@@ -6,14 +6,13 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Lock, Zap, CheckCircle, Clock, ChevronRight } from "lucide-react";
 import { STATIC_LENDER_LOGOS, LENDER_FEATURE_TAGS, DEFAULT_FEATURE_TAG, DASHBOARD_PRIORITY_ORDER, LENDER_FEATURE_BADGES, DEFAULT_FEATURE_BADGES } from "@/lib/constants";
-import { getStoredShortExistingUserOffers, saveShortLender, applyToLoanWalle } from "@/lib/api";
+import { getStoredShortExistingUserOffers, saveShortLender } from "@/lib/api";
 import toast, { Toaster } from "react-hot-toast";
 import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
-import LoanWalleLenderModal from "@/components/offers/LoanWalleLenderModal";
 import SessionActiveBanner from "@/components/shared/SessionActiveBanner";
 import { useOtpGuard } from "@/app/dashboard/layout";
 import { useRamFinCorpApply } from "@/hooks/useRamFinCorpApply"; // stub - RamFinCorp disabled
-import { useKreditBeeApply, useSmartCoinApply, /* useMMBApply, */ useTejasLoanApply, useF1SpeedLoanApply } from "@/hooks/useLenderApply";
+import { useKreditBeeApply, useSmartCoinApply } from "@/hooks/useLenderApply";
 import RingImageSection from "./RingImageSection";
 
 // Lender UTM links — used when an offer doesn't carry its own utmLink. Same set
@@ -39,33 +38,26 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
 const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   rapidmoney: "RapidMoney",
   kreditbee: "KreditBee",
-  // ramfincorp: "RamFinCorp",
   olyv: "SmartCoin",
   truebalance: "TrueBalance",
-  // speedoloan: "SpeedoLoan",
   cashmysalary: "CashMySalary",
-  tejasloan: "TejasLoan",
   truefund: "TrueFund",
   vivifi: "Vivifi",
   moneydot: "MoneyDot",
-  // asapfinance: "ASAPFinance",
   apollo: "Apollo",
-  f1speedloan: "F1SpeedLoan",
   rupinow: "RupiNow",
   cash2you: "Cash2You",
   rocketcash: "RocketCash",
-  // mmb: "MMB",
   loanwalle: "LoanWalle",
   dhanpocket: "DhanPocket",
-  // turantpaisa: "TurantPaisa",
   quickmoney: "QuickMoney",
   kamakshimoney: "Kamakshimoney",
 };
 
-// Map ToofanLoan and RupeeRaftaar to LoanWalle for display purposes
+// Map LoanwalleSalaried and LoanwalleSelfEmployed to LoanWalle for display purposes
 const LENDER_DISPLAY_MAP: Record<string, string> = {
-  ToofanLoan: "LoanWalle",
-  RupeeRaftaar: "LoanWalle",
+  LoanwalleSalaried: "LoanWalle",
+  LoanwalleSelfEmployed: "LoanWalle",
 };
 
 // ============================================================
@@ -138,17 +130,9 @@ export default function LoanOffersBanner() {
 
   const { apply: applyKreditBee, applying: kbApplying } = useKreditBeeApply();
   const { apply: applySmartCoin, applying: smartCoinApplying } = useSmartCoinApply();
-  // const { apply: applyMMB, applying: mmbApplying } = useMMBApply();
-  const mmbApplying = false;
-  const { apply: applyTejasLoan, applying: tejasLoanApplying } = useTejasLoanApply();
-  const { apply: applyF1SpeedLoan, applying: f1SpeedLoanApplying } = useF1SpeedLoanApply();
 
-  // LoanWalle modal state
-  const [showLoanWalleModal, setShowLoanWalleModal] = useState(false);
-  const [loanWalleLenders, setLoanWalleLenders] = useState<{
-    toofanLoan?: { name: string; displayName: string; utmLink: string; logo: string };
-    rupeeRaftaar?: { name: string; displayName: string; utmLink: string; logo: string };
-  }>({});
+  // Store the LoanWalle UTM link (from LoanwalleSalaried or LoanwalleSelfEmployed)
+  const [loanWalleUtmLink, setLoanWalleUtmLink] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const existingUserData = getStoredShortExistingUserOffers();
@@ -303,38 +287,6 @@ export default function LoanOffersBanner() {
       //   });
       // }
 
-      // Check loanWalleUserFound - if true, hide TejasLoan and F1SpeedLoan
-      const loanWalleUserFound = (data as { loanWalleUserFound?: boolean })?.loanWalleUserFound;
-
-      // Add TejasLoan only if loanWalleUserFound is NOT true AND it exists in staticLenders
-      const tejasLoanFromApi = staticLendersArray.find(
-        (l) => l.name?.toLowerCase() === "tejas" || l.name?.toLowerCase() === "tejasloan"
-      );
-      if (loanWalleUserFound !== true && tejasLoanFromApi?.utm_link && !addedLenders.has("TejasLoan")) {
-        addedLenders.add("TejasLoan");
-        eligibleLenders.push({
-          id: "TejasLoan",
-          name: "TejasLoan",
-          prefix: "T",
-        });
-      }
-
-      // Add F1SpeedLoan only if loanWalleUserFound is NOT true AND it exists in staticLenders
-      const f1SpeedLoanFromApi = staticLendersArray.find(
-        (l) => l.name?.toLowerCase() === "f1speedloan"
-      );
-      if (loanWalleUserFound !== true && f1SpeedLoanFromApi?.utm_link && !addedLenders.has("F1SpeedLoan")) {
-        addedLenders.add("F1SpeedLoan");
-        eligibleLenders.push({
-          id: "F1SpeedLoan",
-          name: "F1SpeedLoan",
-          prefix: "F",
-        });
-      }
-
-
-      
-
       // // Add RamFinCorp if eligible (data.response.message === "Dedup Success")
       // if (isRamFinCorpEligible && !addedLenders.has("RamFinCorp")) {
       //   addedLenders.add("RamFinCorp");
@@ -443,14 +395,16 @@ export default function LoanOffersBanner() {
         });
       }
 
-      // Add LoanWalle if ToofanLoan OR RupeeRaftaar is available in staticLenders
-      const toofanLoanFromApi = staticLendersArray.find(
-        (l) => l.name?.toLowerCase() === "toofanloan"
+      // Add LoanWalle if LoanwalleSalaried OR LoanwalleSelfEmployed is available in staticLenders
+      // Only one will be received at a time from the API
+      const loanwalleSalariedFromApi = staticLendersArray.find(
+        (l) => l.name?.toLowerCase() === "loanwallesalaried"
       );
-      const rupeeRaftaarFromApi = staticLendersArray.find(
-        (l) => l.name?.toLowerCase() === "rupeeraftaar"
+      const loanwalleSelfEmployedFromApi = staticLendersArray.find(
+        (l) => l.name?.toLowerCase() === "loanwalleselfemployed"
       );
-      if ((toofanLoanFromApi?.utm_link || rupeeRaftaarFromApi?.utm_link) && !addedLenders.has("LoanWalle")) {
+      const loanwalleUtm = loanwalleSalariedFromApi?.utm_link || loanwalleSelfEmployedFromApi?.utm_link;
+      if (loanwalleUtm && !addedLenders.has("LoanWalle")) {
         addedLenders.add("LoanWalle");
         eligibleLenders.push({
           id: "LoanWalle",
@@ -458,31 +412,8 @@ export default function LoanOffersBanner() {
           prefix: "L",
         });
 
-        // Store the lender options for the modal
-        const loanWalleOptions: {
-          toofanLoan?: { name: string; displayName: string; utmLink: string; logo: string };
-          rupeeRaftaar?: { name: string; displayName: string; utmLink: string; logo: string };
-        } = {};
-
-        if (toofanLoanFromApi?.utm_link) {
-          loanWalleOptions.toofanLoan = {
-            name: "ToofanLoan",
-            displayName: "Toofan Loan",
-            utmLink: toofanLoanFromApi.utm_link,
-            logo: "/toofan-loan.png",
-          };
-        }
-
-        if (rupeeRaftaarFromApi?.utm_link) {
-          loanWalleOptions.rupeeRaftaar = {
-            name: "RupeeRaftaar",
-            displayName: "Rupee Raftaar",
-            utmLink: rupeeRaftaarFromApi.utm_link,
-            logo: "/Rupee-Raftaaar.png",
-          };
-        }
-
-        setLoanWalleLenders(loanWalleOptions);
+        // Store the UTM link for direct redirect
+        setLoanWalleUtmLink(loanwalleUtm);
       }
 
       // Check if user came via UTM medium link - prioritize that lender
@@ -498,28 +429,6 @@ export default function LoanOffersBanner() {
       //     prefix: "L",
       //   });
       // }
-
-      // If UTM is tejasloan and TejasLoan exists in staticLenders but wasn't added yet, add it now
-      // Only if loanWalleUserFound is NOT true
-      if (utmLenderName === "TejasLoan" && loanWalleUserFound !== true && tejasLoanFromApi?.utm_link && !addedLenders.has("TejasLoan")) {
-        addedLenders.add("TejasLoan");
-        eligibleLenders.push({
-          id: "TejasLoan",
-          name: "TejasLoan",
-          prefix: "T",
-        });
-      }
-
-      // If UTM is f1speedloan and F1SpeedLoan exists in staticLenders but wasn't added yet, add it now
-      // Only if loanWalleUserFound is NOT true
-      if (utmLenderName === "F1SpeedLoan" && loanWalleUserFound !== true && f1SpeedLoanFromApi?.utm_link && !addedLenders.has("F1SpeedLoan")) {
-        addedLenders.add("F1SpeedLoan");
-        eligibleLenders.push({
-          id: "F1SpeedLoan",
-          name: "F1SpeedLoan",
-          prefix: "F",
-        });
-      }
 
       // If UTM is apollo and Apollo exists in staticLenders but wasn't added yet, add it now
       if (utmLenderName === "Apollo" && apolloFromApi?.utm_link && !addedLenders.has("Apollo")) {
@@ -581,8 +490,8 @@ export default function LoanOffersBanner() {
         });
       }
 
-      // If UTM is loanwalle and LoanWalle (via ToofanLoan or RupeeRaftaar) exists but wasn't added yet, add it now
-      if (utmLenderName === "LoanWalle" && (toofanLoanFromApi?.utm_link || rupeeRaftaarFromApi?.utm_link) && !addedLenders.has("LoanWalle")) {
+      // If UTM is loanwalle and LoanWalle (via LoanwalleSalaried or LoanwalleSelfEmployed) exists but wasn't added yet, add it now
+      if (utmLenderName === "LoanWalle" && loanwalleUtm && !addedLenders.has("LoanWalle")) {
         addedLenders.add("LoanWalle");
         eligibleLenders.push({
           id: "LoanWalle",
@@ -741,59 +650,14 @@ export default function LoanOffersBanner() {
   //   }
   // };
 
-  const handleTejasLoanApply = async (initialUtmLink?: string) => {
-    await applyTejasLoan(initialUtmLink);
-  };
-
-  const handleF1SpeedLoanApply = async (initialUtmLink?: string) => {
-    await applyF1SpeedLoan(initialUtmLink);
-  };
-
-  // LoanWalle apply handler - shows modal if both options available, redirects directly if only one
+  // LoanWalle apply handler - redirects directly to the UTM link
   const handleLoanWalleApply = async () => {
-    const hasToofan = !!loanWalleLenders.toofanLoan;
-    const hasRupeeRaftaar = !!loanWalleLenders.rupeeRaftaar;
-
-    // If both are available, show the modal
-    if (hasToofan && hasRupeeRaftaar) {
-      setShowLoanWalleModal(true);
-      return;
-    }
-
-    // If only one is available, redirect directly
-    const singleLender = loanWalleLenders.toofanLoan || loanWalleLenders.rupeeRaftaar;
-    if (singleLender) {
-      const phone = sessionStorage.getItem("userPhone") || "";
-      await saveShortLender(phone, singleLender.name);
-
-      // Call LoanWalle leads API for internal tracking (non-blocking)
-      const partnerName = singleLender.name === "ToofanLoan" ? "Toofan" : "RupeeRaftaar";
-      try {
-        await applyToLoanWalle(partnerName);
-      } catch (err) {
-        console.error(`${singleLender.name} leads API failed:`, err);
-      }
-
-      window.open(singleLender.utmLink, "_blank");
-    }
-  };
-
-  // Handle lender selection from LoanWalle modal
-  const handleLoanWalleLenderSelect = async (lenderName: string, utmLink: string) => {
-    setShowLoanWalleModal(false);
+    if (!loanWalleUtmLink) return;
 
     const phone = sessionStorage.getItem("userPhone") || "";
-    await saveShortLender(phone, lenderName);
+    await saveShortLender(phone, "LoanWalle");
 
-    // Call LoanWalle leads API for internal tracking (non-blocking)
-    const partnerName = lenderName === "ToofanLoan" ? "Toofan" : "RupeeRaftaar";
-    try {
-      await applyToLoanWalle(partnerName);
-    } catch (err) {
-      console.error(`${lenderName} leads API failed:`, err);
-    }
-
-    window.open(utmLink, "_blank");
+    window.open(loanWalleUtmLink, "_blank");
   };
 
   // Apply to the hero lender — redirect to its UTM link
@@ -824,37 +688,6 @@ export default function LoanOffersBanner() {
       return;
     }
 
-    // Special handling for MMB
-    // if (displayLender.id === "MMB") {
-    //   // Get utm_link from stored data for fallback
-    //   const data = getStoredShortExistingUserOffers()?.data as Record<string, unknown> | undefined;
-    //   const mmbData = data?.MMBDedup as { utm_link?: string } | undefined;
-    //   handleMMBApply(mmbData?.utm_link);
-    //   return;
-    // }
-
-    // Special handling for TejasLoan
-    if (displayLender.id === "TejasLoan") {
-      const data = getStoredShortExistingUserOffers()?.data as Record<string, unknown> | undefined;
-      const staticLendersArray = (data?.staticLenders || []) as Array<{ name?: string; utm_link?: string }>;
-      const tejasLender = staticLendersArray.find(
-        (l) => l.name?.toLowerCase() === "tejas" || l.name?.toLowerCase() === "tejasloan"
-      );
-      handleTejasLoanApply(tejasLender?.utm_link);
-      return;
-    }
-
-    // Special handling for F1SpeedLoan
-    if (displayLender.id === "F1SpeedLoan") {
-      const data = getStoredShortExistingUserOffers()?.data as Record<string, unknown> | undefined;
-      const staticLendersArray = (data?.staticLenders || []) as Array<{ name?: string; utm_link?: string }>;
-      const f1Lender = staticLendersArray.find(
-        (l) => l.name?.toLowerCase() === "f1speedloan"
-      );
-      handleF1SpeedLoanApply(f1Lender?.utm_link);
-      return;
-    }
-
     // Special handling for LoanWalle - show modal or redirect directly
     if (displayLender.id === "LoanWalle") {
       handleLoanWalleApply();
@@ -876,10 +709,6 @@ export default function LoanOffersBanner() {
       const lenderIdLower = displayLender.id.toLowerCase();
       const matchingLender = staticLendersArray.find((l) => {
         const nameLower = l.name?.toLowerCase();
-        // Handle TejasLoan which might come as "Tejas" or "TejasLoan"
-        if (lenderIdLower === "tejasloan") {
-          return nameLower === "tejas" || nameLower === "tejasloan";
-        }
         return nameLower === lenderIdLower;
       });
       url = matchingLender?.utm_link;
@@ -1127,24 +956,6 @@ export default function LoanOffersBanner() {
       />
     )}
 
-    {/* LoanWalle Lender Selection modal */}
-    {showLoanWalleModal && (
-      <LoanWalleLenderModal
-        onClose={() => setShowLoanWalleModal(false)}
-        hasToofan={!!loanWalleLenders.toofanLoan}
-        hasRupeeRaftaar={!!loanWalleLenders.rupeeRaftaar}
-        onSelectToofan={() => {
-          if (loanWalleLenders.toofanLoan) {
-            handleLoanWalleLenderSelect("ToofanLoan", loanWalleLenders.toofanLoan.utmLink);
-          }
-        }}
-        onSelectRupeeRaftaar={() => {
-          if (loanWalleLenders.rupeeRaftaar) {
-            handleLoanWalleLenderSelect("RupeeRaftaar", loanWalleLenders.rupeeRaftaar.utmLink);
-          }
-        }}
-      />
-    )}
     </>
   );
 }

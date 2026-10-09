@@ -48,13 +48,9 @@ export const STATIC_LENDER_LOGOS: Record<
   // ASAPFinance: { src: "/asapfinance.webp" },
   Apollo: { src: "/apollo.png" },
   LendingPlate: { src: "/lending.png" },
-  F1SpeedLoan: { src: "/F1SpeedLoan.png" },
-  TejasLoan: { src: "/tejasLogo.png", darkBg: true },
   Cash2You: { src: "/CashToYouLogo.svg" },
   RocketCash: { src: "/RocketCashLogo.png" },
   // MMB: { src: "/MMB_Logo.png" },
-  RupeeRaftaar: { src: "/Rupee-Raftaaar.png", darkBg: true },
-  ToofanLoan: { src: "/toofan-loan.png" },
   DhanPocket: { src: "/dhanpocket.png" }, 
   // TurantPaisa: { src: "/Turantpaisa.png" }, 
   QuickMoney: { src: "/quickmoney.png" },
@@ -70,8 +66,6 @@ export const DISPLAY_NAMES: Record<string, string> = {
   // MMB: "MMB",
   TrueBalance: "TrueBalance",
   CashMySalary: "CashMySalary",
-  TejasLoan: "Tejas Loan",
-  F1SpeedLoan: "F1 Speed Loan",
   TrueFund: "TrueFund",
   MoneyDot: "MoneyDot",
   RupiNow: "RupiNow",
@@ -79,8 +73,6 @@ export const DISPLAY_NAMES: Record<string, string> = {
   LendingPlate: "LendingPlate",
   Cash2You: "CashToYou",
   RocketCash: "Rocket Cash",
-  ToofanLoan: "Toofan Loan",
-  RupeeRaftaar: "Rupee Raftaar",
   LoanWalle: "LoanWalle",
   DhanPocket: "DhanPocket",
   // TurantPaisa: "TurantPaisa",
@@ -242,18 +234,6 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Quick Approval and up to 6 months tenure",
     interestRate: "Interest Rates start at 5% to 8% per month.",
   },
-  TejasLoan: {
-    headline: "Get up to ₹1,00,000 with quick approval!",
-    description: "Personal loans with fast disbursement and No Prepayment Charges",
-    keyFeature: "Quick Approval and No Prepayment Charges",
-    interestRate: "Interest Rates start at 1%* per day",
-  },
-  F1SpeedLoan: {
-    headline: "Get up to ₹1,00,000 with quick approval!",
-    description: "Personal loans with fast disbursement and No Prepayment Charges",
-    keyFeature: "Quick Approval and No Prepayment Charges",
-    interestRate: "Interest Rates start at 1%* per day",
-  },
   Cash2You: {
     headline: "Get Personal Loans from ₹1,000 to ₹40,000",
     description: "Flexible repayment options with tenure up to 60 months",
@@ -302,13 +282,11 @@ export const STATIC_LENDER_DETAILS: Record<
 // Lower index = higher priority (shown first)
 export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "QuickMoney",
-  "TejasLoan",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
   "SmartCoin",
   "RapidMoney",
-  "F1SpeedLoan",
   "DhanPocket",
   // "TurantPaisa",
     "TrueFund",
@@ -335,13 +313,11 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   // SpeedoLoan: "Quick approval",
   CashMySalary: "Quick approval",
   LoanWalle: "Only for EPFO registered users",
-  TejasLoan: "Only for EPFO registered users",
   TrueFund: "Quick approval",
   MoneyDot: "no collateral",
   RupiNow: "zero hidden charges",
   // ASAPFinance: "Fast approval",
   Apollo: "Fully digital loan and no paperwork",
-  F1SpeedLoan: "No Prepayment Charges",
   Cash2You: "Long tenure up to 60 months",
   RocketCash: "Quick short-term loans",
   // MMB: "Bank-level security",
@@ -388,11 +364,6 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "Flexible Repayment", description: "Easy repayment options" },
     { title: "Flexible Tenure", description: "No Prepayment Charges" },
   ],
-    TejasLoan: [
-    { title: "Quick Approval", description: "Fast processing" },
-    { title: "Flexible Repayment", description: "Easy repayment options" },
-    { title: "Flexible Tenure", description: "No Prepayment Charges" },
-  ],
   // ASAPFinance: [
   //   { title: "Quick Approval", description: "Fast processing" },
   //   { title: "No Collateral", description: "No collateral required" },
@@ -412,11 +383,6 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "Quick Approval", description: "Fast processing" },
     { title: "No Hidden Charges", description: "Secure and Trusted" },
     { title: "Up to ₹50,000", description: "High loan amount" },
-  ],
-  F1SpeedLoan: [
-    { title: "Quick Approval", description: "Fast processing" },
-    { title: "No Hidden Charges", description: "Secure and Trusted" },
-    { title: "Up to ₹1,00,000", description: "High loan amount" },
   ],
   RupiNow: [
     { title: "Quick Approval", description: "Fast processing" },
@@ -477,7 +443,6 @@ export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   RapidMoney: ["Quick Approval", "Flexible Repayment", "Up to ₹15,000"],
   Vivifi: ["0% Foreclose Charge", "Highest Approval", "Quick Disbursal"],
   LoanWalle: ["EPFO Users Only", "No Prepayment Fee", "Quick Approval"],
-  TejasLoan: ["EPFO Users Only", "No Prepayment Fee", "Quick Approval"],
   KreditBee: ["Upto 100% off on PF", "Loans up to ₹10 Lakh", "Instant Disbursal"],
   TrueBalance: ["Loans up to ₹2 Lakh", "Minimal Docs", "Quick Approval"],
   // RamFinCorp: ["Instant Approval", "Same Day Disbursement", "No Prepayment Charges"],
@@ -489,7 +454,6 @@ export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   RupiNow: ["Zero Hidden Charges", "Flexible Tenure", "Up to ₹50,000"],
   // ASAPFinance: ["Fast Approval", "No Collateral", "Hassle-Free Docs"],
   Apollo: ["Fully Digital Loan", "Quick Approval", "Up to 6 months tenure"],
-  F1SpeedLoan: ["No Prepayment Charges", "Quick Approval", "Up to 365 months"],
   Cash2You: ["Up to 60 Months Tenure", "Flexible EMI", "Up to ₹40,000"],
   RocketCash: ["Quick Approval", "Up to 21 Days", "Up to ₹20,000"],
   // MMB: ["Bank-level security", "Up to 45 days", "No Hidden Fees"],
@@ -513,13 +477,11 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   // SpeedoLoan: 50000,      // ₹50,000
   CashMySalary: 50000,    // ₹50,000
   LoanWalle: 100000,      // ₹1 Lakh
-  TejasLoan: 100000,      // ₹1 Lakh
   TrueFund: 50000,      // ₹50,000
   MoneyDot: 100000,      // ₹1 Lakhs
   RupiNow: 50000,      // ₹50,000
   // ASAPFinance: 12000,      // ₹12,000
   Apollo: 50000,      // 50,000
-  F1SpeedLoan: 100000,      // 100,000
   Cash2You: 40000,      // ₹40,000
   RocketCash: 20000,      // ₹20,000
   // MMB: 30000,      // ₹30,000
