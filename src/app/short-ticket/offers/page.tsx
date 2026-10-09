@@ -31,7 +31,6 @@ const LENDER_ORDER = [
   "Vivifi",
   "SmartCoin",
   "RapidMoney",
-  "DhanPocket",
   "TrueFund",
   "KreditBee",
   "MoneyDot",
@@ -486,10 +485,6 @@ function getUtmLink(
       // CashMySalary only shows if it comes from API staticLenders (no fallback)
       return directLink || null;
 
-
-    case "DhanPocket":
-      return directLink || null;
-
     // case "TurantPaisa":
     //   return directLink || null;
 
@@ -768,9 +763,6 @@ export default function ShortTicketOffersPage() {
       initialVisible = 5;
     } else if (isSmartCoinMediumLocal) {
       renderOrder = SMARTCOIN_PRIORITY_ORDER;
-      initialVisible = 5;
-    } else if (isDhanPocketMediumLocal) {
-      renderOrder = DHANPOCKET_PRIORITY_ORDER;
       initialVisible = 5;
     } else if (isTurantPaisaMediumLocal) {
       renderOrder = TURANTPAISA_PRIORITY_ORDER;

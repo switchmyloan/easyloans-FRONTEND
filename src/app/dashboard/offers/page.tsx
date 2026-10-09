@@ -303,8 +303,7 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         "loanwallesalaried": "LoanwalleSalaried",
         "LoanwalleSelfEmployed": "LoanwalleSelfEmployed",
         "loanwalleselfemployed": "LoanwalleSelfEmployed",
-        "DhanPocket": "DhanPocket",
-        "dhanpocket": "DhanPocket",
+
         // "TurantPaisa": "TurantPaisa",
         // "turantpaisa": "TurantPaisa",
         "QuickMoney": "QuickMoney",
@@ -521,14 +520,7 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         });
       }
 
-      // Add DhanPocket only if it comes from API staticLenders
-      if (staticLenderUtmLinks["DhanPocket"] && !existingLenderNames.has("DhanPocket")) {
-        mappedOffers.push({
-          name: "DhanPocket",
-          utmLink: staticLenderUtmLinks["DhanPocket"],
-          isOffer: false,
-        });
-      }
+
 
       // Add TurantPaisa only if it comes from API staticLenders
       // if (staticLenderUtmLinks["TurantPaisa"] && !existingLenderNames.has("TurantPaisa")) {

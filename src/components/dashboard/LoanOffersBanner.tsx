@@ -49,7 +49,6 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   cash2you: "Cash2You",
   rocketcash: "RocketCash",
   loanwalle: "LoanWalle",
-  dhanpocket: "DhanPocket",
   quickmoney: "QuickMoney",
   kamakshimoney: "Kamakshimoney",
 };
@@ -356,18 +355,6 @@ export default function LoanOffersBanner() {
         });
       }
 
-      // Add DhanPocket only if it comes from API staticLenders
-      const dhanPocketFromApi = staticLendersArray.find(
-        (l) => l.name?.toLowerCase() === "dhanpocket"
-      );
-      if (dhanPocketFromApi?.utm_link && !addedLenders.has("DhanPocket")) {
-        addedLenders.add("DhanPocket");
-        eligibleLenders.push({
-          id: "DhanPocket",
-          name: "DhanPocket",
-          prefix: "D",
-        });
-      }
 
       // Add TurantPaisa only if it comes from API staticLenders
       // const turantPaisaFromApi = staticLendersArray.find(
@@ -460,15 +447,6 @@ export default function LoanOffersBanner() {
         });
       }
 
-      // If UTM is dhanpocket and DhanPocket exists in staticLenders but wasn't added yet, add it now
-      if (utmLenderName === "DhanPocket" && dhanPocketFromApi?.utm_link && !addedLenders.has("DhanPocket")) {
-        addedLenders.add("DhanPocket");
-        eligibleLenders.push({
-          id: "DhanPocket",
-          name: "DhanPocket",
-          prefix: "D",
-        });
-      }
 
       // If UTM is turantpaisa and TurantPaisa exists in staticLenders but wasn't added yet, add it now
       // if (utmLenderName === "TurantPaisa" && turantPaisaFromApi?.utm_link && !addedLenders.has("TurantPaisa")) {
