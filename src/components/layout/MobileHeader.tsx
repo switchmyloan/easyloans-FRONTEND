@@ -10,6 +10,7 @@ export default function MobileHeader() {
     { src: "/true.webp", alt: "Truebalance" },
     { src: "/mpoket.svg", alt: "Mpoket" },
     { src: "/credit.svg", alt: "Credit" },
+    { src: "/kamakshimoney.svg", alt: "Kamakshimoney" },
     // { src: "/logo_Loan112.svg", alt: "Loan112" },
 
   ];

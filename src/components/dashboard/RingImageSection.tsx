@@ -25,6 +25,7 @@ const LENDER_RING_IMAGES: Record<string, string> = {
   // mmb: "/M-ring.png",
   dhanpocket: "/DP-ring.png",
   // turantpaisa: "/TP-ring.png",
+  kamakshimoney: "/KM-ring.png",
 };
 
 // Default fallback image (used if lender not found in mapping)

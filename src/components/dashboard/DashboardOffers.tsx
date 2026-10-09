@@ -244,7 +244,9 @@ export default function DashboardOffers() {
         // "TurantPaisa": "TurantPaisa",
         // "turantpaisa": "TurantPaisa",
         "QuickMoney": "QuickMoney",
-        "quickmoney": "QuickMoney"
+        "quickmoney": "QuickMoney",
+        "Kamakshimoney": "Kamakshimoney",
+        "Kamakshi": "Kamakshimoney",
       };
       for (const lender of staticLendersArray) {
         if (lender.name && lender.utm_link) {
@@ -375,6 +377,15 @@ export default function DashboardOffers() {
         mappedOffers.push({
           name: "TrueBalance",
           utmLink: staticLenderUtmLinks["TrueBalance"],
+          isOffer: false,
+        });
+      }
+
+      // Add Kamakshimoney only if it comes from API staticLenders
+      if (staticLenderUtmLinks["Kamakshimoney"] && !existingLenderNames.has("Kamakshimoney")) {
+        mappedOffers.push({
+          name: "Kamakshimoney",
+          utmLink: staticLenderUtmLinks["Kamakshimoney"],
           isOffer: false,
         });
       }

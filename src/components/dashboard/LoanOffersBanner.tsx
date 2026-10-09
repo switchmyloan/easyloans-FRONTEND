@@ -59,6 +59,7 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   dhanpocket: "DhanPocket",
   // turantpaisa: "TurantPaisa",
   quickmoney: "QuickMoney",
+  kamakshimoney: "Kamakshimoney",
 };
 
 // Map ToofanLoan and RupeeRaftaar to LoanWalle for display purposes

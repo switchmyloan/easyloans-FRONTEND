@@ -58,6 +58,7 @@ export const STATIC_LENDER_LOGOS: Record<
   DhanPocket: { src: "/dhanpocket.png" }, 
   // TurantPaisa: { src: "/Turantpaisa.png" }, 
   QuickMoney: { src: "/quickmoney.png" },
+  Kamakshimoney: { src: "/kamakshimoney.svg" },
 };
 
 export const DISPLAY_NAMES: Record<string, string> = {
@@ -84,6 +85,7 @@ export const DISPLAY_NAMES: Record<string, string> = {
   DhanPocket: "DhanPocket",
   // TurantPaisa: "TurantPaisa",
   QuickMoney: "QuickMoney",
+  Kamakshimoney: "Kamakshimoney",
 };
 
 export const STATIC_LENDER_DETAILS: Record<
@@ -288,6 +290,12 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Quick Approval and Secure & Trusted",
     interestRate: "Interest Rates start at 3.5%* per month",
   },
+  Kamakshimoney: {
+    headline: "Get up to ₹30,000 with quick approval!",
+    description: "Easy short-term loans with fast disbursement and tenure 7 to 36 days",
+    keyFeature: "Quick Approval and Disbursement",
+    interestRate: "Interest Rates start at 1% per day",
+  },
 };
 
 // Dashboard priority order - lenders are displayed in this order when available
@@ -312,6 +320,7 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
+  "Kamakshimoney",
 
 ];
 
@@ -339,6 +348,7 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   DhanPocket: "No Foreclosure charges",
   TurantPaisa: "No hidden charges",
   QuickMoney: "Quick approval",
+  Kamakshimoney: "Quick approval",
 };
 
 
@@ -443,7 +453,11 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "Paperless Process", description: "No hidden fees" },
     { title: "Up to 25,000", description: "Personal loan amount" },
   ],
-
+  Kamakshimoney: [
+    { title: "Quick Approval", description: "Fast processing" },
+    { title: "Disbursement", description: "Same day transfer" },
+    { title: "Up to 30,000", description: "Personal loan amount" },
+  ],
 };
 
 // Default features if lender not found in UTM_MEDIUM_LENDERS_FEATURES
@@ -482,6 +496,7 @@ export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   DhanPocket: ["No Foreclosure Charges", "100% Digital", "Up to ₹1 Lakh"],
   TurantPaisa: ["No Hidden Charges", "Up to 45 Days", "Up to ₹40,000"],
   QuickMoney: ["Quick Approval", "Paperless Process", "Up to 25,000"],
+  Kamakshimoney: ["Quick Approval", "Disbursement", "Up to 30,000"],
 };
 
 // Default feature badges if lender not found
@@ -511,6 +526,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   DhanPocket: 100000,      // ₹100,000
   TurantPaisa: 40000,      // ₹40,000
   QuickMoney: 25000,      // ₹25,000
+  Kamakshimoney: 30000,      // ₹30,000
 };
 
 const DEFAULT_LENDER_DETAIL = {
