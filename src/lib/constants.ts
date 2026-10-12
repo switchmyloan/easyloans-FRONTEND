@@ -281,6 +281,7 @@ export const STATIC_LENDER_DETAILS: Record<
 // Dashboard priority order - lenders are displayed in this order when available
 // Lower index = higher priority (shown first)
 export const DASHBOARD_PRIORITY_ORDER: string[] = [
+  "Kamakshimoney",
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
@@ -298,7 +299,7 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "Kamakshimoney",
+
 
 ];
 
