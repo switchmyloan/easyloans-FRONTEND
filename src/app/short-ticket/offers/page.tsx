@@ -25,6 +25,7 @@ import StickyLenderBanner from "@/components/offers/StickyLenderBanner";
 
 // Default render order
 const LENDER_ORDER = [
+  "Kamakshimoney",
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
@@ -39,12 +40,12 @@ const LENDER_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "Kamakshimoney",
 ];
 
 // When utm_medium=kreditbee: KreditBee first
 const KB_PRIORITY_ORDER = [
   "KreditBee",
+    "Kamakshimoney",
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
@@ -59,12 +60,13 @@ const KB_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "Kamakshimoney",
+
 ];
 
 // When utm_medium=rapidmoney: RapidMoney first
 const RAPIDMONEY_PRIORITY_ORDER = [
   "RapidMoney",
+    "Kamakshimoney",
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
@@ -79,7 +81,7 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "Kamakshimoney",
+
 ];
 
 // const RamFinCorp_PRIORITY_ORDER = [
@@ -107,6 +109,7 @@ const RAPIDMONEY_PRIORITY_ORDER = [
 // When utm_medium=moneydot: MoneyDot first
 const MONEYDOT_PRIORITY_ORDER = [
   "MoneyDot",
+    "Kamakshimoney",
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
@@ -121,11 +124,12 @@ const MONEYDOT_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "Kamakshimoney",
+
 ];
 
 const TRUEFUND_PRIORITY_ORDER = [
   "TrueFund",
+    "Kamakshimoney",
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
@@ -140,12 +144,13 @@ const TRUEFUND_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "Kamakshimoney",
+
 ];
 
 
 const CASHMYSalary_PRIORITY_ORDER = [
   "CashMySalary",
+    "Kamakshimoney",
   "QuickMoney",
   "RupiNow",
   "Vivifi",
@@ -160,11 +165,12 @@ const CASHMYSalary_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "Kamakshimoney",
+
 ];
 
 const APOLLO_PRIORITY_ORDER = [
   "Apollo",
+    "Kamakshimoney",
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
@@ -179,12 +185,13 @@ const APOLLO_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "Kamakshimoney",
+
 ];
 
 // When utm_medium=rupinow: RupiNow first
 const RUPINOW_PRIORITY_ORDER = [
   "RupiNow",
+    "Kamakshimoney",
   "QuickMoney",
   "CashMySalary",
   "Vivifi",
@@ -199,12 +206,13 @@ const RUPINOW_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "Kamakshimoney",
+
 ];
 
 // When utm_medium=cash2you: Cash2You first
 const CASH2YOU_PRIORITY_ORDER = [
   "Cash2You",
+    "Kamakshimoney",
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
@@ -219,12 +227,13 @@ const CASH2YOU_PRIORITY_ORDER = [
   "Apollo",
   "RocketCash",
   "TrueBalance",
-  "Kamakshimoney",
+
 ];
 
 // When utm_medium=rocketcash: RocketCash first
 const ROCKETCASH_PRIORITY_ORDER = [
   "RocketCash",
+    "Kamakshimoney",
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
@@ -239,7 +248,7 @@ const ROCKETCASH_PRIORITY_ORDER = [
   "Apollo",
   "Cash2You",
   "TrueBalance",
-  "Kamakshimoney",
+
 ];
 
 // const MMB_PRIORITY_ORDER = [
@@ -267,6 +276,7 @@ const ROCKETCASH_PRIORITY_ORDER = [
 // When utm_medium=loanwalle: LoanWalle first
 const LOANWALLE_PRIORITY_ORDER = [
   "LoanWalle",
+    "Kamakshimoney",
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
@@ -281,12 +291,13 @@ const LOANWALLE_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "Kamakshimoney",
+
 ];
 
 // When utm_medium=smartcoin: SmartCoin first
 const SMARTCOIN_PRIORITY_ORDER = [
   "SmartCoin",
+    "Kamakshimoney",
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
@@ -301,12 +312,13 @@ const SMARTCOIN_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "Kamakshimoney",
+
 ];
 
 // When utm_medium=dhanpocket: DhanPocket first
 const DHANPOCKET_PRIORITY_ORDER = [
   "DhanPocket",
+    "Kamakshimoney",
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
@@ -321,12 +333,13 @@ const DHANPOCKET_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "Kamakshimoney",
+
 ];
 
 // When utm_medium=turantpaisa: TurantPaisa first
 const TURANTPAISA_PRIORITY_ORDER = [
   "TurantPaisa",
+    "Kamakshimoney",
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
@@ -342,12 +355,13 @@ const TURANTPAISA_PRIORITY_ORDER = [
   "RocketCash",
   "TrueBalance",
   "TrueFund",
-  "Kamakshimoney",
+
 ];
 
 // When utm_medium=quickmoney: QuickMoney first
 const QUICKMONEY_PRIORITY_ORDER = [
   "QuickMoney",
+    "Kamakshimoney",
   "RupiNow",
   "CashMySalary",
   "Vivifi",
@@ -362,11 +376,12 @@ const QUICKMONEY_PRIORITY_ORDER = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-  "Kamakshimoney",
+
 ];
 
 const KAMAKSHIMONEY_PRIORITY_ORDER = [
   "Kamakshimoney",
+    "TrueBalance",
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
@@ -381,7 +396,7 @@ const KAMAKSHIMONEY_PRIORITY_ORDER = [
   "Apollo",
   "Cash2You",
   "RocketCash",
-  "TrueBalance",
+
 ];
 
 const FALLBACK_UTM: Record<string, string> = {
