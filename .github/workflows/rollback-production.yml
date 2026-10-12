@@ -1,0 +1,78 @@
+# Production rollback for easyloans.cready.in: switches NEW-NUCLEUS back to the previous release.
+# Manual only. Runs on branch easy-prod. About 5-15 seconds; health check included.
+name: Rollback Production (easyloans)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type ROLLBACK to switch easyloans.cready.in to the previous release"
+        required: true
+        default: ""
+
+concurrency:
+  group: prod-deploy-easyloans
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  APP: easyloans
+  AWS_REGION: ap-south-1
+  INSTANCE_ID: i-03abbdf854dca9b93
+
+jobs:
+  rollback:
+    name: Roll back to previous release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checks
+        env:
+          ALLOWED: ${{ vars.DEPLOY_ALLOWED_USERS }}
+          CONFIRM: ${{ inputs.confirm }}
+        run: |
+          if [ "$GITHUB_REF" != "refs/heads/easy-prod" ]; then echo "::error::Run on branch easy-prod."; exit 1; fi
+          if [ "$CONFIRM" != "ROLLBACK" ]; then echo "::error::Type ROLLBACK in the confirm box."; exit 1; fi
+          if ! echo ",${ALLOWED}," | grep -qi ",${GITHUB_ACTOR},"; then echo "::error::${GITHUB_ACTOR} is not in DEPLOY_ALLOWED_USERS."; exit 1; fi
+          echo "Checks passed for ${GITHUB_ACTOR}."
+
+      - name: Log in to AWS (OIDC, no stored keys)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Roll back through SSM (SML-Deploy)
+        run: |
+          set -euo pipefail
+          CMD_ID=$(aws ssm send-command \
+            --instance-ids "$INSTANCE_ID" \
+            --document-name SML-Deploy \
+            --parameters "Action=rollback,App=${APP},Commit=0000000,ArtifactUrl=none" \
+            --comment "easyloans rollback by ${GITHUB_ACTOR} run ${GITHUB_RUN_ID}" \
+            --query 'Command.CommandId' --output text)
+          echo "SSM command id: $CMD_ID"
+
+          STATUS=Pending
+          for i in $(seq 1 30); do
+            sleep 5
+            STATUS=$(aws ssm get-command-invocation --command-id "$CMD_ID" --instance-id "$INSTANCE_ID" \
+              --query Status --output text 2>/dev/null || echo Pending)
+            echo "status: $STATUS"
+            case "$STATUS" in Success|Failed|Cancelled|TimedOut) break ;; esac
+          done
+
+          echo "----- server output -----"
+          aws ssm get-command-invocation --command-id "$CMD_ID" --instance-id "$INSTANCE_ID" \
+            --query StandardOutputContent --output text || true
+
+          {
+            echo "### easyloans production rollback: $STATUS"
+            echo "- Requested by: ${GITHUB_ACTOR}"
+            echo "- SSM command: \`${CMD_ID}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$STATUS" != "Success" ]; then echo "::error::Rollback did not succeed (status $STATUS). Check the server."; exit 1; fi
+          echo "Rollback SUCCESS."
