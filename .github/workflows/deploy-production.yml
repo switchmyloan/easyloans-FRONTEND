@@ -1,0 +1,225 @@
+# Production deploy for easyloans.cready.in (repo: switchmyloan/easyloans-FRONTEND, live branch: easy-prod)
+# Manual only. Builds on GitHub, then deploys to NEW-NUCLEUS through AWS SSM (document SML-Deploy).
+# Modes (in-place deploy into the existing easyloans folder; manual deploys keep working):
+#   build-only = install, lint, build, smoke test. Touches nothing on the server.
+#   deploy     = build-only + deploy to production (health check + automatic rollback on failure).
+name: Deploy to Production (easyloans)
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "build-only = test the build only (no server change). deploy = build and deploy to production"
+        type: choice
+        options: [build-only, deploy]
+        default: build-only
+      confirm:
+        description: "For deploy mode only: type DEPLOY"
+        required: false
+        default: ""
+
+concurrency:
+  group: prod-deploy-easyloans
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: write
+  id-token: write
+
+env:
+  APP: easyloans
+  AWS_REGION: ap-south-1
+  INSTANCE_ID: i-03abbdf854dca9b93
+  NODE_VERSION: "22.22.1"
+
+jobs:
+  checks:
+    name: Pre-checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Branch must be easy-prod
+        if: github.ref != 'refs/heads/easy-prod'
+        run: |
+          echo "::error::Run this workflow on branch easy-prod (you selected ${GITHUB_REF_NAME})."
+          exit 1
+
+      - name: Deployer must be allowed
+        env:
+          ALLOWED: ${{ vars.DEPLOY_ALLOWED_USERS }}
+        run: |
+          if echo ",${ALLOWED}," | grep -qi ",${GITHUB_ACTOR},"; then
+            echo "Deployer ${GITHUB_ACTOR} is allowed."
+          else
+            echo "::error::${GITHUB_ACTOR} is not in DEPLOY_ALLOWED_USERS."
+            exit 1
+          fi
+
+      - name: Deploy mode needs confirmation
+        if: inputs.mode == 'deploy' && inputs.confirm != 'DEPLOY'
+        run: |
+          echo "::error::For deploy mode, type DEPLOY in the confirm box."
+          exit 1
+
+      - name: Maker-checker (warning only during pilot)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          AUTHOR=$(curl -s -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}" | jq -r '.author.login // "unknown"')
+          echo "Last commit author: ${AUTHOR}, deployer: ${GITHUB_ACTOR}"
+          if [ "${AUTHOR,,}" = "${GITHUB_ACTOR,,}" ]; then
+            echo "::warning::The deployer is also the author of the last commit (maker-checker). Allowed during the pilot."
+          fi
+
+  build:
+    name: Build and smoke test
+    needs: checks
+    runs-on: ubuntu-latest
+    outputs:
+      artifact_id: ${{ steps.upload.outputs.artifact-id }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint (report only during pilot)
+        run: npm run lint || echo "::warning::Lint reported issues (not blocking during the pilot)."
+
+      - name: Build
+        env:
+          BUILD_ENV_FILE: ${{ vars.BUILD_ENV_FILE }}
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: |
+          if [ -z "$BUILD_ENV_FILE" ]; then echo "::error::Repository variable BUILD_ENV_FILE is empty."; exit 1; fi
+          printf '%s\n' "$BUILD_ENV_FILE" > .env
+          echo "Build settings written: $(grep -c '=' .env) variables ($(cut -d= -f1 .env | tr '\n' ' '))"
+          npm run build
+
+      - name: Smoke test (start the built app, expect HTTP 200)
+        run: |
+          node node_modules/next/dist/bin/next start -H 127.0.0.1 -p 3999 > /tmp/next.log 2>&1 &
+          PID=$!
+          CODE=000
+          for i in $(seq 1 30); do
+            CODE=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:3999/ || true)
+            [ "$CODE" = "200" ] && break
+            sleep 2
+          done
+          kill "$PID" 2>/dev/null || true
+          if [ "$CODE" != "200" ]; then
+            echo "::error::Smoke test failed (HTTP $CODE). App log:"
+            cat /tmp/next.log
+            exit 1
+          fi
+          echo "Smoke test OK (HTTP 200)."
+
+      - name: Package build output (.next + node_modules, same as a manual build on the server)
+        if: inputs.mode == 'deploy'
+        run: |
+          rm -rf .next/cache
+          tar -czf "$GITHUB_WORKSPACE/release.tgz" .next node_modules
+          ls -lh "$GITHUB_WORKSPACE/release.tgz"
+
+      - name: Upload build (deleted after deploy, max 1 day)
+        if: inputs.mode == 'deploy'
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: easyloans-release-${{ github.sha }}
+          path: release.tgz
+          retention-days: 1
+          compression-level: 0
+          if-no-files-found: error
+
+      - name: Summary
+        run: |
+          echo "### easyloans build OK" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Commit: \`${GITHUB_SHA}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Mode: ${{ inputs.mode }}" >> "$GITHUB_STEP_SUMMARY"
+
+  deploy:
+    name: Deploy to NEW-NUCLEUS
+    needs: build
+    if: inputs.mode == 'deploy'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Log in to AWS (OIDC, no stored keys)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy through SSM (SML-Deploy)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_ID: ${{ needs.build.outputs.artifact_id }}
+        run: |
+          set -euo pipefail
+          # Short-lived (about 1 minute) download link for the build, used right away by the server.
+          URL=$(curl -s -o /dev/null -w '%{redirect_url}' \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}/zip")
+          if [ -z "$URL" ]; then echo "::error::Could not get the build download link."; exit 1; fi
+          echo "::add-mask::$URL"
+
+          jq -n --arg app "$APP" --arg c "$GITHUB_SHA" --arg u "$URL" \
+            '{Action:["deploy"],App:[$app],Commit:[$c],ArtifactUrl:[$u]}' > params.json
+
+          CMD_ID=$(aws ssm send-command \
+            --instance-ids "$INSTANCE_ID" \
+            --document-name SML-Deploy \
+            --parameters file://params.json \
+            --comment "easyloans deploy by ${GITHUB_ACTOR} run ${GITHUB_RUN_ID}" \
+            --query 'Command.CommandId' --output text)
+          rm -f params.json
+          echo "SSM command id: $CMD_ID"
+
+          STATUS=Pending
+          for i in $(seq 1 60); do
+            sleep 10
+            STATUS=$(aws ssm get-command-invocation --command-id "$CMD_ID" --instance-id "$INSTANCE_ID" \
+              --query Status --output text 2>/dev/null || echo Pending)
+            echo "status: $STATUS"
+            case "$STATUS" in Success|Failed|Cancelled|TimedOut) break ;; esac
+          done
+
+          echo "----- server output -----"
+          aws ssm get-command-invocation --command-id "$CMD_ID" --instance-id "$INSTANCE_ID" \
+            --query StandardOutputContent --output text || true
+          ERR=$(aws ssm get-command-invocation --command-id "$CMD_ID" --instance-id "$INSTANCE_ID" \
+            --query StandardErrorContent --output text 2>/dev/null || true)
+          if [ -n "$ERR" ] && [ "$ERR" != "None" ]; then echo "----- server errors -----"; echo "$ERR"; fi
+
+          {
+            echo "### easyloans production deploy: $STATUS"
+            echo "- Commit: \`${GITHUB_SHA}\`"
+            echo "- Deployer: ${GITHUB_ACTOR}"
+            echo "- SSM command: \`${CMD_ID}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ "$STATUS" != "Success" ]; then
+            echo "::error::Deploy did not succeed (status $STATUS). If the health check failed, the server already rolled back to the previous build."
+            exit 1
+          fi
+          echo "Deploy SUCCESS."
+
+      - name: Delete the build package from GitHub storage
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_ID: ${{ needs.build.outputs.artifact_id }}
+        run: |
+          [ -n "$ARTIFACT_ID" ] || exit 0
+          curl -s -o /dev/null -w "delete artifact: HTTP %{http_code}\n" -X DELETE \
+            -H "Authorization: Bearer $GH_TOKEN" -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/${ARTIFACT_ID}"
