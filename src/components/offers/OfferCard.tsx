@@ -268,7 +268,7 @@ export default function OfferCard({
             disabled={isDisabled}
             className="group relative h-9 overflow-hidden rounded-lg bg-gradient-to-r from-[#dfff45] via-[#9b6bff] to-[#7c3aed] px-4 text-[10px] font-semibold text-white shadow-md transition-all hover:scale-[1.01] active:scale-[0.98] disabled:opacity-60 cursor-pointer"
           >
-            <span className="relative z-10 flex items-center justify-center gap-1">
+            <span className="relative z-10 flex items-center justify-center gap-1 ">
               {buttonLabel}
 
               <span className="transition-transform duration-200 group-hover:translate-x-1">
@@ -278,7 +278,7 @@ export default function OfferCard({
           </button>
 
           {/* RBI */}
-          <div className="flex items-center gap-1 rounded-lg border border-[#ece4ff] bg-white/95 px-3 text-[10px] font-medium text-gray-700">
+          <div className="flex items-center gap-1 rounded-lg border border-[#ece4ff] bg-white/95 px-2 text-[10px] font-medium text-gray-700">
            <ShieldCheck className="w-3.5 h-3.5 text-white fill-[#12a305] shrink-0" />
 
             RBI Registered

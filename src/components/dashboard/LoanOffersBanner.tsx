@@ -383,8 +383,9 @@ export default function LoanOffersBanner() {
       }
 
       // Add Kamakshimoney only if it comes from API staticLenders
+      // API returns "Kamakshi" but we display as "Kamakshimoney"
       const kamakshimoneyFromApi = staticLendersArray.find(
-        (l) => l.name?.toLowerCase() === "kamakshimoney"
+        (l) => l.name?.toLowerCase() === "kamakshi" || l.name?.toLowerCase() === "kamakshimoney"
       );
       if (kamakshimoneyFromApi?.utm_link && !addedLenders.has("Kamakshimoney")) {
         addedLenders.add("Kamakshimoney");
