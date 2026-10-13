@@ -382,6 +382,19 @@ export default function LoanOffersBanner() {
         });
       }
 
+      // Add Kamakshimoney only if it comes from API staticLenders
+      const kamakshimoneyFromApi = staticLendersArray.find(
+        (l) => l.name?.toLowerCase() === "kamakshimoney"
+      );
+      if (kamakshimoneyFromApi?.utm_link && !addedLenders.has("Kamakshimoney")) {
+        addedLenders.add("Kamakshimoney");
+        eligibleLenders.push({
+          id: "Kamakshimoney",
+          name: "Kamakshimoney",
+          prefix: "K",
+        });
+      }
+
       // Add LoanWalle if LoanwalleSalaried OR LoanwalleSelfEmployed is available in staticLenders
       // Only one will be received at a time from the API
       const loanwalleSalariedFromApi = staticLendersArray.find(
@@ -465,6 +478,16 @@ export default function LoanOffersBanner() {
           id: "QuickMoney",
           name: "QuickMoney",
           prefix: "Q",
+        });
+      }
+
+      // If UTM is kamakshimoney and Kamakshimoney exists in staticLenders but wasn't added yet, add it now
+      if (utmLenderName === "Kamakshimoney" && kamakshimoneyFromApi?.utm_link && !addedLenders.has("Kamakshimoney")) {
+        addedLenders.add("Kamakshimoney");
+        eligibleLenders.push({
+          id: "Kamakshimoney",
+          name: "Kamakshimoney",
+          prefix: "K",
         });
       }
 
