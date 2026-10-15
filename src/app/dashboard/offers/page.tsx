@@ -143,8 +143,6 @@ export default function DashboardOffersPage() {
   const { apply: applySmartCoin, applying: smartCoinApplying } = useSmartCoinApply();
 
   const [showQuickMoneyBanner, setShowQuickMoneyBanner] = useState(true);
-  // Store the LoanWalle UTM link (from LoanwalleSalaried or LoanwalleSelfEmployed)
-  const [loanWalleUtmLink, setLoanWalleUtmLink] = useState<string | undefined>(undefined);
 
   // utm_medium priority lender state
   const [priorityLender, setPriorityLender] = useState<string | undefined>(undefined);
@@ -542,16 +540,17 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
 
       // LoanWalle logic: Show LoanWalle card if LoanwalleSalaried OR LoanwalleSelfEmployed is available in staticLenders
       // Only one will be received at a time from the API
-      const loanwalleUtm = staticLenderUtmLinks["LoanwalleSalaried"] || staticLenderUtmLinks["LoanwalleSelfEmployed"];
-
-      if (loanwalleUtm && !existingLenderNames.has("LoanWalle")) {
-        // Store the UTM link for direct redirect
-        setLoanWalleUtmLink(loanwalleUtm);
-
-        // Add LoanWalle to offers list
+      // Push the actual variant name - DISPLAY_NAMES will show "LoanWalle"
+      if (staticLenderUtmLinks["LoanwalleSalaried"] && !existingLenderNames.has("LoanWalleSalaried")) {
         mappedOffers.push({
-          name: "LoanWalle",
-          utmLink: loanwalleUtm,
+          name: "LoanWalleSalaried",
+          utmLink: staticLenderUtmLinks["LoanwalleSalaried"],
+          isOffer: false,
+        });
+      } else if (staticLenderUtmLinks["LoanwalleSelfEmployed"] && !existingLenderNames.has("LoanWalleSelfEmployed")) {
+        mappedOffers.push({
+          name: "LoanWalleSelfEmployed",
+          utmLink: staticLenderUtmLinks["LoanwalleSelfEmployed"],
           isOffer: false,
         });
       }
@@ -596,16 +595,6 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
   //   }
   // };
 
-  const handleLoanWalleApply = async (utmLink?: string) => {
-    const linkToUse = utmLink || loanWalleUtmLink;
-    if (!linkToUse) return;
-
-    const phone = sessionStorage.getItem("userPhone") || "";
-    await saveShortLender(phone, "LoanWalle");
-
-    window.open(linkToUse, "_blank");
-  };
-
   const handleApply = async (lenderName: string, utmLink?: string) => {
     const allowed = await guardActivity();
     if (!allowed) return;
@@ -625,13 +614,7 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
       return;
     }
 
-    // Route LoanWalle to specific handler
-    if (lenderName === "LoanWalle") {
-      handleLoanWalleApply(utmLink);
-      return;
-    }
-
-    // For other lenders, save and open UTM link
+    // For other lenders (including LoanWalleSalaried/LoanWalleSelfEmployed), save and open UTM link
     const phone = sessionStorage.getItem("userPhone") || "";
     await saveShortLender(phone, lenderName);
 
