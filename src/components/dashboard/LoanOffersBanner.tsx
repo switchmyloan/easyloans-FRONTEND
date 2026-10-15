@@ -130,9 +130,6 @@ export default function LoanOffersBanner() {
   const { apply: applyKreditBee, applying: kbApplying } = useKreditBeeApply();
   const { apply: applySmartCoin, applying: smartCoinApplying } = useSmartCoinApply();
 
-  // Store the LoanWalle UTM link (from LoanwalleSalaried or LoanwalleSelfEmployed)
-  const [loanWalleUtmLink, setLoanWalleUtmLink] = useState<string | undefined>(undefined);
-
   useEffect(() => {
     const existingUserData = getStoredShortExistingUserOffers();
     const userExists = existingUserData?.data?.found || existingUserData?.data?.exists;
@@ -398,23 +395,27 @@ export default function LoanOffersBanner() {
 
       // Add LoanWalle if LoanwalleSalaried OR LoanwalleSelfEmployed is available in staticLenders
       // Only one will be received at a time from the API
+      // Push the actual variant name - DISPLAY_NAMES will show "LoanWalle"
       const loanwalleSalariedFromApi = staticLendersArray.find(
         (l) => l.name?.toLowerCase() === "loanwallesalaried"
       );
       const loanwalleSelfEmployedFromApi = staticLendersArray.find(
         (l) => l.name?.toLowerCase() === "loanwalleselfemployed"
       );
-      const loanwalleUtm = loanwalleSalariedFromApi?.utm_link || loanwalleSelfEmployedFromApi?.utm_link;
-      if (loanwalleUtm && !addedLenders.has("LoanWalle")) {
-        addedLenders.add("LoanWalle");
+      if (loanwalleSalariedFromApi?.utm_link && !addedLenders.has("LoanWalleSalaried")) {
+        addedLenders.add("LoanWalleSalaried");
         eligibleLenders.push({
-          id: "LoanWalle",
-          name: "LoanWalle",
+          id: "LoanWalleSalaried",
+          name: "LoanWalleSalaried",
           prefix: "L",
         });
-
-        // Store the UTM link for direct redirect
-        setLoanWalleUtmLink(loanwalleUtm);
+      } else if (loanwalleSelfEmployedFromApi?.utm_link && !addedLenders.has("LoanWalleSelfEmployed")) {
+        addedLenders.add("LoanWalleSelfEmployed");
+        eligibleLenders.push({
+          id: "LoanWalleSelfEmployed",
+          name: "LoanWalleSelfEmployed",
+          prefix: "L",
+        });
       }
 
       // Check if user came via UTM medium link - prioritize that lender
@@ -492,14 +493,23 @@ export default function LoanOffersBanner() {
         });
       }
 
-      // If UTM is loanwalle and LoanWalle (via LoanwalleSalaried or LoanwalleSelfEmployed) exists but wasn't added yet, add it now
-      if (utmLenderName === "LoanWalle" && loanwalleUtm && !addedLenders.has("LoanWalle")) {
-        addedLenders.add("LoanWalle");
-        eligibleLenders.push({
-          id: "LoanWalle",
-          name: "LoanWalle",
-          prefix: "L",
-        });
+      // If UTM is loanwalle and LoanWalle variant exists but wasn't added yet, add it now
+      if (utmLenderName === "LoanWalle") {
+        if (loanwalleSalariedFromApi?.utm_link && !addedLenders.has("LoanWalleSalaried")) {
+          addedLenders.add("LoanWalleSalaried");
+          eligibleLenders.push({
+            id: "LoanWalleSalaried",
+            name: "LoanWalleSalaried",
+            prefix: "L",
+          });
+        } else if (loanwalleSelfEmployedFromApi?.utm_link && !addedLenders.has("LoanWalleSelfEmployed")) {
+          addedLenders.add("LoanWalleSelfEmployed");
+          eligibleLenders.push({
+            id: "LoanWalleSelfEmployed",
+            name: "LoanWalleSelfEmployed",
+            prefix: "L",
+          });
+        }
       }
 
       // If UTM is rupinow and RupiNow is eligible but wasn't added yet, add it now
@@ -652,16 +662,6 @@ export default function LoanOffersBanner() {
   //   }
   // };
 
-  // LoanWalle apply handler - redirects directly to the UTM link
-  const handleLoanWalleApply = async () => {
-    if (!loanWalleUtmLink) return;
-
-    const phone = sessionStorage.getItem("userPhone") || "";
-    await saveShortLender(phone, "LoanWalle");
-
-    window.open(loanWalleUtmLink, "_blank");
-  };
-
   // Apply to the hero lender — redirect to its UTM link
   // KreditBee and RamFinCorp have special handling with API call
   const handleHeroApply = async () => {
@@ -690,12 +690,7 @@ export default function LoanOffersBanner() {
       return;
     }
 
-    // Special handling for LoanWalle - show modal or redirect directly
-    if (displayLender.id === "LoanWalle") {
-      handleLoanWalleApply();
-      return;
-    }
-
+    // LoanWalleSalaried/LoanWalleSelfEmployed now flow through normal handling
     const phone = sessionStorage.getItem("userPhone") || "";
     await saveShortLender(phone, displayLender.id);
 

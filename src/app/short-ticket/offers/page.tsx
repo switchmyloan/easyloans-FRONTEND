@@ -650,8 +650,6 @@ export default function ShortTicketOffersPage() {
   const [appliedLenders, setAppliedLenders] = useState<Set<string>>(new Set());
 
   const [showQuickMoneyBanner, setShowQuickMoneyBanner] = useState(true);
-  // Store the LoanWalle UTM link (from LoanwalleSalaried or LoanwalleSelfEmployed)
-  const [loanWalleUtmLink, setLoanWalleUtmLink] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const response = getStoredShortTicketOffers();
@@ -974,13 +972,12 @@ export default function ShortTicketOffersPage() {
         case "LoanWalle": {
           // LoanWalle shows if LoanwalleSalaried OR LoanwalleSelfEmployed is available in staticLenders
           // Only one will be received at a time from the API
-          const loanwalleUtm = utmMap["LoanwalleSalaried"] || utmMap["LoanwalleSelfEmployed"];
-
-          if (!loanwalleUtm) break;
-
-          // Store the UTM link for direct redirect
-          setLoanWalleUtmLink(loanwalleUtm);
-          ordered.push({ name: "LoanWalle", utm_link: loanwalleUtm });
+          // Push the actual variant name (LoanWalleSalaried or LoanWalleSelfEmployed) - DISPLAY_NAMES will show "LoanWalle"
+          if (utmMap["LoanwalleSalaried"]) {
+            ordered.push({ name: "LoanWalleSalaried", utm_link: utmMap["LoanwalleSalaried"] });
+          } else if (utmMap["LoanwalleSelfEmployed"]) {
+            ordered.push({ name: "LoanWalleSelfEmployed", utm_link: utmMap["LoanwalleSelfEmployed"] });
+          }
           break;
         }
 
@@ -1127,21 +1124,6 @@ export default function ShortTicketOffersPage() {
   //   }
   // };
 
-  const handleLoanWalleApply = async () => {
-    if (!loanWalleUtmLink) return;
-
-    cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_LENDER_CLICKED, {
-      Lender: "LoanWalle",
-      LenderKey: "LoanWalle",
-    });
-
-    const phone = sessionStorage.getItem("userPhone") || "";
-    await saveShortLender(phone, "LoanWalle");
-
-    window.open(loanWalleUtmLink, "_blank");
-    setAppliedLenders((prev) => new Set(prev).add("LoanWalle"));
-  };
-
   // Resolve lender content
   const resolve = (name: string) => {
     const detail = getStaticLenderDetail(name);
@@ -1152,7 +1134,6 @@ export default function ShortTicketOffersPage() {
   const onApplyFor = (lender: OrderedLender) => {
     if (lender.name === "KreditBee") return handleKreditBeeApply;
     if (lender.name === "SmartCoin") return () => handleSmartCoinApply(lender.utm_link);
-    if (lender.name === "LoanWalle") return handleLoanWalleApply;
     return () => handleApply(lender.name, lender.utm_link);
   };
 

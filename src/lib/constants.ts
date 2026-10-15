@@ -42,6 +42,8 @@ export const STATIC_LENDER_LOGOS: Record<
   // SpeedoLoan: { src: "/speedoloan.png" },
   CashMySalary: { src: "/cashmysalary.webp" },
   LoanWalle: { src: "/loanwalle.webp" },
+  LoanWalleSalaried: { src: "/loanwalle.webp" },
+  LoanWalleSelfEmployed: { src: "/loanwalle.webp" },
   TrueFund: { src: "/truefund.svg" },
   MoneyDot: { src: "/moneydot.png" },
   RupiNow: { src: "/rupinow.png" },
@@ -74,6 +76,8 @@ export const DISPLAY_NAMES: Record<string, string> = {
   Cash2You: "CashToYou",
   RocketCash: "Rocket Cash",
   LoanWalle: "LoanWalle",
+  LoanWalleSalaried: "LoanWalle",
+  LoanWalleSelfEmployed: "LoanWalle",
   DhanPocket: "DhanPocket",
   // TurantPaisa: "TurantPaisa",
   QuickMoney: "QuickMoney",
@@ -204,6 +208,18 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Quick Approval and No Prepayment Charges",
     interestRate: "Interest Rates start at 1%* per day",
   },
+  LoanWalleSalaried: {
+    headline: "Get up to ₹1,00,000 with quick approval!",
+    description: "Personal loans with fast disbursement and No Prepayment Charges",
+    keyFeature: "Quick Approval and No Prepayment Charges",
+    interestRate: "Interest Rates start at 1%* per day",
+  },
+  LoanWalleSelfEmployed: {
+    headline: "Get up to ₹1,00,000 with quick approval!",
+    description: "Personal loans with fast disbursement and No Prepayment Charges",
+    keyFeature: "Quick Approval and No Prepayment Charges",
+    interestRate: "Interest Rates start at 1%* per day",
+  },
   TrueFund: {
     headline: "Get up to ₹50,000 with quick approval!",
     description: "Personal loans with Instant Loan Approval and Smart & Efficient Processing",
@@ -314,6 +330,8 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   // SpeedoLoan: "Quick approval",
   CashMySalary: "Quick approval",
   LoanWalle: "Only for EPFO registered users",
+  LoanWalleSalaried: "Only for EPFO registered users",
+  LoanWalleSelfEmployed: "Only for EPFO registered users",
   TrueFund: "Quick approval",
   MoneyDot: "no collateral",
   RupiNow: "zero hidden charges",
@@ -361,6 +379,16 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "Flexible Repayment", description: "Easy repayment options" },
   ],
   LoanWalle: [
+    { title: "Quick Approval", description: "Fast processing" },
+    { title: "Flexible Repayment", description: "Easy repayment options" },
+    { title: "Flexible Tenure", description: "No Prepayment Charges" },
+  ],
+  LoanWalleSalaried: [
+    { title: "Quick Approval", description: "Fast processing" },
+    { title: "Flexible Repayment", description: "Easy repayment options" },
+    { title: "Flexible Tenure", description: "No Prepayment Charges" },
+  ],
+  LoanWalleSelfEmployed: [
     { title: "Quick Approval", description: "Fast processing" },
     { title: "Flexible Repayment", description: "Easy repayment options" },
     { title: "Flexible Tenure", description: "No Prepayment Charges" },
@@ -444,6 +472,8 @@ export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   RapidMoney: ["Quick Approval", "Flexible Repayment", "Up to ₹15,000"],
   Vivifi: ["0% Foreclose Charge", "Highest Approval", "Quick Disbursal"],
   LoanWalle: ["EPFO Users Only", "No Prepayment Fee", "Quick Approval"],
+  LoanWalleSalaried: ["EPFO Users Only", "No Prepayment Fee", "Quick Approval"],
+  LoanWalleSelfEmployed: ["EPFO Users Only", "No Prepayment Fee", "Quick Approval"],
   KreditBee: ["Upto 100% off on PF", "Loans up to ₹10 Lakh", "Instant Disbursal"],
   TrueBalance: ["Loans up to ₹2 Lakh", "Minimal Docs", "Quick Approval"],
   // RamFinCorp: ["Instant Approval", "Same Day Disbursement", "No Prepayment Charges"],
@@ -478,6 +508,8 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   // SpeedoLoan: 50000,      // ₹50,000
   CashMySalary: 50000,    // ₹50,000
   LoanWalle: 100000,      // ₹1 Lakh
+  LoanWalleSalaried: 100000,      // ₹1 Lakh
+  LoanWalleSelfEmployed: 100000,      // ₹1 Lakh
   TrueFund: 50000,      // ₹50,000
   MoneyDot: 100000,      // ₹1 Lakhs
   RupiNow: 50000,      // ₹50,000
