@@ -17,6 +17,7 @@ import {
   getStoredShortExistingUserOffers,
   saveShortLender,
 } from "@/lib/api";
+import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "@/lib/clevertap";
 
 // ============================================================
 // Types
@@ -330,6 +331,9 @@ export default function DashboardOffers() {
 
       // Add Kamakshimoney only if it comes from API staticLenders
       if (staticLenderUtmLinks["Kamakshimoney"] && !existingLenderNames.has("Kamakshimoney")) {
+        // Track Kamakshimoney card shown (user passed backend dedup validation)
+        console.log("[Kamakshimoney] Dedup pass - card shown, firing CleverTap event");
+        cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_KAMAKSHIMONEY_DEDUP_PASS);
         mappedOffers.push({
           name: "Kamakshimoney",
           utmLink: staticLenderUtmLinks["Kamakshimoney"],

@@ -817,6 +817,9 @@ export default function ShortTicketOffersPage() {
 
         case "Kamakshimoney":
           if (!utmMap[name]) break;
+          // Track Kamakshimoney card shown (user passed backend dedup validation)
+          console.log("[Kamakshimoney] Dedup pass - card shown, firing CleverTap event");
+          cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_KAMAKSHIMONEY_DEDUP_PASS);
           ordered.push({ name, utm_link: utmMap[name] });
           break;
 
