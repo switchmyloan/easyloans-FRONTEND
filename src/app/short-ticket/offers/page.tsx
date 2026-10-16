@@ -817,6 +817,9 @@ export default function ShortTicketOffersPage() {
 
         case "Kamakshimoney":
           if (!utmMap[name]) break;
+          // Track Kamakshimoney card shown (user passed backend dedup validation)
+          console.log("[Kamakshimoney] Dedup pass - card shown, firing CleverTap event");
+          cleverTapTrackEvent(CLEVERTAP_EVENTS.EASY_KAMAKSHIMONEY_DEDUP_PASS);
           ordered.push({ name, utm_link: utmMap[name] });
           break;
 
@@ -1140,7 +1143,13 @@ export default function ShortTicketOffersPage() {
   // Hero card logic
   const showHeroFlow = isKbMedium || isRapidMoneyMedium || isSmartCoinMedium || isMoneyDotMedium || isTrueFundMedium || isCashMySalaryMedium || isApolloMedium || isRupiNowMedium || isCash2YouMedium || isRocketCashMedium || isLoanWalleMedium || isDhanPocketMedium || isTurantPaisaMedium || isQuickMoneyMedium || isKamakshimoneyMedium;
   const heroName = isKbMedium ? "KreditBee" : isRapidMoneyMedium ? "RapidMoney" : isSmartCoinMedium ? "SmartCoin" : isMoneyDotMedium ? "MoneyDot" : isTrueFundMedium ? "TrueFund" : isCashMySalaryMedium ? "CashMySalary" : isApolloMedium ? "Apollo" : isRupiNowMedium ? "RupiNow" : isCash2YouMedium ? "Cash2You" : isRocketCashMedium ? "RocketCash" : isLoanWalleMedium ? "LoanWalle" : isDhanPocketMedium ? "DhanPocket" : isTurantPaisaMedium ? "TurantPaisa" : isQuickMoneyMedium ? "QuickMoney" : isKamakshimoneyMedium ? "Kamakshimoney" : null;
-  const heroIdx = heroName ? visibleLenders.findIndex((l) => l.name === heroName) : -1;
+  // For LoanWalle, check for the actual variants (LoanWalleSalaried or LoanWalleSelfEmployed)
+  const heroIdx = heroName ? visibleLenders.findIndex((l) => {
+    if (heroName === "LoanWalle") {
+      return l.name === "LoanWalleSalaried" || l.name === "LoanWalleSelfEmployed";
+    }
+    return l.name === heroName;
+  }) : -1;
   const showHeroCard = showHeroFlow && heroIdx === 0 && visibleLenders.length > 0;
   const heroLender = showHeroCard ? visibleLenders[0] : null;
   const otherLenders = showHeroCard ? visibleLenders.slice(1) : visibleLenders;

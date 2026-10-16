@@ -317,4 +317,6 @@ export const CLEVERTAP_EVENTS = {
   EASY_SMARTCOIN_APPLY_SUCCESS: "Easy - smartcoin_apply_success",
   /** SmartCoin: Fired when user is not eligible. */
   EASY_SMARTCOIN_APPLY_NOT_ELIGIBLE: "Easy - smartcoin_apply_not_eligible",
+  /** Kamakshimoney: Fired when card is shown (user passed backend dedup validation). */
+  EASY_KAMAKSHIMONEY_DEDUP_PASS: "kamakshimoney_dedup_pass",
 } as const;
