@@ -136,9 +136,8 @@ export default function DashboardOffers() {
     // Check utm_medium for priority lender
     const utmMedium = (sessionStorage.getItem("utm_medium") || "").toLowerCase();
     let priorityLenderLocal: string | undefined = undefined;
-    if (utmMedium === "loanwalle") {
-      priorityLenderLocal = "LoanWalle";
-    }
+    // LoanWalle variant will be determined after we know which variant is available
+    const isLoanWalleUtm = utmMedium === "loanwalle";
 
     const existingUserData = getStoredShortExistingUserOffers();
     const userExists = existingUserData?.data?.found || existingUserData?.data?.exists;
@@ -399,18 +398,32 @@ export default function DashboardOffers() {
       // LoanWalle logic: Show LoanWalle card if LoanwalleSalaried OR LoanwalleSelfEmployed is available in staticLenders
       // Only one will be received at a time from the API
       // Push the actual variant name - DISPLAY_NAMES will show "LoanWalle"
-      if (staticLenderUtmLinks["LoanwalleSalaried"] && !existingLenderNames.has("LoanWalleSalaried")) {
+      // Note: API may return different casings (LoanwalleSalaried vs LoanWalleSalaried), so check both
+      const loanwalleSalariedLink = staticLenderUtmLinks["LoanwalleSalaried"] || staticLenderUtmLinks["LoanWalleSalaried"];
+      const loanwalleSelfEmployedLink = staticLenderUtmLinks["LoanwalleSelfEmployed"] || staticLenderUtmLinks["LoanWalleSelfEmployed"];
+      const hasLoanwalleSalaried = existingLenderNames.has("LoanWalleSalaried") || existingLenderNames.has("LoanwalleSalaried");
+      const hasLoanwalleSelfEmployed = existingLenderNames.has("LoanWalleSelfEmployed") || existingLenderNames.has("LoanwalleSelfEmployed");
+
+      if (loanwalleSalariedLink && !hasLoanwalleSalaried) {
         mappedOffers.push({
           name: "LoanWalleSalaried",
-          utmLink: staticLenderUtmLinks["LoanwalleSalaried"],
+          utmLink: loanwalleSalariedLink,
           isOffer: false,
         });
-      } else if (staticLenderUtmLinks["LoanwalleSelfEmployed"] && !existingLenderNames.has("LoanWalleSelfEmployed")) {
+        // If user came via loanwalle UTM, set the actual variant as priority
+        if (isLoanWalleUtm) {
+          priorityLenderLocal = "LoanWalleSalaried";
+        }
+      } else if (loanwalleSelfEmployedLink && !hasLoanwalleSelfEmployed) {
         mappedOffers.push({
           name: "LoanWalleSelfEmployed",
-          utmLink: staticLenderUtmLinks["LoanwalleSelfEmployed"],
+          utmLink: loanwalleSelfEmployedLink,
           isOffer: false,
         });
+        // If user came via loanwalle UTM, set the actual variant as priority
+        if (isLoanWalleUtm) {
+          priorityLenderLocal = "LoanWalleSelfEmployed";
+        }
       }
 
       // Sort offers by dashboard priority order (with utm_medium priority lender first)

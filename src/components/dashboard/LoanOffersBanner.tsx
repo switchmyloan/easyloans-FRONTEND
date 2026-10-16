@@ -55,8 +55,11 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
 
 // Map LoanwalleSalaried and LoanwalleSelfEmployed to LoanWalle for display purposes
 const LENDER_DISPLAY_MAP: Record<string, string> = {
+  // Handle both casings from API (LoanwalleSalaried vs LoanWalleSalaried)
   LoanwalleSalaried: "LoanWalle",
   LoanwalleSelfEmployed: "LoanWalle",
+  LoanWalleSalaried: "LoanWalle",
+  LoanWalleSelfEmployed: "LoanWalle",
 };
 
 // ============================================================
@@ -547,16 +550,27 @@ export default function LoanOffersBanner() {
       // Sort all eligible lenders by dashboard priority order
       const prioritySorted = sortLendersByPriority(eligibleLenders);
 
-      if (utmLenderName && addedLenders.has(utmLenderName)) {
+      // For LoanWalle UTM, check for the actual variant (LoanWalleSalaried or LoanWalleSelfEmployed)
+      // Note: API may return different casings (LoanwalleSalaried vs LoanWalleSalaried), so check both
+      let actualUtmLenderId = utmLenderName;
+      if (utmLenderName === "LoanWalle") {
+        if (addedLenders.has("LoanWalleSalaried") || addedLenders.has("LoanwalleSalaried")) {
+          actualUtmLenderId = addedLenders.has("LoanWalleSalaried") ? "LoanWalleSalaried" : "LoanwalleSalaried";
+        } else if (addedLenders.has("LoanWalleSelfEmployed") || addedLenders.has("LoanwalleSelfEmployed")) {
+          actualUtmLenderId = addedLenders.has("LoanWalleSelfEmployed") ? "LoanWalleSelfEmployed" : "LoanwalleSelfEmployed";
+        }
+      }
+
+      if (actualUtmLenderId && addedLenders.has(actualUtmLenderId)) {
         // User came via UTM medium link - show that lender as main
         const utmLender: PreviousLender = {
-          id: utmLenderName,
-          name: utmLenderName,
-          prefix: utmLenderName.charAt(0).toUpperCase(),
+          id: actualUtmLenderId,
+          name: actualUtmLenderId,
+          prefix: actualUtmLenderId.charAt(0).toUpperCase(),
         };
         setMainLender(utmLender);
         // Set other lenders (excluding UTM lender) sorted by priority
-        const othersSorted = prioritySorted.filter(l => l.id !== utmLenderName);
+        const othersSorted = prioritySorted.filter(l => l.id !== actualUtmLenderId);
         setOtherLenders(othersSorted.slice(0, 3));
       } else {
         // No UTM medium - check selectedLenders for most recently clicked lender
@@ -573,31 +587,47 @@ export default function LoanOffersBanner() {
         // Find the most recently clicked lender that is in DASHBOARD_PRIORITY_ORDER and is eligible
         let mainLenderFromSelected: PreviousLender | null = null;
         for (const selected of sortedByRecent) {
-          let lenderName = selected.lenderName;
+          const originalLenderName = selected.lenderName;
+          let displayLenderName = originalLenderName;
 
-          // Map ToofanLoan and RupeeRaftaar to LoanWalle for display
-          if (LENDER_DISPLAY_MAP[lenderName]) {
-            lenderName = LENDER_DISPLAY_MAP[lenderName];
+          // Map LoanwalleSalaried and LoanwalleSelfEmployed to LoanWalle for display/priority check
+          if (LENDER_DISPLAY_MAP[originalLenderName]) {
+            displayLenderName = LENDER_DISPLAY_MAP[originalLenderName];
           }
 
           // Skip if not in dashboard priority order
-          if (!DASHBOARD_PRIORITY_ORDER.includes(lenderName)) continue;
+          if (!DASHBOARD_PRIORITY_ORDER.includes(displayLenderName)) continue;
           // Skip removed lenders
-          if (REMOVED_LENDERS.includes(lenderName)) continue;
+          if (REMOVED_LENDERS.includes(displayLenderName)) continue;
           // Check eligibility for specific lenders
-          if (lenderName === "RapidMoney" && rapidMoneyData?.isDuplicate !== false) continue;
-          if (lenderName === "TrueFund" && !isTrueFundEligible) continue;
-          if (lenderName === "MoneyDot" && !isMoneyDotEligible) continue;
-          if (lenderName === "RamFinCorp" && !isRamFinCorpEligible) continue;
-          if (lenderName === "SmartCoin" && !isSmartCoinEligible) continue;
-          if (lenderName === "Vivifi" && !isVivifiEligible) continue;
+          if (displayLenderName === "RapidMoney" && rapidMoneyData?.isDuplicate !== false) continue;
+          if (displayLenderName === "TrueFund" && !isTrueFundEligible) continue;
+          if (displayLenderName === "MoneyDot" && !isMoneyDotEligible) continue;
+          if (displayLenderName === "RamFinCorp" && !isRamFinCorpEligible) continue;
+          if (displayLenderName === "SmartCoin" && !isSmartCoinEligible) continue;
+          if (displayLenderName === "Vivifi" && !isVivifiEligible) continue;
 
+          // For LoanWalle variants, use the original variant name as id (for API calls)
+          // but check against the actual variants in eligibleLenders
+          // Note: API may return different casings (LoanwalleSalaried vs LoanWalleSalaried), so check both
+          let idToUse = originalLenderName;
+          if (displayLenderName === "LoanWalle") {
+            // Find the actual variant that's available (check both casings)
+            if (addedLenders.has("LoanWalleSalaried") || addedLenders.has("LoanwalleSalaried")) {
+              idToUse = addedLenders.has("LoanWalleSalaried") ? "LoanWalleSalaried" : "LoanwalleSalaried";
+            } else if (addedLenders.has("LoanWalleSelfEmployed") || addedLenders.has("LoanwalleSelfEmployed")) {
+              idToUse = addedLenders.has("LoanWalleSelfEmployed") ? "LoanWalleSelfEmployed" : "LoanwalleSelfEmployed";
+            } else {
+              // No LoanWalle variant available, skip
+              continue;
+            }
+          }
 
           // Found an eligible lender in priority order
           mainLenderFromSelected = {
-            id: lenderName,
-            name: lenderName,
-            prefix: lenderName.charAt(0).toUpperCase(),
+            id: idToUse,
+            name: idToUse,
+            prefix: idToUse.charAt(0).toUpperCase(),
           };
           break;
         }
