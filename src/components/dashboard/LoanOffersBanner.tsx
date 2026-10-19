@@ -51,6 +51,7 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   loanwalle: "LoanWalle",
   quickmoney: "QuickMoney",
   kamakshimoney: "Kamakshimoney",
+  salarymantra: "SalaryMantra",
 };
 
 // Map LoanwalleSalaried and LoanwalleSelfEmployed to LoanWalle for display purposes

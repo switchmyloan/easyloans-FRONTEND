@@ -57,6 +57,7 @@ export const STATIC_LENDER_LOGOS: Record<
   // TurantPaisa: { src: "/Turantpaisa.png" }, 
   QuickMoney: { src: "/quickmoney.png" },
   Kamakshimoney: { src: "/kamakshimoney.svg" },
+  SalaryMantra: { src: "/salarymantra.png" },
 };
 
 export const DISPLAY_NAMES: Record<string, string> = {
@@ -82,6 +83,7 @@ export const DISPLAY_NAMES: Record<string, string> = {
   // TurantPaisa: "TurantPaisa",
   QuickMoney: "QuickMoney",
   Kamakshimoney: "Kamakshimoney",
+  SalaryMantra: "SalaryMantra",
 };
 
 export const STATIC_LENDER_DETAILS: Record<
@@ -292,31 +294,33 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Quick Approval and Disbursement",
     interestRate: "Interest Rates start at 1% per day",
   },
+  SalaryMantra: {
+    headline: "Get up to ₹1,50,000 with quick approval!",
+    description: "Personal loans with fast disbursement and tenure up to 45 days", 
+    keyFeature: "Quick Approval and Bank grade security",
+    interestRate: "Interest Rates start at 1%* per month",
+  },
 };
 
 // Dashboard priority order - lenders are displayed in this order when available
 // Lower index = higher priority (shown first)
 export const DASHBOARD_PRIORITY_ORDER: string[] = [
-  "Kamakshimoney",
+ "LoanWalle",
+ "Kamakshimoney",
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
+  "SalaryMantra",
   // "Vivifi",
   "SmartCoin",
   "RapidMoney",
-  "DhanPocket",
-  // "TurantPaisa",
-    "TrueFund",
+  "TrueFund",
   "KreditBee",
   "MoneyDot",
-  "LoanWalle",
   "Apollo",
-  // "MMB",
   "Cash2You",
   "RocketCash",
   "TrueBalance",
-
-
 ];
 
 // Short feature tags for each lender (displayed in offer cards)
@@ -344,6 +348,7 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   TurantPaisa: "No hidden charges",
   QuickMoney: "Quick approval",
   Kamakshimoney: "Quick approval",
+  SalaryMantra: "Quick approval",
 };
 
 
@@ -453,6 +458,11 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "Disbursement", description: "Same day transfer" },
     { title: "Up to 30,000", description: "Personal loan amount" },
   ],
+  SalaryMantra: [
+    { title: "Quick Approval", description: "Fast processing" },
+    { title: "Bank grade security", description: "Secure and Trusted" },
+    { title: "Up to 1,50,000", description: "Personal loan amount" },
+  ],
 };
 
 // Default features if lender not found in UTM_MEDIUM_LENDERS_FEATURES
@@ -492,6 +502,7 @@ export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   TurantPaisa: ["No Hidden Charges", "Up to 45 Days", "Up to ₹40,000"],
   QuickMoney: ["Quick Approval", "Paperless Process", "Up to 25,000"],
   Kamakshimoney: ["Quick Approval", "Disbursement", "Up to 30,000"],
+  SalaryMantra: ["Quick Approval", "Bank grade security", "Up to ₹1,50,000"],
 };
 
 // Default feature badges if lender not found
@@ -522,6 +533,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   TurantPaisa: 40000,      // ₹40,000
   QuickMoney: 25000,      // ₹25,000
   Kamakshimoney: 30000,      // ₹30,000
+  SalaryMantra: 150000,      // ₹1,50,000
 };
 
 const DEFAULT_LENDER_DETAIL = {
