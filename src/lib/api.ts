@@ -544,7 +544,7 @@ export interface GetExistingShortUserDetailsResponse {
     TrueBalance?: ShortTicketLender;
     SmartCoin?: ShortTicketLender;
     // RamFinCorp?: ShortTicketLender;
-    Vivifi?: ShortTicketLender;
+    // Vivifi?: ShortTicketLender;
     [key: string]: unknown;
   };
 }
@@ -686,7 +686,7 @@ export interface ShortTicketData {
   // RamFinCorp?: ShortTicketLender;
   KreditBee?: ShortTicketLender;
   TrueBalance?: ShortTicketLender;
-  Vivifi?: ShortTicketLender;
+  // Vivifi?: ShortTicketLender;
 
   [key: string]: unknown;
 }
@@ -1147,7 +1147,7 @@ export interface ShortExistingUserOffersResponse {
     TrueBalance?: ShortTicketLender;
     SmartCoin?: ShortTicketLender;
     // RamFinCorp?: ShortTicketLender;
-    Vivifi?: ShortTicketLender;
+    // Vivifi?: ShortTicketLender;
 
     [key: string]: unknown;
   };
@@ -1333,7 +1333,7 @@ export interface ShortDashboardLinkResponse {
     RapidMoney?: ShortTicketLender;
     TrueBalance?: ShortTicketLender;
     // RamFinCorp?: ShortTicketLender;
-    Vivifi?: ShortTicketLender;
+    // Vivifi?: ShortTicketLender;
     [key: string]: unknown;
   };
 }

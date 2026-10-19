@@ -10,7 +10,7 @@ const LENDER_RING_IMAGES: Record<string, string> = {
   rapidmoney: "/RR-ring.png",
   kreditbee: "/KB-ring.png",
   truebalance: "/TB-ring.png",
-  vivifi: "/V-ring.png",
+  // vivifi: "/V-ring.png",
   loan112: "/L1-ring.png",
   loanwalle: "/LW-ring.png",
   truefund: "/TF-ring.png",

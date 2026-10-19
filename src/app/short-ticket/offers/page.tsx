@@ -29,7 +29,7 @@ const LENDER_ORDER = [
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
-  "Vivifi",
+  // "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "TrueFund",
@@ -45,11 +45,11 @@ const LENDER_ORDER = [
 // When utm_medium=kreditbee: KreditBee first
 const KB_PRIORITY_ORDER = [
   "KreditBee",
-    "Kamakshimoney",
+  "Kamakshimoney",
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
-  "Vivifi",
+  // "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "DhanPocket",
@@ -70,7 +70,7 @@ const RAPIDMONEY_PRIORITY_ORDER = [
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
-  "Vivifi",
+  // "Vivifi",
   "SmartCoin",
   "DhanPocket",
   "TrueFund",
@@ -89,7 +89,7 @@ const RAPIDMONEY_PRIORITY_ORDER = [
 //  "TejasLoan",
 //   "RupiNow",
 //   "CashMySalary",
-//   "Vivifi",
+//   // "Vivifi",
 //   "SmartCoin",
 //   "RapidMoney",
 //   "F1SpeedLoan",
@@ -113,7 +113,7 @@ const MONEYDOT_PRIORITY_ORDER = [
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
-  "Vivifi",
+  // "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "DhanPocket",
@@ -133,7 +133,7 @@ const TRUEFUND_PRIORITY_ORDER = [
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
-  "Vivifi",
+  // "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "DhanPocket",
@@ -153,7 +153,7 @@ const CASHMYSalary_PRIORITY_ORDER = [
     "Kamakshimoney",
   "QuickMoney",
   "RupiNow",
-  "Vivifi",
+  // "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "DhanPocket",
@@ -174,7 +174,7 @@ const APOLLO_PRIORITY_ORDER = [
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
-  "Vivifi",
+  // "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "DhanPocket",
@@ -194,7 +194,7 @@ const RUPINOW_PRIORITY_ORDER = [
     "Kamakshimoney",
   "QuickMoney",
   "CashMySalary",
-  "Vivifi",
+  // "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "DhanPocket",
@@ -216,7 +216,7 @@ const CASH2YOU_PRIORITY_ORDER = [
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
-  "Vivifi",
+  // "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "DhanPocket",
@@ -237,7 +237,7 @@ const ROCKETCASH_PRIORITY_ORDER = [
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
-  "Vivifi",
+  // "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "DhanPocket",
@@ -257,7 +257,7 @@ const ROCKETCASH_PRIORITY_ORDER = [
 //   "TejasLoan",
 //   "RupiNow",
 //   "CashMySalary",
-//   "Vivifi",
+//   // "Vivifi",
 //   "SmartCoin",
 //   "RapidMoney",
 //   "F1SpeedLoan",
@@ -280,7 +280,7 @@ const LOANWALLE_PRIORITY_ORDER = [
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
-  "Vivifi",
+  // "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "DhanPocket",
@@ -301,7 +301,7 @@ const SMARTCOIN_PRIORITY_ORDER = [
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
-  "Vivifi",
+  // "Vivifi",
   "RapidMoney",
   "DhanPocket",
   "TrueFund",
@@ -322,7 +322,7 @@ const DHANPOCKET_PRIORITY_ORDER = [
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
-  "Vivifi",
+  // "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "TrueFund",
@@ -343,7 +343,7 @@ const TURANTPAISA_PRIORITY_ORDER = [
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
-  "Vivifi",
+  // "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "DhanPocket",
@@ -364,7 +364,7 @@ const QUICKMONEY_PRIORITY_ORDER = [
     "Kamakshimoney",
   "RupiNow",
   "CashMySalary",
-  "Vivifi",
+  // "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "DhanPocket",
@@ -385,7 +385,7 @@ const KAMAKSHIMONEY_PRIORITY_ORDER = [
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
-  "Vivifi",
+  // "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "DhanPocket",
@@ -402,7 +402,7 @@ const KAMAKSHIMONEY_PRIORITY_ORDER = [
 const FALLBACK_UTM: Record<string, string> = {
   KreditBee: "https://kredt.be/3ZFfVbz",
   // RamFinCorp: "https://ramfincorp.com/",
-  Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
+  // Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
   TrueBalance: "https://truebalance.io/",
   // MPokket: "https://mpokket.com/",
   RapidMoney: "https://web.rapidmoney.in/",
@@ -432,8 +432,8 @@ const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   "trueBalance": "TrueBalance",
   "truebalance": "TrueBalance",
   "Truebalance": "TrueBalance",
-  "Vivifi": "Vivifi",
-  "vivifi": "Vivifi",
+  // "Vivifi": "Vivifi",
+  // "vivifi": "Vivifi",
   "MoneyDot": "MoneyDot",
   "RupiNow": "RupiNow",
   // "ASAPFinance": "ASAPFinance",
@@ -506,15 +506,15 @@ function getUtmLink(
     case "QuickMoney":
       return directLink || null;
 
-    case "Vivifi": {
-      // Vivifi shows unless message indicates rejection
-      const vivifiMessage = lender?.message || "";
-      const isRejected =
-        vivifiMessage === "Rejected due to Eligibility criteria." ||
-        vivifiMessage === "Lead rejected.";
-      if (isRejected || !vivifiMessage) return null;
-      return directLink || null;
-    }
+    // case "Vivifi": {
+    //   // Vivifi shows unless message indicates rejection
+    //   const vivifiMessage = lender?.message || "";
+    //   const isRejected =
+    //     vivifiMessage === "Rejected due to Eligibility criteria." ||
+    //     vivifiMessage === "Lead rejected.";
+    //   if (isRejected || !vivifiMessage) return null;
+    //   return directLink || null;
+    // }
 
     // case "ASAPFinance":
     //   // ASAPFinance only shows if it comes from API staticLenders (no fallback)
@@ -876,19 +876,19 @@ export default function ShortTicketOffersPage() {
 
         
 
-        case "Vivifi": {
-          // Vivifi shows unless message indicates rejection
-          const vivifiMessage = lender?.message || "";
-          const isVivifiRejected =
-            vivifiMessage === "Rejected due to Eligibility criteria." ||
-            vivifiMessage === "Lead rejected.";
-          if (isVivifiRejected || !vivifiMessage) break;
-          // Use utm_link from the API response
-          const vivifiUtmLink = lender?.utm_link;
-          if (!vivifiUtmLink) break;
-          ordered.push({ name, utm_link: vivifiUtmLink });
-          break;
-        }
+        // case "Vivifi": {
+        //   // Vivifi shows unless message indicates rejection
+        //   const vivifiMessage = lender?.message || "";
+        //   const isVivifiRejected =
+        //     vivifiMessage === "Rejected due to Eligibility criteria." ||
+        //     vivifiMessage === "Lead rejected.";
+        //   if (isVivifiRejected || !vivifiMessage) break;
+        //   // Use utm_link from the API response
+        //   const vivifiUtmLink = lender?.utm_link;
+        //   if (!vivifiUtmLink) break;
+        //   ordered.push({ name, utm_link: vivifiUtmLink });
+        //   break;
+        // }
 
         // case "SpeedoLoan":
         //   // SpeedoLoan only shows if it comes from API staticLenders
