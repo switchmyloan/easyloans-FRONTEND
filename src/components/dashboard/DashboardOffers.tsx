@@ -224,6 +224,9 @@ export default function DashboardOffers() {
         "quickmoney": "QuickMoney",
         "Kamakshimoney": "Kamakshimoney",
         "Kamakshi": "Kamakshimoney",
+        "SalaryMantra": "SalaryMantra",
+        "salarymantra": "SalaryMantra",
+
       };
       for (const lender of staticLendersArray) {
         if (lender.name && lender.utm_link) {
@@ -266,7 +269,14 @@ export default function DashboardOffers() {
           isOffer: false,
         });
       }
-
+        // Add SalaryMantra only if it comes from API staticLenders
+      if (staticLenderUtmLinks["SalaryMantra"] && !existingLenderNames.has("SalaryMantra")) {
+        mappedOffers.push({
+          name: "SalaryMantra",
+          utmLink: staticLenderUtmLinks["SalaryMantra"],
+          isOffer: false,
+        });
+      }
       // Add Cash2You only if it comes from API staticLenders
       if (staticLenderUtmLinks["Cash2You"] && !existingLenderNames.has("Cash2You")) {
         mappedOffers.push({
