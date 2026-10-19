@@ -308,6 +308,9 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         "quickmoney": "QuickMoney",
         "Kamakshimoney": "Kamakshimoney",
         "Kamakshi": "Kamakshimoney",
+        "SalaryMantra": "SalaryMantra",
+        "salarymantra": "SalaryMantra",
+        
       };
       for (const lender of staticLendersArray) {
         if (lender.name && lender.utm_link) {
@@ -347,6 +350,15 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         mappedOffers.push({
           name: "Apollo",
           utmLink: staticLenderUtmLinks["Apollo"],
+          isOffer: false,
+        });
+      }
+
+  // Add SmartMantra only if it comes from API staticLenders
+      if (staticLenderUtmLinks["SalaryMantra"] && !existingLenderNames.has("SalaryMantra")) {
+        mappedOffers.push({
+          name: "SalaryMantra",
+          utmLink: staticLenderUtmLinks["SalaryMantra"],
           isOffer: false,
         });
       }
