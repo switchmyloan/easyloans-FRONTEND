@@ -41,7 +41,7 @@ interface ShownOffer {
 const FALLBACK_UTM_LINKS: Record<string, string> = {
   SmartCoin: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
   // RamFinCorp: "https://ramfincorp.com/",
-  // Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
+  Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
   SmartCoinHighIntent: "https://smartcoin.onelink.me/KLIY/Switchmyloanlandingpage",
   TrueBalance: "https://truebalance.io/",
   RapidMoney: "https://web.rapidmoney.in/borrower/login?utm_source=creadylandingpage&utm_extsource=abc&utm_medium=rapidmoney&utm_campaign=xyz&utm_campaignID=def",
@@ -279,8 +279,8 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         "TrueBalance": "TrueBalance",
         "trueBalance": "TrueBalance",
         "truebalance": "TrueBalance",
-        // "Vivifi": "Vivifi",
-        // "vivifi": "Vivifi",
+        "Vivifi": "Vivifi",
+        "vivifi": "Vivifi",
         // "ASAPFinance": "ASAPFinance",
         // "asapfinance": "ASAPFinance",
         "Apollo": "Apollo",
@@ -381,22 +381,21 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         });
       }
 
-      // Vivifi disabled
-      // // Add Vivifi unless message indicates rejection
-      // // Try both capitalized and lowercase keys (API returns lowercase for vivifi)
-      // const vivifiData = (data.Vivifi || data.vivifi) as { message?: string; utm_link?: string } | undefined;
-      // const vivifiMessage = vivifiData?.message || "";
-      // const isVivifiRejected =
-      //   vivifiMessage === "Rejected due to Eligibility criteria." ||
-      //   vivifiMessage === "Lead rejected.";
-      // const isVivifiEligible = vivifiMessage && !isVivifiRejected;
-      // if (isVivifiEligible && vivifiData?.utm_link && !existingLenderNames.has("Vivifi")) {
-      //   mappedOffers.push({
-      //     name: "Vivifi",
-      //     utmLink: vivifiData.utm_link,
-      //     isOffer: false,
-      //   });
-      // }
+      // Add Vivifi unless message indicates rejection
+      // Try both capitalized and lowercase keys (API returns lowercase for vivifi)
+      const vivifiData = (data.Vivifi || data.vivifi) as { message?: string; utm_link?: string } | undefined;
+      const vivifiMessage = vivifiData?.message || "";
+      const isVivifiRejected =
+        vivifiMessage === "Rejected due to Eligibility criteria." ||
+        vivifiMessage === "Lead rejected.";
+      const isVivifiEligible = vivifiMessage && !isVivifiRejected;
+      if (isVivifiEligible && vivifiData?.utm_link && !existingLenderNames.has("Vivifi")) {
+        mappedOffers.push({
+          name: "Vivifi",
+          utmLink: vivifiData.utm_link,
+          isOffer: false,
+        });
+      }
 
       // Add TrueBalance only if it comes from API staticLenders
       if (staticLenderUtmLinks["TrueBalance"] && !existingLenderNames.has("TrueBalance")) {

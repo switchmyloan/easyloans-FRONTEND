@@ -36,7 +36,7 @@ export const STATIC_LENDER_LOGOS: Record<
   RapidMoney: { src: "/rapidmoney.svg" },
   // RamFinCorp: { src: "/ramfinCorp.png" },
   SmartCoin: { src: "/olyv.png" },
-  // Vivifi: { src: "/vivifi.webp" },
+  Vivifi: { src: "/flexsalary.webp" },
   TrueBalance: { src: "/truebalance.png" },
   KreditBee: { src: "/kreditbee-logo.svg" },
   // SpeedoLoan: { src: "/speedoloan.png" },
@@ -65,7 +65,7 @@ export const DISPLAY_NAMES: Record<string, string> = {
   RapidMoney: "RapidMoney",
   // RamFinCorp: "Ram FinCorp",
   SmartCoin: "Olyv",
-  // Vivifi: "Vivifi",
+  Vivifi: "Vivifi",
   // MMB: "MMB",
   TrueBalance: "TrueBalance",
   CashMySalary: "CashMySalary",
@@ -126,12 +126,12 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Salary Advance and Flexible Repayment",
     interestRate: "Interest Rates start at 0.1%* per day",
   },
-  // Vivifi: {
-  //  headline: "Get up to ₹3,00,000 in minutes!",
-  //   description: "Digital personal loans with flexible tenure options",
-  //   keyFeature: "Flexible Tenure and 0% foreclose charge",
-  //   interestRate: "Interest Rates start at 1.5%* per month",
-  // },
+  Vivifi: {
+    headline: "Get up to ₹3,00,000 in minutes!",
+    description: "Digital personal loans with flexible tenure options",
+    keyFeature: "Flexible Tenure and 0% foreclose charge",
+    interestRate: "Interest Rates start at 1.5%* per month",
+  },
   PocketCredit: {
     headline: "Get up to ₹50,000 instantly!",
     description: "Quick personal loans with minimal paperwork",
@@ -302,18 +302,16 @@ export const STATIC_LENDER_DETAILS: Record<
   },
 };
 
-// Dashboard priority order - lenders are displayed in this order when available
+// Base lender order - single source of truth for lender display priority
 // Lower index = higher priority (shown first)
-export const DASHBOARD_PRIORITY_ORDER: string[] = [
+export const BASE_LENDER_ORDER: string[] = [
   "LoanWalle",
-  "LoanWalleSalaried",
-  "LoanWalleSelfEmployed",
   "Kamakshimoney",
   "QuickMoney",
   "RupiNow",
   "CashMySalary",
   "SalaryMantra",
-  // "Vivifi",
+  "Vivifi",
   "SmartCoin",
   "RapidMoney",
   "TrueFund",
@@ -325,6 +323,61 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "TrueBalance",
 ];
 
+// Dashboard priority order - includes LoanWalle variants for sorting
+export const DASHBOARD_PRIORITY_ORDER: string[] = [
+  "LoanWalle",
+  "LoanWalleSalaried",
+  "LoanWalleSelfEmployed",
+  "Kamakshimoney",
+  "QuickMoney",
+  "RupiNow",
+  "CashMySalary",
+  "SalaryMantra",
+  "Vivifi",
+  "SmartCoin",
+  "RapidMoney",
+  "TrueFund",
+  "KreditBee",
+  "MoneyDot",
+  "Apollo",
+  "Cash2You",
+  "RocketCash",
+  "TrueBalance",
+];
+
+// UTM medium to lender name mapping
+export const UTM_TO_LENDER: Record<string, string> = {
+  kreditbee: "KreditBee",
+  rapidmoney: "RapidMoney",
+  moneydot: "MoneyDot",
+  truefund: "TrueFund",
+  cashmysalary: "CashMySalary",
+  apollo: "Apollo",
+  rupinow: "RupiNow",
+  cash2you: "Cash2You",
+  rocketcash: "RocketCash",
+  loanwalle: "LoanWalle",
+  olyv: "SmartCoin",
+  smartcoin: "SmartCoin",
+  vivifi: "Vivifi",
+  dhanpocket: "DhanPocket",
+  turantpaisa: "TurantPaisa",
+  quickmoney: "QuickMoney",
+  kamakshimoney: "Kamakshimoney",
+  salarymantra: "SalaryMantra",
+};
+
+// Get priority order with specified lender first
+export function getLenderPriorityOrder(priorityLender?: string): string[] {
+  if (!priorityLender) return BASE_LENDER_ORDER;
+
+  // Move priority lender to the front, keep rest in order
+  return [
+    priorityLender,
+    ...BASE_LENDER_ORDER.filter((l) => l !== priorityLender),
+  ];
+}
+
 // Short feature tags for each lender (displayed in offer cards)
 export const LENDER_FEATURE_TAGS: Record<string, string> = {
   KreditBee: "High approval chances",
@@ -332,7 +385,7 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   RapidMoney: "Quick approval",
   // RamFinCorp: "Instant Approval and Same Day Disbursement",
   SmartCoin: "Quick approval",
-  // Vivifi: "Flexible loan options",
+  Vivifi: "Flexible loan options",
   // SpeedoLoan: "Quick approval",
   CashMySalary: "Quick approval",
   LoanWalle: "Only for EPFO registered users",
@@ -482,7 +535,7 @@ export const DEFAULT_FEATURE_TAG = "Quick approval";
 // Feature badges for each lender (3 badges per lender) - used in LoanOffersBanner
 export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   RapidMoney: ["Quick Approval", "Flexible Repayment", "Up to ₹15,000"],
-  // Vivifi: ["0% Foreclose Charge", "Highest Approval", "Quick Disbursal"],
+  Vivifi: ["0% Foreclose Charge", "Highest Approval", "Quick Disbursal"],
   LoanWalle: ["EPFO Users Only", "No Prepayment Fee", "Quick Approval"],
   LoanWalleSalaried: ["EPFO Users Only", "No Prepayment Fee", "Quick Approval"],
   LoanWalleSelfEmployed: ["EPFO Users Only", "No Prepayment Fee", "Quick Approval"],
@@ -517,7 +570,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   RapidMoney: 15000,        // ₹15,000
   // RamFinCorp: 200000,       // ₹2 Lakhs
   SmartCoin: 500000,        // ₹5 Lakhs
-  // Vivifi: 500000,           // ₹5 Lakhs
+  Vivifi: 500000,           // ₹5 Lakhs
   // SpeedoLoan: 50000,      // ₹50,000
   CashMySalary: 50000,    // ₹50,000
   LoanWalle: 100000,      // ₹1 Lakh
