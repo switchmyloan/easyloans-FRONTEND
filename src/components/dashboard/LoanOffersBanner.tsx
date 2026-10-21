@@ -26,7 +26,7 @@ const FALLBACK_UTM_LINKS: Record<string, string> = {
   // SpeedoLoan: "https://loanapply.speedoloan.com?partner_id=cready",
   CashMySalary: "https://cashmysalary.com/?partner_id=cready",
   TrueFund: "https://truefund.in/short-term-loan/?utm_source=Cready&utm_medium=CRDY&utm_campaign=Cready_Referral",
-  // Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
+  Vivifi: "https://online.flexsalary.com/CustomerLogin/Index?CampaignID=9192313#x",
   MoneyDot: "https://www.moneydot.in/",
   RupiNow: "https://www.rupinow.com/home",
   // ASAPFinance: "https://asapfinance.in/customer/login?utm_source=easyloans+Cready",
@@ -42,7 +42,7 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   truebalance: "TrueBalance",
   cashmysalary: "CashMySalary",
   truefund: "TrueFund",
-  // vivifi: "Vivifi",
+  vivifi: "Vivifi",
   moneydot: "MoneyDot",
   apollo: "Apollo",
   rupinow: "RupiNow",
@@ -92,7 +92,6 @@ const REMOVED_LENDERS = ["MPokket", "Loan112"];
 // Static lenders that should always be shown
 // Note: RamFinCorp is now shown based on API response (message === "Dedup Success")
 // Note: TejasLoan, F1SpeedLoan are shown only when received in staticLenders from API (with utm_link)
-// Note: Vivifi is disabled
 const ALWAYS_SHOW_STATIC_LENDERS = ["KreditBee", /* "SpeedoLoan", */ "TrueBalance"];
 
 // ============================================================
@@ -165,15 +164,13 @@ export default function LoanOffersBanner() {
       // const isMmbEligible = mmbData?.data?.message === "user_not_found";
       const isMmbEligible = false;
 
-      // Vivifi disabled
-      // // Try both capitalized and lowercase keys (API returns lowercase for vivifi)
-      // const vivifiData = (data.Vivifi || data.vivifi) as { message?: string; utm_link?: string } | undefined;
-      // const vivifiMessage = vivifiData?.message || "";
-      // const isVivifiRejected =
-      //   vivifiMessage === "Rejected due to Eligibility criteria." ||
-      //   vivifiMessage === "Lead rejected.";
-      // const isVivifiEligible = vivifiMessage && !isVivifiRejected;
-      const isVivifiEligible = false;
+      // Try both capitalized and lowercase keys (API returns lowercase for vivifi)
+      const vivifiData = (data.Vivifi || data.vivifi) as { message?: string; utm_link?: string } | undefined;
+      const vivifiMessage = vivifiData?.message || "";
+      const isVivifiRejected =
+        vivifiMessage === "Rejected due to Eligibility criteria." ||
+        vivifiMessage === "Lead rejected.";
+      const isVivifiEligible = vivifiMessage && !isVivifiRejected;
 
       // Get shownOffers from API response
       const shownOffers = (data.shownOffers || []) as ShownOffer[];
@@ -198,7 +195,7 @@ export default function LoanOffersBanner() {
         if (lenderName === "RupiNow" && !isRupiNowEligible) continue;
         if (lenderName === "RamFinCorp" && !isRamFinCorpEligible) continue;
         if (lenderName === "SmartCoin" && !isSmartCoinEligible) continue;
-        if (lenderName === "Vivifi") continue; // Vivifi disabled
+        if (lenderName === "Vivifi" && !isVivifiEligible) continue;
 
 
         addedLenders.add(lenderName);
@@ -265,16 +262,15 @@ export default function LoanOffersBanner() {
         });
       }
 
-      // Vivifi disabled
-      // // Add Vivifi if API response message is "Application Accepted" and not already added
-      // if (isVivifiEligible && vivifiData?.utm_link && !addedLenders.has("Vivifi")) {
-      //   addedLenders.add("Vivifi");
-      //   eligibleLenders.push({
-      //     id: "Vivifi",
-      //     name: "Vivifi",
-      //     prefix: "V",
-      //   });
-      // }
+      // Add Vivifi if API response message is "Application Accepted" and not already added
+      if (isVivifiEligible && vivifiData?.utm_link && !addedLenders.has("Vivifi")) {
+        addedLenders.add("Vivifi");
+        eligibleLenders.push({
+          id: "Vivifi",
+          name: "Vivifi",
+          prefix: "V",
+        });
+      }
 
       // // Add LoanWalle only if it comes from API staticLenders (with utm_link)
       const staticLendersArray = (data.staticLenders || []) as Array<{ name?: string; utm_link?: string }>;
@@ -529,18 +525,17 @@ export default function LoanOffersBanner() {
         });
       }
 
-      // Vivifi disabled
-      // // If UTM is vivifi and Vivifi is eligible but wasn't added yet, add it now
-      // if (utmLenderName === "Vivifi" && isVivifiEligible && vivifiData?.utm_link && !addedLenders.has("Vivifi")) {
-      //   addedLenders.add("Vivifi");
-      //   eligibleLenders.push({
-      //     id: "Vivifi",
-      //     name: "Vivifi",
-      //     prefix: "V",
-      //   });
-      // }
+      // If UTM is vivifi and Vivifi is eligible but wasn't added yet, add it now
+      if (utmLenderName === "Vivifi" && isVivifiEligible && vivifiData?.utm_link && !addedLenders.has("Vivifi")) {
+        addedLenders.add("Vivifi");
+        eligibleLenders.push({
+          id: "Vivifi",
+          name: "Vivifi",
+          prefix: "V",
+        });
+      }
 
-    
+
 
       // // If UTM is asapfinance, add ASAPFinance if not already added
       // if (utmLenderName === "ASAPFinance" && !addedLenders.has("ASAPFinance")) {
@@ -610,7 +605,7 @@ export default function LoanOffersBanner() {
           if (displayLenderName === "MoneyDot" && !isMoneyDotEligible) continue;
           if (displayLenderName === "RamFinCorp" && !isRamFinCorpEligible) continue;
           if (displayLenderName === "SmartCoin" && !isSmartCoinEligible) continue;
-          if (displayLenderName === "Vivifi") continue; // Vivifi disabled
+          if (displayLenderName === "Vivifi" && !isVivifiEligible) continue;
 
           // For LoanWalle variants, use the original variant name as id (for API calls)
           // but check against the actual variants in eligibleLenders

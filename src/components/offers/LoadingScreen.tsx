@@ -34,7 +34,7 @@ const partnerLogos = [
 
   { name: "MoneyDot", src: "/moneydot.png" },
   { name: "TrueFund", src: "/truefund.svg" },
-  // { name: "Vivifi", src: "/vivifi.webp" },
+  { name: "Vivifi", src: "/vivifi.webp" },
   { name: "RupiNow", src: "/rupinow.png" },
 
 ];
