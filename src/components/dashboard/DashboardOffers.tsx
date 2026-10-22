@@ -200,6 +200,8 @@ export default function DashboardOffers() {
         "vivifi": "Vivifi",
         // "ASAPFinance": "ASAPFinance",
         // "asapfinance": "ASAPFinance",
+        "MoneyBro": "MoneyBro",
+        "moneybro": "MoneyBro",
         "Apollo": "Apollo",
         "apollo": "Apollo",
         "Cash2You": "Cash2You",
@@ -260,6 +262,14 @@ export default function DashboardOffers() {
       //   });
       // }
 
+   // Add MoneyBro only if it comes from API staticLenders
+      if (staticLenderUtmLinks["MoneyBro"] && !existingLenderNames.has("MoneyBro")) {
+        mappedOffers.push({
+          name: "MoneyBro",
+          utmLink: staticLenderUtmLinks["MoneyBro"],
+          isOffer: false,
+        });
+      }
 
       // Add Apollo only if it comes from API staticLenders
       if (staticLenderUtmLinks["Apollo"] && !existingLenderNames.has("Apollo")) {

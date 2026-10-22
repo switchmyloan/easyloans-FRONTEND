@@ -44,6 +44,7 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   truefund: "TrueFund",
   vivifi: "Vivifi",
   moneydot: "MoneyDot",
+  moneybro: "MoneyBro",
   apollo: "Apollo",
   rupinow: "RupiNow",
   cash2you: "Cash2You",
@@ -342,6 +343,19 @@ export default function LoanOffersBanner() {
         });
       }
 
+      // Add MoneyBro only if it comes from API staticLenders
+       const MoneyBroFromApi = staticLendersArray.find(
+        (l) => l.name?.toLowerCase() === "moneybro"
+      );
+      if (MoneyBroFromApi?.utm_link && !addedLenders.has("MoneyBro")) {
+        addedLenders.add("MoneyBro");
+        eligibleLenders.push({
+          id: "MoneyBro",
+          name: "MoneyBro",
+          prefix: "M",
+        });
+      }
+
       // Add RocketCash only if it comes from API staticLenders
       const rocketCashFromApi = staticLendersArray.find(
         (l) => l.name?.toLowerCase() === "rocketcash"
@@ -496,6 +510,14 @@ export default function LoanOffersBanner() {
         });
       }
 
+      if (utmLenderName === "MoneyBro" && MoneyBroFromApi?.utm_link && !addedLenders.has("MoneyBro")) {
+        addedLenders.add("MoneyBro");
+        eligibleLenders.push({
+          id: "MoneyBro",
+          name: "MoneyBro",
+          prefix: "M",
+        });
+      }
       // If UTM is loanwalle and LoanWalle variant exists but wasn't added yet, add it now
       if (utmLenderName === "LoanWalle") {
         if (loanwalleSalariedFromApi?.utm_link && !addedLenders.has("LoanWalleSalaried")) {

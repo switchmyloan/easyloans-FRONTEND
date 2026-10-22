@@ -283,6 +283,8 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         "vivifi": "Vivifi",
         // "ASAPFinance": "ASAPFinance",
         // "asapfinance": "ASAPFinance",
+        "MoneyBro": "MoneyBro",
+        "moneybro": "MoneyBro",
         "Apollo": "Apollo",
         "apollo": "Apollo",
         "Cash2You": "Cash2You",
@@ -344,7 +346,14 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
       //   });
       // }
 
-
+  // Add MoneyBro only if it comes from API staticLenders
+      if (staticLenderUtmLinks["MoneyBro"] && !existingLenderNames.has("MoneyBro")) {
+        mappedOffers.push({
+          name: "MoneyBro",
+          utmLink: staticLenderUtmLinks["MoneyBro"],
+          isOffer: false,
+        });
+      }
       // Add Apollo only if it comes from API staticLenders
       if (staticLenderUtmLinks["Apollo"] && !existingLenderNames.has("Apollo")) {
         mappedOffers.push({
@@ -354,7 +363,7 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
         });
       }
 
-  // Add SmartMantra only if it comes from API staticLenders
+  // Add SalaryMantra only if it comes from API staticLenders
       if (staticLenderUtmLinks["SalaryMantra"] && !existingLenderNames.has("SalaryMantra")) {
         mappedOffers.push({
           name: "SalaryMantra",
