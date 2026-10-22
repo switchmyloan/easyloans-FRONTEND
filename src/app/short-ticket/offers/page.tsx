@@ -65,6 +65,8 @@ const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   "RupiNow": "RupiNow",
   // "ASAPFinance": "ASAPFinance",
   // "asapfinance": "ASAPFinance",
+  "MoneyBro": "MoneyBro",
+  "moneybro": "MoneyBro",
   "Apollo": "Apollo",
   "apollo": "Apollo",
   "Cash2You": "Cash2You",
@@ -145,6 +147,8 @@ function getUtmLink(
       return directLink || null;
     }
 
+    case "MoneyBro":
+      return directLink || null;
     // case "ASAPFinance":
     //   // ASAPFinance only shows if it comes from API staticLenders (no fallback)
     //   return directLink || null;
@@ -448,6 +452,10 @@ export default function ShortTicketOffersPage() {
         //   if (!utmMap[name]) break;
         //   ordered.push({ name, utm_link: utmMap[name] });
         //   break;
+        case "MoneyBro":
+         if (!utmMap[name]) break;
+         ordered.push({ name, utm_link: utmMap[name] });
+         break;
 
         case "Apollo":
           if (!utmMap[name]) break;
