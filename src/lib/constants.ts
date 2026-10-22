@@ -250,10 +250,10 @@ export const STATIC_LENDER_DETAILS: Record<
   //   interestRate: "Interest Rates start at 0.5% to 1% per day",
   // },
    MoneyBro: {
-    headline: "Get up to ₹75,000 with quick approval!",
-    description: "Personal loans with fast disbursement and tenure up to 12 months",
-    keyFeature: "Quick Approval and Flexible Repayment Options",  
-    interestRate: "Interest Rates start at 1%* per month",
+    headline: "Get up to ₹30,000 with quick approval!",
+    description: "Personal loans with Fast & Fully Digital Process.",
+    keyFeature: "Clear and upfront disclosures, loan tenure up to 45 days",  
+    interestRate: "Fast approvals, flexible terms, and zero hassle.",
   },
   Apollo: {
     headline: "Get up to ₹50,000 with quick approval!",
@@ -364,7 +364,7 @@ export const UTM_TO_LENDER: Record<string, string> = {
   moneydot: "MoneyDot",
   truefund: "TrueFund",
   cashmysalary: "CashMySalary",
-  MoneyBro: "MoneyBro",
+  moneybro: "MoneyBro",
   apollo: "Apollo",
   rupinow: "RupiNow",
   cash2you: "Cash2You",
@@ -485,7 +485,7 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
   MoneyBro: [
     { title: "Quick Approval", description: "Fast processing" },
     { title: "Flexible Repayment", description: "Easy repayment options" },
-    { title: "Up to ₹75,000", description: "High loan amount" },
+    { title: "Up to ₹30,000", description: "High loan amount" },
   ],
   Apollo: [
     { title: "Quick Approval", description: "Fast processing" },
@@ -568,7 +568,7 @@ export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   TrueFund: ["Quick Approval", "Up to ₹10 Lakh", "Flexible Repayment"],
   RupiNow: ["Zero Hidden Charges", "Flexible Tenure", "Up to ₹50,000"],
   // ASAPFinance: ["Fast Approval", "No Collateral", "Hassle-Free Docs"],
-  MoneyBro: ["Quick Approval", "Flexible Repayment", "Up to ₹75,000"],
+  MoneyBro: ["Quick Approval", "Flexible Repayment", "Up to ₹30,000"],
   Apollo: ["Fully Digital Loan", "Quick Approval", "Up to 6 months tenure"],
   Cash2You: ["Up to 60 Months Tenure", "Flexible EMI", "Up to ₹40,000"],
   RocketCash: ["Quick Approval", "Up to 21 Days", "Up to ₹20,000"],
@@ -600,7 +600,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   MoneyDot: 100000,      // ₹1 Lakhs
   RupiNow: 50000,      // ₹50,000
   // ASAPFinance: 12000,      // ₹12,000
-  MoneyBro: 75000,      // ₹75,000
+  MoneyBro: 30000,      // ₹30,000
   Apollo: 50000,      // 50,000
   Cash2You: 40000,      // ₹40,000
   RocketCash: 20000,      // ₹20,000
