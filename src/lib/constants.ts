@@ -59,6 +59,7 @@ export const STATIC_LENDER_LOGOS: Record<
   QuickMoney: { src: "/quickmoney.png" },
   Kamakshimoney: { src: "/kamakshimoney.svg" },
   SalaryMantra: { src: "/salarymantra.png" },
+  ChinmayFinance: { src: "/chinmay.png" },
  
 };
 
@@ -87,6 +88,7 @@ export const DISPLAY_NAMES: Record<string, string> = {
   Kamakshimoney: "Kamakshimoney",
   SalaryMantra: "SalaryMantra",
   MoneyBro: "MoneyBro",
+  ChinmayFinance: "ChinmayFinance",
 };
 
 export const STATIC_LENDER_DETAILS: Record<
@@ -255,6 +257,12 @@ export const STATIC_LENDER_DETAILS: Record<
     keyFeature: "Clear and upfront disclosures, loan tenure up to 45 days",  
     interestRate: "Fast approvals, flexible terms, and zero hassle.",
   },
+  ChinmayFinance: {
+    headline: "Get Personal Loans from ₹10,000 to ₹5 Lakhs",
+    description: "Personal loans with fast disbursement and loan tenure up to 18 months",
+    keyFeature: "Quick Approval and No Prepayment Charges",
+    interestRate: "Interest Rates starts from 28% to 36.5% per annum.",
+  },
   Apollo: {
     headline: "Get up to ₹50,000 with quick approval!",
     description: "Fully digital personal loan and no paperwork",
@@ -332,6 +340,7 @@ export const BASE_LENDER_ORDER: string[] = [
   "Cash2You",
   "RocketCash",
   "TrueBalance",
+  "ChinmayFinance",
 ];
 
 // Dashboard priority order - includes LoanWalle variants for sorting
@@ -350,6 +359,7 @@ export const DASHBOARD_PRIORITY_ORDER: string[] = [
   "TrueFund",
   "KreditBee",
   "MoneyDot",
+  "ChinmayFinance",
   "MoneyBro",
   "Apollo",
   "Cash2You",
@@ -365,6 +375,7 @@ export const UTM_TO_LENDER: Record<string, string> = {
   truefund: "TrueFund",
   cashmysalary: "CashMySalary",
   moneybro: "MoneyBro",
+  chinmayfinance: "ChinmayFinance",
   apollo: "Apollo",
   rupinow: "RupiNow",
   cash2you: "Cash2You",
@@ -406,6 +417,7 @@ export const LENDER_FEATURE_TAGS: Record<string, string> = {
   LoanWalleSelfEmployed: "Only for EPFO registered users",
   TrueFund: "Quick approval",
   MoneyDot: "no collateral",
+  ChinmayFinance: "Quick approval",
   RupiNow: "zero hidden charges",
   MoneyBro: "Quick approval",
   // ASAPFinance: "Fast approval",
@@ -486,6 +498,11 @@ export const UTM_MEDIUM_LENDERS_FEATURES: Record<string, [LenderFeature, LenderF
     { title: "Quick Approval", description: "Fast processing" },
     { title: "Flexible Repayment", description: "Easy repayment options" },
     { title: "Up to ₹30,000", description: "High loan amount" },
+  ],
+  ChinmayFinance: [
+    { title: "Quick Approval", description: "Fast processing" },
+    { title: "Flexible Repayment", description: "Easy repayment options" },
+    { title: "Up to ₹5 Lakhs", description: "High loan amount" },
   ],
   Apollo: [
     { title: "Quick Approval", description: "Fast processing" },
@@ -568,6 +585,7 @@ export const LENDER_FEATURE_BADGES: Record<string, [string, string, string]> = {
   TrueFund: ["Quick Approval", "Up to ₹10 Lakh", "Flexible Repayment"],
   RupiNow: ["Zero Hidden Charges", "Flexible Tenure", "Up to ₹50,000"],
   // ASAPFinance: ["Fast Approval", "No Collateral", "Hassle-Free Docs"],
+  ChinmayFinance: ["Quick Approval", "Flexible Repayment", "Up to ₹5 Lakh"],
   MoneyBro: ["Quick Approval", "Flexible Repayment", "Up to ₹30,000"],
   Apollo: ["Fully Digital Loan", "Quick Approval", "Up to 6 months tenure"],
   Cash2You: ["Up to 60 Months Tenure", "Flexible EMI", "Up to ₹40,000"],
@@ -601,6 +619,7 @@ export const LENDER_MAX_AMOUNT: Record<string, number> = {
   RupiNow: 50000,      // ₹50,000
   // ASAPFinance: 12000,      // ₹12,000
   MoneyBro: 30000,      // ₹30,000
+  ChinmayFinance: 500000,      // ₹5 Lakhs
   Apollo: 50000,      // 50,000
   Cash2You: 40000,      // ₹40,000
   RocketCash: 20000,      // ₹20,000

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Lock, Zap, CheckCircle, Clock, ChevronRight } from "lucide-react";
 import { STATIC_LENDER_LOGOS, LENDER_FEATURE_TAGS, DEFAULT_FEATURE_TAG, DASHBOARD_PRIORITY_ORDER, LENDER_FEATURE_BADGES, DEFAULT_FEATURE_BADGES } from "@/lib/constants";
-import { getStoredShortExistingUserOffers, saveShortLender } from "@/lib/api";
+import { getStoredShortExistingUserOffers, hasChinmayFinanceOffer, applyToShortChinmayFinance, saveShortLender } from "@/lib/api";
 import toast, { Toaster } from "react-hot-toast";
 import NotEligibleScreen from "@/components/offers/NotEligibleScreen";
 import SessionActiveBanner from "@/components/shared/SessionActiveBanner";
@@ -53,6 +53,7 @@ const UTM_MEDIUM_TO_LENDER: Record<string, string> = {
   quickmoney: "QuickMoney",
   kamakshimoney: "Kamakshimoney",
   salarymantra: "SalaryMantra",
+  chinmayfinance: "ChinmayFinance",
 };
 
 // Map LoanwalleSalaried and LoanwalleSelfEmployed to LoanWalle for display purposes
@@ -155,6 +156,8 @@ export default function LoanOffersBanner() {
         trueFundResponseMessage.includes("user details received sucessfully");
       const isMoneyDotEligible = moneyDotData?.data?.response?.can_attribute === true;
       // const isRamFinCorpEligible = ramFinCorpData?.data?.response?.message === "Dedup Success";
+      const isChinmayEligible = hasChinmayFinanceOffer(data.ChinmayFinance);
+
       const isRamFinCorpEligible = false; // RamFinCorp disabled
       const isSmartCoinEligible = smartCoinDedupeData?.isDuplicate === false;
 
@@ -188,6 +191,7 @@ export default function LoanOffersBanner() {
         if (REMOVED_LENDERS.includes(lenderName)) continue;
         // Skip duplicates
         if (addedLenders.has(lenderName)) continue;
+        if (lenderName === "ChinmayFinance" && !isChinmayEligible) continue;
 
         // Check eligibility for specific lenders
         if (lenderName === "RapidMoney" && rapidMoneyData?.isDuplicate !== false) continue;
@@ -250,6 +254,16 @@ export default function LoanOffersBanner() {
           id: "MoneyDot",
           name: "MoneyDot",
           prefix: "M",
+        });
+      }
+
+      // Add ChinmayFinance if the offer data is valid
+      if (isChinmayEligible && !addedLenders.has("ChinmayFinance")) {
+        addedLenders.add("ChinmayFinance");
+        eligibleLenders.push({
+          id: "ChinmayFinance",
+          name: "ChinmayFinance",
+          prefix: "C",
         });
       }
 
@@ -622,12 +636,14 @@ export default function LoanOffersBanner() {
           // Skip removed lenders
           if (REMOVED_LENDERS.includes(displayLenderName)) continue;
           // Check eligibility for specific lenders
+          
           if (displayLenderName === "RapidMoney" && rapidMoneyData?.isDuplicate !== false) continue;
           if (displayLenderName === "TrueFund" && !isTrueFundEligible) continue;
           if (displayLenderName === "MoneyDot" && !isMoneyDotEligible) continue;
           if (displayLenderName === "RamFinCorp" && !isRamFinCorpEligible) continue;
           if (displayLenderName === "SmartCoin" && !isSmartCoinEligible) continue;
           if (displayLenderName === "Vivifi" && !isVivifiEligible) continue;
+          if (displayLenderName === "ChinmayFinance" && !isChinmayEligible) continue;
 
           // For LoanWalle variants, use the original variant name as id (for API calls)
           // but check against the actual variants in eligibleLenders
@@ -745,6 +761,22 @@ export default function LoanOffersBanner() {
     // LoanWalleSalaried/LoanWalleSelfEmployed now flow through normal handling
     const phone = sessionStorage.getItem("userPhone") || "";
     await saveShortLender(phone, displayLender.id);
+
+    if (displayLender.id === "ChinmayFinance") {
+      // Chinmay's redirect URL comes from the apply API, not from the offers response
+      try {
+        const chinmayUrl = await applyToShortChinmayFinance();
+        if (chinmayUrl) {
+          window.open(chinmayUrl, "_blank");
+        } else {
+          // No offer from Chinmay (e.g. "No Chinmay Finance offer for this user")
+          setShowNotEligible("Chinmay Finance");
+        }
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      }
+      return;
+    }
 
     const data = getStoredShortExistingUserOffers()?.data as Record<string, unknown> | undefined;
 

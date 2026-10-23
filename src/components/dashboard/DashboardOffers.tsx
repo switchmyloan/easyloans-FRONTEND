@@ -15,6 +15,8 @@ import { useKreditBeeApply } from "@/hooks/useLenderApply";
 // Import API functions
 import {
   getStoredShortExistingUserOffers,
+  hasChinmayFinanceOffer,
+  applyToShortChinmayFinance,
   saveShortLender,
 } from "@/lib/api";
 import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "@/lib/clevertap";
@@ -155,6 +157,7 @@ export default function DashboardOffers() {
       // const mmbData = data.MMBDedup as { data?: { message?: string }; utm_link?: string } | undefined;
       // const isMmbEligible = mmbData?.data?.message === "user_not_found";
       const isMmbEligible = false;
+      const isChinmayEligible = hasChinmayFinanceOffer(data.ChinmayFinance);
 
       const filteredShownOffers = shownOffers.filter((o) => {
         // Filter out removed lenders
@@ -267,6 +270,15 @@ export default function DashboardOffers() {
         mappedOffers.push({
           name: "MoneyBro",
           utmLink: staticLenderUtmLinks["MoneyBro"],
+          isOffer: false,
+        });
+      }
+      // Add ChinmayFinance based on API response
+      if (isChinmayEligible && !existingLenderNames.has("ChinmayFinance")) {
+        mappedOffers.push({
+          name: "ChinmayFinance",
+          // Redirect URL is fetched from the apply API on click
+          utmLink: undefined,
           isOffer: false,
         });
       }
@@ -498,6 +510,22 @@ export default function DashboardOffers() {
     // For other lenders (including LoanWalleSalaried/LoanWalleSelfEmployed), save and open UTM link
     const phone = sessionStorage.getItem("userPhone") || "";
     await saveShortLender(phone, lenderName);
+
+    if (lenderName === "ChinmayFinance") {
+      // Chinmay's redirect URL comes from the apply API, not from the offers response
+      try {
+        const chinmayUrl = await applyToShortChinmayFinance();
+        if (chinmayUrl) {
+          window.open(chinmayUrl, "_blank");
+        } else {
+          // No offer from Chinmay (e.g. "No Chinmay Finance offer for this user")
+          setShowNotEligible("Chinmay Finance");
+        }
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      }
+      return;
+    }
 
     const fallbackUrl = FALLBACK_UTM_LINKS[lenderName];
     const url = utmLink || fallbackUrl;

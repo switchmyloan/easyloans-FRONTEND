@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { getStaticLenderDetail, STATIC_LENDER_LOGOS, LENDER_FEATURE_TAGS, getLenderFeatures, DISPLAY_NAMES, UTM_TO_LENDER, getLenderPriorityOrder } from "@/lib/constants";
 import {
   getStoredShortTicketOffers,
+  hasChinmayFinanceOffer,
+  applyToShortChinmayFinance,
   saveShortLender,
   trackShortShownOffers,
   type ShortTicketLender,
@@ -92,6 +94,8 @@ const STATIC_LENDER_NAME_MAP: Record<string, string> = {
   "Kamakshimoney": "Kamakshimoney",
   "Kamakshi": "Kamakshimoney",
   "SalaryMantra": "SalaryMantra",
+  "ChinmayFinance": "ChinmayFinance",
+  "chinmayfinance": "ChinmayFinance",
 
 };
 
@@ -208,6 +212,10 @@ function getUtmLink(
       if (rupiNowDedupeStatus !== "Passed") return null;
       return directLink || FALLBACK_UTM.RupiNow;
     }
+
+    case "ChinmayFinance":
+      // No link up front — the redirect URL is fetched from the API on Apply
+      return null;
 
     case "LendingPlate": {
       // Lead-push lender: the API only confirms the lead was accepted
@@ -489,6 +497,13 @@ export default function ShortTicketOffersPage() {
           ordered.push({ name, utm_link: utmMap[name] });
           break;
         }
+        case "ChinmayFinance": {
+          // ChinmayFinance comes as its own object in the API response (like MoneyDot).
+          // Shown when the offer data is valid; the redirect URL is fetched on Apply.
+          if (!hasChinmayFinanceOffer(lender)) break;
+          ordered.push({ name });
+          break;
+        }
 
         case "MoneyDot": {
   const canAttribute = (
@@ -610,7 +625,23 @@ export default function ShortTicketOffersPage() {
         LenderKey: lenderName,
       });
 
-      if (url) window.open(url, "_blank");
+      if (lenderName === "ChinmayFinance") {
+        // Chinmay's redirect URL comes from the apply API, not from the offers response
+        try {
+          const chinmayUrl = await applyToShortChinmayFinance();
+          if (!chinmayUrl) {
+            // No offer from Chinmay (e.g. "No Chinmay Finance offer for this user")
+            setShowNotEligible("Chinmay Finance");
+            return;
+          }
+          window.open(chinmayUrl, "_blank");
+        } catch (err) {
+          toast.error(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+          return;
+        }
+      } else if (url) {
+        window.open(url, "_blank");
+      }
 
       // Mark as applied after successful click
       setAppliedLenders((prev) => new Set(prev).add(lenderName));

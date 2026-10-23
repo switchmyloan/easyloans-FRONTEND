@@ -876,6 +876,27 @@ export async function applyToShortKreditBee(): Promise<KreditBeeApplyResponse> {
   const json: KreditBeeApplyResponse = await res.json();
   return json;
 }
+export async function fetchShortChinmayFinance(): Promise<unknown> {
+  const raw = sessionStorage.getItem("userFormData");
+  if (!raw) throw new Error("User data not found. Please fill the form first.");
+
+  const userData = JSON.parse(raw);
+  const shortOfferLeadId = sessionStorage.getItem("shortOfferLeadId");
+
+  const res = await fetch(`${BASE_URL}/onSubmit/short-chinmay-finance`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      panNumber: userData.panNumber,
+      mobileNumber: userData.mobileNumber,
+      ...(shortOfferLeadId ? { shortOfferLeadId } : {}),
+    }),
+  });
+
+  if (!res.ok) throw new Error("Failed to fetch Chinmay Finance offer.");
+  const json = await res.json();
+  return json?.data ?? json;
+}
 
 export async function applyToShortMoneyView(): Promise<MoneyViewApplyResponse> {
   const raw = sessionStorage.getItem("userFormData");
@@ -1261,6 +1282,74 @@ export function getStoredShortExistingUserOffers(): ShortExistingUserOffersRespo
   } catch {
     return null;
   }
+}
+
+// ChinmayFinance comes as its own object in the offers response (like MoneyDot).
+// Show the card only when the offer data itself is valid — is_offer alone is not reliable.
+// The redirect link is fetched on Apply (applyToShortChinmayFinance), so it is not required here.
+export function hasChinmayFinanceOffer(chinmayData: unknown): boolean {
+  const res = chinmayData as {
+    offerStatus?: string;
+    success?: boolean;
+    offer?: {
+      maxLoanAmount?: number | string;
+      netApproveAmount?: number | string;
+      loanInterestRate?: number | string;
+      loanTenure?: number | string;
+    } | null;
+  } | undefined;
+  const offer = res?.offer;
+  const isPositive = (v: unknown) => Number.isFinite(Number(v)) && Number(v) > 0;
+
+  // New users get offerStatus: "OK"; existing Chinmay users get no offerStatus, only success: true
+  const isStatusOk = res?.offerStatus !== undefined ? res.offerStatus === "OK" : res?.success === true;
+
+  return (
+    isStatusOk &&
+    offer != null &&
+    isPositive(offer.maxLoanAmount) &&
+    isPositive(offer.netApproveAmount) &&
+    isPositive(offer.loanInterestRate) &&
+    isPositive(offer.loanTenure)
+  );
+}
+
+// Called when the user clicks Apply on the ChinmayFinance card.
+// Returns the redirect URL from the API, or null if Chinmay did not return one.
+export async function applyToShortChinmayFinance(): Promise<string | null> {
+  // Short-ticket flow keeps the form in userFormData; dashboard users have it in the stored offers
+  let panNumber: string | undefined;
+  let mobileNumber: string | undefined;
+  try {
+    const formData = JSON.parse(sessionStorage.getItem("userFormData") || "{}");
+    panNumber = formData.panNumber;
+    mobileNumber = formData.mobileNumber;
+  } catch {
+    // ignore
+  }
+  const storedUser = getStoredShortExistingUserOffers()?.data?.user;
+  panNumber = panNumber || storedUser?.panNumber;
+  mobileNumber = mobileNumber || storedUser?.mobileNumber || sessionStorage.getItem("userPhone") || undefined;
+  if (!panNumber || !mobileNumber) throw new Error("User data not found. Please fill the form first.");
+
+  const shortOfferLeadId = getStoredShortOfferLeadId();
+
+  const res = await fetch(`${BASE_URL}/onSubmit/short-chinmay-finance`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      panNumber,
+      mobileNumber,
+      ...(shortOfferLeadId ? { shortOfferLeadId: String(shortOfferLeadId) } : {}),
+    }),
+  });
+
+  if (!res.ok) throw new Error("Failed to apply to Chinmay Finance. Please try again.");
+
+  // Response shape: { data: { ChinmayFinance: { redirect, redirectUrl, ... } } }
+  const json = await res.json();
+  const result = json?.data?.ChinmayFinance as { redirectUrl?: string; utm_link?: string } | undefined;
+  return result?.redirectUrl || result?.utm_link || null;
 }
 
 export function getStoredShortOfferLeadId(): number | null {

@@ -14,6 +14,8 @@ import { useRamFinCorpApply } from "@/hooks/useRamFinCorpApply"; // stub - RamFi
 import { useKreditBeeApply, useSmartCoinApply } from "@/hooks/useLenderApply";
 import {
   getStoredShortExistingUserOffers,
+  hasChinmayFinanceOffer,
+  applyToShortChinmayFinance,
   saveShortLender,
 } from "@/lib/api";
 import { cleverTapTrackEvent, CLEVERTAP_EVENTS } from "@/lib/clevertap";
@@ -183,6 +185,8 @@ const moneyDotData = data.MoneyDot as {
 
 const isMoneyDotEligible =
   moneyDotData?.data?.response?.can_attribute === true;
+const isChinmayEligible = hasChinmayFinanceOffer(data.ChinmayFinance);
+
 
 // const ramFinCorpData = data.RamFinCorp as {
 //   data?: { response?: { message?: string } };
@@ -236,6 +240,10 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
           // TrueFund is now a static lender — added below from staticLenders, not here.
           return false;
         }
+                if (o.lenderName === "ChinmayFinance") {
+          return isChinmayEligible;
+        }
+
         if (o.lenderName === "MoneyDot") {
           return isMoneyDotEligible;
         }
@@ -454,6 +462,15 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
           isOffer: false,
         });
       }
+      // Add ChinmayFinance based on API response
+      if (isChinmayEligible && !existingLenderNames.has("ChinmayFinance")) {
+        mappedOffers.push({
+          name: "ChinmayFinance",
+          // Redirect URL is fetched from the apply API on click
+          utmLink: undefined,
+          isOffer: false,
+        });
+      }
 
       // // Add RamFinCorp if eligible (data.response.message === "Dedup Success") - RamFinCorp disabled
       // if (isRamFinCorpEligible && !existingLenderNames.has("RamFinCorp")) {
@@ -641,6 +658,22 @@ const isLendingPlateEligible = lendingPlateData?.success === true;
     // For other lenders (including LoanWalleSalaried/LoanWalleSelfEmployed), save and open UTM link
     const phone = sessionStorage.getItem("userPhone") || "";
     await saveShortLender(phone, lenderName);
+
+    if (lenderName === "ChinmayFinance") {
+      // Chinmay's redirect URL comes from the apply API, not from the offers response
+      try {
+        const chinmayUrl = await applyToShortChinmayFinance();
+        if (chinmayUrl) {
+          window.open(chinmayUrl, "_blank");
+        } else {
+          // No offer from Chinmay (e.g. "No Chinmay Finance offer for this user")
+          setShowNotEligible("Chinmay Finance");
+        }
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : "Something went wrong. Please try again.");
+      }
+      return;
+    }
 
     const fallbackUrl = FALLBACK_UTM_LINKS[lenderName];
     const url = utmLink || fallbackUrl;
